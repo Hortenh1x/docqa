@@ -37,7 +37,9 @@ class Settings(BaseSettings):
     rrf_top_n: int = 20
     rerank_top_n: int = 8
     hnsw_ef_search: int = 100
-    refusal_threshold: float = 0.35
+    # tuned against eval/golden.yaml for the rerank=none cosine gate (see eval/results.md);
+    # retune when switching to a real reranker — their score scales differ
+    refusal_threshold: float = 0.50
 
     # reranking
     rerank_provider: Literal["cohere", "local", "none", "stub"] = "none"
