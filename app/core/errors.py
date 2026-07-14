@@ -110,6 +110,18 @@ class RequestInFlightError(DomainError):
     title = "Request already in flight"
 
 
+class DemoReadOnlyError(DomainError):
+    status = 403
+    code = "demo_readonly"
+    title = "Collection is read-only"
+
+
+class DemoQuotaExceededError(DomainError):
+    status = 403
+    code = "demo_quota_exceeded"
+    title = "Demo quota exceeded"
+
+
 def problem_response(
     status: int,
     code: str,

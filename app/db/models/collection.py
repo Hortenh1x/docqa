@@ -19,4 +19,6 @@ class Collection(Base):
     slug: Mapped[str]
     # e.g. 'bge-m3' or 'text-embedding-3-small@1024' — guards against mixing embedding models
     embedding_model: Mapped[str]
+    # public-demo collections reject uploads (403 demo_readonly)
+    read_only: Mapped[bool] = mapped_column(server_default=text("false"))
     created_at: Mapped[datetime] = mapped_column(server_default=text("now()"))

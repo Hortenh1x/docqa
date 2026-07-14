@@ -36,6 +36,7 @@ class CollectionOut(BaseModel):
     name: str
     slug: str
     embedding_model: str
+    read_only: bool
     created_at: datetime
 
 

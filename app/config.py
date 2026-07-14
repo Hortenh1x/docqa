@@ -64,6 +64,14 @@ class Settings(BaseSettings):
     # idempotency
     idempotency_ttl_s: int = 86400
 
+    # public demo mode: read-only demo collections + a small sandbox
+    demo_mode: bool = False
+    demo_max_files_per_collection: int = 5
+    demo_max_upload_mb: int = 5
+
+    # CORS (comma-separated origins for the UI)
+    cors_origins: str = "http://localhost:3000"
+
     # limits
     max_upload_mb: int = 25
     max_pages: int = 300
@@ -80,7 +88,14 @@ class Settings(BaseSettings):
 
     @property
     def max_upload_bytes(self) -> int:
-        return self.max_upload_mb * 1024 * 1024
+        mb = self.max_upload_mb
+        if self.demo_mode:
+            mb = min(mb, self.demo_max_upload_mb)
+        return mb * 1024 * 1024
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
     @property
     def embedding_model_id(self) -> str:

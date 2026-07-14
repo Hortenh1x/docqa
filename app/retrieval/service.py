@@ -36,4 +36,12 @@ async def retrieve(collection_id: uuid.UUID, question: str, settings: Settings) 
         [vector_hits, fulltext_hits], k=settings.rrf_k, top_n=settings.rrf_top_n
     )
     reranked = await get_rerank_provider(settings).rerank(question, fused, settings.rerank_top_n)
-    return RetrievalResult(chunks=reranked, top_score=reranked[0].score if reranked else None)
+
+    if settings.rerank_provider == "none":
+        # NoRerank normalizes fused ranks (the top hit is always 1.0) — useless against a
+        # refusal threshold. The honest confidence signal in that mode is the best vector
+        # cosine similarity: "is anything in the corpus semantically close at all".
+        gate_score = vector_hits[0].score if vector_hits else None
+    else:
+        gate_score = reranked[0].score if reranked else None
+    return RetrievalResult(chunks=reranked, top_score=gate_score)

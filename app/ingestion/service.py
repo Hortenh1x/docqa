@@ -10,12 +10,14 @@ import filetype
 import fitz
 import structlog
 from fastapi import UploadFile
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.core.errors import (
+    DemoQuotaExceededError,
+    DemoReadOnlyError,
     DuplicateDocumentError,
     PayloadTooLargeError,
     TooManyPagesError,
@@ -63,6 +65,20 @@ async def save_upload(db: AsyncSession, collection: Collection, upload: UploadFi
     # their attributes afterwards would trigger a sync lazy-load inside the event loop
     collection_id = collection.id
     tenant_id = collection.tenant_id
+
+    if collection.read_only:
+        raise DemoReadOnlyError("This demo collection is read-only. Use the sandbox collection.")
+    if settings.demo_mode:
+        existing = (
+            await db.execute(
+                select(func.count(Document.id)).where(Document.collection_id == collection_id)
+            )
+        ).scalar_one()
+        if existing >= settings.demo_max_files_per_collection:
+            raise DemoQuotaExceededError(
+                f"Demo sandbox allows at most {settings.demo_max_files_per_collection} files "
+                "per collection. Data is wiped nightly."
+            )
     tmp_dir = settings.storage_dir / "tmp"
     tmp_dir.mkdir(parents=True, exist_ok=True)
     tmp_path = tmp_dir / uuid.uuid4().hex
