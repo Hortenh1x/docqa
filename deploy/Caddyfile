@@ -1,0 +1,12 @@
+# Caddy terminates TLS automatically (Let's Encrypt). SSE needs no special config —
+# Caddy does not buffer streaming responses by default.
+
+{$DOCQA_DOMAIN} {
+    encode zstd gzip
+    reverse_proxy api:8000
+}
+
+{$DOCQA_APP_DOMAIN} {
+    encode zstd gzip
+    reverse_proxy ui:3000
+}

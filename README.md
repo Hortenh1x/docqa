@@ -4,7 +4,7 @@
 
 Multi-tenant document Q&A API built on FastAPI, PostgreSQL + pgvector, Redis and Celery. Upload PDF / DOCX / Markdown, and DocQA parses, chunks and embeds them in the background — ready for hybrid retrieval and grounded, citation-backed answers.
 
-> 🚧 **Work in progress.** Milestones 1–3 of 4 are complete: multi-tenant foundation, the full ingestion pipeline, grounded question answering with citations over SSE, and production hardening (rate limiting, idempotency, Docker, CI). A web UI, eval harness and a public demo are next.
+> Built in four milestones: multi-tenant foundation and ingestion → hybrid retrieval and grounded answers over SSE → production hardening (rate limiting, idempotency, Docker, CI) → demo corpus with engineered traps, measured eval, and a Next.js UI. Remaining before the public link: pushing to GitHub (CI) and the VPS deploy — see [deploy/runbook.md](deploy/runbook.md).
 
 ## What works today
 
@@ -32,6 +32,26 @@ Multi-tenant document Q&A API built on FastAPI, PostgreSQL + pgvector, Redis and
 - **Docker** — multi-stage uv image, non-root; `docker-compose.prod.yml` runs api + worker + Postgres + Redis with healthchecks, DB/Redis ports unpublished, `noeviction` Redis (a broker must never drop messages)
 - **CI** — GitHub Actions: ruff, strict mypy, full test suite (testcontainers) with an 80% coverage gate on core modules (currently ~89%); Dependabot for deps and actions
 - **Ops hygiene** — fail-fast config, structured JSON logs with `request_id`, RFC 9457 problem+json errors everywhere, additive Alembic migrations, `/v1/usage` aggregates, 71 tests
+
+**Use it from a browser:**
+
+- **Next.js UI** ([ui/](ui/)) — an "archivist's desk" interface: preset questions, sources rendered *before* the answer streams, inline citation stamps that open a source panel (file, pages, section, highlighted snippet), refusals as a first-class amber state, a library screen with upload and live ingestion statuses. `cd ui && npm install && npm run dev` against a running API.
+
+## Measured, not promised
+
+The repo ships a synthetic corpus (21 corporate policy documents, EN+DE) with deliberately engineered traps — a version conflict, cross-document answers, an exception buried mid-section, near-duplicate policies — plus a 30-question golden set ([eval/golden.yaml](eval/golden.yaml)). On real `bge-m3` embeddings:
+
+| Category | Questions | Recall@8 |
+| --- | --- | --- |
+| direct | 10 | 1.00 |
+| table | 4 | 1.00 |
+| multi-doc (all sources found) | 3 | 1.00 |
+| version conflict | 3 | 1.00 |
+| buried exception | 2 | 1.00 |
+| German | 3 | 1.00 |
+| **all answerable** | **25** | **1.00** |
+
+Off-corpus questions separate cleanly (mean gate score 0.49 vs 0.61 for answerable), and the `REFUSAL_THRESHOLD=0.50` default comes from a measured sweep — details and the reproduce command in [eval/results.md](eval/results.md). The corpus is small (41 chunks), so perfect recall says less than the score separation does; the answer-layer metrics (citation precision, faithfulness) run with `--with-answers` once an LLM is configured.
 
 ## Architecture
 
@@ -105,13 +125,21 @@ Or plain JSON (`"stream": false`) — same pipeline, one response. A question th
 
 Interactive docs: http://localhost:8000/docs
 
+### Seed the demo corpus
+
+```bash
+uv run python -m scripts.build_corpus     # md -> PDF/DOCX (no pandoc needed)
+uv run python -m scripts.seed_demo        # tenant + collections through the API
+uv run python -m eval.run_eval --collection <policies-en id>   # reproduce the numbers
+```
+
 ### Production-shaped stack
 
 ```bash
 docker compose -f docker-compose.prod.yml up -d --build   # api + worker + db + redis
 ```
 
-Single multi-stage image (non-root), migrations on start, healthchecked dependencies, database and Redis not exposed to the host.
+Single multi-stage image (non-root), migrations on start, healthchecked dependencies, database and Redis not exposed to the host. The public-demo overlay (UI + Caddy TLS, demo quotas, nightly sandbox wipe) is documented in [deploy/runbook.md](deploy/runbook.md).
 
 ## Configuration
 
@@ -155,5 +183,6 @@ Copy `.env.example` and adjust. Highlights:
 
 ## Roadmap
 
-- **Demo & eval** — seeded demo corpus with engineered traps (version conflicts, cross-doc answers), golden-set eval (recall@8, citation precision, faithfulness), Next.js UI, live demo
+- **Live demo** — VPS deploy behind Caddy (runbook ready), demo GIF for this README
+- **Answer-layer eval** — citation precision + LLM-as-judge faithfulness once a hosted LLM key is configured
 - **Nice-to-haves** — Anthropic streaming provider, Prometheus metrics, Sentry

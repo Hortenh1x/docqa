@@ -40,8 +40,11 @@ def app_env(_containers, tmp_path_factory):
     os.environ["REDIS_URL"] = redis_url
     os.environ["EMBEDDING_PROVIDER"] = "stub"
     os.environ["LLM_PROVIDER"] = "stub"
-    # word-overlap stub: gives the refusal gate real discrimination in tests
+    # word-overlap stub: gives the refusal gate real discrimination in tests;
+    # the threshold is scale-dependent per provider — 0.35 matches the stub's scale
+    # (the 0.50 default is tuned for the rerank=none cosine gate)
     os.environ["RERANK_PROVIDER"] = "stub"
+    os.environ["REFUSAL_THRESHOLD"] = "0.35"
     # off by default; the limiter's own tests re-enable it with tiny limits
     os.environ["RATE_LIMIT_ENABLED"] = "false"
     os.environ["STORAGE_DIR"] = str(tmp_path_factory.mktemp("storage"))

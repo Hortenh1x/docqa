@@ -11,7 +11,14 @@ DocQA — multi-tenant document Q&A (RAG) API: upload PDF/DOCX/MD/TXT → backgr
 - **Week 1 (done):** infra, config, logging, tenants + API keys + CLI, collections, document upload with dedup, parsers, chunking, embedding providers, Celery ingestion pipeline, unit + integration tests.
 - **Week 2 (done):** hybrid retrieval (vector + FTS + RRF), pluggable rerankers, `POST /v1/query` with SSE (`meta → sources → delta… → done`) and JSON modes, two refusal gates (retrieval threshold — $0; NO_ANSWER sentinel interception), citation validation/mapping, queries + query_citations recording with per-model costs.
 - **Week 3 (done):** per-key rate limiting (Lua token bucket, fail-open), Idempotency-Key replay (upload + non-stream query), IntegrityError safety net, OpenAPI security schemes/tags/examples, `/v1/usage`, multi-stage non-root Docker image + `docker-compose.prod.yml`, GitHub Actions CI with an 80% coverage gate (core modules; actual ~89%), Dependabot.
-- Week 4: demo corpus, eval harness, Next.js UI, deploy. **No GitHub remote yet** — CI triggers once the repo is pushed.
+- **Week 4 (done):** demo corpus (`corpus/`, 18 EN + 3 DE with engineered traps; builder in `scripts/build_corpus.py`), golden set + eval harness (`eval/`, recall@8=1.00 on bge-m3, threshold tuned to 0.50), seed script (`scripts/seed_demo.py`, 429-aware), demo mode (read-only collections, sandbox quotas, `wipe-collection`), CORS, Next.js UI (`ui/`), deploy assets (`deploy/`: Caddy, compose overlay, runbook).
+- Remaining: push to GitHub (CI is dormant until then), VPS deploy per `deploy/runbook.md`, README GIF, answer-layer eval with a hosted LLM.
+
+## Corpus & eval notes
+
+- `corpus/*.md` are the sources; `corpus/build/` holds upload-ready PDFs/DOCX/MD. Never edit numeric facts casually — they are pinned by `plans/docqa-corpus-prompt.md` (fact registry + traps); the grep checklist lives in week-4 plan day 1.
+- Refusal gate with `rerank=none` uses the best vector cosine (not normalized RRF); threshold semantics change per rerank provider — retune via `eval/run_eval.py`.
+- Seeded demo collections are pinned to `bge-m3`: querying them requires `EMBEDDING_PROVIDER=ollama` with a user-level ollama on 11435 (see `.env` comments).
 
 ## Stack
 

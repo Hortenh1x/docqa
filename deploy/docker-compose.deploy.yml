@@ -1,0 +1,48 @@
+# Public-demo overlay: adds the UI and Caddy (TLS) on top of the prod stack.
+#
+#   docker compose -f docker-compose.prod.yml -f deploy/docker-compose.deploy.yml up -d --build
+#
+# Required host env (or .env next to docker-compose.prod.yml):
+#   DOCQA_DOMAIN=docqa.example.com        # API
+#   DOCQA_APP_DOMAIN=app.docqa.example.com
+#   NEXT_PUBLIC_DEMO_API_KEY=dqa_live_…   # printed by scripts/seed_demo.py
+#   POSTGRES_PASSWORD=…                   # anything but the default
+#   DEMO_MODE=true
+
+services:
+  api:
+    # only Caddy talks to the API from outside
+    ports: !reset []
+    environment:
+      DEMO_MODE: ${DEMO_MODE:-true}
+      CORS_ORIGINS: https://${DOCQA_APP_DOMAIN}
+
+  ui:
+    build:
+      context: ../ui
+      args:
+        NEXT_PUBLIC_API_BASE_URL: https://${DOCQA_DOMAIN}
+        NEXT_PUBLIC_DEMO_API_KEY: ${NEXT_PUBLIC_DEMO_API_KEY:-}
+        NEXT_PUBLIC_DEMO_MODE: ${DEMO_MODE:-true}
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOCQA_DOMAIN: ${DOCQA_DOMAIN}
+      DOCQA_APP_DOMAIN: ${DOCQA_APP_DOMAIN}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - ui
+
+volumes:
+  caddy_data:
+  caddy_config:
