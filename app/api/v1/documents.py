@@ -2,17 +2,43 @@
 
 import uuid
 from datetime import datetime
+from typing import Annotated, Any
 
-from fastapi import APIRouter, Response, UploadFile
+from fastapi import APIRouter, Depends, Header, Response, UploadFile
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select
 
 from app.api.deps import CurrentCollection, CurrentTenant, DbSession
 from app.core.errors import NotFoundError
+from app.core.idempotency import replay_headers, run_idempotent
+from app.core.rate_limit import rate_limit
 from app.db.models import Collection, Document
 from app.ingestion import service as ingestion_service
 
 router = APIRouter(prefix="/v1", tags=["documents"])
+
+_UPLOAD_ERROR_EXAMPLES: dict[int | str, dict[str, Any]] = {
+    409: {
+        "description": "Identical file already exists in this collection",
+        "content": {
+            "application/problem+json": {
+                "example": {
+                    "type": "https://docqa.dev/errors/duplicate_document",
+                    "title": "Duplicate document",
+                    "status": 409,
+                    "detail": "Identical file already exists in this collection.",
+                    "code": "duplicate_document",
+                    "existing_document_id": "8b7f6c77-9ffb-466d-b549-327a2244e186",
+                    "request_id": "d41d8cd98f00b204e9800998ecf8427e",
+                }
+            }
+        },
+    },
+    413: {"description": "File exceeds MAX_UPLOAD_MB"},
+    415: {"description": "Not a PDF/DOCX/MD/TXT file (magic-byte check)"},
+    429: {"description": "Upload rate limit exceeded (see Retry-After)"},
+}
 
 
 class DocumentAccepted(BaseModel):
@@ -39,15 +65,39 @@ class DocumentOut(BaseModel):
 
 
 @router.post(
-    "/collections/{collection_id}/documents", status_code=202, response_model=DocumentAccepted
+    "/collections/{collection_id}/documents",
+    status_code=202,
+    response_model=DocumentAccepted,
+    dependencies=[Depends(rate_limit("upload"))],
+    responses=_UPLOAD_ERROR_EXAMPLES,
+    description=(
+        "Accepts a file for background ingestion. Supports the `Idempotency-Key` header: "
+        "a repeated POST with the same key replays the stored response "
+        "(`X-Idempotency-Replay: true`) instead of creating anything."
+    ),
 )
 async def upload_document(
-    collection: CurrentCollection, file: UploadFile, db: DbSession
-) -> Document:
-    return await ingestion_service.save_upload(db, collection, file)
+    collection: CurrentCollection,
+    file: UploadFile,
+    db: DbSession,
+    idempotency_key: Annotated[str | None, Header()] = None,
+) -> Document | JSONResponse:
+    if idempotency_key is None:
+        return await ingestion_service.save_upload(db, collection, file)
+
+    async def _handler() -> tuple[int, dict[str, Any]]:
+        document = await ingestion_service.save_upload(db, collection, file)
+        return 202, {"id": str(document.id), "status": document.status}
+
+    result = await run_idempotent(collection.tenant_id, idempotency_key, _handler)
+    return JSONResponse(result.body, status_code=result.status, headers=replay_headers(result))
 
 
-@router.get("/collections/{collection_id}/documents", response_model=list[DocumentOut])
+@router.get(
+    "/collections/{collection_id}/documents",
+    response_model=list[DocumentOut],
+    dependencies=[Depends(rate_limit("default"))],
+)
 async def list_documents(collection: CurrentCollection, db: DbSession) -> list[Document]:
     result = await db.execute(
         select(Document)
@@ -72,12 +122,21 @@ async def _get_scoped_document(
     return document
 
 
-@router.get("/documents/{document_id}", response_model=DocumentOut)
+@router.get(
+    "/documents/{document_id}",
+    response_model=DocumentOut,
+    dependencies=[Depends(rate_limit("default"))],
+)
 async def get_document(document_id: uuid.UUID, tenant: CurrentTenant, db: DbSession) -> Document:
     return await _get_scoped_document(document_id, tenant.id, db)
 
 
-@router.delete("/documents/{document_id}", status_code=204, response_class=Response)
+@router.delete(
+    "/documents/{document_id}",
+    status_code=204,
+    response_class=Response,
+    dependencies=[Depends(rate_limit("default"))],
+)
 async def delete_document(document_id: uuid.UUID, tenant: CurrentTenant, db: DbSession) -> None:
     document = await _get_scoped_document(document_id, tenant.id, db)
     sha256, mime_type = document.sha256, document.mime_type

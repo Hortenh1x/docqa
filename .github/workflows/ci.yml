@@ -1,0 +1,34 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    # ubuntu runners ship docker out of the box -> testcontainers work as-is
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy app
+      - name: tests with coverage gate (core modules)
+        run: >
+          uv run pytest
+          --cov=app/core --cov=app/ingestion --cov=app/retrieval --cov=app/generation
+          --cov-fail-under=80
+          --cov-report=term
+
+  image:
+    needs: checks
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t docqa:${{ github.sha }} .

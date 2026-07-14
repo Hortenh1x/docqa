@@ -55,6 +55,15 @@ class Settings(BaseSettings):
     context_token_budget: int = 3600
     context_chunk_max_tokens: int = 700
 
+    # rate limiting (token bucket per API key, by endpoint class)
+    rate_limit_enabled: bool = True
+    rate_limit_query_per_minute: int = 30
+    rate_limit_upload_per_minute: int = 10
+    rate_limit_default_per_minute: int = 120
+
+    # idempotency
+    idempotency_ttl_s: int = 86400
+
     # limits
     max_upload_mb: int = 25
     max_pages: int = 300

@@ -10,6 +10,7 @@ import structlog
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.core.logging import get_request_id
@@ -24,9 +25,16 @@ class DomainError(Exception):
     code: str = "internal"
     title: str = "Internal error"
 
-    def __init__(self, detail: str | None = None, **extra: Any) -> None:
+    def __init__(
+        self,
+        detail: str | None = None,
+        *,
+        headers: dict[str, str] | None = None,
+        **extra: Any,
+    ) -> None:
         super().__init__(detail or self.title)
         self.detail = detail or self.title
+        self.headers = headers
         self.extra = extra
 
 
@@ -90,8 +98,25 @@ class ProviderUnavailableError(DomainError):
     title = "Upstream provider unavailable"
 
 
+class RateLimitedError(DomainError):
+    status = 429
+    code = "rate_limited"
+    title = "Rate limit exceeded"
+
+
+class RequestInFlightError(DomainError):
+    status = 409
+    code = "request_in_flight"
+    title = "Request already in flight"
+
+
 def problem_response(
-    status: int, code: str, title: str, detail: str, extra: dict[str, Any] | None = None
+    status: int,
+    code: str,
+    title: str,
+    detail: str,
+    extra: dict[str, Any] | None = None,
+    headers: dict[str, str] | None = None,
 ) -> JSONResponse:
     body: dict[str, Any] = {
         "type": ERROR_TYPE_BASE + code,
@@ -105,7 +130,9 @@ def problem_response(
         body["request_id"] = request_id
     if extra:
         body.update(extra)
-    return JSONResponse(body, status_code=status, media_type="application/problem+json")
+    return JSONResponse(
+        body, status_code=status, media_type="application/problem+json", headers=headers
+    )
 
 
 _HTTP_CODES = {
@@ -119,7 +146,9 @@ _HTTP_CODES = {
 def install_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(DomainError)
     async def domain_error_handler(request: Request, exc: DomainError) -> JSONResponse:
-        return problem_response(exc.status, exc.code, exc.title, exc.detail, exc.extra)
+        return problem_response(
+            exc.status, exc.code, exc.title, exc.detail, exc.extra, headers=exc.headers
+        )
 
     @app.exception_handler(StarletteHTTPException)
     async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
@@ -140,6 +169,15 @@ def install_error_handlers(app: FastAPI) -> None:
             "Validation error",
             "Request validation failed.",
             {"errors": errors},
+        )
+
+    @app.exception_handler(IntegrityError)
+    async def integrity_error_handler(request: Request, exc: IntegrityError) -> JSONResponse:
+        # safety net: recognized constraint violations are converted to specific
+        # DomainErrors in the services; anything that reaches here is a generic conflict
+        log.warning("unhandled_integrity_error", error=str(exc.orig))
+        return problem_response(
+            409, "conflict", "Conflict", "The request conflicts with existing data."
         )
 
     @app.exception_handler(Exception)

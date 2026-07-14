@@ -42,6 +42,8 @@ def app_env(_containers, tmp_path_factory):
     os.environ["LLM_PROVIDER"] = "stub"
     # word-overlap stub: gives the refusal gate real discrimination in tests
     os.environ["RERANK_PROVIDER"] = "stub"
+    # off by default; the limiter's own tests re-enable it with tiny limits
+    os.environ["RATE_LIMIT_ENABLED"] = "false"
     os.environ["STORAGE_DIR"] = str(tmp_path_factory.mktemp("storage"))
 
     import app.core.redis as core_redis

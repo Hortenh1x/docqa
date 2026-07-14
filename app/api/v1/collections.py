@@ -4,7 +4,7 @@ import re
 import uuid
 from datetime import datetime
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -12,9 +12,14 @@ from sqlalchemy.exc import IntegrityError
 from app.api.deps import CurrentTenant, DbSession
 from app.config import get_settings
 from app.core.errors import DuplicateCollectionError
+from app.core.rate_limit import rate_limit
 from app.db.models import Collection
 
-router = APIRouter(prefix="/v1/collections", tags=["collections"])
+router = APIRouter(
+    prefix="/v1/collections",
+    tags=["collections"],
+    dependencies=[Depends(rate_limit("default"))],
+)
 
 SLUG_RE = r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?$"
 

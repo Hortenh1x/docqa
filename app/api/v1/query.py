@@ -8,16 +8,18 @@ come from before the answer itself.
 import json
 import uuid
 from collections.abc import AsyncIterator
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Header
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.api.deps import CurrentTenant, DbSession, fetch_collection
 from app.config import get_settings
 from app.core.errors import EmbeddingModelMismatchError, ProviderUnavailableError
+from app.core.idempotency import replay_headers, run_idempotent
 from app.core.logging import get_request_id
+from app.core.rate_limit import rate_limit
 from app.generation.service import (
     DeltaEvent,
     DoneEvent,
@@ -99,9 +101,27 @@ async def _collect_json(events: AsyncIterator[QueryEvent]) -> dict[str, Any]:
     raise ProviderUnavailableError("Query pipeline ended without a result.")
 
 
-@router.post("/query", response_model=None)
+@router.post(
+    "/query",
+    response_model=None,
+    dependencies=[Depends(rate_limit("query"))],
+    responses={
+        409: {"description": "Embedding model mismatch, or the Idempotency-Key is in flight"},
+        429: {"description": "Query rate limit exceeded (see Retry-After)"},
+        503: {"description": "Embedding or LLM provider unavailable"},
+    },
+    description=(
+        "Answers strictly from the collection's documents, with [n] citations. "
+        "`stream=true` returns SSE (`meta → sources → delta… → done`); `stream=false` "
+        "returns one JSON body and supports the `Idempotency-Key` header. Streams have "
+        "no idempotency semantics — the header is ignored when streaming."
+    ),
+)
 async def query(
-    payload: QueryRequest, tenant: CurrentTenant, db: DbSession
+    payload: QueryRequest,
+    tenant: CurrentTenant,
+    db: DbSession,
+    idempotency_key: Annotated[str | None, Header()] = None,
 ) -> StreamingResponse | JSONResponse:
     collection = await fetch_collection(db, tenant.id, payload.collection_id)
     settings = get_settings()
@@ -112,9 +132,21 @@ async def query(
             collection_embedding_model=collection.embedding_model,
         )
 
-    events = run_query(tenant.id, collection.id, payload.question, settings)
+    tenant_id, collection_id = tenant.id, collection.id
     if payload.stream:
+        events = run_query(tenant_id, collection_id, payload.question, settings)
         return StreamingResponse(
             _sse_stream(events), media_type="text/event-stream", headers=_SSE_HEADERS
         )
-    return JSONResponse(await _collect_json(events))
+
+    if idempotency_key is None:
+        return JSONResponse(
+            await _collect_json(run_query(tenant_id, collection_id, payload.question, settings))
+        )
+
+    async def _handler() -> tuple[int, dict[str, Any]]:
+        body = await _collect_json(run_query(tenant_id, collection_id, payload.question, settings))
+        return 200, body
+
+    result = await run_idempotent(tenant_id, idempotency_key, _handler)
+    return JSONResponse(result.body, status_code=result.status, headers=replay_headers(result))

@@ -66,6 +66,8 @@ async def get_current_tenant(request: Request, db: DbSession) -> Tenant:
                 raise TenantInactiveError()
             await _touch_last_used(api_key)
             structlog.contextvars.bind_contextvars(tenant_id=str(tenant.id))
+            # rate limiting buckets are per key — expose the prefix to later dependencies
+            request.state.api_key_prefix = api_key.prefix
             return tenant
     raise InvalidApiKeyError()
 

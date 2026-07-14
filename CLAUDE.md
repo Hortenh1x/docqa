@@ -10,7 +10,8 @@ DocQA — multi-tenant document Q&A (RAG) API: upload PDF/DOCX/MD/TXT → backgr
 
 - **Week 1 (done):** infra, config, logging, tenants + API keys + CLI, collections, document upload with dedup, parsers, chunking, embedding providers, Celery ingestion pipeline, unit + integration tests.
 - **Week 2 (done):** hybrid retrieval (vector + FTS + RRF), pluggable rerankers, `POST /v1/query` with SSE (`meta → sources → delta… → done`) and JSON modes, two refusal gates (retrieval threshold — $0; NO_ANSWER sentinel interception), citation validation/mapping, queries + query_citations recording with per-model costs.
-- Week 3: production hardening (rate limit, idempotency, Docker, CI). Week 4: demo corpus, eval, UI, deploy.
+- **Week 3 (done):** per-key rate limiting (Lua token bucket, fail-open), Idempotency-Key replay (upload + non-stream query), IntegrityError safety net, OpenAPI security schemes/tags/examples, `/v1/usage`, multi-stage non-root Docker image + `docker-compose.prod.yml`, GitHub Actions CI with an 80% coverage gate (core modules; actual ~89%), Dependabot.
+- Week 4: demo corpus, eval harness, Next.js UI, deploy. **No GitHub remote yet** — CI triggers once the repo is pushed.
 
 ## Stack
 

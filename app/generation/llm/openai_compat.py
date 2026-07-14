@@ -24,12 +24,14 @@ class OpenAICompatLLM:
         model: str,
         temperature: float,
         max_tokens: int,
+        transport: httpx.AsyncBaseTransport | None = None,  # tests inject a MockTransport
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.model = model
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self._transport = transport
 
     @property
     def model_name(self) -> str:
@@ -52,7 +54,7 @@ class OpenAICompatLLM:
         }
         try:
             async with (
-                httpx.AsyncClient(timeout=_TIMEOUT) as client,
+                httpx.AsyncClient(timeout=_TIMEOUT, transport=self._transport) as client,
                 client.stream(
                     "POST", f"{self.base_url}/chat/completions", json=payload, headers=headers
                 ) as response,

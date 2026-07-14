@@ -4,7 +4,7 @@
 
 Multi-tenant document Q&A API built on FastAPI, PostgreSQL + pgvector, Redis and Celery. Upload PDF / DOCX / Markdown, and DocQA parses, chunks and embeds them in the background — ready for hybrid retrieval and grounded, citation-backed answers.
 
-> 🚧 **Work in progress.** Milestones 1–2 of 4 are complete: multi-tenant foundation, the full ingestion pipeline, and grounded question answering with citations over SSE. Production hardening (rate limiting, idempotency, CI, Docker) and a web UI with a public demo are next.
+> 🚧 **Work in progress.** Milestones 1–3 of 4 are complete: multi-tenant foundation, the full ingestion pipeline, grounded question answering with citations over SSE, and production hardening (rate limiting, idempotency, Docker, CI). A web UI, eval harness and a public demo are next.
 
 ## What works today
 
@@ -24,7 +24,14 @@ Multi-tenant document Q&A API built on FastAPI, PostgreSQL + pgvector, Redis and
 - **Background ingestion** — Celery worker: parse → section-aware chunking (~450 tokens, 60 overlap, tables kept atomic) → embeddings → bulk insert; status `pending → processing → ready | failed`
 - **Parsers** — PDF (PyMuPDF, font-size heading heuristics → section breadcrumbs), DOCX (headings + tables → Markdown), MD, TXT
 - **Embedding providers** — OpenAI (`text-embedding-3-small@1024`), Ollama (`bge-m3`), and a deterministic stub: tests and offline mode need zero API keys
-- **Ops hygiene** — fail-fast config, structured JSON logs with `request_id`, RFC 9457 problem+json errors, additive Alembic migrations, ruff + strict mypy, 55 unit & integration tests (testcontainers)
+**Run it like a service:**
+
+- **Per-key rate limiting** — Redis token bucket (atomic Lua), per endpoint class (query 30/min, upload 10/min, default 120/min); 429 with `Retry-After` and `X-RateLimit-*`; fails open when Redis is down (availability beats quota enforcement)
+- **Idempotency** — `Idempotency-Key` on uploads and non-streaming queries: concurrent duplicate → 409 `request_in_flight`, repeat → stored response replayed with `X-Idempotency-Replay: true`
+- **Strict tenant isolation** — every query carries the tenant scope in its WHERE clause; a foreign resource is indistinguishable from a missing one (404, never 403); covered by an IDOR test matrix and a concurrent-dedup race test
+- **Docker** — multi-stage uv image, non-root; `docker-compose.prod.yml` runs api + worker + Postgres + Redis with healthchecks, DB/Redis ports unpublished, `noeviction` Redis (a broker must never drop messages)
+- **CI** — GitHub Actions: ruff, strict mypy, full test suite (testcontainers) with an 80% coverage gate on core modules (currently ~89%); Dependabot for deps and actions
+- **Ops hygiene** — fail-fast config, structured JSON logs with `request_id`, RFC 9457 problem+json errors everywhere, additive Alembic migrations, `/v1/usage` aggregates, 71 tests
 
 ## Architecture
 
@@ -98,6 +105,14 @@ Or plain JSON (`"stream": false`) — same pipeline, one response. A question th
 
 Interactive docs: http://localhost:8000/docs
 
+### Production-shaped stack
+
+```bash
+docker compose -f docker-compose.prod.yml up -d --build   # api + worker + db + redis
+```
+
+Single multi-stage image (non-root), migrations on start, healthchecked dependencies, database and Redis not exposed to the host.
+
 ## Configuration
 
 Copy `.env.example` and adjust. Highlights:
@@ -115,6 +130,7 @@ Copy `.env.example` and adjust. Highlights:
 | `LLM_BASE_URL` / `LLM_MODEL` | OpenAI | any OpenAI-compatible endpoint (DeepSeek, Ollama `/v1`, vLLM) |
 | `RERANK_PROVIDER` | `none` | `cohere` \| `local` \| `none` \| `stub` |
 | `REFUSAL_THRESHOLD` | `0.35` | rerank score below this → refuse without an LLM call |
+| `RATE_LIMIT_ENABLED` | `true` | per-key token buckets (query 30/min, upload 10/min, default 120/min) |
 | `MAX_UPLOAD_MB` | `25` | upload size cap → 413 |
 | `MAX_PAGES` | `300` | PDF page cap → 422 |
 
@@ -139,6 +155,5 @@ Copy `.env.example` and adjust. Highlights:
 
 ## Roadmap
 
-- **Production hardening** — per-key rate limiting (429 + `Retry-After`), `Idempotency-Key` replay, multi-stage Docker image, GitHub Actions CI
 - **Demo & eval** — seeded demo corpus with engineered traps (version conflicts, cross-doc answers), golden-set eval (recall@8, citation precision, faithfulness), Next.js UI, live demo
-- **Nice-to-haves** — Anthropic streaming provider, `/v1/usage` endpoint, Prometheus metrics
+- **Nice-to-haves** — Anthropic streaming provider, Prometheus metrics, Sentry

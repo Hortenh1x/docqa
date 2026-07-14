@@ -1,0 +1,86 @@
+# Production-shaped stack: api + worker + db + redis.
+#   docker compose -f docker-compose.prod.yml up -d --build
+# Secrets/provider config come from the host environment (or an .env file next to this
+# compose file). Database and Redis ports are intentionally NOT published.
+
+x-app-env: &app-env
+  DATABASE_URL: postgresql+asyncpg://docqa:${POSTGRES_PASSWORD:-docqa}@db:5432/docqa
+  DATABASE_URL_SYNC: postgresql+psycopg://docqa:${POSTGRES_PASSWORD:-docqa}@db:5432/docqa
+  REDIS_URL: redis://redis:6379/0
+  EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-stub}
+  OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  LLM_PROVIDER: ${LLM_PROVIDER:-stub}
+  LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
+  LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
+  LLM_API_KEY: ${LLM_API_KEY:-}
+  RERANK_PROVIDER: ${RERANK_PROVIDER:-none}
+  COHERE_API_KEY: ${COHERE_API_KEY:-}
+  REFUSAL_THRESHOLD: ${REFUSAL_THRESHOLD:-0.35}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+services:
+  api:
+    build: .
+    restart: unless-stopped
+    environment: *app-env
+    # migrations on start are fine for a single instance; run a dedicated migrate job
+    # before rolling multiple replicas
+    command: sh -c "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log"
+    ports:
+      - "8000:8000"
+    volumes:
+      - files:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    build: .
+    restart: unless-stopped
+    environment: *app-env
+    command: celery -A app.workers.celery_app worker -Q ingestion -c 2 --loglevel INFO
+    volumes:
+      - files:/app/data
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  db:
+    image: pgvector/pgvector:pg18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: docqa
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-docqa}
+      POSTGRES_DB: docqa
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docqa -d docqa"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # eviction would silently drop Celery messages — never allow it for a broker
+    command: redis-server --maxmemory-policy noeviction
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
+  files:

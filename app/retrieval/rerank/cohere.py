@@ -23,11 +23,13 @@ class CohereRerank:
         model: str,
         timeout_s: float,
         base_url: str = "https://api.cohere.com/v2",
+        transport: httpx.AsyncBaseTransport | None = None,  # tests inject a MockTransport
     ) -> None:
         self.api_key = api_key
         self.model = model
         self.timeout_s = timeout_s
         self.base_url = base_url.rstrip("/")
+        self._transport = transport
 
     async def rerank(
         self, question: str, chunks: list[RetrievedChunk], top_n: int
@@ -35,7 +37,9 @@ class CohereRerank:
         if not chunks:
             return []
         try:
-            async with httpx.AsyncClient(timeout=self.timeout_s) as client:
+            async with httpx.AsyncClient(
+                timeout=self.timeout_s, transport=self._transport
+            ) as client:
                 response = await client.post(
                     f"{self.base_url}/rerank",
                     headers={"Authorization": f"Bearer {self.api_key}"},
