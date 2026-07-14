@@ -1,0 +1,20 @@
+# Local hooks running through the project venv: deterministic versions, no separate hook envs.
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check --fix
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy (app)
+        entry: uv run mypy app
+        language: system
+        pass_filenames: false
+        types: [python]

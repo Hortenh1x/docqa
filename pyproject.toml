@@ -1,0 +1,74 @@
+[project]
+name = "docqa"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "aiofiles>=25.1.0",
+    "alembic>=1.18.5",
+    "asyncpg>=0.31.0",
+    "celery>=5.6.3",
+    "fastapi>=0.139.0",
+    "filetype>=1.2.0",
+    "httpx>=0.28.1",
+    "pgvector>=0.5.0",
+    "psycopg[binary]>=3.3.4",
+    "pydantic-settings>=2.14.2",
+    "pymupdf>=1.28.0",
+    "python-docx>=1.2.0",
+    "python-multipart>=0.0.32",
+    "redis>=8.0.1",
+    "sqlalchemy>=2.0.51",
+    "structlog>=26.1.0",
+    "tenacity>=9.1.4",
+    "tiktoken>=0.13.0",
+    "uvicorn[standard]>=0.51.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.3.0",
+    "pre-commit>=4.6.0",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.21",
+    "testcontainers[postgres,redis]>=4.14.2",
+]
+
+[tool.uv]
+package = false
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+show_error_codes = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = [
+    "fitz.*",
+    "pymupdf.*",
+    "filetype.*",
+    "docx.*",
+    "celery.*",
+    "kombu.*",
+    "aiofiles.*",
+    "pgvector.*",
+    "testcontainers.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_untyped_decorators = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+filterwarnings = ["error::RuntimeWarning"]
+
+[tool.coverage.run]
+source = ["app"]

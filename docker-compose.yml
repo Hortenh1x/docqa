@@ -1,0 +1,33 @@
+# Dev infrastructure only: Postgres (pgvector) + Redis. The API and worker run on the host.
+# Host port 5433 for Postgres — 5432 is commonly taken by other local projects.
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    container_name: docqa-db
+    environment:
+      POSTGRES_USER: docqa
+      POSTGRES_PASSWORD: docqa
+      POSTGRES_DB: docqa
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docqa -d docqa"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: docqa-redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
