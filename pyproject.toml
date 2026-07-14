@@ -67,7 +67,9 @@ disallow_untyped_decorators = false
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+# one event loop for the whole session: the async engine and redis client are loop-bound
 asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
 filterwarnings = ["error::RuntimeWarning"]
 
 [tool.coverage.run]
