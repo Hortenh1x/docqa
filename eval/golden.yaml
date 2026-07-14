@@ -1,0 +1,237 @@
+# Golden evaluation set for the Kranich Software demo corpus.
+# Categories: direct(10) | table(4) | multi_doc(3) | version(3) | buried(2) | no_answer(5) | german(3)
+# Questions are phrased the way real employees ask — several deliberately avoid the
+# source wording (paraphrase test).
+
+- id: q01
+  category: direct
+  question: "How many days can I work from another EU country per year?"
+  expected_answer: "Up to 30 working days per calendar year (EU/EEA only), with manager + People & Culture approval"
+  expected_sources:
+    - { doc: "POL-003", section: "2" }
+  notes: "workation allowance F17; paraphrase of 'workation'"
+
+- id: q02
+  category: direct
+  question: "When do I need to hand in a doctor's note if I'm sick?"
+  expected_answer: "From the 3rd calendar day of absence"
+  expected_sources:
+    - { doc: "POL-007", section: "3" }
+  notes: "F15"
+
+- id: q03
+  category: direct
+  question: "Who do I contact if I clicked a phishing link, and how fast?"
+  expected_answer: "Report to security@kranich.example within 24 hours of noticing"
+  expected_sources:
+    - { doc: "SEC-001", section: "3" }
+  notes: "F20; also stated in POL-005 §7"
+
+- id: q04
+  category: direct
+  question: "What's the deadline for submitting travel expenses?"
+  expected_answer: "Within 30 calendar days after the trip ends"
+  expected_sources:
+    - { doc: "POL-004", section: "6" }
+  notes: "F10"
+
+- id: q05
+  category: direct
+  question: "Is there any budget for gym memberships?"
+  expected_answer: "Yes — the €50/month wellness budget covers sports memberships"
+  expected_sources:
+    - { doc: "HR-004", section: "3" }
+  notes: "F22; paraphrase — 'gym' never appears as such"
+
+- id: q06
+  category: direct
+  question: "Does the company pay for my Deutschlandticket?"
+  expected_answer: "Yes, fully covered for employees in Germany; ordered via Fern"
+  expected_sources:
+    - { doc: "HR-004", section: "4" }
+  notes: "F23"
+
+- id: q07
+  category: direct
+  question: "How often do performance reviews happen?"
+  expected_answer: "Twice a year, in April and October"
+  expected_sources:
+    - { doc: "HR-003", section: "2" }
+  notes: "F21"
+
+- id: q08
+  category: direct
+  question: "How long is the probation period?"
+  expected_answer: "6 months from the start date"
+  expected_sources:
+    - { doc: "HR-004", section: "8" }
+  notes: "F14"
+
+- id: q09
+  category: direct
+  question: "Which password manager are we supposed to use — can I just use my browser?"
+  expected_answer: "1Password (company-provided) is mandatory; browser password stores are not allowed"
+  expected_sources:
+    - { doc: "POL-005", section: "4" }
+  notes: "F19"
+
+- id: q10
+  category: direct
+  question: "How much notice do I need to give for a two-week vacation?"
+  expected_answer: "At least 4 weeks in advance for absences longer than 5 consecutive working days"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "4" }
+  notes: "F7; 'two-week vacation' forces the >5-days rule"
+
+- id: q11
+  category: table
+  question: "What's the daily allowance for a business trip to France?"
+  expected_answer: "€32 per full day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "T4/F8 — answer only in the per-diem table"
+
+- id: q12
+  category: table
+  question: "How much per-diem do I get in the US compared to Poland?"
+  expected_answer: "US €55 per day, Poland €22 per day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "two rows of the same table"
+
+- id: q13
+  category: table
+  question: "What's the hardware budget for engineers?"
+  expected_answer: "€2,800 for engineering roles (standard roles: €2,200)"
+  expected_sources:
+    - { doc: "POL-006", section: "3" }
+  notes: "T4/F11 — equipment table"
+
+- id: q14
+  category: table
+  question: "If my trip is only six hours long, do I still get the full per-diem?"
+  expected_answer: "No — trips under 8 hours get 50% of the country rate"
+  expected_sources:
+    - { doc: "FIN-001", section: "3" }
+  notes: "F9"
+
+- id: q15
+  category: multi_doc
+  question: "I'm traveling to Lisbon for two days of client work — what allowance applies and where is the rate defined?"
+  expected_answer: "Per-diems are defined in FIN-001: Portugal is €24/day; POL-004 only references the sheet"
+  expected_sources:
+    - { doc: "POL-004", section: "4" }
+    - { doc: "FIN-001", section: "2" }
+  notes: "T2 — cross-document chain travel policy -> rates sheet"
+
+- id: q16
+  category: multi_doc
+  question: "The onboarding guide says to do the security training — what exactly is the deadline?"
+  expected_answer: "Within 14 days of the start date (defined in POL-005 §3; HR-001 only points there)"
+  expected_sources:
+    - { doc: "HR-001", section: "4" }
+    - { doc: "POL-005", section: "3" }
+  notes: "T6/F18 — reference chain; number only in POL-005"
+
+- id: q17
+  category: multi_doc
+  question: "When I leave the company, how long do I have to send back my laptop, and where's the shipping label?"
+  expected_answer: "Within 10 business days after the last working day; prepaid label comes through the Fern offboarding checklist"
+  expected_sources:
+    - { doc: "HR-002", section: "4" }
+    - { doc: "POL-006", section: "7" }
+  notes: "F13 stated in both docs — either counts"
+
+- id: q18
+  category: version
+  question: "How many vacation days do employees get?"
+  expected_answer: "27 days per year (v2.3, current); +1 day per 2 full years of service, capped at 30. (v1.0's 24 days is superseded)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "T1 — must answer per v2.3, ideally noting supersession"
+
+- id: q19
+  category: version
+  question: "Until when can I still use last year's leftover vacation days?"
+  expected_answer: "March 31 of the following year (current v2.3 rule; v1.0's March 15 is superseded)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "T1 — carryover deadline conflict between versions"
+
+- id: q20
+  category: version
+  question: "Do I get extra vacation days for having worked here several years?"
+  expected_answer: "Yes — +1 day per 2 full years of service, up to 30 days total (v2.3 only)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F4 exists only in the current version"
+
+- id: q21
+  category: buried
+  question: "I'm just back from parental leave — do my old vacation days still expire in March?"
+  expected_answer: "No — for parental-leave returnees the carryover deadline is extended to June 30 of the return year"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3/F6 — one sentence buried in POL-008 §7.2; POL-001-v2 does not mention it"
+
+- id: q22
+  category: buried
+  question: "Is there any exception to the vacation carryover deadline?"
+  expected_answer: "Yes — employees returning from parental leave keep preserved days until June 30 (POL-008 §7.2)"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 asked from the generic side"
+
+- id: q23
+  category: no_answer
+  question: "What is the company sabbatical policy?"
+  expected_refusal: true
+  notes: "forbidden topic — must refuse, not invent"
+
+- id: q24
+  category: no_answer
+  question: "Can I get a company car instead of the transit ticket?"
+  expected_refusal: true
+  notes: "forbidden topic: company cars"
+
+- id: q25
+  category: no_answer
+  question: "Does the health benefit cover pet insurance for my dog?"
+  expected_refusal: true
+  notes: "forbidden topic: pet insurance"
+
+- id: q26
+  category: no_answer
+  question: "What relocation support do you offer when moving to Berlin?"
+  expected_refusal: true
+  notes: "forbidden topic: relocation/visa"
+
+- id: q27
+  category: no_answer
+  question: "How do employee stock options vest?"
+  expected_refusal: true
+  notes: "forbidden topic: equity/ESOP"
+
+- id: q28
+  category: german
+  question: "Wie viele Tage darf ich pro Jahr aus dem EU-Ausland arbeiten?"
+  expected_answer: "Bis zu 30 Arbeitstage pro Kalenderjahr (nur EU/EWR), mit Genehmigung von Führungskraft und People & Culture"
+  expected_sources:
+    - { doc: "POL-003", section: "2" }
+  notes: "German question; answerable from POL-003 (EN) or general corpus — bge-m3 is multilingual"
+
+- id: q29
+  category: german
+  question: "Bis wann muss ich meinen Spesenbericht einreichen?"
+  expected_answer: "Spätestens 30 Kalendertage nach Reiseende"
+  expected_sources:
+    - { doc: "POL-004-DE", section: "6" }
+  notes: "T8 — German mirror carries the same number"
+
+- id: q30
+  category: german
+  question: "Übernimmt die Firma das Deutschlandticket?"
+  expected_answer: "Ja, vollständig — Bestellung über Fern"
+  expected_sources:
+    - { doc: "HR-004-DE", section: "4" }
+  notes: "F23 via the German benefits overview"

@@ -37,7 +37,8 @@ class _Line:
 
 def _extract_lines(page: fitz.Page, page_index: int) -> list[_Line]:
     lines: list[_Line] = []
-    data = page.get_text("dict")
+    # expand ligatures (ﬀ -> ff, ﬁ -> fi): they would silently break exact-match search
+    data = page.get_text("dict", flags=fitz.TEXTFLAGS_DICT & ~fitz.TEXT_PRESERVE_LIGATURES)
     for block_no, block in enumerate(data.get("blocks", [])):
         if block.get("type") != 0:  # images etc.
             continue
