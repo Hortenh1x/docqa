@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api.v1 import collections, documents, health
+from app.api.v1 import collections, documents, health, query
 from app.config import get_settings
 from app.core.errors import install_error_handlers
 from app.core.logging import RequestContextMiddleware, configure_logging
@@ -35,6 +35,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(collections.router)
     app.include_router(documents.router)
+    app.include_router(query.router)
     return app
 
 

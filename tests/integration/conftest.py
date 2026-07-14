@@ -39,6 +39,9 @@ def app_env(_containers, tmp_path_factory):
     os.environ["DATABASE_URL_SYNC"] = db_url.replace("+asyncpg", "+psycopg")
     os.environ["REDIS_URL"] = redis_url
     os.environ["EMBEDDING_PROVIDER"] = "stub"
+    os.environ["LLM_PROVIDER"] = "stub"
+    # word-overlap stub: gives the refusal gate real discrimination in tests
+    os.environ["RERANK_PROVIDER"] = "stub"
     os.environ["STORAGE_DIR"] = str(tmp_path_factory.mktemp("storage"))
 
     import app.core.redis as core_redis

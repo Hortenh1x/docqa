@@ -73,18 +73,24 @@ async def get_current_tenant(request: Request, db: DbSession) -> Tenant:
 CurrentTenant = Annotated[Tenant, Depends(get_current_tenant)]
 
 
-async def get_collection_or_404(
-    collection_id: uuid.UUID, tenant: CurrentTenant, db: DbSession
+async def fetch_collection(
+    db: AsyncSession, tenant_id: uuid.UUID, collection_id: uuid.UUID
 ) -> Collection:
     # tenant scope lives in the WHERE clause: a foreign collection is indistinguishable
     # from a missing one (404), and no unscoped row ever leaves the database
     result = await db.execute(
-        select(Collection).where(Collection.id == collection_id, Collection.tenant_id == tenant.id)
+        select(Collection).where(Collection.id == collection_id, Collection.tenant_id == tenant_id)
     )
     collection = result.scalar_one_or_none()
     if collection is None:
         raise NotFoundError("Collection not found.")
     return collection
+
+
+async def get_collection_or_404(
+    collection_id: uuid.UUID, tenant: CurrentTenant, db: DbSession
+) -> Collection:
+    return await fetch_collection(db, tenant.id, collection_id)
 
 
 CurrentCollection = Annotated[Collection, Depends(get_collection_or_404)]

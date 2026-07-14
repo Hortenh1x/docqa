@@ -30,6 +30,31 @@ class Settings(BaseSettings):
     chunk_overlap_tokens: int = 60
     chunk_max_tokens: int = 512
 
+    # retrieval (tuned against the eval set in week 4)
+    top_k_vector: int = 30
+    top_k_fts: int = 30
+    rrf_k: int = 60
+    rrf_top_n: int = 20
+    rerank_top_n: int = 8
+    hnsw_ef_search: int = 100
+    refusal_threshold: float = 0.35
+
+    # reranking
+    rerank_provider: Literal["cohere", "local", "none", "stub"] = "none"
+    cohere_api_key: str | None = None
+    cohere_rerank_model: str = "rerank-v3.5"
+    rerank_timeout_s: float = 4.0
+
+    # generation
+    llm_provider: Literal["openai_compat", "stub"] = "stub"
+    llm_base_url: str = "https://api.openai.com/v1"
+    llm_model: str = "gpt-4o-mini"
+    llm_api_key: str | None = None
+    llm_temperature: float = 0.1
+    llm_max_tokens: int = 1024
+    context_token_budget: int = 3600
+    context_chunk_max_tokens: int = 700
+
     # limits
     max_upload_mb: int = 25
     max_pages: int = 300

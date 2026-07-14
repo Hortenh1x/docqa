@@ -78,6 +78,18 @@ class TooManyPagesError(DomainError):
     title = "Too many pages"
 
 
+class EmbeddingModelMismatchError(DomainError):
+    status = 409
+    code = "embedding_model_mismatch"
+    title = "Embedding model mismatch"
+
+
+class ProviderUnavailableError(DomainError):
+    status = 503
+    code = "provider_unavailable"
+    title = "Upstream provider unavailable"
+
+
 def problem_response(
     status: int, code: str, title: str, detail: str, extra: dict[str, Any] | None = None
 ) -> JSONResponse:

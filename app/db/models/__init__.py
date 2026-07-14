@@ -5,6 +5,17 @@ from app.db.models.base import Base
 from app.db.models.chunk import Chunk
 from app.db.models.collection import Collection
 from app.db.models.document import Document, DocumentStatus
+from app.db.models.query import Query, QueryCitation
 from app.db.models.tenant import Tenant
 
-__all__ = ["ApiKey", "Base", "Chunk", "Collection", "Document", "DocumentStatus", "Tenant"]
+__all__ = [
+    "ApiKey",
+    "Base",
+    "Chunk",
+    "Collection",
+    "Document",
+    "DocumentStatus",
+    "Query",
+    "QueryCitation",
+    "Tenant",
+]
