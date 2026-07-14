@@ -22,6 +22,7 @@ from app.core.errors import (
     UnsupportedFileTypeError,
 )
 from app.db.models import Collection, Document, DocumentStatus
+from app.ingestion.mime import EXT_BY_MIME, TEXT_EXT_MIME
 from app.ingestion.tasks import ingest_document
 from app.storage import get_storage
 
@@ -29,25 +30,15 @@ log = structlog.get_logger("docqa.ingestion")
 
 READ_CHUNK_BYTES = 1024 * 1024
 
-# allowlist; detection is by magic bytes (never by extension) for binary formats,
-# by extension + UTF-8 validity for the text formats that have no magic bytes
-DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-EXT_BY_MIME = {
-    "application/pdf": ".pdf",
-    DOCX_MIME: ".docx",
-    "text/markdown": ".md",
-    "text/plain": ".txt",
-}
-_TEXT_EXT_MIME = {".md": "text/markdown", ".markdown": "text/markdown", ".txt": "text/plain"}
-
 
 def _detect_mime(head: bytes, filename: str | None) -> str | None:
+    """Magic bytes for binary formats; extension + UTF-8 validity for text formats."""
     kind = filetype.guess(head)
     if kind is not None:
         return kind.mime if kind.mime in EXT_BY_MIME else None
     # no magic bytes — accept md/txt only when the extension says so and the bytes decode
     ext = Path(filename or "").suffix.lower()
-    mime = _TEXT_EXT_MIME.get(ext)
+    mime = TEXT_EXT_MIME.get(ext)
     if mime is None:
         return None
     try:
