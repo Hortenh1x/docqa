@@ -64,17 +64,35 @@ export const deleteDocument = (documentId: string) =>
 
 export const getUsage = (days = 30) => api<UsageSummary>(`/v1/usage?days=${days}`);
 
-export async function uploadDocument(
+/** XHR instead of fetch: upload progress events are still fetch-less territory. */
+export function uploadDocument(
   collectionId: string,
   file: File,
+  onProgress?: (fraction: number) => void,
 ): Promise<{ id: string; status: string }> {
-  const form = new FormData();
-  form.append("file", file);
-  const res = await fetch(`${API_BASE}/v1/collections/${collectionId}/documents`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}` },
-    body: form,
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${API_BASE}/v1/collections/${collectionId}/documents`);
+    xhr.setRequestHeader("Authorization", `Bearer ${apiKey}`);
+    xhr.responseType = "json";
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && onProgress) onProgress(event.loaded / event.total);
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr.response as { id: string; status: string });
+      } else {
+        const problem: Problem = xhr.response ?? { detail: xhr.statusText };
+        const retryAfter = xhr.getResponseHeader("retry-after");
+        reject(new ApiError(xhr.status, problem, retryAfter ? Number(retryAfter) : null));
+      }
+    };
+    xhr.onerror = () => reject(new ApiError(0, { detail: "Network error" }));
+    xhr.send((() => {
+      const form = new FormData();
+      form.append("file", file);
+      return form;
+    })());
   });
-  if (!res.ok) throw await toApiError(res);
-  return res.json();
 }

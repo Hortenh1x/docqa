@@ -5,9 +5,11 @@ import { useRef, useState } from "react";
 export function Dropzone({
   onFile,
   busy,
+  progress,
 }: {
   onFile: (file: File) => void;
   busy: boolean;
+  progress: { name: string; fraction: number } | null;
 }) {
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -29,17 +31,39 @@ export function Dropzone({
         dragOver ? "border-stamp bg-stamp/5" : "border-hairline bg-sheet"
       }`}
     >
-      <p className="text-sm text-ink-soft">
-        {busy ? "Uploading…" : "Drop PDF, DOCX or MD · up to 25 MB"}
-      </p>
-      <button
-        type="button"
-        disabled={busy}
-        onClick={() => inputRef.current?.click()}
-        className="mt-3 rounded-[6px] border border-hairline bg-paper px-3.5 py-1.5 text-sm disabled:opacity-40"
-      >
-        Choose a file
-      </button>
+      {busy && progress ? (
+        <div className="mx-auto max-w-sm text-left">
+          <div className="font-data flex justify-between text-xs text-ink-soft">
+            <span className="truncate">{progress.name}</span>
+            <span>{Math.round(progress.fraction * 100)}%</span>
+          </div>
+          <div
+            role="progressbar"
+            aria-valuenow={Math.round(progress.fraction * 100)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`Uploading ${progress.name}`}
+            className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-paper"
+          >
+            <div
+              className="h-full rounded-full bg-stamp transition-[width] duration-150"
+              style={{ width: `${Math.round(progress.fraction * 100)}%` }}
+            />
+          </div>
+        </div>
+      ) : (
+        <>
+          <p className="text-sm text-ink-soft">Drop PDF, DOCX or MD · up to 25 MB</p>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => inputRef.current?.click()}
+            className="mt-3 rounded-[6px] border border-hairline bg-paper px-3.5 py-1.5 text-sm disabled:opacity-40"
+          >
+            Choose a file
+          </button>
+        </>
+      )}
       <input
         ref={inputRef}
         type="file"

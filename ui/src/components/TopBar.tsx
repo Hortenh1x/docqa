@@ -95,6 +95,7 @@ export function TopBar() {
         <nav className="flex items-center gap-1" aria-label="Screens">
           <NavLink href="/" label="Ask" />
           <NavLink href="/library" label="Library" />
+          <NavLink href="/usage" label="Usage" />
         </nav>
 
         <div className="ml-auto flex items-center gap-3">

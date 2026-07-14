@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useCollections } from "@/app/providers";
 import type { Source } from "@/lib/api/types";
 import { formatPages } from "@/lib/format";
 
@@ -12,6 +13,7 @@ export function SourceDrawer({
   source: Source | null;
   onClose: () => void;
 }) {
+  const { selected } = useCollections();
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -67,11 +69,16 @@ export function SourceDrawer({
         className="fixed bottom-0 right-0 top-0 z-30 flex w-full max-w-[400px] flex-col gap-4 overflow-y-auto border-l border-hairline bg-sheet p-5 shadow-card max-sm:top-auto max-sm:max-h-[75vh] max-sm:rounded-t-[10px] max-sm:border-t"
       >
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="font-data rounded border border-stamp/60 px-1.5 py-0.5 text-xs text-stamp">
               {source.n}
             </span>
             <h2 className="font-data break-all text-sm">{source.filename}</h2>
+            {selected && (
+              <span className="rounded-full border border-hairline bg-paper px-2 py-0.5 text-[11px] text-ink-soft">
+                {selected.name}
+              </span>
+            )}
           </div>
           <button
             ref={closeRef}
@@ -102,7 +109,7 @@ export function SourceDrawer({
         </dl>
 
         <blockquote className="rounded-[6px] border border-hairline bg-paper p-3 text-sm leading-6">
-          <mark className="bg-stamp/10 text-ink">{source.snippet}</mark>
+          <mark className="bg-stamp/12 text-ink">{source.snippet}</mark>
           {source.snippet.length >= 300 ? "…" : ""}
         </blockquote>
 

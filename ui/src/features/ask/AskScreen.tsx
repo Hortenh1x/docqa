@@ -64,9 +64,18 @@ export function AskScreen() {
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
-  // screen-reader announcements on phase transitions only (never per token)
+  // screen-reader announcements: batched (~600ms) while streaming — never per token,
+  // a live region updated on every delta would drown the screen reader
+  const answerRef = useRef(state.answer);
+  answerRef.current = state.answer;
   useEffect(() => {
     if (!liveRef.current) return;
+    if (state.phase === "streaming") {
+      const timer = setInterval(() => {
+        if (liveRef.current) liveRef.current.textContent = answerRef.current;
+      }, 600);
+      return () => clearInterval(timer);
+    }
     if (state.phase === "searching") liveRef.current.textContent = "Searching documents…";
     else if (state.phase === "done") liveRef.current.textContent = `Answer ready: ${state.answer}`;
     else if (state.phase === "refused")
@@ -87,7 +96,13 @@ export function AskScreen() {
   const active = state.sources.find((s) => s.n === state.activeSource) ?? null;
 
   return (
-    <div className="flex min-h-[calc(100vh-120px)] flex-col">
+    // ≥1100px the reading column shifts to make room for the source panel;
+    // below that the panel overlays (with a backdrop)
+    <div
+      className={`flex min-h-[calc(100vh-120px)] flex-col transition-[margin] duration-200 ${
+        active ? "min-[1100px]:mr-[400px]" : ""
+      }`}
+    >
       <div ref={liveRef} aria-live="polite" className="visually-hidden" />
 
       {state.phase === "idle" ? (
@@ -107,9 +122,17 @@ export function AskScreen() {
           </div>
 
           {state.phase === "searching" && (
-            <div className="flex items-center gap-2 text-sm text-ink-soft">
-              <span className="status-pulse inline-block h-2 w-2 rounded-full bg-pending" />
-              Searching documents…
+            <div aria-hidden="true">
+              <p className="mb-2 text-sm text-ink-soft">Searching documents…</p>
+              {/* skeletons, not spinners (anti-checklist) */}
+              <div className="flex gap-2">
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="h-16 min-w-44 animate-pulse rounded-[10px] border border-hairline bg-sheet motion-reduce:animate-none"
+                  />
+                ))}
+              </div>
             </div>
           )}
 

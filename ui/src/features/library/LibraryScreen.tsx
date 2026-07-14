@@ -7,10 +7,15 @@ import { ApiError, listDocuments, uploadDocument } from "@/lib/api/client";
 import { Dropzone } from "./Dropzone";
 import { DocumentTable } from "./DocumentTable";
 
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+// keep in sync with the backend's DEMO_MAX_FILES_PER_COLLECTION
+const DEMO_MAX_FILES = 5;
+
 export function LibraryScreen() {
   const { selected } = useCollections();
   const queryClient = useQueryClient();
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<{ name: string; fraction: number } | null>(null);
 
   const documents = useQuery({
     queryKey: ["documents", selected?.id],
@@ -24,9 +29,16 @@ export function LibraryScreen() {
   });
 
   const upload = useMutation({
-    mutationFn: (file: File) => uploadDocument(selected!.id, file),
-    onSuccess: () => {
+    mutationFn: (file: File) =>
+      uploadDocument(selected!.id, file, (fraction) =>
+        setProgress({ name: file.name, fraction }),
+      ),
+    onMutate: (file: File) => {
       setUploadError(null);
+      setProgress({ name: file.name, fraction: 0 });
+    },
+    onSettled: () => setProgress(null),
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["documents", selected?.id] });
     },
     onError: (err: unknown) => {
@@ -44,14 +56,23 @@ export function LibraryScreen() {
     return <p className="py-16 text-center text-ink-soft">No collection selected.</p>;
   }
 
+  const fileCount = documents.data?.length ?? 0;
+
   return (
     <div className="flex flex-col gap-6 py-8">
-      <div>
-        <h1 className="font-display text-2xl tracking-tight">{selected.name}</h1>
-        <p className="font-data mt-1 text-xs text-ink-soft">
-          {selected.slug} · {selected.embedding_model}
-          {selected.read_only ? " · read-only" : ""}
-        </p>
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl tracking-tight">{selected.name}</h1>
+          <p className="font-data mt-1 text-xs text-ink-soft">
+            {selected.slug} · {selected.embedding_model}
+            {selected.read_only ? " · read-only" : ""}
+          </p>
+        </div>
+        {DEMO_MODE && !selected.read_only && (
+          <span className="font-data text-xs text-ink-soft" aria-label="Sandbox quota">
+            {Math.min(fileCount, DEMO_MAX_FILES)} / {DEMO_MAX_FILES} files
+          </span>
+        )}
       </div>
 
       {selected.read_only ? (
@@ -60,7 +81,7 @@ export function LibraryScreen() {
           collection to try your own files.
         </div>
       ) : (
-        <Dropzone busy={upload.isPending} onFile={(file) => upload.mutate(file)} />
+        <Dropzone busy={upload.isPending} progress={progress} onFile={(file) => upload.mutate(file)} />
       )}
 
       {uploadError && (

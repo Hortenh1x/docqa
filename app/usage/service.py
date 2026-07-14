@@ -4,7 +4,7 @@ import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import case, func, select
+from sqlalchemy import Date, case, cast, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Query
@@ -24,6 +24,22 @@ async def usage_summary(db: AsyncSession, tenant_id: uuid.UUID, days: int) -> di
             ).where(Query.tenant_id == tenant_id, Query.created_at >= since)
         )
     ).one()
+
+    # per-day breakdown feeds the usage screen's sparkline
+    day = cast(Query.created_at, Date).label("day")
+    daily_rows = (
+        await db.execute(
+            select(
+                day,
+                func.count(Query.id).label("queries"),
+                func.coalesce(func.sum(Query.cost_usd), 0).label("cost_usd"),
+            )
+            .where(Query.tenant_id == tenant_id, Query.created_at >= since)
+            .group_by(day)
+            .order_by(day)
+        )
+    ).all()
+
     return {
         "days": days,
         "queries": row.queries,
@@ -32,4 +48,8 @@ async def usage_summary(db: AsyncSession, tenant_id: uuid.UUID, days: int) -> di
         "completion_tokens": int(row.completion_tokens),
         "cost_usd": float(row.cost_usd),
         "avg_latency_ms": round(row.avg_latency_ms) if row.avg_latency_ms is not None else None,
+        "daily": [
+            {"date": r.day.isoformat(), "queries": r.queries, "cost_usd": float(r.cost_usd)}
+            for r in daily_rows
+        ],
     }

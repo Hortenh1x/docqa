@@ -47,6 +47,12 @@ export interface DonePayload {
   model: string | null;
 }
 
+export interface UsageDay {
+  date: string;
+  queries: number;
+  cost_usd: number;
+}
+
 export interface UsageSummary {
   days: number;
   queries: number;
@@ -55,6 +61,7 @@ export interface UsageSummary {
   completion_tokens: number;
   cost_usd: number;
   avg_latency_ms: number | null;
+  daily: UsageDay[];
 }
 
 /** RFC 9457 problem+json body, as our API emits it. */
