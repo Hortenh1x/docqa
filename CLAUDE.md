@@ -9,7 +9,8 @@ DocQA — multi-tenant document Q&A (RAG) API: upload PDF/DOCX/MD/TXT → backgr
 ## Status
 
 - **Week 1 (done):** infra, config, logging, tenants + API keys + CLI, collections, document upload with dedup, parsers, chunking, embedding providers, Celery ingestion pipeline, unit + integration tests.
-- Week 2: retrieval + generation + citations + SSE. Week 3: production hardening (rate limit, idempotency, Docker, CI). Week 4: demo corpus, eval, UI, deploy.
+- **Week 2 (done):** hybrid retrieval (vector + FTS + RRF), pluggable rerankers, `POST /v1/query` with SSE (`meta → sources → delta… → done`) and JSON modes, two refusal gates (retrieval threshold — $0; NO_ANSWER sentinel interception), citation validation/mapping, queries + query_citations recording with per-model costs.
+- Week 3: production hardening (rate limit, idempotency, Docker, CI). Week 4: demo corpus, eval, UI, deploy.
 
 ## Stack
 
@@ -59,16 +60,30 @@ Host port **5433** for dev Postgres (5432 is occupied by another local project).
 ```
 app/
 ├── main.py            # FastAPI factory
-├── config.py          # pydantic-settings, fail-fast
+├── config.py          # pydantic-settings, fail-fast; all tuning knobs
 ├── cli.py             # tenant/key admin (argparse)
-├── api/deps.py        # get_db, get_current_tenant, get_collection_or_404
-├── api/v1/            # health, collections, documents (+ query, usage in later weeks)
+├── api/deps.py        # get_db, get_current_tenant, fetch_collection
+├── api/v1/            # health, collections, documents, query (+ usage in week 3)
 ├── core/              # security, logging, errors (+ rate_limit, idempotency in week 3)
 ├── db/                # base.py (async), sync.py (worker), models/
 ├── ingestion/         # service, parsers/, chunking, tasks
 ├── embeddings/        # base (Protocol), openai, ollama, stub
+├── retrieval/         # vector, fulltext, fusion (RRF), rerank/, service
+├── generation/        # prompts, sentinel, citations, llm/, service (query pipeline)
+├── usage/costs.py     # model -> price table; unknown model -> NULL cost
 ├── storage/           # base (Protocol), local
 └── workers/celery_app.py
 alembic/               # async env, versions/
 tests/                 # unit/, integration/ (testcontainers), conftest.py
 ```
+
+## Query pipeline notes (week 2)
+
+- `run_query` is an async generator of typed events; **record the query row before the
+  final `yield DoneEvent`** — a JSON-mode collector stops consuming at `done`, so code
+  after that yield never runs.
+- The pipeline never holds a DB connection while the LLM streams: retrieval and
+  recording each use their own short session from `get_sessionmaker()`.
+- Recording is wrapped in `anyio.CancelScope(shield=True)` inside `finally` — stats
+  survive client disconnects mid-stream.
+- Routes returning `StreamingResponse | JSONResponse` need `response_model=None`.
