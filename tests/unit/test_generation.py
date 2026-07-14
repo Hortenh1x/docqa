@@ -1,7 +1,11 @@
 import uuid
 from decimal import Decimal
 
+import pytest
+
+from app.config import Settings
 from app.generation.citations import finalize_answer
+from app.generation.llm import get_llm_provider
 from app.generation.prompts import ContextBlock, block_header, build_context_blocks
 from app.generation.sentinel import SentinelBuffer
 from app.ingestion.chunking import TokenCounter
@@ -126,6 +130,31 @@ def test_similar_but_different_text_is_released():
     buffer = SentinelBuffer()
     assert buffer.feed("NO answer here [1].") == "NO answer here [1]."
     assert not buffer.refused
+
+
+# --- llm provider factory ---
+
+
+def _settings(**overrides) -> Settings:
+    return Settings(database_url="postgresql+asyncpg://x/x", redis_url="redis://x", **overrides)
+
+
+def test_hosted_llm_endpoint_requires_api_key():
+    settings = _settings(
+        llm_provider="openai_compat", llm_base_url="https://api.deepseek.com", llm_api_key=None
+    )
+    with pytest.raises(RuntimeError, match="LLM_API_KEY"):
+        get_llm_provider(settings)
+
+
+def test_local_llm_endpoint_may_go_keyless():
+    settings = _settings(
+        llm_provider="openai_compat",
+        llm_base_url="http://localhost:11435/v1",
+        llm_model="deepseek-v4-flash",
+        llm_api_key=None,
+    )
+    assert get_llm_provider(settings).model_name == "deepseek-v4-flash"
 
 
 # --- costs ---

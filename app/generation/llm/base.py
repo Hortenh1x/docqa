@@ -32,10 +32,19 @@ class LLMProvider(Protocol):
     def model_name(self) -> str: ...
 
 
+def _is_local(base_url: str) -> bool:
+    return "localhost" in base_url or "127.0.0.1" in base_url or "host.docker.internal" in base_url
+
+
 def get_llm_provider(settings: Settings) -> LLMProvider:
     if settings.llm_provider == "openai_compat":
-        if not settings.llm_api_key and "api.openai.com" in settings.llm_base_url:
-            raise RuntimeError("LLM_API_KEY is required when LLM_PROVIDER=openai_compat")
+        # hosted endpoints reject keyless requests anyway — fail fast and readable
+        # instead of surfacing a 401 as provider_unavailable at query time
+        if not settings.llm_api_key and not _is_local(settings.llm_base_url):
+            raise RuntimeError(
+                f"LLM_API_KEY is required for hosted endpoint {settings.llm_base_url!r} "
+                "(only local Ollama/vLLM endpoints may go keyless)"
+            )
         from app.generation.llm.openai_compat import OpenAICompatLLM
 
         return OpenAICompatLLM(
