@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+/* "Archivist's desk": paper, ink, one stamp-blue accent. No AI gloss. */
+@theme {
+  --color-paper: #f7f5f0;
+  --color-sheet: #ffffff;
+  --color-ink: #22201b;
+  --color-ink-soft: #6e6a5f;
+  --color-stamp: #1d4ed0;
+  --color-verify: #1e7f5c;
+  --color-pending: #b87d1f;
+  --color-error: #b3362b;
+  --color-hairline: rgb(34 32 27 / 0.1);
+
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-data: var(--font-jetbrains), ui-monospace, monospace;
+
+  --radius-control: 6px;
+  --radius-card: 10px;
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.06);
+}
+
+html {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.font-data {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+/* streaming caret — a stamp-colored block */
+.caret::after {
+  content: "";
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--color-stamp);
+  animation: caret-blink 1s steps(2) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes soft-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.status-pulse {
+  animation: soft-pulse 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret::after,
+  .status-pulse {
+    animation: none;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

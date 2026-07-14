@@ -1,0 +1,80 @@
+import type { Collection, DocumentOut, Problem, UsageSummary } from "./types";
+
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
+
+/** The key lives in tab memory only — deliberately not persisted anywhere. */
+let apiKey = process.env.NEXT_PUBLIC_DEMO_API_KEY ?? "";
+
+export function setApiKey(key: string) {
+  apiKey = key.trim();
+}
+
+export function getApiKey(): string {
+  return apiKey;
+}
+
+export class ApiError extends Error {
+  readonly problem: Problem;
+  readonly status: number;
+  readonly retryAfterS: number | null;
+
+  constructor(status: number, problem: Problem, retryAfterS: number | null = null) {
+    super(problem.detail ?? problem.title ?? `HTTP ${status}`);
+    this.status = status;
+    this.problem = problem;
+    this.retryAfterS = retryAfterS;
+  }
+
+  get code(): string {
+    return this.problem.code ?? "unknown";
+  }
+}
+
+async function toApiError(res: Response): Promise<ApiError> {
+  let problem: Problem = {};
+  try {
+    problem = await res.json();
+  } catch {
+    problem = { detail: res.statusText };
+  }
+  const retryAfter = res.headers.get("retry-after");
+  return new ApiError(res.status, problem, retryAfter ? Number(retryAfter) : null);
+}
+
+export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const headers = new Headers(init.headers);
+  headers.set("Authorization", `Bearer ${apiKey}`);
+  if (init.body && typeof init.body === "string") {
+    headers.set("Content-Type", "application/json");
+  }
+  const res = await fetch(`${API_BASE}${path}`, { ...init, headers });
+  if (!res.ok) throw await toApiError(res);
+  if (res.status === 204) return undefined as T;
+  return (await res.json()) as T;
+}
+
+export const listCollections = () => api<Collection[]>("/v1/collections");
+
+export const listDocuments = (collectionId: string) =>
+  api<DocumentOut[]>(`/v1/collections/${collectionId}/documents`);
+
+export const deleteDocument = (documentId: string) =>
+  api<void>(`/v1/documents/${documentId}`, { method: "DELETE" });
+
+export const getUsage = (days = 30) => api<UsageSummary>(`/v1/usage?days=${days}`);
+
+export async function uploadDocument(
+  collectionId: string,
+  file: File,
+): Promise<{ id: string; status: string }> {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch(`${API_BASE}/v1/collections/${collectionId}/documents`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}` },
+    body: form,
+  });
+  if (!res.ok) throw await toApiError(res);
+  return res.json();
+}
