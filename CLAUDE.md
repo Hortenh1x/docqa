@@ -38,6 +38,7 @@ uv run python -m app.cli revoke-key --prefix <8 chars>
 uv run pytest                       # integration tests need Docker (testcontainers)
 uv run pytest tests/unit            # fast, no Docker
 uv run ruff check . && uv run ruff format --check . && uv run mypy app
+npm --prefix ui run dev             # Next.js UI → http://localhost:3002 (3000/3001 belong to other local apps)
 ```
 
 Host port **5433** for dev Postgres (5432 is occupied by another local project). Local Ollama note: the systemd ollama service uses `/var/lib/ollama` for models and does not see `~/.ollama/models` (where `bge-m3` lives); for live embedding tests run `OLLAMA_HOST=127.0.0.1:11435 ollama serve` as the user and set `OLLAMA_BASE_URL=http://localhost:11435`.

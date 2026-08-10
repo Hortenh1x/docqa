@@ -71,8 +71,9 @@ class Settings(BaseSettings):
     demo_max_files_per_collection: int = 5
     demo_max_upload_mb: int = 5
 
-    # CORS (comma-separated origins for the UI)
-    cors_origins: str = "http://localhost:3000"
+    # CORS (comma-separated origins for the UI; 3002 is the local dev UI port,
+    # 3000 covers a locally built ui container with default PORT)
+    cors_origins: str = "http://localhost:3000,http://localhost:3002"
 
     # limits
     max_upload_mb: int = 25
