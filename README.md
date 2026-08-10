@@ -1,5 +1,9 @@
 # DocQA
 
+[![CI](https://github.com/Hortenh1x/docqa/actions/workflows/ci.yml/badge.svg)](https://github.com/Hortenh1x/docqa/actions/workflows/ci.yml)
+![coverage](https://img.shields.io/badge/coverage-89.6%25-brightgreen)
+![python](https://img.shields.io/badge/python-3.12-blue)
+
 **Ask questions about your documents. Get answers with page-level citations — or an honest "not found".**
 
 Multi-tenant document Q&A API built on FastAPI, PostgreSQL + pgvector, Redis and Celery. Upload PDF / DOCX / Markdown, and DocQA parses, chunks and embeds them in the background — ready for hybrid retrieval and grounded, citation-backed answers.
@@ -31,7 +35,7 @@ Multi-tenant document Q&A API built on FastAPI, PostgreSQL + pgvector, Redis and
 - **Strict tenant isolation** — every query carries the tenant scope in its WHERE clause; a foreign resource is indistinguishable from a missing one (404, never 403); covered by an IDOR test matrix and a concurrent-dedup race test
 - **Docker** — multi-stage uv image, non-root; `docker-compose.prod.yml` runs api + worker + Postgres + Redis with healthchecks, DB/Redis ports unpublished, `noeviction` Redis (a broker must never drop messages)
 - **CI** — GitHub Actions: ruff, strict mypy, full test suite (testcontainers) with an 80% coverage gate on core modules (currently ~89%); Dependabot for deps and actions
-- **Ops hygiene** — fail-fast config, structured JSON logs with `request_id`, RFC 9457 problem+json errors everywhere, additive Alembic migrations, `/v1/usage` aggregates, 71 tests
+- **Ops hygiene** — fail-fast config, structured JSON logs with `request_id`, RFC 9457 problem+json errors everywhere, additive Alembic migrations, `/v1/usage` aggregates, 77 tests
 
 **Use it from a browser:**
 
@@ -173,6 +177,7 @@ Copy `.env.example` and adjust. Highlights:
 - **`tsvector` with the `'simple'` config** — the corpus is bilingual (EN/DE); language-specific stemming would break one of them. FTS supplies exact matches (IDs, numbers); semantics is the vector's job.
 - **Foreign tenant's resource → 404, not 403** — a 403 confirms the resource exists; that's an information leak.
 - **Parser errors don't retry** — the file will not become more valid; transient (network/provider) errors retry with exponential backoff.
+- **`rerank=none` for the demo is a decision, not a gap** — recall@8 is already 1.00 on this corpus and the cosine gate separates off-corpus questions cleanly (mean 0.49 vs 0.61), so a cross-encoder would add latency and an API key for no measurable gain at this scale. The pluggable path stays ready (Cohere `rerank-v3.5` or local `bge-reranker-v2-m3`); switching providers means retuning `REFUSAL_THRESHOLD` with `eval/run_eval.py` — rerank score scales differ.
 - **Query stats survive disconnects** — recording runs in a cancellation-shielded `finally`; a closed laptop lid doesn't lose usage data.
 
 ## Known limits
