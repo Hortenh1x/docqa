@@ -140,14 +140,22 @@ async def run_answer_layer(
 
 
 JUDGE_SYSTEM = (
-    "You are a strict evaluation judge for a document Q&A system. "
+    "You are an evaluation judge for a document Q&A system. "
     "Judge the ANSWER using only the EXCERPTS and the EXPECTED answer. "
-    "Reply with exactly two lines and nothing else:\n"
-    "FAITHFUL: PASS or FAIL — PASS only if every factual claim in the ANSWER "
-    "is supported by the EXCERPTS.\n"
-    "CORRECT: PASS or FAIL — PASS only if the ANSWER conveys the key fact(s) "
-    "of the EXPECTED answer."
+    'Reply with ONLY a JSON object, no other text: {"faithful": true, "correct": true}\n'
+    'Rules: "faithful" — do the facts stated in the ANSWER appear in the EXCERPTS? '
+    "Paraphrase is fine; citation markers like [1] are fine and are not facts. "
+    "Set faithful=false ONLY if the ANSWER states a fact that contradicts the EXCERPTS "
+    "or is absent from them.\n"
+    '"correct" — does the ANSWER convey the key fact(s) of the EXPECTED answer? '
+    "Extra correct detail is fine. Set correct=false ONLY if a key fact is missing or wrong."
 )
+
+
+def _parse_verdict(raw: str, key: str) -> bool:
+    """Tolerant parse: a missing or malformed verdict counts as a fail, never a pass."""
+    match = re.search(rf'"{key}"\s*:\s*(true|false)', raw, re.IGNORECASE)
+    return match is not None and match.group(1).lower() == "true"
 
 
 def _judge_prompt(result: QuestionResult, excerpts: list[str]) -> str:
@@ -196,8 +204,8 @@ async def run_judge_layer(
             if isinstance(event, TextDelta):
                 parts.append(event.text)
         raw = "".join(parts)
-        result.judge_faithful = re.search(r"FAITHFUL:\s*PASS", raw, re.IGNORECASE) is not None
-        result.judge_correct = re.search(r"CORRECT:\s*PASS", raw, re.IGNORECASE) is not None
+        result.judge_faithful = _parse_verdict(raw, "faithful")
+        result.judge_correct = _parse_verdict(raw, "correct")
         print(f"  {result.qid} faithful={result.judge_faithful} correct={result.judge_correct}")
     return llm.model
 

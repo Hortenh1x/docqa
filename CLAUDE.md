@@ -19,6 +19,7 @@ DocQA — multi-tenant document Q&A (RAG) API: upload PDF/DOCX/MD/TXT → backgr
 - `corpus/*.md` are the sources; `corpus/build/` holds upload-ready PDFs/DOCX/MD. Never edit numeric facts casually — they are pinned by `plans/docqa-corpus-prompt.md` (fact registry + traps); the grep checklist lives in week-4 plan day 1.
 - Refusal gate with `rerank=none` uses the best vector cosine (not normalized RRF); threshold semantics change per rerank provider — retune via `eval/run_eval.py`.
 - Seeded demo collections are pinned to `bge-m3`: querying them requires `EMBEDDING_PROVIDER=ollama` with a user-level ollama on 11435 (see `.env` comments).
+- Local live-LLM runs: the same 11435 ollama serves the answer side via `LLM_PROVIDER=openai_compat` + `LLM_BASE_URL=http://localhost:11435/v1` (`qwen2.5:7b-instruct`, or `qwen2.5:3b-instruct` when VRAM is scarce — both pulled; `bge-m3` is pinned `num_gpu 0` there so embeddings never evict the LLM). `eval/run_eval.py --with-answers --judge` adds citation precision + LLM-judged faithfulness/correctness on top of the retrieval layer.
 
 ## Stack
 

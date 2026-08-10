@@ -6,6 +6,8 @@
 
 **Ask questions about your documents. Get answers with page-level citations — or an honest "not found".**
 
+![DocQA demo — a table-trap question answered with a citation](docs/demo.gif)
+
 Multi-tenant document Q&A API built on FastAPI, PostgreSQL + pgvector, Redis and Celery. Upload PDF / DOCX / Markdown, and DocQA parses, chunks and embeds them in the background — ready for hybrid retrieval and grounded, citation-backed answers.
 
 > Built in four milestones: multi-tenant foundation and ingestion → hybrid retrieval and grounded answers over SSE → production hardening (rate limiting, idempotency, Docker, CI) → demo corpus with engineered traps, measured eval, and a Next.js UI. Remaining before the public link: pushing to GitHub (CI) and the VPS deploy — see [deploy/runbook.md](deploy/runbook.md).
@@ -55,7 +57,19 @@ The repo ships a synthetic corpus (21 corporate policy documents, EN+DE) with de
 | German | 3 | 1.00 |
 | **all answerable** | **25** | **1.00** |
 
-Off-corpus questions separate cleanly (mean gate score 0.49 vs 0.61 for answerable), and the `REFUSAL_THRESHOLD=0.50` default comes from a measured sweep — details and the reproduce command in [eval/results.md](eval/results.md). The corpus is small (41 chunks), so perfect recall says less than the score separation does; the answer-layer metrics (citation precision, faithfulness) run with `--with-answers` once an LLM is configured.
+Off-corpus questions separate cleanly (mean gate score 0.49 vs 0.61 for answerable), and the `REFUSAL_THRESHOLD=0.50` default comes from a measured sweep — details and the reproduce command in [eval/results.md](eval/results.md). The corpus is small (41 chunks), so perfect recall says less than the score separation does.
+
+The full answer pipeline (`--with-answers --judge`), measured with a local `qwen2.5:7b-instruct` through Ollama's OpenAI-compatible endpoint — the same provider class that serves DeepSeek/OpenAI, so a hosted model is a config change, not a code change:
+
+| Answer-layer metric | Result |
+| --- | --- |
+| End-to-end refusals on off-corpus questions | 5/5 |
+| Citation precision (cited docs ∈ expected docs) | 24/24 |
+| Faithfulness — every claim supported by retrieved excerpts (LLM-judged) | 20/21 |
+| Correctness vs the golden answer (LLM-judged) | 19/21 |
+| False refusals on answerable questions | 4/25 |
+
+The false refusals split 1 : 3 — one is the deliberate `0.50`-threshold sacrifice visible in the sweep; three are the 7B model playing it safe with `NO_ANSWER` on paraphrase-heavy traps. A stronger hosted LLM should reclaim those. Judge verdicts carry the usual small-judge caveat (7B, local) — rerun against a hosted judge with `--judge-model`.
 
 ## Architecture
 
@@ -188,6 +202,6 @@ Copy `.env.example` and adjust. Highlights:
 
 ## Roadmap
 
-- **Live demo** — VPS deploy behind Caddy (runbook ready), demo GIF for this README
-- **Answer-layer eval** — citation precision + LLM-as-judge faithfulness once a hosted LLM key is configured
+- **Live demo** — VPS deploy behind Caddy (runbook ready)
+- **Answer-layer eval, hosted rerun** — the local-LLM run above, repeated with DeepSeek as answerer and judge once a key is configured (one command)
 - **Nice-to-haves** — Anthropic streaming provider, Prometheus metrics, Sentry

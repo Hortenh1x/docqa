@@ -1,6 +1,6 @@
 # Evaluation results
 
-_Embeddings: bge-m3 · rerank: none · top-8 after fusion of vector top-30 + FTS top-30_
+_Embeddings: bge-m3 · rerank: none · top-8 after fusion of vector top-30 + FTS top-30 · LLM: qwen2.5:7b-instruct_
 
 Reproduce: `uv run python -m eval.run_eval --collection <policies-en id>`
 
@@ -45,6 +45,13 @@ Reproduce: `uv run python -m eval.run_eval --collection <policies-en id>`
 
 **Recommended `REFUSAL_THRESHOLD`: 0.52** — refuses 60% of off-corpus questions for $0 while passing 96% of answerable ones. The retrieval gate is deliberately conservative: off-corpus questions that slip through are still converted to refusals by the NO_ANSWER generation gate (at the cost of one LLM call).
 
-## Answer layer
+## Answer layer (full pipeline)
 
-_Not run yet (needs a configured LLM): `uv run python -m eval.run_eval --collection <id> --with-answers --api-key <key>`._
+- End-to-end refusal rate on no_answer: 5/5
+- False refusals on answerable questions: 4/25
+- Citation precision (cited docs ∩ expected docs): 24/24
+
+## LLM-judged answer quality (judge: qwen2.5:7b-instruct)
+
+- Faithfulness (every claim supported by the excerpts): 20/21
+- Correctness vs the golden expected answer: 19/21
