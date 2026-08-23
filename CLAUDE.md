@@ -28,6 +28,7 @@ Python 3.12 (pinned — parity with the week-3 `python:3.12-slim` prod image), u
 ## Commands
 
 ```bash
+./scripts/dev.sh                    # the whole dev stack in one command (Ctrl+C stops it)
 docker compose up -d                # dev Postgres (host port 5433!) + Redis
 uv sync                             # deps (incl. dev)
 uv run alembic upgrade head

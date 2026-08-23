@@ -94,6 +94,8 @@ flowchart LR
 
 Requires Docker and [uv](https://docs.astral.sh/uv/).
 
+Everything below in one command (and Ctrl+C to stop it all): `./scripts/dev.sh`. Step by step:
+
 ```bash
 cp .env.example .env          # defaults work out of the box (stub embeddings)
 docker compose up -d          # Postgres (host port 5433) + Redis
