@@ -1,11 +1,12 @@
-"""Document upload, listing, status and deletion."""
+"""Document upload, listing, status, original-file download and deletion."""
 
 import uuid
 from datetime import datetime
 from typing import Annotated, Any
+from urllib.parse import quote
 
 from fastapi import APIRouter, Depends, Header, Response, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import select
 
@@ -15,6 +16,8 @@ from app.core.idempotency import replay_headers, run_idempotent
 from app.core.rate_limit import rate_limit
 from app.db.models import Collection, Document
 from app.ingestion import service as ingestion_service
+from app.ingestion.mime import EXT_BY_MIME
+from app.storage import get_storage
 
 router = APIRouter(prefix="/v1", tags=["documents"])
 
@@ -129,6 +132,35 @@ async def _get_scoped_document(
 )
 async def get_document(document_id: uuid.UUID, tenant: CurrentTenant, db: DbSession) -> Document:
     return await _get_scoped_document(document_id, tenant.id, db)
+
+
+@router.get(
+    "/documents/{document_id}/file",
+    response_class=FileResponse,
+    dependencies=[Depends(rate_limit("default"))],
+    responses={404: {"description": "Unknown document (or another tenant's)"}},
+    description="The original uploaded file, served inline — powers the in-app reader.",
+)
+async def get_document_file(
+    document_id: uuid.UUID, tenant: CurrentTenant, db: DbSession
+) -> FileResponse:
+    document = await _get_scoped_document(document_id, tenant.id, db)
+    path = get_storage().path_for(
+        str(tenant.id), document.sha256, EXT_BY_MIME.get(document.mime_type, "")
+    )
+    if not path.is_file():
+        raise NotFoundError("Document not found.")
+    # ASCII fallback + RFC 5987 filename* so non-ASCII names survive the header
+    ascii_name = document.filename.encode("ascii", "ignore").decode().replace('"', "") or "file"
+    return FileResponse(
+        path,
+        media_type=document.mime_type,
+        headers={
+            "Content-Disposition": (
+                f"inline; filename=\"{ascii_name}\"; filename*=UTF-8''{quote(document.filename)}"
+            )
+        },
+    )
 
 
 @router.delete(

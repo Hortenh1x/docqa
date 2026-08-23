@@ -161,3 +161,23 @@ async def test_delete_cascades_chunks(client, tenant, collection_id):
     async with get_sessionmaker()() as session:
         remaining = await session.scalar(select(func.count()).select_from(Chunk))
     assert remaining == 0
+
+
+async def test_document_file_served_inline(client, tenant, make_tenant, collection_id):
+    upload = await client.post(
+        f"/v1/collections/{collection_id}/documents",
+        files={"file": ("policy.md", POLICY_MD, "text/markdown")},
+        headers=tenant["headers"],
+    )
+    document_id = upload.json()["id"]
+
+    response = await client.get(f"/v1/documents/{document_id}/file", headers=tenant["headers"])
+    assert response.status_code == 200
+    assert response.content == POLICY_MD
+    assert response.headers["content-type"].startswith("text/markdown")
+    assert response.headers["content-disposition"].startswith("inline")
+
+    # a foreign tenant gets the same 404 as for a document that never existed
+    stranger = await make_tenant()
+    foreign = await client.get(f"/v1/documents/{document_id}/file", headers=stranger["headers"])
+    assert foreign.status_code == 404

@@ -62,6 +62,15 @@ export const listDocuments = (collectionId: string) =>
 export const deleteDocument = (documentId: string) =>
   api<void>(`/v1/documents/${documentId}`, { method: "DELETE" });
 
+/** The original uploaded file as a blob — the reader shows PDFs natively, text inline. */
+export async function fetchDocumentFile(documentId: string): Promise<Blob> {
+  const res = await fetch(`${API_BASE}/v1/documents/${documentId}/file`, {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (!res.ok) throw await toApiError(res);
+  return res.blob();
+}
+
 export const getUsage = (days = 30) => api<UsageSummary>(`/v1/usage?days=${days}`);
 
 /** XHR instead of fetch: upload progress events are still fetch-less territory. */
