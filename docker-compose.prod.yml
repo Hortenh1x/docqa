@@ -24,6 +24,9 @@ services:
     build: .
     restart: unless-stopped
     environment: *app-env
+    # makes host.docker.internal resolve on Linux too (no-op where Docker adds it)
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     # migrations on start are fine for a single instance; run a dedicated migrate job
     # before rolling multiple replicas
     command: sh -c "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log"
@@ -46,6 +49,8 @@ services:
     build: .
     restart: unless-stopped
     environment: *app-env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command: celery -A app.workers.celery_app worker -Q ingestion -c 2 --loglevel INFO
     volumes:
       - files:/app/data
