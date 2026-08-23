@@ -10,7 +10,7 @@ import uuid
 from collections.abc import AsyncIterator
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
@@ -107,7 +107,7 @@ async def _collect_json(events: AsyncIterator[QueryEvent]) -> dict[str, Any]:
     dependencies=[Depends(rate_limit("query"))],
     responses={
         409: {"description": "Embedding model mismatch, or the Idempotency-Key is in flight"},
-        429: {"description": "Query rate limit exceeded (see Retry-After)"},
+        429: {"description": "Query rate limit or daily query quota exceeded (see Retry-After)"},
         503: {"description": "Embedding or LLM provider unavailable"},
     },
     description=(
@@ -121,6 +121,7 @@ async def query(
     payload: QueryRequest,
     tenant: CurrentTenant,
     db: DbSession,
+    response: Response,
     idempotency_key: Annotated[str | None, Header()] = None,
 ) -> StreamingResponse | JSONResponse:
     collection = await fetch_collection(db, tenant.id, payload.collection_id)
@@ -132,16 +133,22 @@ async def query(
             collection_embedding_model=collection.embedding_model,
         )
 
+    # responses constructed below replace the injected Response — carry over the
+    # rate-limit/quota headers the dependency wrote into it
+    limit_headers = dict(response.headers)
     tenant_id, collection_id = tenant.id, collection.id
     if payload.stream:
         events = run_query(tenant_id, collection_id, payload.question, settings)
         return StreamingResponse(
-            _sse_stream(events), media_type="text/event-stream", headers=_SSE_HEADERS
+            _sse_stream(events),
+            media_type="text/event-stream",
+            headers={**_SSE_HEADERS, **limit_headers},
         )
 
     if idempotency_key is None:
         return JSONResponse(
-            await _collect_json(run_query(tenant_id, collection_id, payload.question, settings))
+            await _collect_json(run_query(tenant_id, collection_id, payload.question, settings)),
+            headers=limit_headers,
         )
 
     async def _handler() -> tuple[int, dict[str, Any]]:
@@ -149,4 +156,8 @@ async def query(
         return 200, body
 
     result = await run_idempotent(tenant_id, idempotency_key, _handler)
-    return JSONResponse(result.body, status_code=result.status, headers=replay_headers(result))
+    return JSONResponse(
+        result.body,
+        status_code=result.status,
+        headers={**limit_headers, **(replay_headers(result) or {})},
+    )

@@ -29,10 +29,16 @@ LLM_BASE_URL=https://api.deepseek.com
 LLM_MODEL=deepseek-v4-flash          # current DeepSeek model; deepseek-chat is deprecated
 LLM_API_KEY=…
 RERANK_PROVIDER=none                 # cohere + COHERE_API_KEY for better precision
+RATE_LIMIT_QUERY_PER_MINUTE=10       # demo pacing
+RATE_LIMIT_QUERY_PER_DAY=900         # cost cap: ≤ $1/day per visitor at deepseek-v4-flash prices
+RATE_LIMIT_TRUST_FORWARDED_FOR=true  # per-visitor quota scope from Caddy's X-Forwarded-For
 NEXT_PUBLIC_DEMO_API_KEY=            # filled in after step 4
 ```
 
-Demo quotas: tighten per-key limits via `RATE_LIMIT_QUERY_PER_MINUTE=10`.
+Cost math for the daily cap: a worst-case query (3.6k-token context + max-length
+question + 1024-token completion) costs ~$0.001 at `deepseek-v4-flash` prices
+(`app/usage/costs.py`), so 900/day bounds one visitor at ~$0.9/day; a typical query
+is ~$0.0004, so the practical ceiling is ~$0.35. Re-derive when switching models.
 
 ## 3. First start
 

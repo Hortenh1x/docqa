@@ -7,6 +7,14 @@ equals the per-minute limit.
 Deliberate trade-off: when Redis is unavailable the limiter FAILS OPEN with an error
 log — availability of search beats enforcement of quotas. Flip this only when quota
 abuse costs more than downtime.
+
+On top of the bucket, the query class can carry a **daily quota** (fixed UTC-day
+window, ``RATE_LIMIT_QUERY_PER_DAY``) scoped per (api key, client address) — a cost
+cap for the public demo where every visitor shares one key. The client address comes
+from X-Forwarded-For only when ``RATE_LIMIT_TRUST_FORWARDED_FOR`` says a trusted
+proxy overwrites it. Same fail-open policy. Denied requests are not charged; a request
+that passes the gate is charged even if it later refuses for $0 — the quota bounds
+worst-case spend, not exact spend.
 """
 
 import math
@@ -20,7 +28,7 @@ from fastapi import Request, Response
 
 from app.api.deps import CurrentTenant
 from app.config import get_settings
-from app.core.errors import RateLimitedError
+from app.core.errors import DailyQuotaExceededError, RateLimitedError
 from app.core.redis import get_redis
 
 log = structlog.get_logger("docqa.rate_limit")
@@ -89,17 +97,57 @@ async def consume(key_id: str, limit_class: LimitClass, cost: int = 1) -> RateDe
     )
 
 
+@dataclass(frozen=True)
+class QuotaDecision:
+    allowed: bool
+    limit: int
+    remaining: int
+    retry_after_s: int
+
+
+def _client_address(request: Request) -> str:
+    """The per-visitor half of the daily-quota scope."""
+    if get_settings().rate_limit_trust_forwarded_for:
+        forwarded = request.headers.get("x-forwarded-for")
+        if forwarded:
+            return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "local"
+
+
+async def consume_daily(scope: str, limit: int) -> QuotaDecision:
+    """Fixed-window daily counter, resets at UTC midnight; INCR + first-hit EXPIRE."""
+    now = int(time.time())
+    day_key = f"dq:{scope}:{time.strftime('%Y%m%d', time.gmtime(now))}"
+    retry_after = 86400 - now % 86400
+    try:
+        redis = get_redis()
+        used = int(await redis.incr(day_key))
+        if used == 1:
+            await redis.expire(day_key, 90000)  # 25h: outlives its window, then self-cleans
+    except Exception:
+        log.error("daily_quota_unavailable_failing_open")
+        return QuotaDecision(allowed=True, limit=limit, remaining=limit, retry_after_s=0)
+    return QuotaDecision(
+        allowed=used <= limit,
+        limit=limit,
+        remaining=max(0, limit - used),
+        retry_after_s=retry_after,
+    )
+
+
 def rate_limit(limit_class: LimitClass) -> Callable[..., Awaitable[None]]:
     """Dependency factory: attach per-class limits point-wise to routes."""
 
     async def guard(request: Request, response: Response, tenant: CurrentTenant) -> None:
-        if not get_settings().rate_limit_enabled:
+        settings = get_settings()
+        if not settings.rate_limit_enabled:
             return
         key_id = getattr(request.state, "api_key_prefix", None) or str(tenant.id)
         decision = await consume(key_id, limit_class)
         response.headers["X-RateLimit-Limit"] = str(decision.limit)
         response.headers["X-RateLimit-Remaining"] = str(decision.remaining)
         if not decision.allowed:
+            # denied before the daily counter on purpose: a 429 costs nothing
             raise RateLimitedError(
                 f"Rate limit exceeded for '{limit_class}' requests. "
                 f"Retry in {decision.retry_after_s}s.",
@@ -109,5 +157,20 @@ def rate_limit(limit_class: LimitClass) -> Callable[..., Awaitable[None]]:
                     "X-RateLimit-Remaining": str(decision.remaining),
                 },
             )
+
+        if limit_class == "query" and settings.rate_limit_query_per_day > 0:
+            scope = f"{key_id}:{_client_address(request)}"
+            quota = await consume_daily(scope, settings.rate_limit_query_per_day)
+            response.headers["X-Quota-Daily-Limit"] = str(quota.limit)
+            response.headers["X-Quota-Daily-Remaining"] = str(quota.remaining)
+            if not quota.allowed:
+                raise DailyQuotaExceededError(
+                    f"Daily query quota exceeded. Resets in {quota.retry_after_s}s.",
+                    headers={
+                        "Retry-After": str(quota.retry_after_s),
+                        "X-Quota-Daily-Limit": str(quota.limit),
+                        "X-Quota-Daily-Remaining": "0",
+                    },
+                )
 
     return guard

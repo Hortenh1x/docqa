@@ -104,6 +104,12 @@ class RateLimitedError(DomainError):
     title = "Rate limit exceeded"
 
 
+class DailyQuotaExceededError(DomainError):
+    status = 429
+    code = "daily_quota_exceeded"
+    title = "Daily query quota exceeded"
+
+
 class RequestInFlightError(DomainError):
     status = 409
     code = "request_in_flight"
