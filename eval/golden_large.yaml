@@ -1,0 +1,3326 @@
+# Large golden evaluation set for the Kranich Software demo corpus (English only).
+# Generated from the corpus + the fixed fact registry (plans/docqa-corpus-prompt.md);
+# 447 entries: direct(167) | table(40) | multi_doc(40) | version(30) | buried(20) | no_answer(150)
+# Same schema as eval/golden.yaml. Run:
+#   uv run python -m eval.run_eval --collection <policies-en id> --golden eval/golden_large.yaml \
+#     --results eval/results_large.md --with-answers --judge --concurrency 4 --api-key <key>
+
+- id: d001
+  category: direct
+  question: "I just went full-time — how many vacation days do I get per year?"
+  expected_answer: "27 vacation days per calendar year (plus public holidays of your place of employment)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F3"
+
+- id: d002
+  category: direct
+  question: "Do my vacation days all appear on day one or do they build up over the year?"
+  expected_answer: "Days accrue monthly from your first day of work"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "accrual rule, paraphrase"
+
+- id: d003
+  category: direct
+  question: "Does my vacation allowance grow the longer I stay at the company?"
+  expected_answer: "Yes — one additional day for every 2 full years of service, capped at 30 days total"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F4"
+
+- id: d004
+  category: direct
+  question: "I joined Kranich in 2021 — how many vacation days do I have in 2025?"
+  expected_answer: "29 days — 27 base plus 2 tenure days for 4 full years of service"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F3+F4, worked example from the doc (Anna)"
+
+- id: d005
+  category: direct
+  question: "I work part-time three days a week — how is my vacation calculated?"
+  expected_answer: "Part-time entitlements are calculated pro rata"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "2" }
+  notes: "scope rule"
+
+- id: d006
+  category: direct
+  question: "How far in advance should I request a long vacation?"
+  expected_answer: "At least 4 weeks of notice for any absence longer than 5 consecutive working days"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "4" }
+  notes: "F7"
+
+- id: d007
+  category: direct
+  question: "Who signs off on my vacation requests and can they say no?"
+  expected_answer: "Your manager approves requests in Fern; approval is the default and pushback happens only when critical coverage is at risk, with an alternative window proposed"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "4" }
+  notes: "approval flow"
+
+- id: d008
+  category: direct
+  question: "If I don't use all my days this year, when exactly do the carried-over ones disappear?"
+  expected_answer: "Carried-over days expire on March 31 of the following year"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "F5"
+
+- id: d009
+  category: direct
+  question: "Does anyone remind us about expiring vacation days?"
+  expected_answer: "Yes — everyone is nudged in January, and People & Culture reviews teams where large balances pile up"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "soft fact, carryover section"
+
+- id: d010
+  category: direct
+  question: "I got the flu in the middle of my booked vacation — are those days just lost?"
+  expected_answer: "No — affected days convert back to sick leave once you provide the documentation described in the Sick Leave & Medical Absence policy (POL-007)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "6" }
+  notes: "sickness during vacation"
+
+- id: d011
+  category: direct
+  question: "What happens to vacation days I never took if I quit?"
+  expected_answer: "Untaken accrued days are paid out with the final payroll; days taken beyond accrual are deducted"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "7" }
+  notes: "exit payout"
+
+- id: d012
+  category: direct
+  question: "Do contractors follow the same vacation policy as employees?"
+  expected_answer: "No — contractors and working students follow their individual agreements"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "2" }
+  notes: "scope exclusion"
+
+- id: d013
+  category: direct
+  question: "Am I allowed to work fully from home, or do I have to show up at an office sometimes?"
+  expected_answer: "You may work up to 100% remotely from anywhere within your country of employment — office attendance is not required"
+  expected_sources:
+    - { doc: "POL-002", section: "2" }
+  notes: "F16"
+
+- id: d014
+  category: direct
+  question: "Can I just work from my cousin's place in another country under the remote work policy?"
+  expected_answer: "No — the Remote Work Policy only covers your country of employment; temporary stays abroad fall under the Workation Guideline (POL-003)"
+  expected_sources:
+    - { doc: "POL-002", section: "2" }
+  notes: "T7 boundary"
+
+- id: d015
+  category: direct
+  question: "Is there a time window when everyone is supposed to be reachable for meetings?"
+  expected_answer: "Yes — the company-wide anchor is 11:00–15:00 CET; meetings should be scheduled inside this window whenever possible"
+  expected_sources:
+    - { doc: "POL-002", section: "3" }
+  notes: "core hours, paraphrase"
+
+- id: d016
+  category: direct
+  question: "Can I just buy a monitor for my home office and expense it?"
+  expected_answer: "No — laptops, monitors and peripherals are ordered through IT under the Equipment & Hardware Policy (POL-006), not expensed ad hoc"
+  expected_sources:
+    - { doc: "POL-002", section: "4" }
+  notes: "equipment via IT"
+
+- id: d017
+  category: direct
+  question: "Do I need the VPN when working from a coffee shop?"
+  expected_answer: "Yes — public Wi-Fi requires the company VPN"
+  expected_sources:
+    - { doc: "POL-002", section: "5" }
+  notes: "security expectations"
+
+- id: d018
+  category: direct
+  question: "Does working from home mean lighter security rules?"
+  expected_answer: "No — the IT & Information Security Policy applies fully: company-managed devices only, the company password manager, locked screens when away"
+  expected_sources:
+    - { doc: "POL-002", section: "5" }
+  notes: "security parity at home"
+
+- id: d019
+  category: direct
+  question: "What's the rule when a chat discussion starts dragging on forever?"
+  expected_answer: "If a discussion runs longer than fifteen minutes in text, switch to a call — then write down the result"
+  expected_sources:
+    - { doc: "POL-002", section: "6" }
+  notes: "communication default"
+
+- id: d020
+  category: direct
+  question: "Where should decisions end up so they don't get lost in chat?"
+  expected_answer: "Decisions and outcomes belong in Grove or the team's project space, not only in chat — written first"
+  expected_sources:
+    - { doc: "POL-002", section: "6" }
+  notes: "written-first"
+
+- id: d021
+  category: direct
+  question: "Do I need anyone's approval to keep working from home permanently?"
+  expected_answer: "No — a remote setup within your country of employment is the default and needs no approval"
+  expected_sources:
+    - { doc: "POL-002", section: "2" }
+  notes: "default setup, example"
+
+- id: d022
+  category: direct
+  question: "Are the offices still a thing for remote employees?"
+  expected_answer: "Yes — the Berlin and Lisbon offices remain open to everyone; desks and rooms are booked through Perch"
+  expected_sources:
+    - { doc: "POL-002", section: "7" }
+  notes: "office as a tool"
+
+- id: d023
+  category: direct
+  question: "How many days a year can I work from abroad?"
+  expected_answer: "Up to 30 working days per calendar year, from other EU/EEA countries only"
+  expected_sources:
+    - { doc: "POL-003", section: "2" }
+  notes: "F17"
+
+- id: d024
+  category: direct
+  question: "Who has to say yes before I book a workation?"
+  expected_answer: "Both your manager and People & Culture must approve before you book anything"
+  expected_sources:
+    - { doc: "POL-003", section: "2" }
+  notes: "F17 approval"
+
+- id: d025
+  category: direct
+  question: "If I do two separate trips abroad, do they count against the same allowance?"
+  expected_answer: "Yes — days are counted per working day actually spent abroad, across all trips combined"
+  expected_sources:
+    - { doc: "POL-003", section: "2" }
+  notes: "counting rule"
+
+- id: d026
+  category: direct
+  question: "Could I spend a month working from Thailand?"
+  expected_answer: "Stays outside the EU/EEA need a case-by-case review by People & Culture and are usually declined for tax reasons"
+  expected_sources:
+    - { doc: "POL-003", section: "3" }
+  notes: "non-EU/EEA rule"
+
+- id: d027
+  category: direct
+  question: "If I workation long enough, does my employment country change?"
+  expected_answer: "No — a workation does not change your country of employment or your contract"
+  expected_sources:
+    - { doc: "POL-003", section: "3" }
+  notes: "not a base move"
+
+- id: d028
+  category: direct
+  question: "I'm visiting a client abroad — is that a workation?"
+  expected_answer: "No — client-site travel is business travel under the Travel & Expense Policy (POL-004)"
+  expected_sources:
+    - { doc: "POL-003", section: "3" }
+  notes: "boundary to travel"
+
+- id: d029
+  category: direct
+  question: "How late can I file a workation request before flying out?"
+  expected_answer: "Request the stay in Fern at least two weeks before departure"
+  expected_sources:
+    - { doc: "POL-003", section: "5" }
+  notes: "request lead time"
+
+- id: d030
+  category: direct
+  question: "What info goes into a workation request?"
+  expected_answer: "Destination country, dates, and a one-line coverage note — submitted in Fern"
+  expected_sources:
+    - { doc: "POL-003", section: "5" }
+  notes: "request contents"
+
+- id: d031
+  category: direct
+  question: "Anything I need to keep updated in Fern while working abroad?"
+  expected_answer: "Yes — your emergency contact details in Fern must be current for the duration of the stay"
+  expected_sources:
+    - { doc: "POL-003", section: "4" }
+  notes: "responsibilities abroad"
+
+- id: d032
+  category: direct
+  question: "Do the core collaboration hours still apply when I'm on a workation?"
+  expected_answer: "Yes — keep your normal working hours agreed with your team, including the 11:00–15:00 CET anchor window"
+  expected_sources:
+    - { doc: "POL-003", section: "4" }
+  notes: "hours abroad"
+
+- id: d033
+  category: direct
+  question: "Do trips need sign-off before I book flights?"
+  expected_answer: "Yes — your manager approves trips before booking"
+  expected_sources:
+    - { doc: "POL-004", section: "2" }
+  notes: "approval before booking"
+
+- id: d034
+  category: direct
+  question: "What do we use to book business travel?"
+  expected_answer: "Book through Ledgerly's travel module using your corporate card where possible"
+  expected_sources:
+    - { doc: "POL-004", section: "3" }
+  notes: "booking tool"
+
+- id: d035
+  category: direct
+  question: "Can I book business class if the flight is long?"
+  expected_answer: "No — choose reasonable options: economy flights and standard hotel rooms"
+  expected_sources:
+    - { doc: "POL-004", section: "3" }
+  notes: "reasonable options"
+
+- id: d036
+  category: direct
+  question: "When should I take the train instead of flying?"
+  expected_answer: "Trains are preferred over flights for routes under five hours door to door"
+  expected_sources:
+    - { doc: "POL-004", section: "3" }
+  notes: "train rule"
+
+- id: d037
+  category: direct
+  question: "Which document actually lists the current per-diem amounts?"
+  expected_answer: "The Expense Rates & Per-Diems sheet (FIN-001) — the travel policy deliberately quotes no numbers"
+  expected_sources:
+    - { doc: "POL-004", section: "4" }
+  notes: "T2 pointer as a direct fact"
+
+- id: d038
+  category: direct
+  question: "Do I need to collect restaurant receipts to get my daily allowance?"
+  expected_answer: "No — per-diems are paid automatically with your expense report; no meal receipts needed"
+  expected_sources:
+    - { doc: "POL-004", section: "4" }
+  notes: "per-diem mechanics"
+
+- id: d039
+  category: direct
+  question: "How long after a trip can I still hand in my expenses?"
+  expected_answer: "No later than 30 calendar days after the trip ends"
+  expected_sources:
+    - { doc: "POL-004", section: "6" }
+  notes: "F10"
+
+- id: d040
+  category: direct
+  question: "Which expenses need receipts attached?"
+  expected_answer: "Everything except per-diems needs receipts"
+  expected_sources:
+    - { doc: "POL-004", section: "6" }
+  notes: "receipts rule"
+
+- id: d041
+  category: direct
+  question: "Once my expense report is approved, when do I actually see the money?"
+  expected_answer: "Finance reviews weekly; approved reports are paid with the next payroll run"
+  expected_sources:
+    - { doc: "POL-004", section: "6" }
+  notes: "payout timing"
+
+- id: d042
+  category: direct
+  question: "I got a speeding ticket in a rental on a business trip — can I expense it?"
+  expected_answer: "No — fines of any kind are not reimbursable (nor minibar or personal detours)"
+  expected_sources:
+    - { doc: "POL-004", section: "5" }
+  notes: "non-reimbursable"
+
+- id: d043
+  category: direct
+  question: "My phone plan doesn't cover the country I'm traveling to — can I expense roaming?"
+  expected_answer: "Yes — roaming or a local SIM is reimbursable when your plan does not cover the destination"
+  expected_sources:
+    - { doc: "POL-004", section: "5" }
+  notes: "reimbursable list"
+
+- id: d044
+  category: direct
+  question: "Am I insured if something happens on a business trip?"
+  expected_answer: "Yes — Kranich provides business travel insurance for all approved trips"
+  expected_sources:
+    - { doc: "POL-004", section: "7" }
+  notes: "insurance"
+
+- id: d045
+  category: direct
+  question: "Can I do some work from my personal laptop?"
+  expected_answer: "No — work happens on company-managed devices only; personal devices may access calendar and chat but never source code, customer data, or production systems"
+  expected_sources:
+    - { doc: "POL-005", section: "2" }
+  notes: "devices"
+
+- id: d046
+  category: direct
+  question: "Is checking the company calendar on my private phone okay?"
+  expected_answer: "Yes — personal devices may access the company calendar and chat, but not source code, customer data, or production systems"
+  expected_sources:
+    - { doc: "POL-005", section: "2" }
+  notes: "personal device carve-out"
+
+- id: d047
+  category: direct
+  question: "How quickly does my screen lock by itself?"
+  expected_answer: "Screens lock automatically after five minutes — and you should lock manually whenever you step away"
+  expected_sources:
+    - { doc: "POL-005", section: "2" }
+  notes: "screen lock"
+
+- id: d048
+  category: direct
+  question: "As a new joiner, how much time do I have to finish the security training?"
+  expected_answer: "Within 14 days of your start date"
+  expected_sources:
+    - { doc: "POL-005", section: "3" }
+  notes: "F18"
+
+- id: d049
+  category: direct
+  question: "How long does the security training actually take?"
+  expected_answer: "About ninety minutes, ending with a short quiz"
+  expected_sources:
+    - { doc: "POL-005", section: "3" }
+  notes: "training length"
+
+- id: d050
+  category: direct
+  question: "Is the security training a one-time thing?"
+  expected_answer: "No — annual refreshers are assigned each autumn to everyone"
+  expected_sources:
+    - { doc: "POL-005", section: "3" }
+  notes: "refreshers"
+
+- id: d051
+  category: direct
+  question: "What happens if someone never completes their assigned security training?"
+  expected_answer: "Overdue trainings escalate to the Head of Information Security; managers see completion status in Fern"
+  expected_sources:
+    - { doc: "POL-005", section: "3" }
+  notes: "escalation"
+
+- id: d052
+  category: direct
+  question: "Where am I supposed to keep all my work passwords?"
+  expected_answer: "In the company-provided 1Password vault — mandatory, no exceptions and no browser password stores"
+  expected_sources:
+    - { doc: "POL-005", section: "4" }
+  notes: "F19"
+
+- id: d053
+  category: direct
+  question: "Is two-factor authentication optional on our systems?"
+  expected_answer: "No — multi-factor authentication is enforced on all company systems that support it"
+  expected_sources:
+    - { doc: "POL-005", section: "4" }
+  notes: "MFA"
+
+- id: d054
+  category: direct
+  question: "Can I reuse my work password for a private account if it's a strong one?"
+  expected_answer: "No — never reuse a work password anywhere else"
+  expected_sources:
+    - { doc: "POL-005", section: "4" }
+  notes: "reuse ban"
+
+- id: d055
+  category: direct
+  question: "Can I pull a customer dataset onto my laptop to debug something?"
+  expected_answer: "No — customer data stays in production systems and approved analytics tools; use the anonymized-sample process described in POL-010"
+  expected_sources:
+    - { doc: "POL-005", section: "5" }
+  notes: "data handling"
+
+- id: d056
+  category: direct
+  question: "Who do I email about a suspected security problem and what's the time limit?"
+  expected_answer: "security@kranich.example within 24 hours of noticing"
+  expected_sources:
+    - { doc: "POL-005", section: "7" }
+  notes: "F20"
+
+- id: d057
+  category: direct
+  question: "Besides the laptop, what gear does the company give me?"
+  expected_answer: "External monitor, keyboard, mouse or trackpad, headset, and a laptop stand; home-office chairs and desks are supported within the budget"
+  expected_sources:
+    - { doc: "POL-006", section: "2" }
+  notes: "standard setup"
+
+- id: d058
+  category: direct
+  question: "Will the company help pay for a proper desk chair at home?"
+  expected_answer: "Yes — home-office chairs and desks are supported within the equipment budget when your local setup needs them"
+  expected_sources:
+    - { doc: "POL-006", section: "2" }
+  notes: "chair/desk"
+
+- id: d059
+  category: direct
+  question: "How often do we get new laptops?"
+  expected_answer: "Laptops and budget renew every 36 months"
+  expected_sources:
+    - { doc: "POL-006", section: "4" }
+  notes: "F12"
+
+- id: d060
+  category: direct
+  question: "My laptop is falling apart before the refresh date — do I have to wait?"
+  expected_answer: "No — if your device struggles earlier, IT swaps it without ceremony; the cycle is a guideline, not a wall"
+  expected_sources:
+    - { doc: "POL-006", section: "4" }
+  notes: "early swap"
+
+- id: d061
+  category: direct
+  question: "Do equipment orders need someone's approval?"
+  expected_answer: "Anything in the IT catalog in Grove within your remaining budget is approved automatically; items outside the catalog need a one-line justification to it-help@kranich.example"
+  expected_sources:
+    - { doc: "POL-006", section: "5" }
+  notes: "ordering"
+
+- id: d062
+  category: direct
+  question: "I want a peripheral that's not in the catalog — what do I do?"
+  expected_answer: "Send a one-line justification to it-help@kranich.example — the answer usually arrives the same day"
+  expected_sources:
+    - { doc: "POL-006", section: "5" }
+  notes: "off-catalog"
+
+- id: d063
+  category: direct
+  question: "Does the hardware I use belong to me after a while?"
+  expected_answer: "No — all equipment remains the property of Kranich Software"
+  expected_sources:
+    - { doc: "POL-006", section: "6" }
+  notes: "ownership"
+
+- id: d064
+  category: direct
+  question: "I spilled coffee on my laptop — who do I tell?"
+  expected_answer: "Report damage or loss to it-help@kranich.example immediately; a lost device is also a security incident"
+  expected_sources:
+    - { doc: "POL-006", section: "6" }
+  notes: "damage/loss"
+
+- id: d065
+  category: direct
+  question: "What exactly do I do the morning I wake up sick?"
+  expected_answer: "Tell your manager and mark the absence in Fern before your working day would normally start, or as soon as you reasonably can"
+  expected_sources:
+    - { doc: "POL-007", section: "2" }
+  notes: "reporting absence"
+
+- id: d066
+  category: direct
+  question: "Do I have to tell my manager what illness I have?"
+  expected_answer: "No — a one-line message is enough; you owe no diagnosis to anyone"
+  expected_sources:
+    - { doc: "POL-007", section: "2" }
+  notes: "no diagnosis"
+
+- id: d067
+  category: direct
+  question: "At what point does a sick day need a doctor's certificate?"
+  expected_answer: "From the 3rd calendar day of absence"
+  expected_sources:
+    - { doc: "POL-007", section: "3" }
+  notes: "F15"
+
+- id: d068
+  category: direct
+  question: "I was out sick just one day — do I need any paperwork?"
+  expected_answer: "No — for absences of one or two calendar days no certificate is needed"
+  expected_sources:
+    - { doc: "POL-007", section: "3" }
+  notes: "short absence"
+
+- id: d069
+  category: direct
+  question: "Where do I send my sick note?"
+  expected_answer: "Upload it to Fern — People & Culture handles the rest, including anything your health insurer needs"
+  expected_sources:
+    - { doc: "POL-007", section: "3" }
+  notes: "upload target"
+
+- id: d070
+  category: direct
+  question: "What if the law in my country demands a sick note earlier than the policy?"
+  expected_answer: "The statutory rules win — Fern shows the correct requirement for your contract"
+  expected_sources:
+    - { doc: "POL-007", section: "3" }
+  notes: "statutory override"
+
+- id: d071
+  category: direct
+  question: "Who stays in contact with me during a long illness?"
+  expected_answer: "From the second week onward, People & Culture stays in touch directly — about pay continuation, insurer paperwork, and a return-to-work plan"
+  expected_sources:
+    - { doc: "POL-007", section: "5" }
+  notes: "longer illness"
+
+- id: d072
+  category: direct
+  question: "Can my manager see my medical certificates in Fern?"
+  expected_answer: "No — managers never see diagnoses or certificates, only absence dates; access is restricted to People & Culture"
+  expected_sources:
+    - { doc: "POL-007", section: "7" }
+  notes: "privacy"
+
+- id: d073
+  category: direct
+  question: "Do I need to log a Fern entry for a routine doctor's appointment during work hours?"
+  expected_answer: "No — block the calendar and work around it; no Fern entry needed"
+  expected_sources:
+    - { doc: "POL-007", section: "6" }
+  notes: "appointments"
+
+- id: d074
+  category: direct
+  question: "Does Kranich add anything on top of the statutory parental leave benefit?"
+  expected_answer: "Yes — where the statutory benefit replaces only part of your salary, Kranich tops it up; payroll applies it automatically once the leave is registered"
+  expected_sources:
+    - { doc: "POL-008", section: "4" }
+  notes: "top-up"
+
+- id: d075
+  category: direct
+  question: "Do I need to fill out a form to get the parental leave pay top-up?"
+  expected_answer: "No — the top-up requires no separate application; payroll applies it automatically once the leave is registered"
+  expected_sources:
+    - { doc: "POL-008", section: "4" }
+  notes: "automatic top-up"
+
+- id: d076
+  category: direct
+  question: "When should I tell the company I'm expecting a child?"
+  expected_answer: "As early as you feel comfortable — the timing is yours, and the conversation with People & Culture is confidential until you decide otherwise"
+  expected_sources:
+    - { doc: "POL-008", section: "3" }
+  notes: "telling us"
+
+- id: d077
+  category: direct
+  question: "Will my manager immediately know that I announced a pregnancy to HR?"
+  expected_answer: "No — your manager learns the dates when you are ready to plan the handover; until then it stays confidential"
+  expected_sources:
+    - { doc: "POL-008", section: "3" }
+  notes: "confidentiality"
+
+- id: d078
+  category: direct
+  question: "Am I expected to join meetings while on parental leave?"
+  expected_answer: "No — you are a guest, not an employee-on-call: no meetings, no expectations"
+  expected_sources:
+    - { doc: "POL-008", section: "6" }
+  notes: "during leave"
+
+- id: d079
+  category: direct
+  question: "Can I stay a little in the loop with my team during parental leave?"
+  expected_answer: "Yes — opt in to the monthly team digest in Fern; company gatherings also remain open to you, family included"
+  expected_sources:
+    - { doc: "POL-008", section: "6" }
+  notes: "digest opt-in"
+
+- id: d080
+  category: direct
+  question: "How far ahead should I fix my return date after parental leave?"
+  expected_answer: "Agree the return date with People & Culture at least a month ahead so access, equipment and a re-onboarding buddy are ready"
+  expected_sources:
+    - { doc: "POL-008", section: "7.1" }
+  notes: "return planning"
+
+- id: d081
+  category: direct
+  question: "Is easing back in slowly after parental leave something I have to negotiate?"
+  expected_answer: "No — ramp-up weeks with reduced meeting load are the default, not a favor"
+  expected_sources:
+    - { doc: "POL-008", section: "7.1" }
+  notes: "ramp-up default"
+
+- id: d082
+  category: direct
+  question: "Can I come back from parental leave on reduced hours for a while?"
+  expected_answer: "Yes — a temporarily reduced schedule for the first months back is available where statutory rules allow it; discuss with People & Culture and your manager"
+  expected_sources:
+    - { doc: "POL-008", section: "7.3" }
+  notes: "flexible restart"
+
+- id: d083
+  category: direct
+  question: "Does the code of conduct also apply to contractors and guests at our events?"
+  expected_answer: "Yes — it applies to employees, leadership, contractors, and guests at events"
+  expected_sources:
+    - { doc: "POL-009", section: "1" }
+  notes: "scope"
+
+- id: d084
+  category: direct
+  question: "What's the expected way to give critical feedback to a colleague?"
+  expected_answer: "Feedback goes to the person first, in private, in a form you would accept yourself"
+  expected_sources:
+    - { doc: "POL-009", section: "3" }
+  notes: "directness with care"
+
+- id: d085
+  category: direct
+  question: "Could reporting a conduct issue backfire on me?"
+  expected_answer: "No — retaliation against people who raise concerns is itself a violation of the code"
+  expected_sources:
+    - { doc: "POL-009", section: "6" }
+  notes: "retaliation"
+
+- id: d086
+  category: direct
+  question: "Is there a way to raise a concern without giving my name?"
+  expected_answer: "Yes — anonymously through the concern form in Grove"
+  expected_sources:
+    - { doc: "POL-009", section: "6" }
+  notes: "anonymous channel"
+
+- id: d087
+  category: direct
+  question: "Am I allowed to have a side project outside work?"
+  expected_answer: "Yes — as long as it does not compete with Kranich, use company resources, or crowd out your commitments"
+  expected_sources:
+    - { doc: "POL-009", section: "5" }
+  notes: "side projects"
+
+- id: d088
+  category: direct
+  question: "I own shares in one of our vendors — do I need to tell anyone?"
+  expected_answer: "Yes — financial interests in vendors, clients, or competitors are disclosed to People & Culture"
+  expected_sources:
+    - { doc: "POL-009", section: "5" }
+  notes: "conflict of interest"
+
+- id: d089
+  category: direct
+  question: "What's the stance on alcohol at company events?"
+  expected_answer: "Alcohol at company events is fine; pressure to drink is not"
+  expected_sources:
+    - { doc: "POL-009", section: "4" }
+  notes: "events"
+
+- id: d090
+  category: direct
+  question: "How bad can consequences get for violating the code of conduct?"
+  expected_answer: "Proportionate to the behavior — from a documented conversation up to termination"
+  expected_sources:
+    - { doc: "POL-009", section: "7" }
+  notes: "consequences"
+
+- id: d091
+  category: direct
+  question: "Can I reuse personal data we collected for one purpose in a new feature?"
+  expected_answer: "No — personal data is used only for the purpose it was collected for; new purposes need a new assessment with the privacy team"
+  expected_sources:
+    - { doc: "POL-010", section: "2" }
+  notes: "purpose first"
+
+- id: d092
+  category: direct
+  question: "How often are data access rights reviewed?"
+  expected_answer: "Access reviews run quarterly per system owner"
+  expected_sources:
+    - { doc: "POL-010", section: "2" }
+  notes: "least access"
+
+- id: d093
+  category: direct
+  question: "Where do I find how long we keep different kinds of data?"
+  expected_answer: "Retention schedules live in Grove"
+  expected_sources:
+    - { doc: "POL-010", section: "2" }
+  notes: "retention"
+
+- id: d094
+  category: direct
+  question: "How do I get realistic data to debug a customer issue without breaking privacy rules?"
+  expected_answer: "Request an anonymized sample in Grove — the platform team generates one with identifiers removed"
+  expected_sources:
+    - { doc: "POL-010", section: "3" }
+  notes: "anonymized samples"
+
+- id: d095
+  category: direct
+  question: "Is exporting raw customer data to my laptop ever fine if it saves time?"
+  expected_answer: "No — exporting raw customer data to laptops or personal storage is never acceptable"
+  expected_sources:
+    - { doc: "POL-010", section: "3" }
+  notes: "export ban"
+
+- id: d096
+  category: direct
+  question: "What employee data can managers actually see?"
+  expected_answer: "Only what they operationally need — absence dates, not medical certificates; salary bands during reviews, not payroll files"
+  expected_sources:
+    - { doc: "POL-010", section: "4" }
+  notes: "employee data"
+
+- id: d097
+  category: direct
+  question: "We want to sign up a new SaaS tool that stores user emails — what has to happen first?"
+  expected_answer: "It goes through the privacy review in Grove before a contract is signed; if the tool is not in the processing register, it is not approved"
+  expected_sources:
+    - { doc: "POL-010", section: "5" }
+  notes: "vendor review"
+
+- id: d098
+  category: direct
+  question: "A customer's employee emailed asking us to delete their data — what do I do?"
+  expected_answer: "Forward it to privacy@kranich.example immediately — statutory deadlines are short, never sit on such a request"
+  expected_sources:
+    - { doc: "POL-010", section: "6" }
+  notes: "DSR"
+
+- id: d099
+  category: direct
+  question: "Who decides whether a regulator needs to be told about a data breach?"
+  expected_answer: "The privacy team — that assessment is theirs, not yours; a suspected breach is first handled per the Security Incident Response Runbook"
+  expected_sources:
+    - { doc: "POL-010", section: "7" }
+  notes: "breach notification"
+
+- id: d100
+  category: direct
+  question: "What kinds of things count as a security incident?"
+  expected_answer: "Anything that could affect confidentiality, integrity or availability of company or customer data — phishing clicks, exposed credentials, lost devices, malware warnings, unknown logins, a breached vendor"
+  expected_sources:
+    - { doc: "SEC-001", section: "2" }
+  notes: "incident definition"
+
+- id: d101
+  category: direct
+  question: "A vendor just told us they got hacked — is that our incident too?"
+  expected_answer: "Yes — a vendor telling you they were breached is a typical incident example; report it"
+  expected_sources:
+    - { doc: "SEC-001", section: "2" }
+  notes: "vendor breach"
+
+- id: d102
+  category: direct
+  question: "I'm not sure whether what I saw is a real incident — should I still report?"
+  expected_answer: "Yes — when unsure, treat it as an incident; false alarms are free"
+  expected_sources:
+    - { doc: "SEC-001", section: "2" }
+  notes: "when unsure"
+
+- id: d103
+  category: direct
+  question: "What should a security incident report actually contain?"
+  expected_answer: "One paragraph is enough: what you saw, when, on which device or system, and what you already did"
+  expected_sources:
+    - { doc: "SEC-001", section: "3" }
+  notes: "report contents"
+
+- id: d104
+  category: direct
+  question: "The security mess-up was my own fault — should I keep quiet?"
+  expected_answer: "No — reporting is the rule even when the mistake was yours; a prompt report is explicitly a good look, never a bad one"
+  expected_sources:
+    - { doc: "SEC-001", section: "3" }
+  notes: "own mistake"
+
+- id: d105
+  category: direct
+  question: "I clicked a phishing link — should I switch the laptop off?"
+  expected_answer: "No — disconnect from networks, leave the device on, and report"
+  expected_sources:
+    - { doc: "SEC-001", section: "4" }
+  notes: "phishing containment"
+
+- id: d106
+  category: direct
+  question: "My work laptop was stolen — what happens to the data on it?"
+  expected_answer: "Report immediately — remote wipe is triggered by IT; also rotate any credential you typed on that device recently"
+  expected_sources:
+    - { doc: "SEC-001", section: "4" }
+  notes: "lost device"
+
+- id: d107
+  category: direct
+  question: "I got a login alert I don't recognize — first steps?"
+  expected_answer: "Change the affected password in 1Password, enable/verify MFA, then report"
+  expected_sources:
+    - { doc: "SEC-001", section: "4" }
+  notes: "suspicious login"
+
+- id: d108
+  category: direct
+  question: "Can I dig into a suspected incident myself before reporting it?"
+  expected_answer: "No — do not investigate beyond the basic containment list; well-meant digging destroys evidence"
+  expected_sources:
+    - { doc: "SEC-001", section: "4" }
+  notes: "no self-investigation"
+
+- id: d109
+  category: direct
+  question: "Who runs the show once I've reported an incident?"
+  expected_answer: "The on-call responder from the security team acknowledges, classifies severity, and owns communication from there"
+  expected_sources:
+    - { doc: "SEC-001", section: "5" }
+  notes: "responder"
+
+- id: d110
+  category: direct
+  question: "Should I give customers a heads-up if an incident might affect them?"
+  expected_answer: "No — you never notify customers about an incident yourself; the responder and privacy team own notifications"
+  expected_sources:
+    - { doc: "SEC-001", section: "6" }
+  notes: "customer notification"
+
+- id: d111
+  category: direct
+  question: "Do incidents end with someone getting blamed?"
+  expected_answer: "No — every real incident gets a short, blameless write-up readable by everyone in the security workspace"
+  expected_sources:
+    - { doc: "SEC-001", section: "7" }
+  notes: "blameless"
+
+- id: d112
+  category: direct
+  question: "Will my laptop arrive before my first day?"
+  expected_answer: "Yes — IT ships your laptop and peripherals to arrive before your start date"
+  expected_sources:
+    - { doc: "HR-001", section: "2" }
+  notes: "pre-day-one"
+
+- id: d113
+  category: direct
+  question: "What does Fern ask me to fill in before I start?"
+  expected_answer: "Personal data, bank details, and emergency contact — about ten minutes, best done early"
+  expected_sources:
+    - { doc: "HR-001", section: "2" }
+  notes: "pre-start form"
+
+- id: d114
+  category: direct
+  question: "What happens on my very first day?"
+  expected_answer: "A short kickoff call with your manager and buddy, account activation, joining team channels, and getting your 1Password vault access"
+  expected_sources:
+    - { doc: "HR-001", section: "3" }
+  notes: "day one"
+
+- id: d115
+  category: direct
+  question: "Who sets up my intro meetings with other teams?"
+  expected_answer: "Your buddy schedules five short intro calls with the people your role touches"
+  expected_sources:
+    - { doc: "HR-001", section: "4" }
+  notes: "intro calls"
+
+- id: d116
+  category: direct
+  question: "Which policies am I supposed to read in my first two weeks?"
+  expected_answer: "The starter pack in Grove: Remote Work (POL-002), Travel & Expense (POL-004), and Code of Conduct (POL-009)"
+  expected_sources:
+    - { doc: "HR-001", section: "4" }
+  notes: "starter pack"
+
+- id: d117
+  category: direct
+  question: "Is there an expectation to deliver something in week one?"
+  expected_answer: "Yes — ship something small; every team keeps a first-week task ready"
+  expected_sources:
+    - { doc: "HR-001", section: "4" }
+  notes: "first-week task"
+
+- id: d118
+  category: direct
+  question: "What check-ins happen during probation?"
+  expected_answer: "A structured check-in with your manager at the end of month one and a mid-probation conversation with People & Culture"
+  expected_sources:
+    - { doc: "HR-001", section: "5" }
+  notes: "probation check-ins"
+
+- id: d119
+  category: direct
+  question: "The onboarding guide had an outdated step — who wants to know?"
+  expected_answer: "Tell Lea in People Operations"
+  expected_sources:
+    - { doc: "HR-001", section: "8" }
+  notes: "feedback loop"
+
+- id: d120
+  category: direct
+  question: "Once I hand in my notice, what does HR confirm in writing?"
+  expected_answer: "People & Culture confirms your last working day and remaining vacation balance in writing"
+  expected_sources:
+    - { doc: "HR-002", section: "2" }
+  notes: "confirmation"
+
+- id: d121
+  category: direct
+  question: "Where should my leaving handover be written up?"
+  expected_answer: "In Grove, not in private notes — what you own, where it lives, what is fragile, who takes over"
+  expected_sources:
+    - { doc: "HR-002", section: "3" }
+  notes: "handover location"
+
+- id: d122
+  category: direct
+  question: "I manage client accounts and I'm leaving — anything special for my clients?"
+  expected_answer: "Yes — customer-facing colleagues introduce the new contact to clients before the last day"
+  expected_sources:
+    - { doc: "HR-002", section: "3" }
+  notes: "client intro"
+
+- id: d123
+  category: direct
+  question: "When exactly do my accounts get switched off after I leave?"
+  expected_answer: "IT disables accounts at the end of your last working day — automated from the Fern checklist"
+  expected_sources:
+    - { doc: "HR-002", section: "5" }
+  notes: "account disable"
+
+- id: d124
+  category: direct
+  question: "What happens to the team's shared logins when someone leaves?"
+  expected_answer: "Shared credentials owned by the team are rotated; 1Password vault ownership transfers to the manager"
+  expected_sources:
+    - { doc: "HR-002", section: "5" }
+  notes: "credential rotation"
+
+- id: d125
+  category: direct
+  question: "I still have an open expense report and I'm leaving — will I get the money?"
+  expected_answer: "Yes — Finance settles open expense reports with the final payroll"
+  expected_sources:
+    - { doc: "HR-002", section: "6" }
+  notes: "final settlement"
+
+- id: d126
+  category: direct
+  question: "Is the exit interview mandatory?"
+  expected_answer: "No — the 30-minute exit conversation is optional; summaries are anonymized before leadership sees them"
+  expected_sources:
+    - { doc: "HR-002", section: "7" }
+  notes: "exit conversation"
+
+- id: d127
+  category: direct
+  question: "Who issues employment references after I've left?"
+  expected_answer: "References and employment confirmations come from people@kranich.example — the alias keeps working for you as an alum"
+  expected_sources:
+    - { doc: "HR-002", section: "8" }
+  notes: "references"
+
+- id: d128
+  category: direct
+  question: "I work remotely — how do I physically get my equipment back to the company when I leave?"
+  expected_answer: "Remote employees receive a prepaid shipping label through the checklist in Fern; office-based colleagues hand everything to IT in person"
+  expected_sources:
+    - { doc: "HR-002", section: "4" }
+  notes: "F13 shipping"
+
+- id: d129
+  category: direct
+  question: "Which months do review cycles kick off?"
+  expected_answer: "April and October — twice a year"
+  expected_sources:
+    - { doc: "HR-003", section: "2" }
+  notes: "F21"
+
+- id: d130
+  category: direct
+  question: "How long does a review cycle run start to finish?"
+  expected_answer: "About three weeks from self-review to the closing conversation"
+  expected_sources:
+    - { doc: "HR-003", section: "2" }
+  notes: "cycle length"
+
+- id: d131
+  category: direct
+  question: "What should my self-review focus on?"
+  expected_answer: "Outcomes, not activity — what changed because of your work; Fern provides the short template"
+  expected_sources:
+    - { doc: "HR-003", section: "3" }
+  notes: "self-review"
+
+- id: d132
+  category: direct
+  question: "How many peers give feedback in my review?"
+  expected_answer: "You nominate two to four colleagues; your manager may add one"
+  expected_sources:
+    - { doc: "HR-003", section: "3" }
+  notes: "peer count"
+
+- id: d133
+  category: direct
+  question: "How much effort is peer feedback for the people I nominate?"
+  expected_answer: "Peers answer three questions, fifteen minutes total"
+  expected_sources:
+    - { doc: "HR-003", section: "3" }
+  notes: "peer effort"
+
+- id: d134
+  category: direct
+  question: "Do I hear my assessment for the first time live in the review meeting?"
+  expected_answer: "No — the hour-long conversation happens after you have read the written assessment; no live reveals"
+  expected_sources:
+    - { doc: "HR-003", section: "4" }
+  notes: "no reveals"
+
+- id: d135
+  category: direct
+  question: "Does my manager single-handedly decide my raise?"
+  expected_answer: "No — salary decisions are made by calibration across teams, not by individual managers alone"
+  expected_sources:
+    - { doc: "HR-003", section: "5" }
+  notes: "calibration"
+
+- id: d136
+  category: direct
+  question: "How do promotions actually get decided?"
+  expected_answer: "Proposed in the calibration with written cases, following the review cycle"
+  expected_sources:
+    - { doc: "HR-003", section: "5" }
+  notes: "promotions"
+
+- id: d137
+  category: direct
+  question: "What happens if my review says I'm underperforming?"
+  expected_answer: "The review says so plainly, together with a concrete support plan and a follow-up date — nobody is managed out by silence"
+  expected_sources:
+    - { doc: "HR-003", section: "6" }
+  notes: "difficult review"
+
+- id: d138
+  category: direct
+  question: "Do people on probation join the full review cycle?"
+  expected_answer: "No — lighter check-ins replace the full cycle during probation; the full rhythm starts with the first regular cycle after confirmation"
+  expected_sources:
+    - { doc: "HR-003", section: "7" }
+  notes: "probation reviews"
+
+- id: d139
+  category: direct
+  question: "How much wellness money do we get and how often?"
+  expected_answer: "€50 per month"
+  expected_sources:
+    - { doc: "HR-004", section: "3" }
+  notes: "F22"
+
+- id: d140
+  category: direct
+  question: "Would therapy sessions or a meditation app fall under the wellness budget?"
+  expected_answer: "Yes — therapy co-pays, meditation apps, sports memberships and massage all qualify"
+  expected_sources:
+    - { doc: "HR-004", section: "3" }
+  notes: "wellness scope"
+
+- id: d141
+  category: direct
+  question: "How do I actually claim wellness expenses?"
+  expected_answer: "Claim in Ledgerly — no questions asked within the list in Grove"
+  expected_sources:
+    - { doc: "HR-004", section: "3" }
+  notes: "wellness claim"
+
+- id: d142
+  category: direct
+  question: "How do I order my Deutschlandticket through the company?"
+  expected_answer: "Order it through Fern — it is fully covered and renews automatically"
+  expected_sources:
+    - { doc: "HR-004", section: "4" }
+  notes: "F23"
+
+- id: d143
+  category: direct
+  question: "Is there a transit benefit for people in the Lisbon office?"
+  expected_answer: "Yes — Lisbon-based colleagues receive the equivalent local transit pass under the same rule as the Deutschlandticket"
+  expected_sources:
+    - { doc: "HR-004", section: "4" }
+  notes: "Lisbon transit"
+
+- id: d144
+  category: direct
+  question: "Is there money for courses and conferences?"
+  expected_answer: "Yes — a learning budget is agreed per team each year and spent with your manager's sign-off"
+  expected_sources:
+    - { doc: "HR-004", section: "7" }
+  notes: "learning budget"
+
+- id: d145
+  category: direct
+  question: "Do internal job openings get posted before external ones?"
+  expected_answer: "Yes — open roles are posted in Grove before they are posted anywhere else"
+  expected_sources:
+    - { doc: "HR-004", section: "7" }
+  notes: "internal mobility"
+
+- id: d146
+  category: direct
+  question: "How long until my probation is over?"
+  expected_answer: "6 months from your start date; your contract states the exact date and Fern shows it"
+  expected_sources:
+    - { doc: "HR-004", section: "8" }
+  notes: "F14"
+
+- id: d147
+  category: direct
+  question: "Where can I check how many vacation days I have left and when they expire?"
+  expected_answer: "In Fern, including carryover expiry dates"
+  expected_sources:
+    - { doc: "HR-004", section: "8" }
+  notes: "balance location"
+
+- id: d148
+  category: direct
+  question: "What's the address of the Berlin office and which floors are ours?"
+  expected_answer: "Ritterstraße 24, 10969 Berlin — floors 3 and 4"
+  expected_sources:
+    - { doc: "OPS-001", section: "2" }
+  notes: "HQ address"
+
+- id: d149
+  category: direct
+  question: "What hours can I badge into the office?"
+  expected_answer: "Workdays 07:00–21:00, with your badge"
+  expected_sources:
+    - { doc: "OPS-001", section: "2" }
+  notes: "access hours"
+
+- id: d150
+  category: direct
+  question: "Where is the Lisbon office located?"
+  expected_answer: "Rua do Alecrim 12, 1200-017 Lisboa — floor 2"
+  expected_sources:
+    - { doc: "OPS-001", section: "2" }
+  notes: "Lisbon address"
+
+- id: d151
+  category: direct
+  question: "I can't find my office badge — what now?"
+  expected_answer: "Report it to it-help@kranich.example immediately — a lost badge is handled like a lost device"
+  expected_sources:
+    - { doc: "OPS-001", section: "2" }
+  notes: "lost badge"
+
+- id: d152
+  category: direct
+  question: "How do I book a meeting room?"
+  expected_answer: "Via the internal Perch tool — the mobile app or the panel next to each room"
+  expected_sources:
+    - { doc: "OPS-001", section: "3" }
+  notes: "F24"
+
+- id: d153
+  category: direct
+  question: "Is there a cap on standing weekly room bookings?"
+  expected_answer: "Yes — at most 3 recurring meeting-room slots per person; more requires Workplace & Operations approval, rarely granted"
+  expected_sources:
+    - { doc: "OPS-001", section: "3" }
+  notes: "F24 cap"
+
+- id: d154
+  category: direct
+  question: "What happens to a booked room if nobody shows up?"
+  expected_answer: "Rooms free themselves after ten minutes of no-show; repeat no-shows get a friendly note from Rui's team"
+  expected_sources:
+    - { doc: "OPS-001", section: "3" }
+  notes: "no-show"
+
+- id: d155
+  category: direct
+  question: "A client is visiting tomorrow — what do I need to arrange?"
+  expected_answer: "Register the visitor in Perch the day before; reception prints badges and client visits get a room reserved automatically; guests are accompanied at all times"
+  expected_sources:
+    - { doc: "OPS-001", section: "4" }
+  notes: "guests"
+
+- id: d156
+  category: direct
+  question: "Which areas of the offices are quiet zones?"
+  expected_answer: "Floor 3 in Berlin and the window row in Lisbon — no calls, no meetings at desks"
+  expected_sources:
+    - { doc: "OPS-001", section: "5" }
+  notes: "quiet zones"
+
+- id: d157
+  category: direct
+  question: "Can I sit in a phone booth for a two-hour call?"
+  expected_answer: "No — calls longer than an hour belong in a booked room, not a booth"
+  expected_sources:
+    - { doc: "OPS-001", section: "5" }
+  notes: "booth rule"
+
+- id: d158
+  category: direct
+  question: "Will my food in the office fridge survive the week?"
+  expected_answer: "Only if labeled — the Friday fridge cleanup discards everything unlabeled"
+  expected_sources:
+    - { doc: "OPS-001", section: "6" }
+  notes: "fridge"
+
+- id: d159
+  category: direct
+  question: "Can I ship a personal package to the office, and how long will reception hold it?"
+  expected_answer: "Yes, within reason — reception holds parcels for five workdays"
+  expected_sources:
+    - { doc: "OPS-001", section: "7" }
+  notes: "deliveries"
+
+- id: d160
+  category: direct
+  question: "A colleague said I have 30 days to send back my laptop after leaving — is that right?"
+  expected_answer: "No — equipment must be returned within 10 business days after your last working day (30 calendar days is the expense report deadline)"
+  expected_sources:
+    - { doc: "POL-006", section: "7" }
+  notes: "T5 distractor: 30 days vs 10 business days"
+
+- id: d161
+  category: direct
+  question: "Is the mandatory security training due within my first 30 days?"
+  expected_answer: "No — it must be completed within 14 days of your start date"
+  expected_sources:
+    - { doc: "POL-005", section: "3" }
+  notes: "T5 distractor: 30 vs 14 days"
+
+- id: d162
+  category: direct
+  question: "Someone told me a sick note is only needed from day five — true?"
+  expected_answer: "No — a doctor's certificate is required from the 3rd calendar day of absence"
+  expected_sources:
+    - { doc: "POL-007", section: "3" }
+  notes: "T5 distractor: day 5 vs day 3"
+
+- id: d163
+  category: direct
+  question: "Probation here is three months, right?"
+  expected_answer: "No — the probation period is 6 months from the start date"
+  expected_sources:
+    - { doc: "HR-004", section: "8" }
+  notes: "T5 distractor: 3 vs 6 months"
+
+- id: d164
+  category: direct
+  question: "Do expense reports have to be in within two weeks of the trip?"
+  expected_answer: "No — you have 30 calendar days after the trip ends"
+  expected_sources:
+    - { doc: "POL-004", section: "6" }
+  notes: "T5 distractor: 14 vs 30 days"
+
+- id: d165
+  category: direct
+  question: "Laptops get replaced every two years, don't they?"
+  expected_answer: "No — laptops and budget renew every 36 months"
+  expected_sources:
+    - { doc: "POL-006", section: "4" }
+  notes: "T5 distractor: 24 vs 36 months"
+
+- id: d166
+  category: direct
+  question: "I have 48 hours to report a security incident, correct?"
+  expected_answer: "No — report within 24 hours of noticing, to security@kranich.example"
+  expected_sources:
+    - { doc: "SEC-001", section: "3" }
+  notes: "T5 distractor: 48 vs 24 hours"
+
+- id: d167
+  category: direct
+  question: "Do I really need to give four weeks notice to take one day off?"
+  expected_answer: "No — 4 weeks notice applies only to absences longer than 5 consecutive working days; single days are flexible"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "4" }
+  notes: "T5 distractor: notice scope"
+
+- id: t001
+  category: table
+  question: "What's the daily rate for a work trip inside Germany?"
+  expected_answer: "€28 per full day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "F8 DE row"
+
+- id: t002
+  category: table
+  question: "How much per-diem for a few days in Portugal?"
+  expected_answer: "€24 per full day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "F8 PT row"
+
+- id: t003
+  category: table
+  question: "I'm off to Paris for a client workshop — what daily allowance do I get?"
+  expected_answer: "€32 per full day (France rate)"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "F8 FR row, paraphrase via city"
+
+- id: t004
+  category: table
+  question: "What's the per-diem when traveling to the UK?"
+  expected_answer: "€36 per full day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "F8 UK row"
+
+- id: t005
+  category: table
+  question: "Daily allowance for Poland?"
+  expected_answer: "€22 per full day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "F8 PL row, terse phrasing"
+
+- id: t006
+  category: table
+  question: "What do I get per day on a business trip to Spain?"
+  expected_answer: "€26 per full day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "F8 ES row"
+
+- id: t007
+  category: table
+  question: "How much is the US per-diem?"
+  expected_answer: "€55 per full day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "F8 US row"
+
+- id: t008
+  category: table
+  question: "Is the UK allowance higher than the German one?"
+  expected_answer: "Yes — UK €36 vs Germany €28 per full day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "two-row comparison"
+
+- id: t009
+  category: table
+  question: "Which destination has the highest daily allowance?"
+  expected_answer: "The United States at €55 per day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "max over table"
+
+- id: t010
+  category: table
+  question: "Which country on our per-diem list pays the least?"
+  expected_answer: "Poland at €22 per day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "min over table"
+
+- id: t011
+  category: table
+  question: "Is there any difference between the Spain and Portugal per-diems?"
+  expected_answer: "Yes, slightly — Spain €26 vs Portugal €24 per day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "adjacent rows"
+
+- id: t012
+  category: table
+  question: "I'm traveling from Berlin to the Lisbon office for a planning week — which country's rate applies?"
+  expected_answer: "The Portuguese rate, €24 per full day"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "destination reasoning over the table"
+
+- id: t013
+  category: table
+  question: "What's the per-diem for Italy?"
+  expected_answer: "Italy is not in the rate table — rates for unlisted destinations are set by Finance on request (finance@kranich.example) before the trip"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "unlisted country — honest handling, not hallucinating a rate"
+
+- id: t014
+  category: table
+  question: "How much would I get per day in the Netherlands?"
+  expected_answer: "The Netherlands is not listed — Finance sets rates for unlisted destinations on request before the trip"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "unlisted country"
+
+- id: t015
+  category: table
+  question: "Is there a fixed per-diem for Japan?"
+  expected_answer: "No — Japan is not in the table; write to finance@kranich.example with destination and dates to have a rate set"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "unlisted country"
+
+- id: t016
+  category: table
+  question: "My whole trip lasts about six hours — do I get the full day rate?"
+  expected_answer: "No — trips shorter than 8 hours get 50% of the country rate"
+  expected_sources:
+    - { doc: "FIN-001", section: "3" }
+  notes: "F9"
+
+- id: t017
+  category: table
+  question: "How are the first and last days of a multi-day trip paid?"
+  expected_answer: "Arrival and departure days count as partial days at half the country rate"
+  expected_sources:
+    - { doc: "FIN-001", section: "3" }
+  notes: "partial days"
+
+- id: t018
+  category: table
+  question: "Flying out Monday morning and back Wednesday night — which days are paid in full?"
+  expected_answer: "Only Tuesday is a full day; Monday and Wednesday are partial days at half rate"
+  expected_sources:
+    - { doc: "FIN-001", section: "3" }
+  notes: "worked example (Deniz)"
+
+- id: t019
+  category: table
+  question: "My day trip runs nine hours door to door — full per-diem or half?"
+  expected_answer: "Full — only trips shorter than 8 hours are reduced to 50%"
+  expected_sources:
+    - { doc: "FIN-001", section: "3" }
+  notes: "F9 boundary, inference above threshold"
+
+- id: t020
+  category: table
+  question: "Hotel breakfast was included — does that change my allowance?"
+  expected_answer: "Yes — reduce the day's per-diem by 20% for breakfast in Ledgerly"
+  expected_sources:
+    - { doc: "FIN-001", section: "4" }
+  notes: "meal deduction"
+
+- id: t021
+  category: table
+  question: "A client paid for my dinner — how much of the per-diem comes off?"
+  expected_answer: "40% — dinner counts as 40%, same as lunch; breakfast is 20%"
+  expected_sources:
+    - { doc: "FIN-001", section: "4" }
+  notes: "meal deduction"
+
+- id: t022
+  category: table
+  question: "Lunch was provided at the conference — do I have to do the per-diem math myself?"
+  expected_answer: "Lunch counts as 40%, and Ledgerly does the arithmetic when you tick the boxes"
+  expected_sources:
+    - { doc: "FIN-001", section: "4" }
+  notes: "meal deduction + tooling"
+
+- id: t023
+  category: table
+  question: "Can I use my own car for a client visit and get money per kilometer?"
+  expected_answer: "Yes, with prior manager approval — reimbursed at the statutory rate of your country of employment"
+  expected_sources:
+    - { doc: "FIN-001", section: "5" }
+  notes: "mileage"
+
+- id: t024
+  category: table
+  question: "I paid for a taxi in pounds — what exchange rate is used?"
+  expected_answer: "Ledgerly converts at the card provider's rate on the transaction date"
+  expected_sources:
+    - { doc: "FIN-001", section: "6" }
+  notes: "currency"
+
+- id: t025
+  category: table
+  question: "What's the hardware budget if I'm not an engineer?"
+  expected_answer: "€2,200 for standard roles"
+  expected_sources:
+    - { doc: "POL-006", section: "3" }
+  notes: "F11 standard row"
+
+- id: t026
+  category: table
+  question: "How big is the equipment budget for developers?"
+  expected_answer: "€2,800 for engineering roles"
+  expected_sources:
+    - { doc: "POL-006", section: "3" }
+  notes: "F11 engineering row"
+
+- id: t027
+  category: table
+  question: "Who exactly falls under the engineering equipment budget?"
+  expected_answer: "Software engineers, data engineers, and field solutions engineers — roles that routinely run heavy local workloads"
+  expected_sources:
+    - { doc: "POL-006", section: "3" }
+  notes: "role mapping"
+
+- id: t028
+  category: table
+  question: "Do managers get the bigger hardware budget?"
+  expected_answer: "No — everyone else, including management, uses the standard €2,200 budget"
+  expected_sources:
+    - { doc: "POL-006", section: "3" }
+  notes: "management explicitly standard"
+
+- id: t029
+  category: table
+  question: "As a field solutions engineer, which budget tier am I in?"
+  expected_answer: "Engineering — €2,800"
+  expected_sources:
+    - { doc: "POL-006", section: "3" }
+  notes: "field solutions row"
+
+- id: t030
+  category: table
+  question: "Do data engineers count as engineering for the equipment budget?"
+  expected_answer: "Yes — data engineers are in the engineering category with €2,800"
+  expected_sources:
+    - { doc: "POL-006", section: "3" }
+  notes: "data engineer row"
+
+- id: t031
+  category: table
+  question: "How much more equipment budget do engineers get compared to everyone else?"
+  expected_answer: "€600 more — €2,800 vs €2,200"
+  expected_sources:
+    - { doc: "POL-006", section: "3" }
+  notes: "difference across rows"
+
+- id: t032
+  category: table
+  question: "Does the equipment budget include the laptop price?"
+  expected_answer: "No — the budget covers everything beyond the laptop itself, and renews with the refresh cycle"
+  expected_sources:
+    - { doc: "POL-006", section: "3" }
+  notes: "budget scope"
+
+- id: t033
+  category: table
+  question: "When does my equipment budget reset?"
+  expected_answer: "It renews with the refresh cycle — every 36 months"
+  expected_sources:
+    - { doc: "POL-006", section: "3" }
+  notes: "budget renewal + F12"
+
+- id: t034
+  category: table
+  question: "Which internal tool handles leave requests and trainings?"
+  expected_answer: "Fern — HR: personal data, leave, trainings"
+  expected_sources:
+    - { doc: "HR-001", section: "6" }
+  notes: "tools table row"
+
+- id: t035
+  category: table
+  question: "What is Perch for?"
+  expected_answer: "Desk and room booking"
+  expected_sources:
+    - { doc: "HR-001", section: "6" }
+  notes: "tools table row"
+
+- id: t036
+  category: table
+  question: "Which tool do we use for expenses and travel booking?"
+  expected_answer: "Ledgerly"
+  expected_sources:
+    - { doc: "HR-001", section: "6" }
+  notes: "tools table row"
+
+- id: t037
+  category: table
+  question: "Where does the policy library live?"
+  expected_answer: "Grove — the intranet and policy library"
+  expected_sources:
+    - { doc: "HR-001", section: "6" }
+  notes: "tools table row"
+
+- id: t038
+  category: table
+  question: "What's the one place all credentials are supposed to go?"
+  expected_answer: "1Password — all credentials, no exceptions"
+  expected_sources:
+    - { doc: "HR-001", section: "6" }
+  notes: "tools table row"
+
+- id: t039
+  category: table
+  question: "Fern, Grove, Perch — which one books me a desk?"
+  expected_answer: "Perch"
+  expected_sources:
+    - { doc: "HR-001", section: "6" }
+  notes: "tool disambiguation"
+
+- id: t040
+  category: table
+  question: "Per-diem for Germany versus the US — how far apart are they?"
+  expected_answer: "Germany €28 vs US €55 — the US rate is €27 higher"
+  expected_sources:
+    - { doc: "FIN-001", section: "2" }
+  notes: "cross-row arithmetic"
+
+- id: m001
+  category: multi_doc
+  question: "The travel policy says per-diem rates live in some sheet — which document is it, and what's the rate for Germany?"
+  expected_answer: "Rates are maintained in FIN-001 (Expense Rates & Per-Diems); Germany is €28 per full day"
+  expected_sources:
+    - { doc: "POL-004", section: "4" }
+    - { doc: "FIN-001", section: "2" }
+  notes: "T2 chain, DE rate"
+
+- id: m002
+  category: multi_doc
+  question: "Marek's doing a two-day client rollout near Kraków — under which policy does he travel and what daily allowance applies?"
+  expected_answer: "Business travel under POL-004 (manager approval, booked via Ledgerly); the Poland per-diem in FIN-001 is €22 per full day"
+  expected_sources:
+    - { doc: "POL-004", section: "4" }
+    - { doc: "FIN-001", section: "2" }
+  notes: "T2 chain, PL rate, scenario"
+
+- id: m003
+  category: multi_doc
+  question: "For a US client trip, where do I check the current daily allowance and what is it right now?"
+  expected_answer: "In FIN-001, which POL-004 points to — the US rate is €55 per full day"
+  expected_sources:
+    - { doc: "POL-004", section: "4" }
+    - { doc: "FIN-001", section: "2" }
+  notes: "T2 chain, US rate"
+
+- id: m004
+  category: multi_doc
+  question: "Two-day workshop in London: who approves the trip and what per-diem do I get?"
+  expected_answer: "Your manager approves before booking (POL-004); the UK rate is €36 per full day (FIN-001)"
+  expected_sources:
+    - { doc: "POL-004", section: "2" }
+    - { doc: "FIN-001", section: "2" }
+  notes: "approval + UK rate"
+
+- id: m005
+  category: multi_doc
+  question: "Client visit in Madrid — what's the daily rate, and how long after the trip can I submit the expense report?"
+  expected_answer: "Spain is €26 per full day (FIN-001); the expense report is due within 30 calendar days after the trip ends (POL-004)"
+  expected_sources:
+    - { doc: "POL-004", section: "6" }
+    - { doc: "FIN-001", section: "2" }
+  notes: "ES rate + F10 deadline"
+
+- id: m006
+  category: multi_doc
+  question: "Does the travel policy itself state the France per-diem, or do I have to look elsewhere — and what's the number?"
+  expected_answer: "POL-004 quotes no numbers on purpose — the rate is only in FIN-001: France €32 per full day"
+  expected_sources:
+    - { doc: "POL-004", section: "4" }
+    - { doc: "FIN-001", section: "2" }
+  notes: "T2 made explicit, FR rate"
+
+- id: m007
+  category: multi_doc
+  question: "The onboarding guide tells me to do the security training — what's the actual deadline it points to?"
+  expected_answer: "Within 14 days of your start date — HR-001 refers to §3 of POL-005 where the deadline is defined"
+  expected_sources:
+    - { doc: "HR-001", section: "4" }
+    - { doc: "POL-005", section: "3" }
+  notes: "T6 chain, F18"
+
+- id: m008
+  category: multi_doc
+  question: "I'm a new hire following the onboarding checklist — when is my security training due and how long will it take me?"
+  expected_answer: "Due within 14 days of the start date (POL-005 §3, referenced from HR-001); it takes about ninety minutes plus a short quiz"
+  expected_sources:
+    - { doc: "HR-001", section: "4" }
+    - { doc: "POL-005", section: "3" }
+  notes: "T6 chain + training length"
+
+- id: m009
+  category: multi_doc
+  question: "Onboarding says the training deadline is firm — what actually happens if I blow past it?"
+  expected_answer: "Overdue trainings escalate to the Head of Information Security; managers see completion status in Fern (POL-005 §3, referenced from HR-001)"
+  expected_sources:
+    - { doc: "HR-001", section: "4" }
+    - { doc: "POL-005", section: "3" }
+  notes: "T6 chain + escalation"
+
+- id: m010
+  category: multi_doc
+  question: "When I leave the company, how long do I have to return equipment, and how does the return physically work for remote people?"
+  expected_answer: "Within 10 business days after the last working day; remote employees get a prepaid shipping label through the Fern offboarding checklist"
+  expected_sources:
+    - { doc: "HR-002", section: "4" }
+    - { doc: "POL-006", section: "7" }
+  notes: "F13 in both docs"
+
+- id: m011
+  category: multi_doc
+  question: "The offboarding checklist says return all equipment — where is the full list of what counts as equipment?"
+  expected_answer: "In the Equipment & Hardware Policy (POL-006): laptop plus peripherals — monitor, keyboard, mouse/trackpad, headset, stand"
+  expected_sources:
+    - { doc: "HR-002", section: "4" }
+    - { doc: "POL-006", section: "2" }
+  notes: "reference chain to the equipment list"
+
+- id: m012
+  category: multi_doc
+  question: "Can I use the workation rules to move abroad for good?"
+  expected_answer: "No — a workation is temporary (max 30 working days/year, EU/EEA); your permanent setup is governed by the Remote Work Policy and stays within your country of employment"
+  expected_sources:
+    - { doc: "POL-003", section: "3" }
+    - { doc: "POL-002", section: "2" }
+  notes: "T7 boundary"
+
+- id: m013
+  category: multi_doc
+  question: "What's the actual difference between the remote work policy and the workation guideline?"
+  expected_answer: "POL-002 covers your permanent setup within your country of employment; POL-003 covers temporary work from another EU/EEA country (up to 30 working days/year)"
+  expected_sources:
+    - { doc: "POL-002", section: "1" }
+    - { doc: "POL-003", section: "1" }
+  notes: "T7 head-on"
+
+- id: m014
+  category: multi_doc
+  question: "I want to spend three weeks working from my parents' place in another EU country — is that remote work or something else, and how many days a year can I do this?"
+  expected_answer: "That is a workation under POL-003, not remote work under POL-002 — up to 30 working days per calendar year in the EU/EEA, with manager + People & Culture approval"
+  expected_sources:
+    - { doc: "POL-003", section: "2" }
+    - { doc: "POL-002", section: "2" }
+  notes: "T7 disambiguation"
+
+- id: m015
+  category: multi_doc
+  question: "Do I get a per-diem while on a workation abroad?"
+  expected_answer: "No — a workation is not business travel and has no per-diems; per-diems only apply to trips under the Travel & Expense Policy"
+  expected_sources:
+    - { doc: "POL-004", section: "8" }
+    - { doc: "POL-003", section: "3" }
+  notes: "workation vs travel benefits"
+
+- id: m016
+  category: multi_doc
+  question: "While working from abroad on a workation, do the usual security rules like VPN apply?"
+  expected_answer: "Yes — POL-003 requires following POL-005 exactly as at home: company device, VPN on untrusted networks, locked screen"
+  expected_sources:
+    - { doc: "POL-003", section: "4" }
+    - { doc: "POL-005", section: "6" }
+  notes: "workation security chain"
+
+- id: m017
+  category: multi_doc
+  question: "The benefits overview mentions a parental pay top-up — which policy has the details, and do I need to apply?"
+  expected_answer: "The Parental Leave Policy (POL-008): the top-up applies automatically once leave is registered — no application forms"
+  expected_sources:
+    - { doc: "HR-004", section: "6" }
+    - { doc: "POL-008", section: "4" }
+  notes: "benefits map chain"
+
+- id: m018
+  category: multi_doc
+  question: "According to the benefits map, where are vacation entitlement and carryover actually defined, and what's the current entitlement?"
+  expected_answer: "In the Vacation & Leave Policy (current version) — 27 days per year, with carryover until March 31"
+  expected_sources:
+    - { doc: "HR-004", section: "2" }
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "benefits map chain to vacation"
+
+- id: m019
+  category: multi_doc
+  question: "The benefits page mentions a tenure bonus for vacation — how does it actually work?"
+  expected_answer: "Per the Vacation & Leave Policy: +1 day for every 2 full years of service, capped at 30 days total"
+  expected_sources:
+    - { doc: "HR-004", section: "2" }
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "benefits map chain, F4"
+
+- id: m020
+  category: multi_doc
+  question: "I clicked a phishing link on my work laptop — walk me through what to do and how fast."
+  expected_answer: "Disconnect from networks, leave the device on, and report to security@kranich.example within 24 hours of noticing (sooner is better)"
+  expected_sources:
+    - { doc: "SEC-001", section: "4" }
+    - { doc: "POL-005", section: "7" }
+  notes: "F20 + containment steps"
+
+- id: m021
+  category: multi_doc
+  question: "My company laptop disappeared during a trip — who do I tell, and is this an equipment problem or a security incident?"
+  expected_answer: "Both — report loss to it-help@kranich.example immediately per POL-006, and it is a security incident: IT triggers remote wipe and you rotate recently used credentials per SEC-001"
+  expected_sources:
+    - { doc: "POL-006", section: "6" }
+    - { doc: "SEC-001", section: "4" }
+  notes: "equipment loss = incident"
+
+- id: m022
+  category: multi_doc
+  question: "Got a weird login notification — what are the immediate steps, and which policy makes MFA mandatory anyway?"
+  expected_answer: "Change the affected password in 1Password, enable/verify MFA, then report (SEC-001); MFA is enforced by POL-005 on all systems that support it"
+  expected_sources:
+    - { doc: "SEC-001", section: "4" }
+    - { doc: "POL-005", section: "4" }
+  notes: "runbook + MFA policy"
+
+- id: m023
+  category: multi_doc
+  question: "If personal data might have leaked, which process runs first and who talks to the regulator?"
+  expected_answer: "It is a security incident first — follow SEC-001 and the POL-005 reporting duty; the privacy team owns regulator and data-subject notifications"
+  expected_sources:
+    - { doc: "POL-010", section: "7" }
+    - { doc: "SEC-001", section: "6" }
+  notes: "breach chain"
+
+- id: m024
+  category: multi_doc
+  question: "The security policy bans exporting customer data — what's the sanctioned way to get debug data then?"
+  expected_answer: "The anonymized-sample process in POL-010: request a sample in Grove and the platform team generates one with identifiers removed"
+  expected_sources:
+    - { doc: "POL-005", section: "5" }
+    - { doc: "POL-010", section: "3" }
+  notes: "data handling chain"
+
+- id: m025
+  category: multi_doc
+  question: "I lost my office badge — the office guide says treat it like a lost device. What does that mean I should do?"
+  expected_answer: "Report to it-help@kranich.example immediately; as with a lost device it is a security incident — report per SEC-001 and rotate exposed credentials"
+  expected_sources:
+    - { doc: "OPS-001", section: "2" }
+    - { doc: "SEC-001", section: "4" }
+  notes: "badge = device chain"
+
+- id: m026
+  category: multi_doc
+  question: "I'm fully remote — when my team gathers for a planning week, which policy covers my trip there?"
+  expected_answer: "Travel for planning weeks follows the Travel & Expense Policy (POL-004), as POL-002 states"
+  expected_sources:
+    - { doc: "POL-002", section: "7" }
+    - { doc: "POL-004", section: "2" }
+  notes: "remote → travel chain"
+
+- id: m027
+  category: multi_doc
+  question: "The remote policy says offices stay open — what are the actual desk and room booking rules when I come in?"
+  expected_answer: "Book desks and rooms via Perch; max 3 recurring room slots per person, rooms release after ten minutes of no-show"
+  expected_sources:
+    - { doc: "POL-002", section: "7" }
+    - { doc: "OPS-001", section: "3" }
+  notes: "office rules chain"
+
+- id: m028
+  category: multi_doc
+  question: "I fell ill during my vacation — do I get the days back, and what paperwork makes that happen?"
+  expected_answer: "Yes — affected days convert back to sick leave once you provide a doctor's certificate as required from the 3rd calendar day (POL-007)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "6" }
+    - { doc: "POL-007", section: "3" }
+  notes: "vacation↔sick chain"
+
+- id: m029
+  category: multi_doc
+  question: "When I leave the company, what happens to my leftover vacation days and where is that settled?"
+  expected_answer: "Untaken accrued days are paid out with the final payroll (per the Vacation & Leave Policy); the offboarding checklist covers the settlement alongside expenses"
+  expected_sources:
+    - { doc: "HR-002", section: "6" }
+    - { doc: "POL-001-v2", section: "7" }
+  notes: "offboarding payout chain"
+
+- id: m030
+  category: multi_doc
+  question: "Onboarding gives me 1Password vault access on day one — which policy explains why that's non-negotiable?"
+  expected_answer: "POL-005 §4: 1Password is mandatory for every work credential — no exceptions, no browser password stores"
+  expected_sources:
+    - { doc: "HR-001", section: "3" }
+    - { doc: "POL-005", section: "4" }
+  notes: "onboarding → security chain, F19"
+
+- id: m031
+  category: multi_doc
+  question: "The onboarding guide says my laptop ships before day one — what exactly is in that delivery?"
+  expected_answer: "Per POL-006: the laptop plus peripherals — external monitor, keyboard, mouse or trackpad, headset, and a laptop stand"
+  expected_sources:
+    - { doc: "HR-001", section: "2" }
+    - { doc: "POL-006", section: "2" }
+  notes: "onboarding → equipment chain"
+
+- id: m032
+  category: multi_doc
+  question: "Where is the probation length summarized for new joiners, and how long is it?"
+  expected_answer: "6 months from the start date — summarized in the Benefits Overview FAQ, which the onboarding guide points to"
+  expected_sources:
+    - { doc: "HR-001", section: "5" }
+    - { doc: "HR-004", section: "8" }
+  notes: "F14 chain"
+
+- id: m033
+  category: multi_doc
+  question: "During probation, which check-ins replace the normal review cycle?"
+  expected_answer: "A month-one check-in with your manager and a mid-probation conversation with People & Culture; the full review rhythm starts after confirmation"
+  expected_sources:
+    - { doc: "HR-001", section: "5" }
+    - { doc: "HR-003", section: "7" }
+  notes: "probation check-ins in both docs"
+
+- id: m034
+  category: multi_doc
+  question: "Can I charge a team lunch at the office to the company, and under which policy?"
+  expected_answer: "Only when a client is present — then it is charged per the Travel & Expense Policy; otherwise the kitchen budget covers basics"
+  expected_sources:
+    - { doc: "OPS-001", section: "6" }
+    - { doc: "POL-004", section: "5" }
+  notes: "office guide → expense chain"
+
+- id: m035
+  category: multi_doc
+  question: "I want to speak at a conference — is the trip justified travel, and can the ticket come from the learning budget?"
+  expected_answer: "Yes — conferences you speak at are justified travel per POL-004, and conference tickets are a normal learning-budget spend with manager sign-off per HR-004"
+  expected_sources:
+    - { doc: "POL-004", section: "2" }
+    - { doc: "HR-004", section: "7" }
+  notes: "travel + learning budget"
+
+- id: m036
+  category: multi_doc
+  question: "Does the mandatory security training also cover data protection, or is that separate?"
+  expected_answer: "It is included — data-protection basics are part of the mandatory security training for new hires and the annual refresher"
+  expected_sources:
+    - { doc: "POL-010", section: "8" }
+    - { doc: "POL-005", section: "3" }
+  notes: "training scope chain"
+
+- id: m037
+  category: multi_doc
+  question: "Sofia is coming back from parental leave in March — do her old vacation days die on March 31 like everyone else's?"
+  expected_answer: "No — for parental-leave returnees the carryover deadline for preserved days is extended to June 30 of the return year (POL-008 §7.2); March 31 is the general rule"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "T3 contrast across docs"
+
+- id: m038
+  category: multi_doc
+  question: "My last expense report will land after my final working day — is that okay and what's the deadline?"
+  expected_answer: "Yes — Finance settles open reports with the final payroll; the normal 30-calendar-day submission deadline after the trip still applies"
+  expected_sources:
+    - { doc: "HR-002", section: "6" }
+    - { doc: "POL-004", section: "6" }
+  notes: "offboarding + F10"
+
+- id: m039
+  category: multi_doc
+  question: "Remote policy says equipment comes 'as described there' — which policy is that and what budget do I get as a backend engineer?"
+  expected_answer: "The Equipment & Hardware Policy (POL-006) — engineering roles get €2,800"
+  expected_sources:
+    - { doc: "POL-002", section: "4" }
+    - { doc: "POL-006", section: "3" }
+  notes: "remote → equipment chain, F11"
+
+- id: m040
+  category: multi_doc
+  question: "A departing teammate's laptop needs to go back and their expense report is still open — what are the two deadlines in play?"
+  expected_answer: "Equipment back within 10 business days after the last working day; the expense report within 30 calendar days after the trip (settled with final payroll)"
+  expected_sources:
+    - { doc: "HR-002", section: "4" }
+    - { doc: "POL-004", section: "6" }
+  notes: "F13 + F10 together"
+
+- id: v001
+  category: version
+  question: "How many days of paid vacation do we get?"
+  expected_answer: "27 days per year under the current policy v2.3 (the old v1.0's 24 days is superseded)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "T1 core"
+
+- id: v002
+  category: version
+  question: "What's the last day to use up carried-over vacation?"
+  expected_answer: "March 31 of the following year (current v2.3; v1.0's March 15 is superseded)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "T1 carryover"
+
+- id: v003
+  category: version
+  question: "Is there a seniority perk in the vacation policy?"
+  expected_answer: "Yes — under current v2.3, +1 day per 2 full years of service, capped at 30 total (this bonus does not exist in v1.0)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F4 only in v2"
+
+- id: v004
+  category: version
+  question: "Which version of the vacation policy is actually in force?"
+  expected_answer: "Version 2.3 — it supersedes Vacation & Leave Policy v1.0 in its entirety"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "1" }
+  notes: "supersession statement"
+
+- id: v005
+  category: version
+  question: "An old handbook I found says 24 vacation days — is that still the number?"
+  expected_answer: "No — that is the superseded v1.0; the current policy grants 27 days per year"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "T1 stale copy"
+
+- id: v006
+  category: version
+  question: "A 2023 printout says vacation carryover ends March 15 — should I trust it?"
+  expected_answer: "No — that is v1.0; under the current v2.3 carryover days expire on March 31"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "T1 stale carryover"
+
+- id: v007
+  category: version
+  question: "Did the vacation entitlement ever change from the original policy?"
+  expected_answer: "Yes — v1.0 granted 24 days; the current v2.3 grants 27 days plus a tenure bonus"
+  expected_sources:
+    - { doc: "POL-001-v1", section: "3" }
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "T1 delta, both versions needed"
+
+- id: v008
+  category: version
+  question: "What exactly changed between the old and the new vacation policy?"
+  expected_answer: "Entitlement went from 24 to 27 days, the carryover deadline moved from March 15 to March 31, and a tenure bonus (+1 day per 2 full years, cap 30) was added"
+  expected_sources:
+    - { doc: "POL-001-v1", section: "3" }
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "T1 full delta"
+
+- id: v009
+  category: version
+  question: "What's the maximum vacation entitlement anyone can reach?"
+  expected_answer: "30 days per year — the tenure bonus caps at 30 total"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F4 cap"
+
+- id: v010
+  category: version
+  question: "After 5 full years at the company, how many vacation days do I get?"
+  expected_answer: "29 — 27 base plus 2 tenure days (one per 2 full years of service)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F4 arithmetic"
+
+- id: v011
+  category: version
+  question: "With 6 full years of service, what's my annual vacation?"
+  expected_answer: "30 days — 27 base plus 3 tenure days"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F4 arithmetic at cap"
+
+- id: v012
+  category: version
+  question: "I've been here 10 years — do I get 32 vacation days now?"
+  expected_answer: "No — the tenure bonus is capped at 30 days total"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F4 cap probe"
+
+- id: v013
+  category: version
+  question: "If two copies of a policy disagree, which one wins?"
+  expected_answer: "The version with the later effective date — for vacation that is v2.3, which supersedes v1.0"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "1" }
+  notes: "supersession rule"
+
+- id: v014
+  category: version
+  question: "From when does the extra tenure vacation day count — the exact anniversary?"
+  expected_answer: "The bonus applies from the calendar year in which the anniversary falls"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F4 timing"
+
+- id: v015
+  category: version
+  question: "My colleague insists we get 24 days and I say 27 — who's right?"
+  expected_answer: "27 days is correct under the current policy v2.3; 24 days was the superseded v1.0"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "T1 dispute"
+
+- id: v016
+  category: version
+  question: "Does the old vacation policy document itself warn you that it's outdated?"
+  expected_answer: "No — v1.0 contains no forward reference; only v2.3 declares that it supersedes v1.0 in its entirety"
+  expected_sources:
+    - { doc: "POL-001-v1", section: "1" }
+    - { doc: "POL-001-v2", section: "1" }
+  notes: "T1 meta, both docs"
+
+- id: v017
+  category: version
+  question: "Is vacation carryover meant as a way to save days long-term?"
+  expected_answer: "No — carryover is a safety valve, not a savings account; carried days expire March 31 and People & Culture reviews large balances"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "carryover intent"
+
+- id: v018
+  category: version
+  question: "I heard leftover days die in mid-March — exact date please?"
+  expected_answer: "March 31 under the current policy (mid-March / March 15 was the old v1.0 rule)"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "T1 date precision"
+
+- id: v019
+  category: version
+  question: "As a part-timer, how does the current vacation policy treat me?"
+  expected_answer: "Pro rata of the 27-day entitlement"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "2" }
+  notes: "current-version scope"
+
+- id: v020
+  category: version
+  question: "Anna joined in 2021 — what's her 2025 vacation entitlement under the current rules?"
+  expected_answer: "29 days — 4 full years of service add 2 days to the 27-day base"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "doc's own worked example"
+
+- id: v021
+  category: version
+  question: "Do public holidays get deducted from my 27 vacation days?"
+  expected_answer: "No — the 27 days come on top of the public holidays of your place of employment"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "holidays separate"
+
+- id: v022
+  category: version
+  question: "Starting in July — do I get all 27 days for that year?"
+  expected_answer: "No — days accrue monthly from your first day, so a mid-year start accrues roughly half"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "accrual (v1 example, rule in v2)"
+
+- id: v023
+  category: version
+  question: "What happens to my unused vacation at the end of December?"
+  expected_answer: "It carries into the next calendar year and expires on March 31 of that year"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "year-end behavior"
+
+- id: v024
+  category: version
+  question: "Can I bank vacation days across two years?"
+  expected_answer: "No — carried-over days expire on March 31 of the following year"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "no multi-year banking"
+
+- id: v025
+  category: version
+  question: "Was the carryover deadline always the end of March?"
+  expected_answer: "No — v1.0 had March 15; the current v2.3 moved it to March 31"
+  expected_sources:
+    - { doc: "POL-001-v1", section: "5" }
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "T1 history, both docs"
+
+- id: v026
+  category: version
+  question: "Why does Fern show my carryover expiring at the end of March and not mid-March?"
+  expected_answer: "Because the current policy v2.3 sets the expiry at March 31; March 15 was the superseded v1.0 rule"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "5" }
+  notes: "T1 via tooling"
+
+- id: v027
+  category: version
+  question: "Is the vacation policy from 2023 still valid?"
+  expected_answer: "No — it is superseded in its entirety by v2.3"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "1" }
+  notes: "supersession"
+
+- id: v028
+  category: version
+  question: "Where do I find the authoritative current version of the vacation policy?"
+  expected_answer: "In Grove — it hosts the current version of every policy; for vacation that is v2.3"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "8" }
+  notes: "current source"
+
+- id: v029
+  category: version
+  question: "Does long tenure change when I have to request long vacations?"
+  expected_answer: "No — the 4-weeks-notice rule for absences over 5 consecutive working days applies regardless of tenure; tenure only adds days"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "4" }
+  notes: "tenure affects amount, not process"
+
+- id: v030
+  category: version
+  question: "Under the current vacation rules, when would a brand-new employee hit 30 days?"
+  expected_answer: "After 6 full years of service — +1 day per 2 years on top of 27, capped at 30"
+  expected_sources:
+    - { doc: "POL-001-v2", section: "3" }
+  notes: "F4 projection"
+
+- id: b001
+  category: buried
+  question: "Is there any exception to the March 31 carryover cutoff?"
+  expected_answer: "Yes — employees returning from parental leave keep preserved days until June 30 of the return year (POL-008 §7.2)"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 generic"
+
+- id: b002
+  category: buried
+  question: "I'm just back from parental leave — do my old vacation days still expire at the end of March?"
+  expected_answer: "No — for parental-leave returnees the carryover deadline is extended to June 30 of the year of return"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 returnee"
+
+- id: b003
+  category: buried
+  question: "Do vacation days I earned before going on parental leave survive the leave?"
+  expected_answer: "Yes — days accrued before and during parental leave are preserved in full"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 preservation"
+
+- id: b004
+  category: buried
+  question: "Sofia returns from parental leave in February — until when can she use her preserved vacation days?"
+  expected_answer: "June 30 of the year of her return"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 scenario"
+
+- id: b005
+  category: buried
+  question: "Which document contains the special carryover rule for parents coming back from leave?"
+  expected_answer: "The Parental Leave Policy — POL-008, section 7.2"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 source pointer"
+
+- id: b006
+  category: buried
+  question: "Do returning parents have to apply to keep their extended vacation expiry?"
+  expected_answer: "No — Fern shows the adjusted expiry date automatically; no application is needed"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 automation"
+
+- id: b007
+  category: buried
+  question: "My manager says vacation carryover ends March 31 for absolutely everyone — is that accurate?"
+  expected_answer: "Not quite — parental-leave returnees keep preserved days until June 30 of the return year"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 vs blanket claim"
+
+- id: b008
+  category: buried
+  question: "Does going on parental leave pause the expiry of my accumulated vacation?"
+  expected_answer: "Effectively yes — accrued days are preserved in full and their carryover deadline moves to June 30 of the return year"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 paraphrase"
+
+- id: b009
+  category: buried
+  question: "For someone back from parental leave, is the vacation deadline in March or June?"
+  expected_answer: "June — June 30 of the year of return, instead of the general March 31"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 binary probe"
+
+- id: b010
+  category: buried
+  question: "A teammate was on parental leave the whole last year — are her vacation days from before the leave gone now?"
+  expected_answer: "No — they are preserved in full, usable until June 30 of the year she returns"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 full-year leave"
+
+- id: b011
+  category: buried
+  question: "Where would I even look for vacation rules specific to new parents?"
+  expected_answer: "In the Parental Leave Policy (POL-008) — §7.2 covers the vacation balance after leave"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 discovery"
+
+- id: b012
+  category: buried
+  question: "Is June 30 relevant for anyone's vacation planning?"
+  expected_answer: "Yes — it is the extended carryover deadline for employees returning from parental leave"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 from the date side"
+
+- id: b013
+  category: buried
+  question: "I came back from parental leave in January with 8 preserved days — can I still take them in May?"
+  expected_answer: "Yes — preserved days remain usable until June 30 of the return year"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 concrete scenario"
+
+- id: b014
+  category: buried
+  question: "Does the vacation policy itself mention the parental-leave carryover exception?"
+  expected_answer: "No — the exception is stated only in POL-008 §7.2; the Vacation & Leave Policy gives just the general March 31 rule"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 meta — where it is NOT written"
+
+- id: b015
+  category: buried
+  question: "Any way to keep vacation days past March 31?"
+  expected_answer: "Only for parental-leave returnees — their preserved days last until June 30 of the return year"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 loophole probe"
+
+- id: b016
+  category: buried
+  question: "How does Fern show the special expiry date for returnees?"
+  expected_answer: "The adjusted expiry date appears on your balance automatically — no application needed"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 tooling"
+
+- id: b017
+  category: buried
+  question: "Returning parent with days accrued during the leave itself — do those count too?"
+  expected_answer: "Yes — days accrued before and during parental leave are preserved in full"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 during-leave accrual"
+
+- id: b018
+  category: buried
+  question: "Whose vacation days get a June deadline instead of March?"
+  expected_answer: "Employees returning from parental leave — their preserved days expire June 30 of the return year"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 inverse phrasing"
+
+- id: b019
+  category: buried
+  question: "I go on parental leave in November with 12 unused days — what happens to them?"
+  expected_answer: "They are preserved in full; after your return they remain usable until June 30 of the return year"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 pre-leave balance"
+
+- id: b020
+  category: buried
+  question: "Is the parental carryover extension automatic or does HR grant it case by case?"
+  expected_answer: "Automatic — Fern shows the adjusted expiry on your balance; no application is needed"
+  expected_sources:
+    - { doc: "POL-008", section: "7.2" }
+  notes: "T3 automatic"
+
+- id: n001
+  category: no_answer
+  question: "How do I apply for a sabbatical?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical"
+
+- id: n002
+  category: no_answer
+  question: "Can I take six months of unpaid leave to travel?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical/unpaid extended leave"
+
+- id: n003
+  category: no_answer
+  question: "After how many years do I qualify for a sabbatical?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical"
+
+- id: n004
+  category: no_answer
+  question: "Is there a career-break program at Kranich?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical paraphrase"
+
+- id: n005
+  category: no_answer
+  question: "I'm feeling burned out — can I take three months off unpaid and keep my job?"
+  expected_refusal: true
+  notes: "forbidden: unpaid extended leave, scenario"
+
+- id: n006
+  category: no_answer
+  question: "Does the company support extended unpaid time off for personal projects?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical"
+
+- id: n007
+  category: no_answer
+  question: "What's the maximum length of a sabbatical here?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical, presupposes existence"
+
+- id: n008
+  category: no_answer
+  question: "Do sabbatical months count toward my tenure for the vacation bonus?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical crossed with real F4 — must not invent"
+
+- id: n009
+  category: no_answer
+  question: "Is pay partially continued during a sabbatical?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical"
+
+- id: n010
+  category: no_answer
+  question: "Can engineers take a research sabbatical to study?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical"
+
+- id: n011
+  category: no_answer
+  question: "How early do I need to announce a planned sabbatical?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical"
+
+- id: n012
+  category: no_answer
+  question: "A friend's company offers every employee a gap year — does Kranich have anything similar?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical paraphrase"
+
+- id: n013
+  category: no_answer
+  question: "Who approves unpaid leave longer than a month?"
+  expected_refusal: true
+  notes: "forbidden: unpaid extended leave"
+
+- id: n014
+  category: no_answer
+  question: "Can I pause my employment for a semester and return to the same role?"
+  expected_refusal: true
+  notes: "forbidden: sabbatical paraphrase"
+
+- id: n015
+  category: no_answer
+  question: "Do employees get a company car?"
+  expected_refusal: true
+  notes: "forbidden: company car"
+
+- id: n016
+  category: no_answer
+  question: "Can I get a car allowance instead of the transit ticket?"
+  expected_refusal: true
+  notes: "forbidden: car allowance vs real F23"
+
+- id: n017
+  category: no_answer
+  question: "Is there a company car policy for field engineers who drive to clients a lot?"
+  expected_refusal: true
+  notes: "forbidden: company car, plausible role"
+
+- id: n018
+  category: no_answer
+  question: "At what seniority level do you get a company vehicle?"
+  expected_refusal: true
+  notes: "forbidden: company car, presupposes"
+
+- id: n019
+  category: no_answer
+  question: "Does Kranich lease cars for employees?"
+  expected_refusal: true
+  notes: "forbidden: car leasing"
+
+- id: n020
+  category: no_answer
+  question: "Can I configure an electric car through the company?"
+  expected_refusal: true
+  notes: "forbidden: EV company car"
+
+- id: n021
+  category: no_answer
+  question: "What car brands are available in the company fleet?"
+  expected_refusal: true
+  notes: "forbidden: company car fleet"
+
+- id: n022
+  category: no_answer
+  question: "Is private use of a company car allowed on weekends?"
+  expected_refusal: true
+  notes: "forbidden: company car"
+
+- id: n023
+  category: no_answer
+  question: "How is a company car taxed for me as an employee?"
+  expected_refusal: true
+  notes: "forbidden: company car"
+
+- id: n024
+  category: no_answer
+  question: "Can sales colleagues expense a leased vehicle?"
+  expected_refusal: true
+  notes: "forbidden: car allowance"
+
+- id: n025
+  category: no_answer
+  question: "Do managers receive a monthly car budget?"
+  expected_refusal: true
+  notes: "forbidden: car allowance"
+
+- id: n026
+  category: no_answer
+  question: "Is there a mobility budget I could put toward a car?"
+  expected_refusal: true
+  notes: "forbidden: car allowance adjacent"
+
+- id: n027
+  category: no_answer
+  question: "Marek drives to clients weekly — shouldn't he get a company car?"
+  expected_refusal: true
+  notes: "forbidden: company car, near real mileage rule — must not conflate"
+
+- id: n028
+  category: no_answer
+  question: "Who do I ask about ordering a company car?"
+  expected_refusal: true
+  notes: "forbidden: company car"
+
+- id: n029
+  category: no_answer
+  question: "Does the health benefit cover pet insurance for my dog?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance via wellness"
+
+- id: n030
+  category: no_answer
+  question: "Can I insure my cat through a company plan?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance"
+
+- id: n031
+  category: no_answer
+  question: "Is pet insurance part of our benefits package?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance"
+
+- id: n032
+  category: no_answer
+  question: "Does Kranich reimburse vet bills?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance paraphrase"
+
+- id: n033
+  category: no_answer
+  question: "Can the wellness budget go toward my dog's insurance premium?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance crossed with real F22"
+
+- id: n034
+  category: no_answer
+  question: "Is there a discounted group rate for pet insurance?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance"
+
+- id: n035
+  category: no_answer
+  question: "What animals are covered by the company pet policy?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance, presupposes"
+
+- id: n036
+  category: no_answer
+  question: "My puppy needs surgery — does any company benefit help with the cost?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance, scenario"
+
+- id: n037
+  category: no_answer
+  question: "Do we get pet bereavement days?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance adjacent + absent bereavement"
+
+- id: n038
+  category: no_answer
+  question: "Can I add my pet to my health insurance via the company?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance"
+
+- id: n039
+  category: no_answer
+  question: "Is there an employee discount for animal clinics?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance adjacent"
+
+- id: n040
+  category: no_answer
+  question: "Does Kranich partner with any pet insurance provider?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance"
+
+- id: n041
+  category: no_answer
+  question: "How do I enroll my dog in the pet plan?"
+  expected_refusal: true
+  notes: "forbidden: pet insurance, presupposes"
+
+- id: n042
+  category: no_answer
+  question: "What relocation support do you offer when moving to Berlin?"
+  expected_refusal: true
+  notes: "forbidden: relocation"
+
+- id: n043
+  category: no_answer
+  question: "Will Kranich pay for my moving costs if I switch offices?"
+  expected_refusal: true
+  notes: "forbidden: relocation"
+
+- id: n044
+  category: no_answer
+  question: "Does the company sponsor work visas?"
+  expected_refusal: true
+  notes: "forbidden: visa sponsorship"
+
+- id: n045
+  category: no_answer
+  question: "Can Kranich help me get a Blue Card?"
+  expected_refusal: true
+  notes: "forbidden: visa sponsorship"
+
+- id: n046
+  category: no_answer
+  question: "Is there a relocation bonus for new hires from abroad?"
+  expected_refusal: true
+  notes: "forbidden: relocation"
+
+- id: n047
+  category: no_answer
+  question: "Do you cover temporary housing for relocating employees?"
+  expected_refusal: true
+  notes: "forbidden: relocation"
+
+- id: n048
+  category: no_answer
+  question: "Will the company pay an immigration lawyer for my visa case?"
+  expected_refusal: true
+  notes: "forbidden: visa sponsorship"
+
+- id: n049
+  category: no_answer
+  question: "I want to transfer from Lisbon to Berlin — what moving package applies?"
+  expected_refusal: true
+  notes: "forbidden: relocation, presupposes"
+
+- id: n050
+  category: no_answer
+  question: "Does Kranich hire people who need visa sponsorship?"
+  expected_refusal: true
+  notes: "forbidden: visa sponsorship"
+
+- id: n051
+  category: no_answer
+  question: "Is there support for family members' visas too?"
+  expected_refusal: true
+  notes: "forbidden: visa sponsorship"
+
+- id: n052
+  category: no_answer
+  question: "How many days of paid leave do I get for moving apartments?"
+  expected_refusal: true
+  notes: "absent: moving day leave (relocation-adjacent)"
+
+- id: n053
+  category: no_answer
+  question: "Can I get a language course paid as part of relocating to Germany?"
+  expected_refusal: true
+  notes: "forbidden: relocation package contents"
+
+- id: n054
+  category: no_answer
+  question: "Who coordinates international relocations at Kranich?"
+  expected_refusal: true
+  notes: "forbidden: relocation, presupposes"
+
+- id: n055
+  category: no_answer
+  question: "Is there a lump-sum payment when you relocate for the job?"
+  expected_refusal: true
+  notes: "forbidden: relocation"
+
+- id: n056
+  category: no_answer
+  question: "Does the company assist with residence permit renewals?"
+  expected_refusal: true
+  notes: "forbidden: visa/permit"
+
+- id: n057
+  category: no_answer
+  question: "How do employee stock options vest?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n058
+  category: no_answer
+  question: "Do employees get shares in the company?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n059
+  category: no_answer
+  question: "Is there an ESOP or VSOP program?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n060
+  category: no_answer
+  question: "What's the strike price for employee options?"
+  expected_refusal: true
+  notes: "forbidden: equity, presupposes"
+
+- id: n061
+  category: no_answer
+  question: "Does equity vest over four years with a cliff?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n062
+  category: no_answer
+  question: "Can I buy company stock at a discount?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n063
+  category: no_answer
+  question: "What happens to my options if I leave the company?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n064
+  category: no_answer
+  question: "Are there equity refresh grants after promotions?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n065
+  category: no_answer
+  question: "Do senior engineers get phantom stock?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n066
+  category: no_answer
+  question: "Is any part of compensation paid in company shares?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n067
+  category: no_answer
+  question: "When was the last employee equity round?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n068
+  category: no_answer
+  question: "How is the company valuation shared with option holders?"
+  expected_refusal: true
+  notes: "forbidden: equity"
+
+- id: n069
+  category: no_answer
+  question: "Does the review cycle affect my equity grant?"
+  expected_refusal: true
+  notes: "forbidden: equity crossed with real HR-003"
+
+- id: n070
+  category: no_answer
+  question: "Who administers the employee participation program?"
+  expected_refusal: true
+  notes: "forbidden: equity, presupposes"
+
+- id: n071
+  category: no_answer
+  question: "Does Kranich pay into a company pension scheme?"
+  expected_refusal: true
+  notes: "absent: pension"
+
+- id: n072
+  category: no_answer
+  question: "Is there an employer-matched retirement plan?"
+  expected_refusal: true
+  notes: "absent: pension"
+
+- id: n073
+  category: no_answer
+  question: "What's the company contribution to betriebliche Altersvorsorge?"
+  expected_refusal: true
+  notes: "absent: pension (German occupational scheme)"
+
+- id: n074
+  category: no_answer
+  question: "Can I convert part of my salary into pension contributions?"
+  expected_refusal: true
+  notes: "absent: pension"
+
+- id: n075
+  category: no_answer
+  question: "Is there anything like a 401k here?"
+  expected_refusal: true
+  notes: "absent: pension, US framing"
+
+- id: n076
+  category: no_answer
+  question: "At what age can I draw from the company retirement plan?"
+  expected_refusal: true
+  notes: "absent: pension, presupposes"
+
+- id: n077
+  category: no_answer
+  question: "Does our insurance cover dental cleanings?"
+  expected_refusal: true
+  notes: "absent: dental"
+
+- id: n078
+  category: no_answer
+  question: "Is there a dental plan on top of statutory insurance?"
+  expected_refusal: true
+  notes: "absent: dental"
+
+- id: n079
+  category: no_answer
+  question: "Will the company chip in for braces or orthodontics?"
+  expected_refusal: true
+  notes: "absent: dental"
+
+- id: n080
+  category: no_answer
+  question: "Do we have supplementary vision insurance for glasses?"
+  expected_refusal: true
+  notes: "absent: vision"
+
+- id: n081
+  category: no_answer
+  question: "Can I expense new glasses since I work at a screen all day?"
+  expected_refusal: true
+  notes: "absent: vision/glasses reimbursement"
+
+- id: n082
+  category: no_answer
+  question: "Is there an annual allowance for eye exams?"
+  expected_refusal: true
+  notes: "absent: vision"
+
+- id: n083
+  category: no_answer
+  question: "Do we get an annual performance bonus?"
+  expected_refusal: true
+  notes: "absent: cash bonus (word 'bonus' exists only as vacation tenure bonus)"
+
+- id: n084
+  category: no_answer
+  question: "Is there a 13th-month salary at Kranich?"
+  expected_refusal: true
+  notes: "absent: 13th salary"
+
+- id: n085
+  category: no_answer
+  question: "How big is the target bonus for engineers, percentage-wise?"
+  expected_refusal: true
+  notes: "absent: cash bonus, presupposes"
+
+- id: n086
+  category: no_answer
+  question: "Do customer success folks earn commission on renewals?"
+  expected_refusal: true
+  notes: "absent: commission"
+
+- id: n087
+  category: no_answer
+  question: "Is there a Christmas bonus?"
+  expected_refusal: true
+  notes: "absent: cash bonus"
+
+- id: n088
+  category: no_answer
+  question: "Does hitting my review goals trigger a cash payout?"
+  expected_refusal: true
+  notes: "absent: bonus crossed with real HR-003 outcomes"
+
+- id: n089
+  category: no_answer
+  question: "How is overtime compensated — money or time off?"
+  expected_refusal: true
+  notes: "absent: overtime"
+
+- id: n090
+  category: no_answer
+  question: "Is overtime paid at 125% or 150% here?"
+  expected_refusal: true
+  notes: "absent: overtime, presupposes rates"
+
+- id: n091
+  category: no_answer
+  question: "Can I bank extra hours into a time-off account?"
+  expected_refusal: true
+  notes: "absent: overtime/TOIL"
+
+- id: n092
+  category: no_answer
+  question: "Do weekend deploys earn compensatory days?"
+  expected_refusal: true
+  notes: "absent: overtime"
+
+- id: n093
+  category: no_answer
+  question: "What's the maximum overtime allowed per month?"
+  expected_refusal: true
+  notes: "absent: overtime caps"
+
+- id: n094
+  category: no_answer
+  question: "Is there an on-call allowance for the platform team?"
+  expected_refusal: true
+  notes: "absent: on-call pay"
+
+- id: n095
+  category: no_answer
+  question: "Is there employee parking at the Berlin office?"
+  expected_refusal: true
+  notes: "absent: parking"
+
+- id: n096
+  category: no_answer
+  question: "Can I reserve a parking spot at Ritterstraße?"
+  expected_refusal: true
+  notes: "absent: parking, real address as bait"
+
+- id: n097
+  category: no_answer
+  question: "Does the Lisbon office have a garage for employees?"
+  expected_refusal: true
+  notes: "absent: parking"
+
+- id: n098
+  category: no_answer
+  question: "Will the company validate my parking ticket when I visit the office?"
+  expected_refusal: true
+  notes: "absent: parking"
+
+- id: n099
+  category: no_answer
+  question: "Does Kranich offer bike leasing like JobRad?"
+  expected_refusal: true
+  notes: "absent: bike leasing"
+
+- id: n100
+  category: no_answer
+  question: "Can I lease an e-bike through my salary?"
+  expected_refusal: true
+  notes: "absent: bike leasing"
+
+- id: n101
+  category: no_answer
+  question: "Is there a subsidy for buying a bicycle for commuting?"
+  expected_refusal: true
+  notes: "absent: bike subsidy"
+
+- id: n102
+  category: no_answer
+  question: "Where can I park my bike at the office and is there a company bike program?"
+  expected_refusal: true
+  notes: "absent: bike facilities/program"
+
+- id: n103
+  category: no_answer
+  question: "Does the transit benefit extend to bike-sharing memberships?"
+  expected_refusal: true
+  notes: "absent: bike sharing crossed with real F23"
+
+- id: n104
+  category: no_answer
+  question: "How many days off do I get if a close family member dies?"
+  expected_refusal: true
+  notes: "absent: bereavement leave"
+
+- id: n105
+  category: no_answer
+  question: "Is bereavement leave paid?"
+  expected_refusal: true
+  notes: "absent: bereavement"
+
+- id: n106
+  category: no_answer
+  question: "Do I need to use vacation days to attend a funeral?"
+  expected_refusal: true
+  notes: "absent: bereavement"
+
+- id: n107
+  category: no_answer
+  question: "What's the policy for compassionate leave?"
+  expected_refusal: true
+  notes: "absent: bereavement paraphrase"
+
+- id: n108
+  category: no_answer
+  question: "Does bereavement leave differ for Germany and Portugal?"
+  expected_refusal: true
+  notes: "absent: bereavement"
+
+- id: n109
+  category: no_answer
+  question: "Am I paid while serving jury duty?"
+  expected_refusal: true
+  notes: "absent: jury duty"
+
+- id: n110
+  category: no_answer
+  question: "How do I report time off for a court summons?"
+  expected_refusal: true
+  notes: "absent: civic duty leave"
+
+- id: n111
+  category: no_answer
+  question: "Is there special leave for volunteering as an election worker?"
+  expected_refusal: true
+  notes: "absent: civic duty"
+
+- id: n112
+  category: no_answer
+  question: "Does civic duty leave come out of my vacation balance?"
+  expected_refusal: true
+  notes: "absent: civic duty"
+
+- id: n113
+  category: no_answer
+  question: "Do we get meal vouchers or a lunch card?"
+  expected_refusal: true
+  notes: "absent: meal vouchers"
+
+- id: n114
+  category: no_answer
+  question: "Is there a daily lunch subsidy?"
+  expected_refusal: true
+  notes: "absent: lunch subsidy"
+
+- id: n115
+  category: no_answer
+  question: "Does Kranich offer Sodexo or Edenred benefits?"
+  expected_refusal: true
+  notes: "absent: meal vouchers, brand names"
+
+- id: n116
+  category: no_answer
+  question: "Can I expense my everyday lunch when working from home?"
+  expected_refusal: true
+  notes: "absent: lunch subsidy (per-diems are travel-only)"
+
+- id: n117
+  category: no_answer
+  question: "Is there a cafeteria allowance in Lisbon?"
+  expected_refusal: true
+  notes: "absent: meal benefit"
+
+- id: n118
+  category: no_answer
+  question: "Does the company subsidize daycare costs?"
+  expected_refusal: true
+  notes: "absent: childcare"
+
+- id: n119
+  category: no_answer
+  question: "Is there a kindergarten allowance for parents?"
+  expected_refusal: true
+  notes: "absent: childcare"
+
+- id: n120
+  category: no_answer
+  question: "Do you have backup childcare when my kita closes?"
+  expected_refusal: true
+  notes: "absent: childcare"
+
+- id: n121
+  category: no_answer
+  question: "Can I get extra paid days when my child is sick?"
+  expected_refusal: true
+  notes: "absent: child sick days (POL-007 covers only own illness)"
+
+- id: n122
+  category: no_answer
+  question: "Is there a family bonus per child?"
+  expected_refusal: true
+  notes: "absent: child allowance"
+
+- id: n123
+  category: no_answer
+  question: "Is there a dress code for client meetings?"
+  expected_refusal: true
+  notes: "absent: dress code"
+
+- id: n124
+  category: no_answer
+  question: "Can I wear shorts to the office in summer?"
+  expected_refusal: true
+  notes: "absent: dress code"
+
+- id: n125
+  category: no_answer
+  question: "What's the expected attire for the company all-hands?"
+  expected_refusal: true
+  notes: "absent: dress code"
+
+- id: n126
+  category: no_answer
+  question: "Is there a referral bonus if I bring in a new hire?"
+  expected_refusal: true
+  notes: "absent: referral program"
+
+- id: n127
+  category: no_answer
+  question: "How much does the employee referral program pay?"
+  expected_refusal: true
+  notes: "absent: referral, presupposes"
+
+- id: n128
+  category: no_answer
+  question: "When is a referral bonus paid out — after probation?"
+  expected_refusal: true
+  notes: "absent: referral crossed with real F14"
+
+- id: n129
+  category: no_answer
+  question: "Do referrals for hard-to-fill roles pay more?"
+  expected_refusal: true
+  notes: "absent: referral"
+
+- id: n130
+  category: no_answer
+  question: "Where do I submit a candidate referral?"
+  expected_refusal: true
+  notes: "absent: referral"
+
+- id: n131
+  category: no_answer
+  question: "Does the company provide life insurance?"
+  expected_refusal: true
+  notes: "absent: life insurance"
+
+- id: n132
+  category: no_answer
+  question: "Is there a death-in-service benefit for my family?"
+  expected_refusal: true
+  notes: "absent: life insurance"
+
+- id: n133
+  category: no_answer
+  question: "Can I add disability insurance through work?"
+  expected_refusal: true
+  notes: "absent: disability insurance"
+
+- id: n134
+  category: no_answer
+  question: "Who is the beneficiary contact for the group life policy?"
+  expected_refusal: true
+  notes: "absent: life insurance, presupposes"
+
+- id: n135
+  category: no_answer
+  question: "Do we get paid volunteering days each year?"
+  expected_refusal: true
+  notes: "absent: volunteering days"
+
+- id: n136
+  category: no_answer
+  question: "Is there a charity donation matching program?"
+  expected_refusal: true
+  notes: "absent: donation matching"
+
+- id: n137
+  category: no_answer
+  question: "Can my team do a paid volunteering day together?"
+  expected_refusal: true
+  notes: "absent: volunteering"
+
+- id: n138
+  category: no_answer
+  question: "Do I get extra days off for my own wedding?"
+  expected_refusal: true
+  notes: "absent: wedding leave"
+
+- id: n139
+  category: no_answer
+  question: "Is there special leave for getting married?"
+  expected_refusal: true
+  notes: "absent: wedding leave"
+
+- id: n140
+  category: no_answer
+  question: "Does the company give a wedding gift or bonus?"
+  expected_refusal: true
+  notes: "absent: wedding perk"
+
+- id: n141
+  category: no_answer
+  question: "How many days off for my child's wedding?"
+  expected_refusal: true
+  notes: "absent: wedding leave"
+
+- id: n142
+  category: no_answer
+  question: "Do employees get a company phone?"
+  expected_refusal: true
+  notes: "absent: company phone (standard setup lists no phone)"
+
+- id: n143
+  category: no_answer
+  question: "Will Kranich pay my monthly mobile bill?"
+  expected_refusal: true
+  notes: "absent: phone bill (only travel roaming is covered)"
+
+- id: n144
+  category: no_answer
+  question: "Can I order an iPhone through the equipment catalog?"
+  expected_refusal: true
+  notes: "absent: company phone crossed with real POL-006 catalog"
+
+- id: n145
+  category: no_answer
+  question: "Is there a BYOD stipend for using my personal phone for work?"
+  expected_refusal: true
+  notes: "absent: BYOD stipend"
+
+- id: n146
+  category: no_answer
+  question: "Can I bring my dog to the Berlin office?"
+  expected_refusal: true
+  notes: "absent: office pets"
+
+- id: n147
+  category: no_answer
+  question: "What's the policy on pets in the office?"
+  expected_refusal: true
+  notes: "absent: office pets"
+
+- id: n148
+  category: no_answer
+  question: "Are there dog-free zones in the Lisbon office?"
+  expected_refusal: true
+  notes: "absent: office pets, presupposes"
+
+- id: n149
+  category: no_answer
+  question: "Do I need to register my dog in Perch before bringing it in?"
+  expected_refusal: true
+  notes: "absent: office pets crossed with real Perch tool"
+
+- id: n150
+  category: no_answer
+  question: "Is there a limit on how many days a week a dog can be in the office?"
+  expected_refusal: true
+  notes: "absent: office pets"

@@ -76,8 +76,8 @@ def _target_collection(
     return collection_id
 
 
-def load_golden() -> list[dict[str, Any]]:
-    return yaml.safe_load(GOLDEN.read_text(encoding="utf-8"))
+def load_golden(path: Path) -> list[dict[str, Any]]:
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 async def run_retrieval_layer(
@@ -117,26 +117,46 @@ async def run_answer_layer(
     collection_id: uuid.UUID,
     collection_de_id: uuid.UUID | None,
     results: list[QuestionResult],
+    concurrency: int = 1,
 ) -> None:
+    semaphore = asyncio.Semaphore(concurrency)
     async with httpx.AsyncClient(
         base_url=api, headers={"Authorization": f"Bearer {api_key}"}, timeout=300
     ) as client:
-        for result in results:
+
+        async def one(result: QuestionResult) -> None:
             target = _target_collection(collection_id, collection_de_id, result.expected_docs)
-            response = await client.post(
-                "/v1/query",
-                json={
-                    "collection_id": str(target),
-                    "question": result.question,
-                    "stream": False,
-                },
-            )
-            response.raise_for_status()
-            body = response.json()
-            result.answered_refused = body["refused"]
-            result.answer_text = body.get("answer")
-            result.citation_docs = [_doc_of(s["filename"]) for s in body.get("sources", [])]
-            print(f"  {result.qid} refused={body['refused']}")
+            async with semaphore:
+                try:
+                    # a well-behaved client: respect 429 + Retry-After from our own limiter,
+                    # back off on transient 5xx instead of killing a long run
+                    for attempt in range(8):
+                        response = await client.post(
+                            "/v1/query",
+                            json={
+                                "collection_id": str(target),
+                                "question": result.question,
+                                "stream": False,
+                            },
+                        )
+                        if response.status_code == 429:
+                            await asyncio.sleep(int(response.headers.get("retry-after", "5")))
+                            continue
+                        if response.status_code >= 500 and attempt < 7:
+                            await asyncio.sleep(2**attempt)
+                            continue
+                        break
+                    response.raise_for_status()
+                except httpx.HTTPError as exc:
+                    print(f"  {result.qid} ERROR {exc!r} — skipped")
+                    return
+                body = response.json()
+                result.answered_refused = body["refused"]
+                result.answer_text = body.get("answer")
+                result.citation_docs = [_doc_of(s["filename"]) for s in body.get("sources", [])]
+                print(f"  {result.qid} refused={body['refused']}")
+
+        await asyncio.gather(*(one(result) for result in results))
 
 
 JUDGE_SYSTEM = (
@@ -173,6 +193,7 @@ async def run_judge_layer(
     collection_de_id: uuid.UUID | None,
     results: list[QuestionResult],
     judge_model: str | None,
+    concurrency: int = 1,
 ) -> str:
     """LLM-as-judge over answered questions; returns the judge model name used."""
     settings = get_settings()
@@ -183,7 +204,9 @@ async def run_judge_layer(
         temperature=0.0,
         max_tokens=200,
     )
-    for result in results:
+    semaphore = asyncio.Semaphore(concurrency)
+
+    async def one(result: QuestionResult) -> None:
         judgeable = (
             not result.expected_refusal
             and result.expected_answer
@@ -191,22 +214,31 @@ async def run_judge_layer(
             and result.answer_text
         )
         if not judgeable:
-            continue
-        # rebuild exactly the context the answering LLM saw (same retrieval, same budget)
-        target = _target_collection(collection_id, collection_de_id, result.expected_docs)
-        retrieval = await retrieve(target, result.question, settings)
-        blocks = build_context_blocks(
-            retrieval.chunks, settings.context_token_budget, settings.context_chunk_max_tokens
-        )
-        excerpts = [b.chunk.content for b in blocks]
-        parts: list[str] = []
-        async for event in llm.stream(JUDGE_SYSTEM, _judge_prompt(result, excerpts)):
-            if isinstance(event, TextDelta):
-                parts.append(event.text)
-        raw = "".join(parts)
-        result.judge_faithful = _parse_verdict(raw, "faithful")
-        result.judge_correct = _parse_verdict(raw, "correct")
-        print(f"  {result.qid} faithful={result.judge_faithful} correct={result.judge_correct}")
+            return
+        async with semaphore:
+            try:
+                # rebuild exactly the context the answering LLM saw (same retrieval, same budget)
+                target = _target_collection(collection_id, collection_de_id, result.expected_docs)
+                retrieval = await retrieve(target, result.question, settings)
+                blocks = build_context_blocks(
+                    retrieval.chunks,
+                    settings.context_token_budget,
+                    settings.context_chunk_max_tokens,
+                )
+                excerpts = [b.chunk.content for b in blocks]
+                parts: list[str] = []
+                async for event in llm.stream(JUDGE_SYSTEM, _judge_prompt(result, excerpts)):
+                    if isinstance(event, TextDelta):
+                        parts.append(event.text)
+            except Exception as exc:  # noqa: BLE001 — one lost verdict must not kill the run
+                print(f"  {result.qid} JUDGE ERROR {exc!r} — skipped")
+                return
+            raw = "".join(parts)
+            result.judge_faithful = _parse_verdict(raw, "faithful")
+            result.judge_correct = _parse_verdict(raw, "correct")
+            print(f"  {result.qid} faithful={result.judge_faithful} correct={result.judge_correct}")
+
+    await asyncio.gather(*(one(result) for result in results))
     return llm.model
 
 
@@ -348,6 +380,11 @@ async def main() -> None:
         "--judge", action="store_true", help="LLM-as-judge pass (implies --with-answers)"
     )
     parser.add_argument("--judge-model", default=None, help="judge model (default: LLM_MODEL)")
+    parser.add_argument("--golden", type=Path, default=GOLDEN, help="golden set YAML path")
+    parser.add_argument("--results", type=Path, default=RESULTS, help="results markdown path")
+    parser.add_argument(
+        "--concurrency", type=int, default=1, help="parallel requests in answer/judge layers"
+    )
     args = parser.parse_args()
     if args.judge:
         args.with_answers = True
@@ -359,7 +396,7 @@ async def main() -> None:
     )
     if args.with_answers:
         settings_note += f" · LLM: {settings.llm_model}"
-    entries = load_golden()
+    entries = load_golden(args.golden)
     print(f"retrieval layer over {len(entries)} questions…")
     results = await run_retrieval_layer(args.collection, args.collection_de, entries)
 
@@ -368,19 +405,30 @@ async def main() -> None:
         if not args.api_key:
             raise SystemExit("--with-answers requires --api-key")
         print("answer layer…")
-        await run_answer_layer(args.api, args.api_key, args.collection, args.collection_de, results)
+        await run_answer_layer(
+            args.api,
+            args.api_key,
+            args.collection,
+            args.collection_de,
+            results,
+            concurrency=args.concurrency,
+        )
     if args.judge:
         print("judge layer…")
         judge_model = await run_judge_layer(
-            args.collection, args.collection_de, results, args.judge_model
+            args.collection,
+            args.collection_de,
+            results,
+            args.judge_model,
+            concurrency=args.concurrency,
         )
 
     sweep = threshold_sweep(results)
-    RESULTS.write_text(
+    args.results.write_text(
         render_results(results, sweep, args.with_answers, settings_note, judge_model),
         encoding="utf-8",
     )
-    print(f"\nwrote {RESULTS}")
+    print(f"\nwrote {args.results}")
 
 
 async def _run() -> None:
