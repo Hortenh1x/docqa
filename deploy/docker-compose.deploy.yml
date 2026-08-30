@@ -19,7 +19,7 @@ services:
 
   ui:
     build:
-      context: ../ui
+      context: ./ui
       args:
         NEXT_PUBLIC_API_BASE_URL: https://${DOCQA_DOMAIN}
         NEXT_PUBLIC_DEMO_API_KEY: ${NEXT_PUBLIC_DEMO_API_KEY:-}
