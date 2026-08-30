@@ -43,6 +43,7 @@ from app.usage.costs import cost_usd
 log = structlog.get_logger("docqa.query")
 
 REFUSAL_REASON = "not_in_documents"
+EMPTY_COMPLETION_REASON = "empty_completion"
 
 
 @dataclass(frozen=True)
@@ -277,7 +278,30 @@ async def run_query(
             )
             return
 
-        answer, citations = finalize_answer("".join(parts), blocks)
+        raw = "".join(parts)
+        if not raw.strip():
+            # empty completion: the provider spent the whole budget on hidden reasoning
+            # or returned a zero-token stream — a blank non-refusal would reach the
+            # client as an empty answer, so convert it to an honest refusal
+            log_ctx.warning(
+                "query_empty_completion",
+                completion_tokens=usage.completion_tokens if usage else None,
+            )
+            await record_once(answer=None, refused=True, cost=cost, model=model)
+            yield DoneEvent(
+                answer=None,
+                refused=True,
+                reason=EMPTY_COMPLETION_REASON,
+                confidence=retrieval.top_score,
+                prompt_tokens=usage.prompt_tokens if usage else None,
+                completion_tokens=usage.completion_tokens if usage else None,
+                cost=cost,
+                latency_ms=latency_ms(),
+                model=model,
+            )
+            return
+
+        answer, citations = finalize_answer(raw, blocks)
         log_ctx.info(
             "query_answered",
             citations=[c.n for c in citations],

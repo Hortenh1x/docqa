@@ -132,6 +132,50 @@ def test_similar_but_different_text_is_released():
     assert not buffer.refused
 
 
+# --- empty completion guard ---
+
+
+async def test_empty_llm_stream_becomes_refusal(monkeypatch):
+    """A zero-content stream (hidden-reasoning burn / provider glitch) must surface as
+    an honest refusal, never as an empty non-refused answer."""
+    from app.generation import service
+    from app.generation.llm.base import StreamUsage as Usage
+    from app.retrieval.service import RetrievalResult
+
+    async def fake_retrieve(collection_id, question, settings):
+        return RetrievalResult(chunks=[make_chunk(1, "Some relevant content.")], top_score=0.9)
+
+    class EmptyLLM:
+        model_name = "deepseek-v4-flash"
+
+        async def stream(self, system, user):
+            yield Usage(prompt_tokens=3000, completion_tokens=1024)  # budget eaten, no text
+
+    recorded = {}
+
+    async def fake_record(**kwargs):
+        recorded.update(kwargs)
+
+    monkeypatch.setattr(service, "retrieve", fake_retrieve)
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: EmptyLLM())
+    monkeypatch.setattr(service, "_record_query", fake_record)
+
+    events = [
+        event
+        async for event in service.run_query(
+            uuid.uuid4(), uuid.uuid4(), "How many days?", _settings()
+        )
+    ]
+
+    assert not any(isinstance(e, service.DeltaEvent) for e in events)
+    done = events[-1]
+    assert isinstance(done, service.DoneEvent)
+    assert done.refused is True
+    assert done.reason == service.EMPTY_COMPLETION_REASON
+    assert done.answer is None
+    assert recorded["refused"] is True and recorded["answer"] is None
+
+
 # --- llm provider factory ---
 
 

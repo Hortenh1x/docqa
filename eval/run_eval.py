@@ -247,7 +247,8 @@ def threshold_sweep(results: list[QuestionResult]) -> list[tuple[float, float, f
     no_answer = [r for r in results if r.expected_refusal and r.gate_score is not None]
     answerable = [r for r in results if not r.expected_refusal and r.gate_score is not None]
     rows = []
-    for step in range(30, 71, 2):
+    # 0.10 floor: openai embeddings score much lower on the cosine scale than bge-m3
+    for step in range(10, 71, 2):
         threshold = step / 100
         refused = sum(1 for r in no_answer if r.gate_score < threshold)
         passed = sum(1 for r in answerable if r.gate_score >= threshold)

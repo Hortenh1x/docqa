@@ -22,23 +22,39 @@ POSTGRES_PASSWORD=<random>
 DOCQA_DOMAIN=docqa.example.com
 DOCQA_APP_DOMAIN=app.docqa.example.com
 DEMO_MODE=true
-EMBEDDING_PROVIDER=openai            # or ollama if the box runs one
+EMBEDDING_PROVIDER=openai            # measured choice — see the threshold note below
 OPENAI_API_KEY=…
 LLM_PROVIDER=openai_compat
 LLM_BASE_URL=https://api.deepseek.com
-LLM_MODEL=deepseek-v4-flash          # current DeepSeek model; deepseek-chat is deprecated
+LLM_MODEL=deepseek-v4-flash          # thinking allowed by decision — LLM_MAX_TOKENS below gives hidden
+                                     # reasoning room to finish (at 1024 it emptied 2/447 answers; the
+                                     # pipeline now converts an empty completion into a refusal as a backstop).
+                                     # Cheaper/simpler alternative: LLM_MODEL=deepseek-chat = the same model
+                                     # in non-thinking mode, same price, then LLM_MAX_TOKENS can stay 1024.
+LLM_MAX_TOKENS=4096
 LLM_API_KEY=…
+REFUSAL_THRESHOLD=0.28               # measured for text-embedding-3-small@1024 on the 447-question set
+                                     # (eval/results_large_openai.md: recall@8 0.99, faithfulness 100%,
+                                     # 98% answerable pass, e2e refusal 99%). The scale is embedding-model-
+                                     # specific: bge-m3 via ollama needs 0.48 (eval/results_large.md) and an
+                                     # ollama container; any other provider — re-run eval/run_eval.py against
+                                     # a collection seeded with it and take the sweep's recommendation.
 RERANK_PROVIDER=none                 # cohere + COHERE_API_KEY for better precision
 RATE_LIMIT_QUERY_PER_MINUTE=10       # demo pacing
-RATE_LIMIT_QUERY_PER_DAY=900         # cost cap: ≤ $1/day per visitor at deepseek-v4-flash prices
+RATE_LIMIT_QUERY_PER_DAY=900         # cost cap: ~$1.5/day worst case per visitor with thinking allowed
+                                     # (typical stays ~$0.35/day); set 550 for a hard ≤$1/day
 RATE_LIMIT_TRUST_FORWARDED_FOR=true  # per-visitor quota scope from Caddy's X-Forwarded-For
 NEXT_PUBLIC_DEMO_API_KEY=            # filled in after step 4
 ```
 
-Cost math for the daily cap: a worst-case query (3.6k-token context + max-length
-question + 1024-token completion) costs ~$0.001 at `deepseek-v4-flash` prices
-(`app/usage/costs.py`), so 900/day bounds one visitor at ~$0.9/day; a typical query
-is ~$0.0004, so the practical ceiling is ~$0.35. Re-derive when switching models.
+Cost math for the daily cap (thinking allowed, `LLM_MAX_TOKENS=4096`): reasoning
+bills as ordinary output tokens at `deepseek-v4-flash` prices (`app/usage/costs.py`);
+typical bursts are 150–500 tokens on a low single-digit % of calls, so a typical query
+stays ~$0.0004 (~$0.35/day practical ceiling at 900/day). The worst case — 3.6k-token
+context + max-length question + a full 4096-token completion — is ~$0.0017, i.e.
+**~$1.5/day per visitor at 900/day (accepted)**; set `RATE_LIMIT_QUERY_PER_DAY=550`
+for a hard ≤$1/day, or switch to non-thinking `deepseek-chat` + `LLM_MAX_TOKENS=1024`
+to return to the ~$0.9/day worst case. Re-derive when switching models.
 
 ## 3. First start
 
@@ -66,6 +82,14 @@ docker compose -f docker-compose.prod.yml -f deploy/docker-compose.deploy.yml up
 ```
 
 ## 5. Cron: backups and the sandbox wipe
+
+Resolve the sandbox collection id once (seed_demo also prints it in step 4):
+
+```bash
+SANDBOX_ID=$(docker compose -f /opt/docqa/docker-compose.prod.yml exec -T db \
+  psql -U docqa -d docqa -tA -c "select id from collections where slug='sandbox'")
+echo "$SANDBOX_ID"   # paste into the wipe line below
+```
 
 ```cron
 0 3 * * * docker exec docqa-db pg_dump -U docqa docqa | gzip > /backup/docqa-$(date +\%F).sql.gz && find /backup -mtime +7 -delete
