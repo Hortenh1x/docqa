@@ -104,6 +104,15 @@ Optionally sync `/backup` to object storage with rclone.
 - `https://app.docqa.example.com` → preset question streams an answer with citations
 - upload to a policies collection → 403 `demo_readonly`; sandbox accepts ≤ 5 files ≤ 5 MB
 
+## Variant: a host that already has an ingress on 80/443
+
+When the box runs other projects behind an existing reverse proxy, skip the bundled
+Caddy: use `deploy/docker-compose.shared-host.yml` instead of the deploy overlay. It
+publishes the API on `127.0.0.1:${API_HOST_PORT:-8100}` and the UI on
+`127.0.0.1:${UI_HOST_PORT:-3100}`; point the host ingress at those two ports
+(`DOCQA_DOMAIN` → API port, `DOCQA_APP_DOMAIN` → UI port) and let it terminate TLS.
+Everything else in this runbook (seed, key, crons, checks) is unchanged.
+
 ## Known limits
 
 - Single instance; migrations at startup. Multi-instance needs a migrate job + shared storage for `data/`.

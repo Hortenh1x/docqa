@@ -1,0 +1,33 @@
+# Shared-host overlay: the box already has its own ingress on 80/443, so DocQA
+# publishes the API and UI on localhost-only ports and brings NO bundled Caddy.
+# The host ingress terminates TLS for DOCQA_DOMAIN (API) and DOCQA_APP_DOMAIN (UI)
+# and proxies to these ports.
+#
+#   docker compose -f docker-compose.prod.yml -f deploy/docker-compose.shared-host.yml up -d --build
+#
+# Required host env (or .env next to docker-compose.prod.yml):
+#   DOCQA_DOMAIN=api.docqa.example.com    # public API host (baked into the UI build)
+#   DOCQA_APP_DOMAIN=docqa.example.com    # public UI host (CORS origin)
+#   NEXT_PUBLIC_DEMO_API_KEY=dqa_live_…   # printed by scripts/seed_demo.py
+#   POSTGRES_PASSWORD=…                   # anything but the default
+#   DEMO_MODE=true
+#   API_HOST_PORT=8100 / UI_HOST_PORT=3100  # localhost ports for the ingress to hit
+
+services:
+  api:
+    ports: !reset
+      - "127.0.0.1:${API_HOST_PORT:-8100}:8000"
+    environment:
+      DEMO_MODE: ${DEMO_MODE:-true}
+      CORS_ORIGINS: https://${DOCQA_APP_DOMAIN}
+
+  ui:
+    build:
+      context: ../ui
+      args:
+        NEXT_PUBLIC_API_BASE_URL: https://${DOCQA_DOMAIN}
+        NEXT_PUBLIC_DEMO_API_KEY: ${NEXT_PUBLIC_DEMO_API_KEY:-}
+        NEXT_PUBLIC_DEMO_MODE: ${DEMO_MODE:-true}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${UI_HOST_PORT:-3100}:3000"
