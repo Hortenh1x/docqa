@@ -15,7 +15,8 @@
 
 services:
   api:
-    ports: !reset
+    # !override replaces the prod mapping; !reset would drop the field entirely
+    ports: !override
       - "127.0.0.1:${API_HOST_PORT:-8100}:8000"
     environment:
       DEMO_MODE: ${DEMO_MODE:-true}

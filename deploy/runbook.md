@@ -67,11 +67,22 @@ before scaling to replicas). Caddy fetches certificates automatically.
 
 ## 4. Seed the demo corpus
 
+Two caveats discovered on the first real deploy:
+
+- the production image ships only `app/` — copy `scripts/` and a locally built
+  `corpus/build/` into the container (`python -m scripts.build_corpus` also cannot run
+  in the image: the `markdown` dependency is dev-only);
+- seed with `DEMO_MODE=false`: the demo sandbox cap (5 files/collection) otherwise
+  rejects the corpus upload itself. Flip it back to `true` right after.
+
 ```bash
-docker compose -f docker-compose.prod.yml exec api \
-  python -m scripts.build_corpus
+# on the workstation: uv run python -m scripts.build_corpus && scp -r corpus/build <host>:/tmp/corpus-build
+sed -i 's/^DEMO_MODE=true/DEMO_MODE=false/' .env && docker compose -f docker-compose.prod.yml up -d api
+docker exec -u 0 <api container> mkdir -p /app/corpus
+docker cp scripts <api container>:/app/scripts && docker cp /tmp/corpus-build <api container>:/app/corpus/build
 docker compose -f docker-compose.prod.yml exec api \
   python -m scripts.seed_demo --api http://localhost:8000 --readonly
+sed -i 's/^DEMO_MODE=false/DEMO_MODE=true/' .env && docker compose -f docker-compose.prod.yml up -d api
 ```
 
 Copy the printed API key into `NEXT_PUBLIC_DEMO_API_KEY` in `.env`, note the sandbox
