@@ -86,6 +86,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
         expose_headers=[
             "X-Request-Id",
+            "X-Total-Count",
             "X-RateLimit-Limit",
             "X-RateLimit-Remaining",
             "Retry-After",

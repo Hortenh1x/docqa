@@ -5,10 +5,10 @@ from datetime import datetime
 from typing import Annotated, Any
 from urllib.parse import quote
 
-from fastapi import APIRouter, Depends, Header, Response, UploadFile
+from fastapi import APIRouter, Depends, Header, Query, Response, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from app.api.deps import CurrentCollection, CurrentTenant, DbSession
 from app.core.errors import NotFoundError
@@ -100,13 +100,35 @@ async def upload_document(
     "/collections/{collection_id}/documents",
     response_model=list[DocumentOut],
     dependencies=[Depends(rate_limit("default"))],
+    description=(
+        "Newest first. `limit`/`offset` page through large collections; both optional, "
+        "so existing full-list consumers keep working. `X-Total-Count` always carries "
+        "the collection's total."
+    ),
 )
-async def list_documents(collection: CurrentCollection, db: DbSession) -> list[Document]:
-    result = await db.execute(
+async def list_documents(
+    collection: CurrentCollection,
+    db: DbSession,
+    response: Response,
+    limit: Annotated[int | None, Query(ge=1, le=500)] = None,
+    offset: Annotated[int, Query(ge=0)] = 0,
+) -> list[Document]:
+    total = await db.scalar(
+        select(func.count()).select_from(Document).where(Document.collection_id == collection.id)
+    )
+    response.headers["X-Total-Count"] = str(total or 0)
+
+    # id as tiebreak: bulk-seeded documents share created_at, pages must not overlap
+    stmt = (
         select(Document)
         .where(Document.collection_id == collection.id)
-        .order_by(Document.created_at.desc())
+        .order_by(Document.created_at.desc(), Document.id)
     )
+    if offset:
+        stmt = stmt.offset(offset)
+    if limit is not None:
+        stmt = stmt.limit(limit)
+    result = await db.execute(stmt)
     return list(result.scalars().all())
 
 

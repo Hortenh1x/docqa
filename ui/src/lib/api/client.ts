@@ -59,6 +59,22 @@ export const listCollections = () => api<Collection[]>("/v1/collections");
 export const listDocuments = (collectionId: string) =>
   api<DocumentOut[]>(`/v1/collections/${collectionId}/documents`);
 
+/** One page of a collection's documents plus the collection total (X-Total-Count). */
+export async function listDocumentsPage(
+  collectionId: string,
+  limit: number,
+  offset: number,
+): Promise<{ documents: DocumentOut[]; total: number }> {
+  const res = await fetch(
+    `${API_BASE}/v1/collections/${collectionId}/documents?limit=${limit}&offset=${offset}`,
+    { headers: { Authorization: `Bearer ${apiKey}` } },
+  );
+  if (!res.ok) throw await toApiError(res);
+  const documents = (await res.json()) as DocumentOut[];
+  const total = Number(res.headers.get("x-total-count") ?? documents.length);
+  return { documents, total };
+}
+
 export const deleteDocument = (documentId: string) =>
   api<void>(`/v1/documents/${documentId}`, { method: "DELETE" });
 

@@ -181,3 +181,43 @@ async def test_document_file_served_inline(client, tenant, make_tenant, collecti
     stranger = await make_tenant()
     foreign = await client.get(f"/v1/documents/{document_id}/file", headers=stranger["headers"])
     assert foreign.status_code == 404
+
+
+async def test_listing_pagination_and_total(client, tenant, collection_id):
+    """limit/offset page newest-first without overlap; X-Total-Count always present."""
+    for i in range(5):
+        response = await client.post(
+            f"/v1/collections/{collection_id}/documents",
+            files={"file": (f"doc-{i}.md", POLICY_MD + str(i).encode(), "text/markdown")},
+            headers=tenant["headers"],
+        )
+        assert response.status_code == 202, response.text
+
+    full = await client.get(f"/v1/collections/{collection_id}/documents", headers=tenant["headers"])
+    assert full.status_code == 200
+    assert full.headers["x-total-count"] == "5"
+    assert len(full.json()) == 5  # no limit -> unchanged full listing
+
+    page1 = await client.get(
+        f"/v1/collections/{collection_id}/documents?limit=2&offset=0",
+        headers=tenant["headers"],
+    )
+    page2 = await client.get(
+        f"/v1/collections/{collection_id}/documents?limit=2&offset=2",
+        headers=tenant["headers"],
+    )
+    tail = await client.get(
+        f"/v1/collections/{collection_id}/documents?limit=2&offset=4",
+        headers=tenant["headers"],
+    )
+    assert page1.headers["x-total-count"] == "5"
+    ids = [d["id"] for d in page1.json() + page2.json() + tail.json()]
+    assert len(page1.json()) == 2 and len(page2.json()) == 2 and len(tail.json()) == 1
+    assert len(set(ids)) == 5  # stable order, no overlap across pages
+    assert ids[:5] == [d["id"] for d in full.json()]
+
+    capped = await client.get(
+        f"/v1/collections/{collection_id}/documents?limit=501",
+        headers=tenant["headers"],
+    )
+    assert capped.status_code == 400  # limit ceiling -> validation problem+json
