@@ -142,7 +142,7 @@ async def test_empty_llm_stream_becomes_refusal(monkeypatch):
     from app.generation.llm.base import StreamUsage as Usage
     from app.retrieval.service import RetrievalResult
 
-    async def fake_retrieve(collection_id, question, settings):
+    async def fake_retrieve(collection_id, question, settings, principal=None):
         return RetrievalResult(chunks=[make_chunk(1, "Some relevant content.")], top_score=0.9)
 
     class EmptyLLM:

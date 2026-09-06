@@ -7,6 +7,7 @@ export function formatBytes(bytes: number): string {
 export function formatCost(usd: number | null): string {
   if (usd === null) return "—";
   if (usd === 0) return "$0";
+  if (usd < 0.0001) return "<$0.0001"; // ingest costs of small corpora land here
   if (usd < 0.01) return `$${usd.toFixed(4)}`;
   return `$${usd.toFixed(2)}`;
 }

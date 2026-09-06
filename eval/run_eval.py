@@ -30,6 +30,7 @@ from typing import Any
 import httpx
 import yaml
 
+from app.access import resolve_principal
 from app.config import get_settings
 from app.db.base import dispose_engine
 from app.generation.llm import TextDelta
@@ -40,7 +41,16 @@ from app.retrieval.service import retrieve
 GOLDEN = Path("eval/golden.yaml")
 RESULTS = Path("eval/results.md")
 
-CATEGORY_ORDER = ["direct", "table", "multi_doc", "version", "buried", "german", "no_answer"]
+CATEGORY_ORDER = [
+    "direct",
+    "table",
+    "multi_doc",
+    "version",
+    "buried",
+    "german",
+    "no_answer",
+    "access",
+]
 
 
 @dataclass
@@ -51,9 +61,16 @@ class QuestionResult:
     expected_docs: list[str]
     expected_refusal: bool
     expected_answer: str | None = None
+    role: str | None = None  # access role the question is asked under (None → --role)
+    # access category: documents holding the hidden passage (documentation for the
+    # Misses block) and the labels the reveal-mode hint is expected to name
+    hidden_docs: list[str] = field(default_factory=list)
+    expected_hidden_labels: list[str] = field(default_factory=list)
     retrieved_docs: list[str] = field(default_factory=list)
     gate_score: float | None = None
     recall_hit: bool | None = None
+    hidden_labels: list[str] | None = None  # from retrieval (reveal mode only)
+    retrieval_leak: bool | None = None  # a chunk outside the role's labels surfaced
     # answer layer
     answered_refused: bool | None = None
     answer_text: str | None = None
@@ -84,6 +101,7 @@ async def run_retrieval_layer(
     collection_id: uuid.UUID,
     collection_de_id: uuid.UUID | None,
     entries: list[dict[str, Any]],
+    role: str,
 ):
     settings = get_settings()
     results: list[QuestionResult] = []
@@ -96,17 +114,31 @@ async def run_retrieval_layer(
             expected_docs=expected_docs,
             expected_refusal=bool(entry.get("expected_refusal", False)),
             expected_answer=entry.get("expected_answer"),
+            role=entry.get("role"),
+            hidden_docs=[s["doc"] for s in entry.get("hidden_sources", [])],
+            expected_hidden_labels=list(entry.get("expected_hidden_labels", [])),
         )
         target = _target_collection(collection_id, collection_de_id, expected_docs)
-        retrieval = await retrieve(target, entry["question"], settings)
+        principal = resolve_principal(settings, result.role or role)
+        retrieval = await retrieve(target, entry["question"], settings, principal)
         result.retrieved_docs = [_doc_of(c.filename) for c in retrieval.chunks]
         result.gate_score = retrieval.top_score
+        if retrieval.hidden is not None:
+            result.hidden_labels = list(retrieval.hidden.labels)
+        # the authoritative leak test: a chunk whose label the role may not read surfaced.
+        # Section numbers are not needed for this — open sections of the same document
+        # may surface freely (T11 partial answers)
+        result.retrieval_leak = any(
+            chunk.access_label not in principal.labels for chunk in retrieval.chunks
+        )
         if expected_docs:
             # multi_doc questions require ALL expected documents in the top-8 —
             # that is the whole point of the category
             result.recall_hit = all(doc in result.retrieved_docs for doc in expected_docs)
         results.append(result)
         marker = "·" if result.recall_hit in (True, None) else "MISS"
+        if result.retrieval_leak:
+            marker = "LEAK"
         # gate_score is None when retrieval returned nothing (e.g. an FTS-only query
         # that matched no chunk) — report it instead of crashing the whole run
         score = f"{result.gate_score:.3f}" if result.gate_score is not None else "none"
@@ -120,6 +152,7 @@ async def run_answer_layer(
     collection_id: uuid.UUID,
     collection_de_id: uuid.UUID | None,
     results: list[QuestionResult],
+    role: str,
     concurrency: int = 1,
 ) -> None:
     semaphore = asyncio.Semaphore(concurrency)
@@ -140,6 +173,7 @@ async def run_answer_layer(
                                 "collection_id": str(target),
                                 "question": result.question,
                                 "stream": False,
+                                "role": result.role or role,
                             },
                         )
                         if response.status_code == 429:
@@ -196,6 +230,7 @@ async def run_judge_layer(
     collection_de_id: uuid.UUID | None,
     results: list[QuestionResult],
     judge_model: str | None,
+    role: str,
     concurrency: int = 1,
 ) -> str:
     """LLM-as-judge over answered questions; returns the judge model name used."""
@@ -222,7 +257,8 @@ async def run_judge_layer(
             try:
                 # rebuild exactly the context the answering LLM saw (same retrieval, same budget)
                 target = _target_collection(collection_id, collection_de_id, result.expected_docs)
-                retrieval = await retrieve(target, result.question, settings)
+                principal = resolve_principal(settings, result.role or role)
+                retrieval = await retrieve(target, result.question, settings, principal)
                 blocks = build_context_blocks(
                     retrieval.chunks,
                     settings.context_token_budget,
@@ -361,6 +397,43 @@ def render_results(
             "",
         ]
 
+    access = [r for r in results if r.category == "access"]
+    if access:
+        restricted = [r for r in access if r.expected_refusal]
+        unlock = [r for r in access if not r.expected_refusal and r.recall_hit is not None]
+        leak_checked = [r for r in restricted if r.retrieval_leak is not None]
+        leaks = sum(1 for r in leak_checked if r.retrieval_leak)
+        leaked_ids = [r.qid for r in leak_checked if r.retrieval_leak]
+        hint_checked = [
+            r for r in restricted if r.expected_hidden_labels and r.hidden_labels is not None
+        ]
+        hint_ok = sum(
+            1 for r in hint_checked if set(r.expected_hidden_labels) <= set(r.hidden_labels or [])
+        )
+        unlock_hits = sum(1 for r in unlock if r.recall_hit)
+        lines += [
+            "## Access control",
+            "",
+            f"- Restricted questions (asked under a role that may not see the answer): "
+            f"{len(restricted)}",
+            f"- Retrieval leaks (a chunk outside the role's labels surfaced): "
+            f"{leaks}/{len(leak_checked)}" + (f" — {', '.join(leaked_ids)}" if leaked_ids else ""),
+        ]
+        if hint_checked:
+            lines.append(f"- Reveal hint names the unlocking label: {hint_ok}/{len(hint_checked)}")
+        if with_answers:
+            answered = [r for r in restricted if r.answered_refused is not None]
+            e2e_leaks = sum(1 for r in answered if r.answered_refused is False)
+            lines.append(
+                f"- End-to-end leaks (an answer instead of a refusal): {e2e_leaks}/{len(answered)}"
+            )
+        if unlock:
+            lines.append(
+                f"- Unlock questions (asked under the right role), recall@8: "
+                f"{unlock_hits}/{len(unlock)}"
+            )
+        lines.append("")
+
     misses = [r for r in results if r.recall_hit is False]
     if misses:
         lines += ["## Misses", ""]
@@ -389,6 +462,11 @@ async def main() -> None:
     parser.add_argument(
         "--concurrency", type=int, default=1, help="parallel requests in answer/judge layers"
     )
+    parser.add_argument(
+        "--role",
+        default="leadership",
+        help="access role for questions that name none (default: leadership = full corpus)",
+    )
     args = parser.parse_args()
     if args.judge:
         args.with_answers = True
@@ -402,7 +480,7 @@ async def main() -> None:
         settings_note += f" · LLM: {settings.llm_model}"
     entries = load_golden(args.golden)
     print(f"retrieval layer over {len(entries)} questions…")
-    results = await run_retrieval_layer(args.collection, args.collection_de, entries)
+    results = await run_retrieval_layer(args.collection, args.collection_de, entries, args.role)
 
     judge_model: str | None = None
     if args.with_answers:
@@ -415,6 +493,7 @@ async def main() -> None:
             args.collection,
             args.collection_de,
             results,
+            args.role,
             concurrency=args.concurrency,
         )
     if args.judge:
@@ -424,6 +503,7 @@ async def main() -> None:
             args.collection_de,
             results,
             args.judge_model,
+            args.role,
             concurrency=args.concurrency,
         )
 

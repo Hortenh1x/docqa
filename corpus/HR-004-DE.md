@@ -46,3 +46,13 @@ Ein Lernbudget wird jährlich pro Team vereinbart und mit Freigabe der Führungs
 - **Wer beantwortet Fragen zu Zusatzleistungen?** people@kranich.example oder euer People-Partner laut Grove.
 
 Beispiel: Sofia nutzte das Wellness-Budget für eine Kletterhallen-Mitgliedschaft in Madrid und das Lernbudget für einen Produktanalytik-Kurs — beides in derselben Woche genehmigt, beides über Ledgerly.
+
+## 9. Vorschuss in Notlagen
+
+Zugriff: nur People & Culture
+
+Manchmal kommt die Rechnung vor dem Gehalt — unerwartete Arztkosten, eine Wohnungskaution, ein Notfall in der Familie — und Kranich kann einen Teil des künftigen Gehalts im Voraus auszahlen. Dieser Abschnitt richtet sich an People & Culture, die jede Anfrage vertraulich bearbeiten; Kolleginnen und Kollegen wenden sich an ihren People-Partner, nicht an ihre Führungskraft.
+
+Ein Vorschuss in Notlagen ist auf 2.000 € begrenzt. Die Rückzahlung erfolgt über die Gehaltsabrechnung innerhalb von 12 Monaten, in Raten, die mit der Kollegin oder dem Kollegen vereinbart werden. Es fallen keine Zinsen an; ein kurzer schriftlicher Antrag genügt, die Vereinbarung steht in Fern, Finance richtet den Abzug ein. Ein offener Vorschuss wird beim Ausscheiden mit der letzten Gehaltsabrechnung verrechnet (siehe §6 von HR-002).
+
+Entscheidet nach der Situation, nicht nach Betriebszugehörigkeit oder Rolle. Beispiel: Lea, People-Operations-Spezialistin in Berlin, organisierte einen Vorschuss für einen Kollegen, dessen Vermieter kurzfristig eine Kaution verlangte; das Geld ging mit dem nächsten Gehaltslauf raus, und außerhalb von People & Culture wusste niemand davon.

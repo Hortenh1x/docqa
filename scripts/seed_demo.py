@@ -113,6 +113,28 @@ async def seed(api: str, readonly: bool) -> None:
                 print(f"  timeout: {len(pending)} documents still processing", file=sys.stderr)
                 raise SystemExit(1)
 
+            # the worker generates suggested questions once the collection settles
+            if batch:
+                deadline = time.monotonic() + 180
+                questions: list[str] | None = None
+                while time.monotonic() < deadline:
+                    listing = await client.get("/v1/collections")
+                    row = next(c for c in listing.json() if c["id"] == collections[slug])
+                    questions = row.get("suggested_questions")
+                    if questions:
+                        break
+                    await asyncio.sleep(2)
+                if questions:
+                    print("  suggested questions:")
+                    for question in questions:
+                        print(f"    · {question}")
+                else:
+                    print(
+                        "  suggested questions not ready after 180s — "
+                        "check the worker logs and the LLM key",
+                        file=sys.stderr,
+                    )
+
     if readonly:
         await _mark_readonly(collections["policies-en"])
         await _mark_readonly(collections["policies-de"])

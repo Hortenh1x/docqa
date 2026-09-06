@@ -1,9 +1,9 @@
 import { API_BASE, ApiError, getApiKey } from "./client";
-import type { DonePayload, Problem, Source } from "./types";
+import type { AccessInfo, DonePayload, Problem, Source } from "./types";
 
 /** Typed SSE events as the query endpoint emits them. */
 export type QueryEvent =
-  | { event: "meta"; data: { query_id: string } }
+  | { event: "meta"; data: { query_id: string; access: AccessInfo } }
   | { event: "sources"; data: { sources: Source[] } }
   | { event: "delta"; data: { text: string } }
   | { event: "done"; data: DonePayload }
@@ -14,7 +14,7 @@ export type QueryEvent =
  * Frames are separated by a blank line; a partial frame is carried into the next chunk.
  */
 export async function streamQuery(
-  body: { collection_id: string; question: string },
+  body: { collection_id: string; question: string; role?: string },
   onEvent: (event: QueryEvent) => void,
   signal: AbortSignal,
 ): Promise<void> {

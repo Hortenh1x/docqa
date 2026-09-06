@@ -47,6 +47,9 @@ def app_env(_containers, tmp_path_factory):
     os.environ["REFUSAL_THRESHOLD"] = "0.35"
     # off by default; the limiter's own tests re-enable it with tiny limits
     os.environ["RATE_LIMIT_ENABLED"] = "false"
+    # pinned so a developer's .env (demo reveal on) cannot leak into the suite;
+    # the access tests switch it on per test
+    os.environ["ACCESS_REVEAL_HIDDEN"] = "false"
     os.environ["STORAGE_DIR"] = str(tmp_path_factory.mktemp("storage"))
 
     import app.core.redis as core_redis

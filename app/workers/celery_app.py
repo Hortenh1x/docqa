@@ -16,7 +16,7 @@ celery_app.conf.update(
     worker_prefetch_multiplier=1,
     task_default_queue="ingestion",
     broker_connection_retry_on_startup=True,
-    imports=("app.ingestion.tasks",),
+    imports=("app.ingestion.tasks", "app.generation.tasks"),
 )
 
 

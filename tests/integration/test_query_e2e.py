@@ -35,6 +35,12 @@ async def ready_collection(client, tenant) -> str:
         headers=tenant["headers"],
     )
     assert upload.status_code == 202  # celery eager: ready right away
+
+    # settling the collection spent one stub-LLM call on suggested questions;
+    # the tests below count calls made by the query pipeline only
+    from app.generation.llm.stub import StubLLM
+
+    StubLLM.calls = 0
     return collection_id
 
 

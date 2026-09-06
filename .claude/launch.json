@@ -2,10 +2,11 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "ui",
+      "name": "docqa-ui",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["start", "--prefix", "ui"],
-      "port": 3002
+      "runtimeArgs": ["--prefix", "ui", "run", "dev:preview"],
+      "port": 3012,
+      "autoPort": false
     }
   ]
 }

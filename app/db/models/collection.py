@@ -1,7 +1,9 @@
 import uuid
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import ForeignKey, UniqueConstraint, text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.models.base import Base
@@ -21,4 +23,8 @@ class Collection(Base):
     embedding_model: Mapped[str]
     # public-demo collections reject uploads (403 demo_readonly)
     read_only: Mapped[bool] = mapped_column(server_default=text("false"))
+    # LLM-drafted starter questions the corpus can answer, as
+    # [{"question": str, "min_role": str}]; refreshed by the worker whenever the
+    # collection's ingestion settles (see app/generation/suggestions.py)
+    suggested_questions: Mapped[list[dict[str, Any]] | None] = mapped_column(JSONB)
     created_at: Mapped[datetime] = mapped_column(server_default=text("now()"))

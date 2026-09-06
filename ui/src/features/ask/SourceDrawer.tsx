@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useCollections } from "@/app/providers";
+import { labelName } from "@/lib/access";
 import type { Source } from "@/lib/api/types";
 import { formatPages } from "@/lib/format";
 
@@ -106,6 +107,12 @@ export function SourceDrawer({
           )}
           <dt className="text-ink-soft">Relevance</dt>
           <dd>{source.score.toFixed(3)}</dd>
+          <dt className="text-ink-soft">Access</dt>
+          <dd>
+            {source.access_label === "all"
+              ? "All staff"
+              : `${labelName(source.access_label)} only`}
+          </dd>
         </dl>
 
         <blockquote className="rounded-[6px] border border-hairline bg-paper p-3 text-sm leading-6">

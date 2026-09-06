@@ -10,11 +10,14 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import func, select
 
+from app.access.labels import restricted_labels_by_document
 from app.api.deps import CurrentCollection, CurrentTenant, DbSession
+from app.config import get_settings
 from app.core.errors import NotFoundError
 from app.core.idempotency import replay_headers, run_idempotent
 from app.core.rate_limit import rate_limit
 from app.db.models import Collection, Document
+from app.generation.tasks import suggest_questions
 from app.ingestion import service as ingestion_service
 from app.ingestion.mime import EXT_BY_MIME
 from app.storage import get_storage
@@ -65,6 +68,8 @@ class DocumentOut(BaseModel):
     page_count: int | None
     created_at: datetime
     processed_at: datetime | None
+    # restricted content labels found in the document's sections (empty = all open)
+    access_labels: list[str] = []
 
 
 @router.post(
@@ -112,7 +117,7 @@ async def list_documents(
     response: Response,
     limit: Annotated[int | None, Query(ge=1, le=500)] = None,
     offset: Annotated[int, Query(ge=0)] = 0,
-) -> list[Document]:
+) -> list[DocumentOut]:
     total = await db.scalar(
         select(func.count()).select_from(Document).where(Document.collection_id == collection.id)
     )
@@ -129,7 +134,12 @@ async def list_documents(
     if limit is not None:
         stmt = stmt.limit(limit)
     result = await db.execute(stmt)
-    return list(result.scalars().all())
+    documents = list(result.scalars().all())
+    labels = await restricted_labels_by_document(db, [d.id for d in documents])
+    return [
+        DocumentOut.model_validate(d).model_copy(update={"access_labels": labels.get(d.id, [])})
+        for d in documents
+    ]
 
 
 async def _get_scoped_document(
@@ -152,8 +162,12 @@ async def _get_scoped_document(
     response_model=DocumentOut,
     dependencies=[Depends(rate_limit("default"))],
 )
-async def get_document(document_id: uuid.UUID, tenant: CurrentTenant, db: DbSession) -> Document:
-    return await _get_scoped_document(document_id, tenant.id, db)
+async def get_document(document_id: uuid.UUID, tenant: CurrentTenant, db: DbSession) -> DocumentOut:
+    document = await _get_scoped_document(document_id, tenant.id, db)
+    labels = await restricted_labels_by_document(db, [document.id])
+    return DocumentOut.model_validate(document).model_copy(
+        update={"access_labels": labels.get(document.id, [])}
+    )
 
 
 @router.get(
@@ -194,9 +208,14 @@ async def get_document_file(
 async def delete_document(document_id: uuid.UUID, tenant: CurrentTenant, db: DbSession) -> None:
     document = await _get_scoped_document(document_id, tenant.id, db)
     sha256, mime_type = document.sha256, document.mime_type
+    collection_id = document.collection_id
 
     await db.delete(document)  # chunks go with it (FK cascade)
     await db.commit()
 
     # the stored file is content-addressed per tenant; keep it while other documents reference it
     await ingestion_service.delete_document_file_if_unreferenced(db, tenant.id, sha256, mime_type)
+
+    # the corpus shrank — refresh the collection's suggested questions (worker-side)
+    if get_settings().suggested_questions_enabled:
+        suggest_questions.delay(str(collection_id))

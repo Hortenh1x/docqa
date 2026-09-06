@@ -1,11 +1,12 @@
 "use client";
 
+import { roleName } from "@/lib/access";
 import type { DonePayload } from "@/lib/api/types";
 import { formatCost, formatLatency, formatTokens } from "@/lib/format";
 
 /** Confidence as a word, not a gauge — people read words. Format per the design plan:
- * `● grounded · confidence 0.91 · 2.3k tokens · $0.0007 · 1.8s` */
-export function MetaLine({ done }: { done: DonePayload }) {
+ * `● grounded · confidence 0.91 · 2.3k tokens · $0.0007 · 1.8s · as Employee` */
+export function MetaLine({ done, role }: { done: DonePayload; role?: string | null }) {
   const grounded = (done.confidence ?? 0) >= 0.6;
   const totalTokens =
     done.usage.prompt_tokens !== null && done.usage.completion_tokens !== null
@@ -17,6 +18,7 @@ export function MetaLine({ done }: { done: DonePayload }) {
     `${formatTokens(totalTokens)} tokens`,
     formatCost(done.usage.cost_usd),
     formatLatency(done.latency_ms),
+    role ? `as ${roleName(role)}` : null,
   ]
     .filter(Boolean)
     .join(" · ");

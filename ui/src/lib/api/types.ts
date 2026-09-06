@@ -1,10 +1,50 @@
+/** A starter question and the least-privileged access role that can answer it. */
+export interface SuggestedQuestion {
+  question: string;
+  min_role: string;
+}
+
+/** An access role the API accepts on queries (GET /v1/roles), in privilege order. */
+export interface Role {
+  role: string;
+  labels: string[];
+  description: string;
+  default: boolean;
+}
+
+/** What a query reveals about access: the role it ran as and, in reveal mode, what it
+ *  could not see (null = not revealed). */
+export interface AccessInfo {
+  role: string;
+  hidden_passages: number | null;
+  hidden_labels: string[] | null;
+}
+
 export interface Collection {
   id: string;
   name: string;
   slug: string;
   embedding_model: string;
   read_only: boolean;
+  /** 3 LLM-drafted starter questions; null until the first ingestion settles. */
+  suggested_questions: SuggestedQuestion[] | null;
+  /** restricted content labels present in the collection (empty = nothing restricted) */
+  access_labels: string[];
   created_at: string;
+}
+
+export interface IngestStatus {
+  pending: number;
+  processing: number;
+  ready: number;
+  failed: number;
+  embedded_tokens: number;
+  embedding_model: string;
+  price_per_1m_tokens: number | null;
+  embedding_cost_usd: number | null;
+  eta_seconds: number | null;
+  suggested_questions: SuggestedQuestion[] | null;
+  access: { chunks_by_label: Record<string, number>; restricted_chunks: number };
 }
 
 export interface DocumentOut {
@@ -19,6 +59,8 @@ export interface DocumentOut {
   page_count: number | null;
   created_at: string;
   processed_at: string | null;
+  /** restricted content labels found in the document's sections (empty = all open) */
+  access_labels: string[];
 }
 
 export interface Source {
@@ -29,6 +71,8 @@ export interface Source {
   section: string | null;
   snippet: string;
   score: number;
+  /** content label of the chunk ("all" = open) */
+  access_label: string;
 }
 
 export interface Usage {

@@ -7,9 +7,12 @@
            stored result → replay: same status/body + X-Idempotency-Replay: true
 
 Failed handlers release the key — an error response must not lock the client out of
-retrying for the TTL. Applies to non-streaming endpoints only: a replayed SSE stream
-has no meaningful semantics (documented on the query route). Redis down → fail open
-with an error log: for uploads the dedup unique constraint still guards side effects.
+retrying for the TTL. A fingerprint of the request can be stored with the result: a
+replay with a different fingerprint is refused (422) — the same key must not hand a
+response produced under one access role to a caller asserting another. Applies to
+non-streaming endpoints only: a replayed SSE stream has no meaningful semantics
+(documented on the query route). Redis down → fail open with an error log: for uploads
+the dedup unique constraint still guards side effects.
 """
 
 import json
@@ -21,7 +24,7 @@ from typing import Any
 import structlog
 
 from app.config import get_settings
-from app.core.errors import RequestInFlightError
+from app.core.errors import IdempotencyKeyReusedError, RequestInFlightError
 from app.core.redis import get_redis
 
 log = structlog.get_logger("docqa.idempotency")
@@ -39,8 +42,14 @@ class IdempotentResult:
 
 
 async def run_idempotent(
-    tenant_id: uuid.UUID, idempotency_key: str, handler: Handler
+    tenant_id: uuid.UUID,
+    idempotency_key: str,
+    handler: Handler,
+    fingerprint: str | None = None,
 ) -> IdempotentResult:
+    """``fingerprint`` binds the key to the request that first used it: a replay attempt
+    with a different fingerprint (same key, other question or other access role) is
+    rejected instead of handing out the stored response."""
     redis = get_redis()
     key = f"idem:{tenant_id}:{idempotency_key}"
     ttl = get_settings().idempotency_ttl_s
@@ -63,7 +72,9 @@ async def run_idempotent(
                 log.error("idempotency_release_failed", key=key)
             raise
         try:
-            await redis.set(key, json.dumps({"status": status, "body": body}), ex=ttl)
+            await redis.set(
+                key, json.dumps({"status": status, "body": body, "fp": fingerprint}), ex=ttl
+            )
         except Exception:
             log.error("idempotency_store_failed", key=key)
         return IdempotentResult(status=status, body=body, replayed=False)
@@ -74,6 +85,12 @@ async def run_idempotent(
             "A request with this Idempotency-Key is currently being processed."
         )
     data = json.loads(stored)
+    stored_fp = data.get("fp")
+    if fingerprint is not None and stored_fp is not None and stored_fp != fingerprint:
+        raise IdempotencyKeyReusedError(
+            "This Idempotency-Key was already used for a different request "
+            "(other question, collection or role). Use a fresh key."
+        )
     return IdempotentResult(status=data["status"], body=data["body"], replayed=True)
 
 

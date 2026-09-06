@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
-from app.api.v1 import collections, documents, health, query, usage
+from app.api.v1 import access, collections, documents, health, query, usage
 from app.config import get_settings
 from app.core.errors import install_error_handlers
 from app.core.logging import RequestContextMiddleware, configure_logging
@@ -24,6 +24,7 @@ _TAGS = [
         "description": "Grounded answers with page-level citations — or an honest refusal.",
     },
     {"name": "usage", "description": "Tenant usage aggregates (tokens, cost, refusal rate)."},
+    {"name": "access", "description": "Access roles: who may read which labelled passages."},
 ]
 
 
@@ -99,6 +100,7 @@ def create_app() -> FastAPI:
     app.include_router(documents.router)
     app.include_router(query.router)
     app.include_router(usage.router)
+    app.include_router(access.router)
     _install_openapi(app)
     return app
 

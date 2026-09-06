@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING
 import structlog
 
 from app.config import get_settings
+from app.ingestion.access import LABEL_ALL, parse_access_marker
 from app.ingestion.parsers.base import ParsedDocument
 
 if TYPE_CHECKING:
@@ -36,6 +37,7 @@ class ChunkDraft:
     page_start: int | None
     page_end: int | None
     section_path: str | None
+    access_label: str = LABEL_ALL
 
 
 class TokenCounter:
@@ -79,6 +81,7 @@ class _Block:
 class _Section:
     path: str | None
     blocks: list[_Block]
+    access_label: str = LABEL_ALL
 
     @property
     def tokens(self) -> int:
@@ -90,15 +93,25 @@ def _is_table(block: str) -> bool:
 
 
 def _build_sections(parsed: ParsedDocument, counter: TokenCounter) -> list[_Section]:
+    """Sections with heading breadcrumbs and access labels.
+
+    Access labels (app/ingestion/access.py): a marker block right after a heading labels
+    that heading's section; sub-sections inherit the label of their nearest ancestor
+    heading; a marker before the first heading labels the whole document. The marker
+    stays in the text (the LLM sees "Access: … only" like a reader would).
+    """
     sections: list[_Section] = []
-    stack: list[tuple[int, str]] = []  # heading breadcrumbs
+    stack: list[tuple[int, str, str]] = []  # heading breadcrumbs: (level, text, label)
     current: list[_Block] = []
     current_path: str | None = None
+    doc_label = LABEL_ALL
+    current_label = LABEL_ALL
+    after_heading = False
 
     def close() -> None:
         nonlocal current
         if current:
-            sections.append(_Section(path=current_path, blocks=current))
+            sections.append(_Section(path=current_path, blocks=current, access_label=current_label))
             current = []
 
     for page in parsed.pages:
@@ -110,11 +123,25 @@ def _build_sections(parsed: ParsedDocument, counter: TokenCounter) -> list[_Sect
             if pending and block == pending[0][1]:
                 level, text = pending.pop(0)
                 close()
-                stack[:] = [h for h in stack if h[0] < level] + [(level, text)]
+                parents = [h for h in stack if h[0] < level]
+                inherited = parents[-1][2] if parents else doc_label
+                stack[:] = parents + [(level, text, inherited)]
                 current_path = " > ".join(h[1] for h in stack)
+                current_label = inherited
+                after_heading = True
                 # the heading itself opens the section content — it helps retrieval
                 current.append(_Block(text=text, page=page.number, tokens=counter.count(text)))
                 continue
+            if after_heading or not stack:
+                label = parse_access_marker(block)
+                if label is not None:
+                    if stack:
+                        level, text, _ = stack[-1]
+                        stack[-1] = (level, text, label)
+                    else:
+                        doc_label = label
+                    current_label = label
+            after_heading = False
             current.append(_Block(text=block, page=page.number, tokens=counter.count(block)))
     close()
     return sections
@@ -250,6 +277,7 @@ def chunk_document(parsed: ParsedDocument) -> list[ChunkDraft]:
                 page_end=page_end,
                 # merged short sections keep the first section's breadcrumbs
                 section_path=buffer[0].path,
+                access_label=buffer[0].access_label,
             )
         )
         buffer.clear()
@@ -269,10 +297,16 @@ def chunk_document(parsed: ParsedDocument) -> list[ChunkDraft]:
                         page_start=page_start,
                         page_end=page_end,
                         section_path=section.path,
+                        access_label=section.access_label,
                     )
                 )
             continue
-        if buffer and sum(s.tokens for s in buffer) + section.tokens > target:
+        # a chunk carries exactly one access label: sections with different labels are
+        # never merged, or a restricted paragraph would ride along in an open chunk
+        if buffer and (
+            buffer[0].access_label != section.access_label
+            or sum(s.tokens for s in buffer) + section.tokens > target
+        ):
             flush_buffer()
         buffer.append(section)
     flush_buffer()

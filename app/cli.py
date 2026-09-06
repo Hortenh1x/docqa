@@ -91,6 +91,7 @@ async def wipe_collection(collection_id: uuid.UUID) -> None:
                 str(collection.tenant_id), document.sha256, EXT_BY_MIME.get(document.mime_type, "")
             )
         await session.execute(delete(Document).where(Document.collection_id == collection_id))
+        collection.suggested_questions = None  # stale once the documents are gone
         await session.commit()
         print(f"wiped {len(documents)} documents from {collection.slug!r}")
 

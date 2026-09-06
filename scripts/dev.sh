@@ -4,8 +4,9 @@
 #
 #   ./scripts/dev.sh
 #
-# The seeded demo collections are pinned to bge-m3, so the script starts the
-# user-level ollama on 11435 (the systemd instance does not see ~/.ollama models).
+# Embeddings default to OpenAI (cloud, parity with prod); the user-level ollama on
+# 11435 is still started for legacy bge-m3 collections and the optional local LLM
+# (the systemd instance does not see ~/.ollama models).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

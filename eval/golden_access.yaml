@@ -1,0 +1,267 @@
+# Access-levels golden set for the Kranich demo corpus (facts F25–F32, traps T9–T11 in
+# plans/docqa-corpus-prompt.md). Every question exists in two flavours: asked under a
+# role that may NOT read the passage (expected_refusal + hidden_sources: the document
+# must not surface at all) and under the least-privileged role that may (expected
+# answer + sources). Run against a collection seeded from corpus/build:
+#   uv run python -m eval.run_eval --collection <id> --golden eval/golden_access.yaml \
+#     --results eval/results_access.md --with-answers --api-key <key>
+# (--role only applies to entries without a role; every entry here names one.)
+
+# --- F25: card limit (FIN-001 §8, Finance) ---
+- id: a001
+  category: access
+  role: employee
+  question: "What is the single-transaction limit on the corporate card?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "FIN-001", section: "8" }]
+  expected_hidden_labels: ["finance"]
+  notes: "F25 under employee"
+- id: a002
+  category: access
+  role: finance
+  question: "What is the single-transaction limit on the corporate card?"
+  expected_answer: "€1,500; anything above needs CFO approval before the purchase"
+  expected_sources: [{ doc: "FIN-001", section: "8" }]
+  notes: "F25 unlocked"
+- id: a003
+  category: access
+  role: hr
+  question: "Above which card amount does the CFO have to approve a purchase?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "FIN-001", section: "8" }]
+  expected_hidden_labels: ["finance"]
+  notes: "F25: HR is a sibling of Finance, not above it"
+- id: a004
+  category: access
+  role: leadership
+  question: "Above which card amount does the CFO have to approve a purchase?"
+  expected_answer: "€1,500 per transaction"
+  expected_sources: [{ doc: "FIN-001", section: "8" }]
+  notes: "F25 leadership sees everything"
+
+# --- F26: calibration share (HR-003 §9, Managers) ---
+- id: a005
+  category: access
+  role: employee
+  question: "What share of a team can be rated 'exceeds expectations' in calibration?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "HR-003", section: "9" }]
+  expected_hidden_labels: ["managers"]
+  notes: "F26 under employee"
+- id: a006
+  category: access
+  role: manager
+  question: "What share of a team can be rated 'exceeds expectations' in calibration?"
+  expected_answer: "At most 20% of a team's ratings"
+  expected_sources: [{ doc: "HR-003", section: "9" }]
+  notes: "F26 unlocked by manager"
+- id: a007
+  category: access
+  role: finance
+  question: "Is there a cap on how many people on a team get the top performance rating?"
+  expected_answer: "Yes — no more than 20% may be rated 'exceeds expectations'"
+  expected_sources: [{ doc: "HR-003", section: "9" }]
+  notes: "F26: finance includes the managers label"
+
+# --- F27: for-cause access revocation (HR-002 §9, Managers) ---
+- id: a008
+  category: access
+  role: employee
+  question: "How quickly is system access revoked when someone is let go for cause?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "HR-002", section: "9" }]
+  expected_hidden_labels: ["managers"]
+  notes: "F27 under employee"
+- id: a009
+  category: access
+  role: manager
+  question: "How quickly is system access revoked when someone is let go for cause?"
+  expected_answer: "Within 1 hour of the manager's notification to IT"
+  expected_sources: [{ doc: "HR-002", section: "9" }]
+  notes: "F27 unlocked"
+- id: a010
+  category: access
+  role: hr
+  question: "When does IT cut access for a departure for cause?"
+  expected_answer: "Within 1 hour of being notified by the manager"
+  expected_sources: [{ doc: "HR-002", section: "9" }]
+  notes: "F27: hr includes managers"
+
+# --- F28: disclosure decision (SEC-001 §9, Leadership) ---
+- id: a011
+  category: access
+  role: employee
+  question: "Within what time does leadership decide whether customers are told about a data incident?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "SEC-001", section: "9" }]
+  expected_hidden_labels: ["leadership"]
+  notes: "F28 under employee"
+- id: a012
+  category: access
+  role: hr
+  question: "Within what time does leadership decide whether customers are told about a data incident?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "SEC-001", section: "9" }]
+  expected_hidden_labels: ["leadership"]
+  notes: "F28: leadership-only stays hidden from HR"
+- id: a013
+  category: access
+  role: leadership
+  question: "Within what time does leadership decide whether customers are told about a data incident?"
+  expected_answer: "Within 48 hours of the incident being confirmed"
+  expected_sources: [{ doc: "SEC-001", section: "9" }]
+  notes: "F28 unlocked"
+
+# --- F29: asset write-off threshold (POL-006 §9, Finance) ---
+- id: a014
+  category: access
+  role: employee
+  question: "Below which net book value is old equipment written off without approval?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "POL-006", section: "9" }]
+  expected_hidden_labels: ["finance"]
+  notes: "F29 under employee"
+- id: a015
+  category: access
+  role: finance
+  question: "Below which net book value is old equipment written off without approval?"
+  expected_answer: "Below €400 net book value; above that Finance decides"
+  expected_sources: [{ doc: "POL-006", section: "9" }]
+  notes: "F29 unlocked"
+- id: a016
+  category: access
+  role: manager
+  question: "Who decides about writing off a laptop that still has book value?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "POL-006", section: "9" }]
+  expected_hidden_labels: ["finance"]
+  notes: "F29: managers label does not include finance"
+
+# --- F30: hardship advance (HR-004 §9 / HR-004-DE §9, People & Culture) ---
+- id: a017
+  category: access
+  role: employee
+  question: "How much can an employee get as a hardship advance?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "HR-004", section: "9" }]
+  expected_hidden_labels: ["hr"]
+  notes: "F30 under employee"
+- id: a018
+  category: access
+  role: hr
+  question: "How much can an employee get as a hardship advance?"
+  expected_answer: "Up to €2,000"
+  expected_sources: [{ doc: "HR-004", section: "9" }]
+  notes: "F30 unlocked"
+- id: a019
+  category: access
+  role: hr
+  question: "Over what period is a hardship advance paid back?"
+  expected_answer: "Within 12 months, through payroll"
+  expected_sources: [{ doc: "HR-004", section: "9" }]
+  notes: "F30 second number"
+- id: a020
+  category: access
+  role: finance
+  question: "Over what period is a hardship advance paid back?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "HR-004", section: "9" }]
+  expected_hidden_labels: ["hr"]
+  notes: "F30: finance does not include hr"
+- id: a021
+  category: access
+  role: employee
+  question: "Wie hoch kann ein Vorschuss in einer Notlage sein?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "HR-004-DE", section: "9" }]
+  expected_hidden_labels: ["hr"]
+  notes: "F30 German mirror under employee (DE collection)"
+- id: a022
+  category: access
+  role: hr
+  question: "Wie hoch kann ein Vorschuss in einer Notlage sein?"
+  expected_answer: "Bis zu 2.000 €"
+  expected_sources: [{ doc: "HR-004-DE", section: "9" }]
+  notes: "F30 German mirror unlocked"
+
+# --- F31/F32: compensation bands (EXEC-001, whole document Leadership) ---
+- id: a023
+  category: access
+  role: employee
+  question: "What is the salary band for a Senior Engineer in Berlin?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "EXEC-001", section: "2" }]
+  expected_hidden_labels: ["leadership"]
+  notes: "F31 under employee — the demo's opening question"
+- id: a024
+  category: access
+  role: manager
+  question: "What is the salary band for a Senior Engineer in Berlin?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "EXEC-001", section: "2" }]
+  expected_hidden_labels: ["leadership"]
+  notes: "F31 under manager"
+- id: a025
+  category: access
+  role: finance
+  question: "What is the salary band for a Senior Engineer in Berlin?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "EXEC-001", section: "2" }]
+  expected_hidden_labels: ["leadership"]
+  notes: "F31 under finance — compensation bands are leadership-only, not finance"
+- id: a026
+  category: access
+  role: leadership
+  question: "What is the salary band for a Senior Engineer in Berlin?"
+  expected_answer: "€78,000–€96,000 annual base salary"
+  expected_sources: [{ doc: "EXEC-001", section: "2" }]
+  notes: "F31 unlocked (table)"
+- id: a027
+  category: access
+  role: leadership
+  question: "What do we pay an Engineering Manager in Berlin?"
+  expected_answer: "€92,000–€115,000 annual base salary"
+  expected_sources: [{ doc: "EXEC-001", section: "2" }]
+  notes: "F31 second row, paraphrase"
+- id: a028
+  category: access
+  role: leadership
+  question: "How much of payroll is set aside for the annual salary review?"
+  expected_answer: "3.5% of total payroll"
+  expected_sources: [{ doc: "EXEC-001", section: "3" }]
+  notes: "F32 unlocked"
+- id: a029
+  category: access
+  role: hr
+  question: "How much of payroll is set aside for the annual salary review?"
+  expected_refusal: true
+  hidden_sources: [{ doc: "EXEC-001", section: "3" }]
+  expected_hidden_labels: ["leadership"]
+  notes: "F32: HR does not see leadership content"
+
+# --- T11: partial answers (open half answerable, restricted half hidden) ---
+- id: a030
+  category: access
+  role: employee
+  question: "What is the equipment budget for an engineering role, and below which book value is old equipment written off?"
+  expected_answer: "€2,800 for an engineering role (the write-off threshold is not available at this access level)"
+  expected_sources: [{ doc: "POL-006", section: "3" }]
+  hidden_sources: [{ doc: "POL-006", section: "9" }]
+  expected_hidden_labels: ["finance"]
+  notes: "T11 partial: open F11 answered, restricted F29 hidden — judge checks faithfulness"
+- id: a031
+  category: access
+  role: finance
+  question: "What is the equipment budget for an engineering role, and below which book value is old equipment written off?"
+  expected_answer: "€2,800 budget; equipment below €400 net book value is written off without approval"
+  expected_sources: [{ doc: "POL-006", section: "3" }, { doc: "POL-006", section: "9" }]
+  notes: "T11 both halves for finance"
+- id: a032
+  category: access
+  role: employee
+  question: "When do I need to report a suspected security incident, and how fast does leadership decide on customer disclosure?"
+  expected_answer: "Report within 24 hours to security@kranich.example (the disclosure timeline is not available at this access level)"
+  expected_sources: [{ doc: "SEC-001", section: "3" }]
+  hidden_sources: [{ doc: "SEC-001", section: "9" }]
+  expected_hidden_labels: ["leadership"]
+  notes: "T11 partial: F20 open, F28 hidden"

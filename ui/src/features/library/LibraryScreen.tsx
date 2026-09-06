@@ -1,9 +1,13 @@
 "use client";
 
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCollections } from "@/app/providers";
-import { ApiError, listDocumentsPage, uploadDocument } from "@/lib/api/client";
+import { LockIcon } from "@/components/LockIcon";
+import { labelName } from "@/lib/access";
+import { ApiError, getIngestStatus, listDocumentsPage, uploadDocument } from "@/lib/api/client";
+import type { IngestStatus } from "@/lib/api/types";
+import { formatCost, formatTokens } from "@/lib/format";
 import { Dropzone } from "./Dropzone";
 import { DocumentTable } from "./DocumentTable";
 
@@ -49,6 +53,37 @@ export function LibraryScreen() {
     }
   }, [documents.data, page, pageSize]);
 
+  const questionWaitPolls = useRef(0);
+  const ingest = useQuery({
+    queryKey: ["ingest-status", selected?.id],
+    queryFn: () => getIngestStatus(selected!.id),
+    enabled: !!selected,
+    refetchInterval: (query) => {
+      const status = query.state.data;
+      if (!status) return false;
+      if (status.pending + status.processing > 0) {
+        questionWaitPolls.current = 0;
+        return 2000;
+      }
+      // settled, questions still cooking (one LLM call) — keep polling for ~2 min max
+      if (status.ready > 0 && !status.suggested_questions && questionWaitPolls.current < 40) {
+        questionWaitPolls.current += 1;
+        return 3000;
+      }
+      return false;
+    },
+  });
+
+  // fresh questions → refresh the collections list so the Ask screen's chips pick them up
+  const questionsKey = JSON.stringify(ingest.data?.suggested_questions ?? null);
+  const prevQuestionsKey = useRef(questionsKey);
+  useEffect(() => {
+    if (prevQuestionsKey.current !== questionsKey) {
+      prevQuestionsKey.current = questionsKey;
+      queryClient.invalidateQueries({ queryKey: ["collections"] });
+    }
+  }, [questionsKey, queryClient]);
+
   const upload = useMutation({
     mutationFn: (file: File) =>
       uploadDocument(selected!.id, file, (fraction) =>
@@ -62,6 +97,7 @@ export function LibraryScreen() {
     onSuccess: () => {
       setPage(0); // the fresh upload sorts first — show it
       queryClient.invalidateQueries({ queryKey: ["documents", selected?.id] });
+      queryClient.invalidateQueries({ queryKey: ["ingest-status", selected?.id] });
     },
     onError: (err: unknown) => {
       if (err instanceof ApiError && err.code === "duplicate_document") {
@@ -87,6 +123,12 @@ export function LibraryScreen() {
             {selected.slug} · {selected.embedding_model}
             {selected.read_only ? " · read-only" : ""}
           </p>
+          {selected.access_labels.length > 0 && (
+            <p className="font-data mt-1 flex items-center gap-1.5 text-xs text-ink-soft">
+              <LockIcon />
+              restricted sections: {selected.access_labels.map(labelName).join(", ")}
+            </p>
+          )}
         </div>
         {DEMO_MODE && !selected.read_only && (
           <span className="font-data text-xs text-ink-soft" aria-label="Sandbox quota">
@@ -103,6 +145,8 @@ export function LibraryScreen() {
       ) : (
         <Dropzone busy={upload.isPending} progress={progress} onFile={(file) => upload.mutate(file)} />
       )}
+
+      {ingest.data && <IngestProgress status={ingest.data} />}
 
       {uploadError && (
         <p role="alert" className="text-sm text-error">
@@ -175,4 +219,45 @@ export function LibraryScreen() {
       )}
     </div>
   );
+}
+
+/** One quiet line under the dropzone: ETA + running tokens/cost while ingesting,
+ *  "generating questions" while the LLM drafts them, a cost summary when idle. */
+function IngestProgress({ status }: { status: IngestStatus }) {
+  const inFlight = status.pending + status.processing;
+  if (inFlight > 0) {
+    return (
+      <p role="status" className="font-data text-xs text-ink-soft">
+        Processing {inFlight} {inFlight === 1 ? "document" : "documents"}…
+        {status.eta_seconds !== null && ` ~${status.eta_seconds}s left`}
+        {" · "}
+        {formatTokens(status.embedded_tokens)} tokens embedded
+        {status.embedding_cost_usd !== null && ` · ${formatCost(status.embedding_cost_usd)}`}
+      </p>
+    );
+  }
+  if (status.ready > 0 && !status.suggested_questions) {
+    return (
+      <p role="status" className="font-data text-xs text-ink-soft">
+        Generating suggested questions…
+      </p>
+    );
+  }
+  if (status.ready > 0) {
+    const restricted = Object.entries(status.access.chunks_by_label).filter(
+      ([label]) => label !== "all",
+    );
+    return (
+      <p className="font-data text-xs text-ink-soft">
+        {formatTokens(status.embedded_tokens)} tokens embedded
+        {status.embedding_cost_usd !== null &&
+          ` · ${formatCost(status.embedding_cost_usd)} embedding cost`}
+        {status.access.restricted_chunks > 0 &&
+          ` · ${status.access.restricted_chunks} restricted ${
+            status.access.restricted_chunks === 1 ? "passage" : "passages"
+          } (${restricted.map(([label, n]) => `${labelName(label)} ${n}`).join(" · ")})`}
+      </p>
+    );
+  }
+  return null;
 }

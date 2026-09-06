@@ -1,14 +1,16 @@
 "use client";
 
 import { useCallback, useEffect, useReducer, useRef } from "react";
-import { useCollections } from "@/app/providers";
+import { useCollections, useRole } from "@/app/providers";
+import { joinNames, labelName, roleName } from "@/lib/access";
 import { ApiError } from "@/lib/api/client";
 import { streamQuery } from "@/lib/api/sse";
+import { AccessLine } from "./AccessLine";
 import { AnswerView } from "./AnswerView";
 import { Composer } from "./Composer";
 import { ErrorPanel } from "./ErrorPanel";
 import { MetaLine } from "./MetaLine";
-import { PRESETS, PresetChips } from "./PresetChips";
+import { QuestionChips } from "./QuestionChips";
 import { RefusalPanel } from "./RefusalPanel";
 import { SourceDrawer } from "./SourceDrawer";
 import { SourceRail } from "./SourceRail";
@@ -16,23 +18,25 @@ import { askReducer, initialState } from "./state";
 
 export function AskScreen() {
   const { selected } = useCollections();
+  const { roles, role, setRole } = useRole();
   const [state, dispatch] = useReducer(askReducer, initialState);
   const abortRef = useRef<AbortController | null>(null);
   const markTriggerRef = useRef<HTMLElement | null>(null);
   const liveRef = useRef<HTMLDivElement>(null);
 
   const ask = useCallback(
-    (question: string) => {
+    (question: string, asRole: string = role) => {
       if (!selected || !question.trim()) return;
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
-      dispatch({ type: "submit", question: question.trim() });
+      dispatch({ type: "submit", question: question.trim(), role: asRole });
 
       streamQuery(
-        { collection_id: selected.id, question: question.trim() },
+        { collection_id: selected.id, question: question.trim(), role: asRole },
         (event) => {
-          if (event.event === "meta") dispatch({ type: "meta", queryId: event.data.query_id });
+          if (event.event === "meta")
+            dispatch({ type: "meta", queryId: event.data.query_id, access: event.data.access });
           else if (event.event === "sources")
             dispatch({ type: "sources", sources: event.data.sources });
           else if (event.event === "delta") dispatch({ type: "delta", text: event.data.text });
@@ -59,7 +63,16 @@ export function AskScreen() {
         }
       });
     },
-    [selected],
+    [selected, role],
+  );
+
+  // "View as Finance" on a refusal: switch the role AND re-ask right away
+  const viewAs = useCallback(
+    (next: string) => {
+      setRole(next);
+      ask(state.question, next);
+    },
+    [ask, setRole, state.question],
   );
 
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -79,9 +92,11 @@ export function AskScreen() {
     if (state.phase === "searching") liveRef.current.textContent = "Searching documents…";
     else if (state.phase === "done") liveRef.current.textContent = `Answer ready: ${state.answer}`;
     else if (state.phase === "refused")
-      liveRef.current.textContent = "Not found in the documents.";
+      liveRef.current.textContent = state.access?.hidden_passages
+        ? "Not available at your access level."
+        : "Not found in the documents.";
     else if (state.phase === "error") liveRef.current.textContent = "Something went wrong.";
-  }, [state.phase, state.answer]);
+  }, [state.phase, state.answer, state.access]);
 
   const openSource = useCallback((n: number, trigger: HTMLElement | null) => {
     markTriggerRef.current = trigger;
@@ -94,6 +109,8 @@ export function AskScreen() {
   }, []);
 
   const active = state.sources.find((s) => s.n === state.activeSource) ?? null;
+  const restricted = selected?.access_labels ?? [];
+  const roleMoved = state.phase !== "idle" && state.askedAs !== null && state.askedAs !== role;
 
   return (
     // ≥1100px the reading column shifts to make room for the source panel;
@@ -113,7 +130,14 @@ export function AskScreen() {
               Answers come with page-level citations — or an honest &lsquo;not found&rsquo;.
             </p>
           </div>
-          <PresetChips onPick={ask} />
+          <QuestionChips questions={selected?.suggested_questions} onPick={ask} />
+          {restricted.length > 0 && (
+            <p className="max-w-md text-xs leading-5 text-ink-soft">
+              Viewing as <span className="text-ink">{roleName(role)}</span>. Some sections
+              here are restricted to {joinNames(restricted.map(labelName))} — switch the
+              role in the top bar to see how the answers change.
+            </p>
+          )}
         </div>
       ) : (
         <div className="flex flex-col gap-5 py-8">
@@ -144,6 +168,10 @@ export function AskScreen() {
             />
           )}
 
+          {state.phase !== "refused" && state.phase !== "searching" && (
+            <AccessLine access={state.access} />
+          )}
+
           {(state.phase === "streaming" || state.phase === "done") && (
             <AnswerView
               answer={state.answer}
@@ -153,9 +181,19 @@ export function AskScreen() {
             />
           )}
 
-          {state.phase === "done" && state.done && <MetaLine done={state.done} />}
+          {state.phase === "done" && state.done && (
+            <MetaLine done={state.done} role={state.askedAs} />
+          )}
 
-          {state.phase === "refused" && <RefusalPanel onPick={ask} />}
+          {state.phase === "refused" && (
+            <RefusalPanel
+              questions={selected?.suggested_questions}
+              onPick={ask}
+              access={state.access}
+              roles={roles}
+              onViewAs={viewAs}
+            />
+          )}
 
           {state.phase === "error" && state.error && (
             <ErrorPanel error={state.error} onRetry={() => ask(state.question)} />
@@ -164,7 +202,21 @@ export function AskScreen() {
       )}
 
       <div className="sticky bottom-0 mt-auto bg-paper pb-5 pt-2">
-        <Composer disabled={!selected} onSubmit={ask} />
+        {roleMoved && (
+          <div className="mb-2 flex items-center justify-between gap-3 rounded-[6px] border border-hairline bg-sheet px-3 py-1.5 text-xs text-ink-soft">
+            <span>
+              Role changed to <span className="text-ink">{roleName(role)}</span>.
+            </span>
+            <button
+              type="button"
+              onClick={() => ask(state.question, role)}
+              className="rounded-[6px] border border-hairline px-2 py-0.5 text-xs text-ink hover:border-stamp/40"
+            >
+              Ask again as {roleName(role)}
+            </button>
+          </div>
+        )}
+        <Composer disabled={!selected} onSubmit={(q) => ask(q)} />
         {!selected && (
           <p className="mt-2 text-center text-xs text-ink-soft">
             No collection available — set an API key or create a collection first.
@@ -176,5 +228,3 @@ export function AskScreen() {
     </div>
   );
 }
-
-export { PRESETS };

@@ -20,6 +20,15 @@ PRICES_PER_1M: dict[str, tuple[Decimal, Decimal]] = {
     "deepseek-reasoner": (Decimal("0.14"), Decimal("0.28")),
 }
 
+# Embedding prices, USD per 1M input tokens. Keyed by the base model name — the id
+# pinned on a collection may carry a "@<dims>" suffix (text-embedding-3-small@1024).
+EMBEDDING_PRICES_PER_1M: dict[str, Decimal] = {
+    "stub": Decimal("0"),
+    "bge-m3": Decimal("0"),  # local ollama
+    "text-embedding-3-small": Decimal("0.02"),
+    "text-embedding-3-large": Decimal("0.13"),
+}
+
 _PER = Decimal("1000000")
 _CENT_MICRO = Decimal("0.000001")
 
@@ -35,3 +44,14 @@ def cost_usd(
     input_price, output_price = prices
     total = (prompt_tokens * input_price + completion_tokens * output_price) / _PER
     return total.quantize(_CENT_MICRO)
+
+
+def embedding_price_per_1m(model_id: str) -> Decimal | None:
+    return EMBEDDING_PRICES_PER_1M.get(model_id.split("@", 1)[0])
+
+
+def embedding_cost_usd(model_id: str, tokens: int | None) -> Decimal | None:
+    price = embedding_price_per_1m(model_id)
+    if price is None or tokens is None:
+        return None
+    return (tokens * price / _PER).quantize(_CENT_MICRO)

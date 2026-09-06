@@ -8,6 +8,8 @@ Status machine: pending → processing → ready | failed.
 - EmbeddingError (network/provider) retries with exponential backoff, then fails.
 - Existing chunks are deleted before insert, so reprocessing a failed document never
   duplicates rows.
+- Every terminal state (ready or failed) may settle the collection — when nothing is
+  left in flight, a suggested-questions refresh is enqueued (best-effort, decoupled).
 """
 
 import asyncio
@@ -20,13 +22,14 @@ from typing import Any
 import structlog
 from celery import Task
 from celery.exceptions import MaxRetriesExceededError
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 
 from app.config import get_settings
 from app.db.models import Chunk, Collection, Document, DocumentStatus
 from app.db.sync import sync_session
 from app.embeddings import get_embedding_provider
 from app.embeddings.base import EmbeddingError
+from app.generation.tasks import suggest_questions
 from app.ingestion.chunking import ChunkDraft, chunk_document
 from app.ingestion.mime import EXT_BY_MIME
 from app.ingestion.parsers import ParsedDocument, ParserError, get_parser
@@ -56,6 +59,51 @@ def _mark_failed(document_id: uuid.UUID, error: str) -> None:
         document.status = DocumentStatus.FAILED
         document.error = error[:500]
         document.processed_at = datetime.now(UTC)
+    # a terminal failure can be the last in-flight document of its collection
+    _refresh_suggestions_if_settled(document_id, corpus_changed=False)
+
+
+def _refresh_suggestions_if_settled(document_id: uuid.UUID, *, corpus_changed: bool) -> None:
+    """Enqueue a suggested-questions refresh once the collection has nothing in flight.
+
+    ``corpus_changed=False`` (a failed ingest adds no chunks) skips the refresh when
+    questions already exist — nothing changed, no LLM call to spend.
+    """
+    if not get_settings().suggested_questions_enabled:
+        return
+    with sync_session() as session:
+        row = session.execute(
+            select(Document.collection_id, Collection.suggested_questions)
+            .join(Collection, Document.collection_id == Collection.id)
+            .where(Document.id == document_id)
+        ).first()
+        if row is None:
+            return
+        collection_id, existing = row
+        in_flight = session.execute(
+            select(func.count())
+            .select_from(Document)
+            .where(
+                Document.collection_id == collection_id,
+                Document.status.in_((DocumentStatus.PENDING, DocumentStatus.PROCESSING)),
+            )
+        ).scalar_one()
+        # two workers can settle the collection near-simultaneously — let only the
+        # latest terminal document enqueue, so one settle spends one LLM call
+        latest = session.execute(
+            select(Document.id)
+            .where(
+                Document.collection_id == collection_id,
+                Document.processed_at.isnot(None),
+            )
+            .order_by(Document.processed_at.desc(), Document.id.desc())
+            .limit(1)
+        ).scalar_one_or_none()
+    if in_flight or latest != document_id:
+        return
+    if not corpus_changed and existing is not None:
+        return
+    suggest_questions.delay(str(collection_id))
 
 
 def _store_chunks(
@@ -80,6 +128,7 @@ def _store_chunks(
                 page_start=draft.page_start,
                 page_end=draft.page_end,
                 section_path=draft.section_path,
+                access_label=draft.access_label,
                 embedding=embedding,
             )
             for draft, embedding in zip(drafts, embeddings, strict=True)
@@ -143,3 +192,4 @@ def ingest_document(self: Task, document_id: str) -> None:
 
     _store_chunks(doc_id, parsed, drafts, embeddings)
     log_ctx.info("ingest_done", chunks=len(drafts))
+    _refresh_suggestions_if_settled(doc_id, corpus_changed=True)

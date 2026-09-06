@@ -1,4 +1,11 @@
-import type { Collection, DocumentOut, Problem, UsageSummary } from "./types";
+import type {
+  Collection,
+  DocumentOut,
+  IngestStatus,
+  Problem,
+  Role,
+  UsageSummary,
+} from "./types";
 
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
@@ -56,6 +63,8 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 
 export const listCollections = () => api<Collection[]>("/v1/collections");
 
+export const listRoles = () => api<Role[]>("/v1/roles");
+
 export const listDocuments = (collectionId: string) =>
   api<DocumentOut[]>(`/v1/collections/${collectionId}/documents`);
 
@@ -74,6 +83,9 @@ export async function listDocumentsPage(
   const total = Number(res.headers.get("x-total-count") ?? documents.length);
   return { documents, total };
 }
+
+export const getIngestStatus = (collectionId: string) =>
+  api<IngestStatus>(`/v1/collections/${collectionId}/ingest-status`);
 
 export const deleteDocument = (documentId: string) =>
   api<void>(`/v1/documents/${documentId}`, { method: "DELETE" });

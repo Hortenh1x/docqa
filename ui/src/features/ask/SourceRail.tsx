@@ -1,5 +1,7 @@
 "use client";
 
+import { LockIcon } from "@/components/LockIcon";
+import { labelName } from "@/lib/access";
 import type { Source } from "@/lib/api/types";
 import { formatPages } from "@/lib/format";
 
@@ -38,6 +40,12 @@ export function SourceRail({
             {formatPages(source.pages) ?? "no pages"}
             {source.section ? ` · ${source.section}` : ""}
           </div>
+          {source.access_label !== "all" && (
+            <span className="font-data mt-1.5 inline-flex items-center gap-1 rounded border border-hairline px-1 text-[10px] leading-4 text-ink-soft">
+              <LockIcon className="h-2.5 w-2.5" />
+              {labelName(source.access_label)}
+            </span>
+          )}
         </button>
       ))}
     </div>

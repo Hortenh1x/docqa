@@ -4,9 +4,13 @@
 raises on garbage. The ``'simple'`` config matches the generated column (no stemming —
 the corpus is bilingual EN+DE): FTS is our source of exact matches (IDs like "POL-004",
 numbers); semantics is the vector's job. An empty result is normal, not an error.
+
+Access control is the same WHERE predicate as in vector search: restricted chunks are
+filtered before ranking, never after.
 """
 
 import uuid
+from collections.abc import Sequence
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,6 +25,7 @@ async def fulltext_search(
     collection_id: uuid.UUID,
     question: str,
     top_k: int,
+    allowed_labels: Sequence[str],
 ) -> list[RetrievedChunk]:
     tsquery = func.websearch_to_tsquery("simple", question)
     score = func.ts_rank_cd(Chunk.tsv, tsquery)
@@ -31,6 +36,7 @@ async def fulltext_search(
             Chunk.page_start,
             Chunk.page_end,
             Chunk.section_path,
+            Chunk.access_label,
             Document.id.label("document_id"),
             Document.filename,
             score.label("score"),
@@ -39,6 +45,7 @@ async def fulltext_search(
         .where(
             Document.collection_id == collection_id,
             Document.status == DocumentStatus.READY,
+            Chunk.access_label.in_(list(allowed_labels)),
             Chunk.tsv.op("@@")(tsquery),
         )
         .order_by(score.desc())

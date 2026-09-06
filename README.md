@@ -12,7 +12,7 @@ Multi-tenant document Q&A API built on FastAPI, PostgreSQL + pgvector, Redis and
 
 Measured on a 447-question golden set over a trap-engineered corpus ([details](docs.md#measured-not-promised)): recall@8 **0.99**, faithfulness **100%**, correctness **97.8%**, citation precision **99.6%**, **zero invented answers** on 150 off-corpus questions.
 
-- **[docs.md](docs.md)** — features, eval results, architecture, configuration, design decisions
+- **[docs.md](docs.md)** — features, eval results, architecture, configuration, design decisions, access-aware retrieval (section-level restrictions, roles, the 403-vs-404 trade-off)
 - **[deploy/runbook.md](deploy/runbook.md)** — public-demo deploy (Caddy TLS, quotas, backups)
 
 ## Quickstart

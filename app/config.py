@@ -4,6 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -56,6 +57,10 @@ class Settings(BaseSettings):
     llm_max_tokens: int = 1024
     context_token_budget: int = 3600
     context_chunk_max_tokens: int = 700
+    # suggested questions: the worker refreshes them when a collection's ingestion
+    # settles — count kept, count+2 drafted, ranked by retrieval score
+    suggested_questions_enabled: bool = True
+    suggested_questions_count: int = 3
 
     # rate limiting (token bucket per API key, by endpoint class)
     rate_limit_enabled: bool = True
@@ -74,6 +79,24 @@ class Settings(BaseSettings):
     # idempotency
     idempotency_ttl_s: int = 86400
 
+    # access levels: chunks carry a content label (from "Access: … only" markers in the
+    # documents); a query carries the caller's role; a role sees the labels listed here.
+    # Labels are a partial order on purpose (HR and Finance are siblings, not a ladder).
+    # ACCESS_ROLES accepts JSON in the environment. Every role must include "all".
+    access_roles: dict[str, list[str]] = {
+        "employee": ["all"],
+        "manager": ["all", "managers"],
+        "hr": ["all", "managers", "hr"],
+        "finance": ["all", "managers", "finance"],
+        "leadership": ["all", "managers", "hr", "finance", "leadership"],
+    }
+    # role assumed when a query carries none — least privilege, never "see everything"
+    access_default_role: str = "employee"
+    # demo mode: tell the client how many relevant passages its role cannot see and which
+    # labels would unlock them. This deliberately confirms that restricted content exists
+    # (the "403 vs 404" trade-off) — keep it off in deployments where that matters.
+    access_reveal_hidden: bool = False
+
     # public demo mode: read-only demo collections + a small sandbox
     demo_mode: bool = False
     demo_max_files_per_collection: int = 5
@@ -90,6 +113,19 @@ class Settings(BaseSettings):
     # misc
     storage_dir: Path = Path("data/files")
     log_level: str = "INFO"
+
+    @model_validator(mode="after")
+    def _validate_access_roles(self) -> "Settings":
+        if not self.access_roles:
+            raise ValueError("ACCESS_ROLES must define at least one role")
+        for role, labels in self.access_roles.items():
+            if "all" not in labels:
+                raise ValueError(f"ACCESS_ROLES: role '{role}' must include the 'all' label")
+        if self.access_default_role not in self.access_roles:
+            raise ValueError(
+                f"ACCESS_DEFAULT_ROLE '{self.access_default_role}' is not in ACCESS_ROLES"
+            )
+        return self
 
     @property
     def sync_database_url(self) -> str:

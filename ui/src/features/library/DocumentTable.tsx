@@ -2,6 +2,8 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { LockIcon } from "@/components/LockIcon";
+import { labelName } from "@/lib/access";
 import { deleteDocument } from "@/lib/api/client";
 import type { DocumentOut } from "@/lib/api/types";
 import { formatBytes, formatDate } from "@/lib/format";
@@ -36,6 +38,7 @@ export function DocumentTable({
             <th className="px-3 py-2.5 font-medium">Pages</th>
             <th className="px-3 py-2.5 font-medium">Size</th>
             <th className="px-3 py-2.5 font-medium">Status</th>
+            <th className="px-3 py-2.5 font-medium">Access</th>
             <th className="px-3 py-2.5 font-medium">Added</th>
             {!readOnly && <th className="px-3 py-2.5" />}
           </tr>
@@ -61,6 +64,23 @@ export function DocumentTable({
               </td>
               <td className="px-3 py-2.5">
                 <StatusBadge status={doc.status} error={doc.error} />
+              </td>
+              <td className="px-3 py-2.5">
+                {doc.access_labels.length ? (
+                  <span className="flex flex-wrap gap-1">
+                    {doc.access_labels.map((label) => (
+                      <span
+                        key={label}
+                        className="font-data inline-flex items-center gap-1 rounded border border-hairline px-1 text-[10px] leading-4 text-ink-soft"
+                      >
+                        <LockIcon className="h-2.5 w-2.5" />
+                        {labelName(label)}
+                      </span>
+                    ))}
+                  </span>
+                ) : (
+                  <span className="font-data text-xs text-ink-soft">—</span>
+                )}
               </td>
               <td className="font-data px-3 py-2.5 text-xs text-ink-soft">
                 {formatDate(doc.created_at)}

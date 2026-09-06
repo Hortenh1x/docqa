@@ -24,6 +24,7 @@ from typing import Any
 import anyio
 import structlog
 
+from app.access import Principal, resolve_principal
 from app.config import Settings
 from app.db.base import get_sessionmaker
 from app.db.models import Query, QueryCitation
@@ -37,6 +38,7 @@ from app.generation.prompts import (
     build_user_prompt,
 )
 from app.generation.sentinel import SentinelBuffer
+from app.retrieval.base import HiddenStats
 from app.retrieval.service import retrieve
 from app.usage.costs import cost_usd
 
@@ -49,6 +51,8 @@ EMPTY_COMPLETION_REASON = "empty_completion"
 @dataclass(frozen=True)
 class MetaEvent:
     query_id: uuid.UUID
+    # {"role", "hidden_passages", "hidden_labels"} — hidden_* are null unless reveal mode
+    access: dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -94,6 +98,17 @@ def _source_payload(block: ContextBlock) -> dict[str, Any]:
         "section": chunk.section_path,
         "snippet": chunk.content[:300],
         "score": round(chunk.score, 4),
+        "access_label": chunk.access_label,
+    }
+
+
+def access_payload(principal: Principal, hidden: HiddenStats | None) -> dict[str, Any]:
+    """What the client learns about access: its role, and — in reveal mode only — how many
+    relevant passages it could not see and which labels would unlock them."""
+    return {
+        "role": principal.role,
+        "hidden_passages": hidden.passages if hidden is not None else None,
+        "hidden_labels": list(hidden.labels) if hidden is not None else None,
     }
 
 
@@ -112,6 +127,7 @@ async def _record_query(
     cost: Decimal | None,
     model: str | None,
     blocks: list[ContextBlock],
+    role: str | None = None,
 ) -> None:
     """Best-effort, shielded from cancellation: stats must survive client disconnects."""
     try:
@@ -131,6 +147,7 @@ async def _record_query(
                         completion_tokens=completion_tokens,
                         cost_usd=cost,
                         model=model,
+                        role=role,
                     )
                 )
                 session.add_all(
@@ -149,22 +166,24 @@ async def run_query(
     collection_id: uuid.UUID,
     question: str,
     settings: Settings,
+    principal: Principal | None = None,
 ) -> AsyncIterator[QueryEvent]:
     query_id = uuid.uuid4()
     started = time.perf_counter()
-    log_ctx = log.bind(query_id=str(query_id))
+    principal = principal or resolve_principal(settings, None)
+    log_ctx = log.bind(query_id=str(query_id), role=principal.role)
 
     def latency_ms() -> int:
         return round((time.perf_counter() - started) * 1000)
 
     try:
-        retrieval = await retrieve(collection_id, question, settings)
+        retrieval = await retrieve(collection_id, question, settings, principal)
     except EmbeddingError as exc:
         log_ctx.warning("query_embedding_unavailable", error=str(exc))
         yield ErrorEvent(code="provider_unavailable", message="Embedding provider unavailable.")
         return
 
-    yield MetaEvent(query_id=query_id)
+    yield MetaEvent(query_id=query_id, access=access_payload(principal, retrieval.hidden))
 
     # retrieval gate: an off-corpus question is refused before the LLM — it costs nothing
     if not retrieval.chunks or (
@@ -187,6 +206,7 @@ async def run_query(
             cost=None,
             model=None,
             blocks=[],
+            role=principal.role,
         )
         yield DoneEvent(
             answer=None,
@@ -233,6 +253,7 @@ async def run_query(
             cost=cost,
             model=model,
             blocks=blocks,
+            role=principal.role,
         )
 
     try:

@@ -1,12 +1,11 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { getApiKey, getUsage, setApiKey } from "@/lib/api/client";
-import { formatCost } from "@/lib/format";
-import { useCollections } from "@/app/providers";
+import { getApiKey, setApiKey } from "@/lib/api/client";
+import { useCollections, useRole } from "@/app/providers";
+import { PERSONAS, roleName } from "@/lib/access";
 
 function NavLink({ href, label }: { href: string; label: string }) {
   const pathname = usePathname();
@@ -64,9 +63,42 @@ function KeyField() {
   );
 }
 
+/** "Viewing as": the demo's access switch. Every question is asked as this role. */
+function RoleSwitch() {
+  const { roles, role, setRole } = useRole();
+  const { selected } = useCollections();
+  if (!roles.length) return null;
+  const nothingRestricted = !!selected && selected.access_labels.length === 0;
+  return (
+    <label
+      className="flex items-center gap-1.5 text-sm text-ink-soft"
+      title={
+        nothingRestricted
+          ? "This collection has no restricted sections — the role makes no difference here."
+          : "Sections restricted to other groups are hidden from this role."
+      }
+    >
+      <span className="hidden sm:inline">Viewing as</span>
+      <span className="visually-hidden">Access role</span>
+      <select
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+        aria-label="Access role"
+        className="max-w-56 rounded-[6px] border border-hairline bg-sheet px-2 py-1 text-sm text-ink"
+      >
+        {roles.map((r) => (
+          <option key={r.role} value={r.role}>
+            {roleName(r.role)}
+            {PERSONAS[r.role] ? ` · ${PERSONAS[r.role]}` : ""}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 export function TopBar() {
   const { collections, selected, selectById } = useCollections();
-  const usage = useQuery({ queryKey: ["usage"], queryFn: () => getUsage(30), retry: false });
 
   return (
     <header className="sticky top-0 z-10 border-b border-hairline bg-paper/95 backdrop-blur-sm">
@@ -92,20 +124,21 @@ export function TopBar() {
           </select>
         </label>
 
+        <RoleSwitch />
+
         <nav className="flex items-center gap-1" aria-label="Screens">
           <NavLink href="/" label="Ask" />
           <NavLink href="/library" label="Library" />
           <NavLink href="/usage" label="Usage" />
         </nav>
 
-        <div className="ml-auto flex items-center gap-3">
-          {usage.data && (
-            <span className="font-data hidden text-xs text-ink-soft sm:block">
-              {usage.data.queries} queries · {formatCost(usage.data.cost_usd)}
-            </span>
-          )}
-          <KeyField />
-        </div>
+        {/* builds with a baked-in NEXT_PUBLIC_DEMO_API_KEY never ask for a key —
+            the field exists only so a keyless build has a way to authenticate */}
+        {!process.env.NEXT_PUBLIC_DEMO_API_KEY && (
+          <div className="ml-auto">
+            <KeyField />
+          </div>
+        )}
       </div>
     </header>
   );

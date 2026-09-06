@@ -41,7 +41,20 @@ Routing Core, Fleet Insights, Platform & Infrastructure, Customer Success, Go-to
 - Marek — field solutions engineer, works with clients in Poland.
 - Sofia — product manager, Fleet Insights, based in Madrid (works remotely from Spain).
 - Lea — people operations specialist, Berlin.
+- Ines Duarte — engineering manager, Routing Core, Berlin.
 
-## Fixed fact registry (F1–F24) — the single source of numeric truth
+## Access levels (demo personas)
 
-See plans/docqa-corpus-prompt.md. Never introduce numeric facts outside that registry.
+One persona per role; the UI's "Viewing as" switcher uses these names.
+
+- Employee — Anna (backend engineer, Routing Core, Lisbon)
+- Manager — Ines Duarte (engineering manager, Routing Core, Berlin)
+- People & Culture — Lea (people operations specialist, Berlin)
+- Finance — Tomasz Zieliński (CFO)
+- Leadership — Marta Lindqvist (CEO)
+
+A restricted section carries, as the first paragraph after its `## N. Title` heading, a standalone marker line such as `Access: Finance only` (EN: Managers / People & Culture / Finance / Leadership; DE: `Zugriff: nur Führungskräfte` / `nur People & Culture` / `nur Finanzen` / `nur Geschäftsführung`), which applies to that section and its `###` subsections up to the next `##` heading; a fully restricted document (EXEC-001) has `access: Leadership only` in its front matter plus the same marker paragraph right after the H1. FACTS.md itself is never uploaded.
+
+## Fixed fact registry (F1–F32) — the single source of numeric truth
+
+See plans/docqa-corpus-prompt.md. Never introduce numeric facts outside that registry; F25–F32 live only inside restricted sections (F25–F30) or the Leadership-only EXEC-001 (F31, F32).

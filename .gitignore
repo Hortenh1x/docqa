@@ -29,3 +29,7 @@ plans/
 .vscode/
 *.swp
 .DS_Store
+
+# agent scratch: local worktrees and knowledge-graph output
+.claude/worktrees/
+graphify-out/

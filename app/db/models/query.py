@@ -30,6 +30,7 @@ class Query(Base):
     completion_tokens: Mapped[int | None]
     cost_usd: Mapped[Decimal | None] = mapped_column(Numeric(10, 6))
     model: Mapped[str | None]
+    role: Mapped[str | None]  # the caller's asserted role (access levels); null = legacy rows
     created_at: Mapped[datetime] = mapped_column(server_default=text("now()"))
 
 

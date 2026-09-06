@@ -128,6 +128,18 @@ class DemoQuotaExceededError(DomainError):
     title = "Demo quota exceeded"
 
 
+class InvalidRoleError(DomainError):
+    status = 422
+    code = "invalid_role"
+    title = "Unknown role"
+
+
+class IdempotencyKeyReusedError(DomainError):
+    status = 422
+    code = "idempotency_key_reused"
+    title = "Idempotency-Key reused with a different request"
+
+
 def problem_response(
     status: int,
     code: str,

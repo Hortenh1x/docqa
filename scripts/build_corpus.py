@@ -78,10 +78,20 @@ def _fence_tables(body: str) -> str:
     return "\n".join(out)
 
 
+def access_line(meta: dict[str, str]) -> str | None:
+    """Whole-document restriction from front matter, rendered as its own paragraph so the
+    ingestion parser sees a standalone "Access: … only" marker before the first heading."""
+    value = meta.get("access")
+    return f"Access: {value}" if value else None
+
+
 def build_pdf(meta: dict[str, str], body: str, dest: Path) -> None:
     html_body = md_lib.markdown(_fence_tables(body), extensions=["fenced_code"])
     header = " · ".join(meta_header_lines(meta))
-    html = f'<p class="meta">{header}</p>\n{html_body}'
+    html = f'<p class="meta">{header}</p>\n'
+    if access := access_line(meta):
+        html += f'<p class="meta">{access}</p>\n'
+    html += html_body
 
     story = fitz.Story(html=html, user_css=_CSS)
     writer = fitz.DocumentWriter(str(dest))
@@ -100,6 +110,8 @@ def build_docx(meta: dict[str, str], body: str, dest: Path) -> None:
     doc = DocxBuilder()
     for line in meta_header_lines(meta):
         doc.add_paragraph(line)
+    if access := access_line(meta):
+        doc.add_paragraph(access)
 
     table_rows: list[list[str]] = []
 
