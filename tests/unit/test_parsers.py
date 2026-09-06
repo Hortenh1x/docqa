@@ -6,6 +6,15 @@ from docx import Document as DocxBuilder
 
 from app.ingestion.parsers import ParserError, get_parser
 from app.ingestion.parsers.markdown import MarkdownParser, PlainTextParser
+from app.ingestion.parsers.pdf import _line_text
+
+
+def test_pdf_line_text_drops_nul_bytes():
+    """Real-world 10-K PDFs emit NUL bytes from broken fonts; they must never reach
+    Postgres (text columns reject 0x00)."""
+    spans = [{"text": "Net\x00 revenue"}, {"text": " \x00"}, {"text": "2022\x00"}]
+    assert _line_text(spans) == "Net revenue 2022"
+    assert _line_text([{"text": "\x00"}]) == ""
 
 
 @pytest.fixture

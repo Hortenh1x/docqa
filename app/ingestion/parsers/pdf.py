@@ -35,6 +35,11 @@ class _Line:
     level: int = 0
 
 
+def _line_text(spans: list[dict[str, object]]) -> str:
+    # broken font encodings surface as NUL bytes, which Postgres text columns reject
+    return "".join(str(span.get("text", "")) for span in spans).replace("\x00", "").strip()
+
+
 def _extract_lines(page: fitz.Page, page_index: int) -> list[_Line]:
     lines: list[_Line] = []
     # expand ligatures (ﬀ -> ff, ﬁ -> fi): they would silently break exact-match search
@@ -44,7 +49,7 @@ def _extract_lines(page: fitz.Page, page_index: int) -> list[_Line]:
             continue
         for raw_line in block.get("lines", []):
             spans = raw_line.get("spans", [])
-            text = "".join(span.get("text", "") for span in spans).strip()
+            text = _line_text(spans)
             if not text:
                 continue
             x0, y0, _, _ = raw_line.get("bbox", (0.0, 0.0, 0.0, 0.0))
