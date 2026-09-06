@@ -107,7 +107,10 @@ async def run_retrieval_layer(
             result.recall_hit = all(doc in result.retrieved_docs for doc in expected_docs)
         results.append(result)
         marker = "·" if result.recall_hit in (True, None) else "MISS"
-        print(f"  {result.qid} [{result.category}] score={result.gate_score:.3f} {marker}")
+        # gate_score is None when retrieval returned nothing (e.g. an FTS-only query
+        # that matched no chunk) — report it instead of crashing the whole run
+        score = f"{result.gate_score:.3f}" if result.gate_score is not None else "none"
+        print(f"  {result.qid} [{result.category}] score={score} {marker}")
     return results
 
 
