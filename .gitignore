@@ -33,3 +33,10 @@ plans/
 # agent scratch: local worktrees and knowledge-graph output
 .claude/worktrees/
 graphify-out/
+
+# corpus v2 build artifacts and rejected generations
+corpus/large/build/
+corpus/large/rejected/
+
+# eval run logs (structlog JSON, large)
+eval/*.log

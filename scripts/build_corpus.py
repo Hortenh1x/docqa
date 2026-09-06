@@ -10,14 +10,18 @@ wrapped as preformatted blocks so the pipe layout survives PDF text extraction a
 chunker keeps tables atomic.
 
 Usage: uv run python -m scripts.build_corpus
+       uv run python -m scripts.build_corpus --src corpus/large/docs --out corpus/large/build \
+           --manifest corpus/large/manifest.yaml
 """
 
+import argparse
 import re
 import shutil
 from pathlib import Path
 
 import fitz
 import markdown as md_lib
+import yaml
 from docx import Document as DocxBuilder
 
 CORPUS = Path("corpus")
@@ -146,26 +150,50 @@ def build_docx(meta: dict[str, str], body: str, dest: Path) -> None:
 
 
 def main() -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--src", type=Path, default=CORPUS, help="directory with *.md sources")
+    parser.add_argument(
+        "--out", type=Path, default=None, help="output directory (default: <src>/build)"
+    )
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=None,
+        help="corpus v2 manifest.yaml: takes the output format per document from it",
+    )
+    args = parser.parse_args()
+    src: Path = args.src
+    out: Path = args.out or (src / "build")
+    formats: dict[str, str] = {}
+    if args.manifest:
+        for doc in yaml.safe_load(args.manifest.read_text(encoding="utf-8")):
+            formats[doc["doc_id"]] = doc.get("format", "pdf")
+
+    out.mkdir(parents=True, exist_ok=True)
     built = []
-    for source_path in sorted(CORPUS.glob("*.md")):
-        if source_path.name == "FACTS.md":
+    for source_path in sorted(src.glob("*.md")):
+        if source_path.name in ("FACTS.md", "style.md"):
             continue
         doc_id = source_path.stem
         meta, body = split_front_matter(source_path.read_text(encoding="utf-8"))
-        if doc_id in KEEP_MD:
-            dest = OUT / f"{doc_id}.md"
+        if formats:
+            fmt = formats.get(doc_id, "pdf")
+        else:
+            fmt = "md" if doc_id in KEEP_MD else "docx" if doc_id in AS_DOCX else "pdf"
+        if fmt == "md":
+            dest = out / f"{doc_id}.md"
             shutil.copyfile(source_path, dest)
-        elif doc_id in AS_DOCX:
-            dest = OUT / f"{doc_id}.docx"
+        elif fmt == "docx":
+            dest = out / f"{doc_id}.docx"
             build_docx(meta, body, dest)
         else:
-            dest = OUT / f"{doc_id}.pdf"
+            dest = out / f"{doc_id}.pdf"
             build_pdf(meta, body, dest)
         built.append(dest.name)
-    print(f"built {len(built)} files into {OUT}/")
-    for name in built:
-        print(f"  {name}")
+    print(f"built {len(built)} files into {out}/")
+    if len(built) <= 40:
+        for name in built:
+            print(f"  {name}")
 
 
 if __name__ == "__main__":

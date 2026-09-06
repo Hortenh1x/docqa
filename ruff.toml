@@ -8,6 +8,8 @@ select = ["E", "F", "I", "UP", "B", "SIM", "ASYNC"]
 known-first-party = ["app"]
 
 [lint.per-file-ignores]
+"scripts/corpus_v2/spec.py" = ["E501"]  # data tables
+"scripts/corpus_v2/make_golden.py" = ["E501"]  # prompt strings
 # assert is the point of a test file
 "tests/**" = ["B011"]
 # one-shot CLI tooling: blocking file IO inside asyncio.run is harmless there

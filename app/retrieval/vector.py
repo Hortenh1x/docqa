@@ -91,8 +91,10 @@ async def hidden_probe(
 ) -> HiddenStats:
     """The complement of ``vector_search``: the best chunks the role can NOT see.
 
-    Only their count above the refusal threshold and their labels are returned — never
-    the content. Runs in the same transaction as the search (SET LOCAL already applied).
+    Only the count of those scoring at least ``threshold`` (the caller's floor: the
+    refusal gate, or the best visible score minus a margin) and their labels are
+    returned — never the content. Runs in the same transaction as the search (SET LOCAL
+    already applied).
     """
     distance = Chunk.embedding.cosine_distance(query_embedding)
     stmt = (

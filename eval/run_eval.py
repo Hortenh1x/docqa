@@ -33,6 +33,7 @@ import yaml
 from app.access import resolve_principal
 from app.config import get_settings
 from app.db.base import dispose_engine
+from app.embeddings.base import EmbeddingError
 from app.generation.llm import TextDelta
 from app.generation.llm.openai_compat import OpenAICompatLLM
 from app.generation.prompts import build_context_blocks
@@ -46,10 +47,15 @@ CATEGORY_ORDER = [
     "table",
     "multi_doc",
     "version",
+    "version_history",
     "buried",
+    "distractor_country",
+    "stale_faq",
+    "as_of_date",
     "german",
     "no_answer",
     "access",
+    "partial",
 ]
 
 
@@ -69,7 +75,9 @@ class QuestionResult:
     retrieved_docs: list[str] = field(default_factory=list)
     gate_score: float | None = None
     recall_hit: bool | None = None
+    hidden_values: list[str] = field(default_factory=list)  # values that must never be answered
     hidden_labels: list[str] | None = None  # from retrieval (reveal mode only)
+    value_leak: bool | None = None  # a hidden value appeared in the answer text
     retrieval_leak: bool | None = None  # a chunk outside the role's labels surfaced
     # answer layer
     answered_refused: bool | None = None
@@ -97,6 +105,19 @@ def load_golden(path: Path) -> list[dict[str, Any]]:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
+async def _retrieve_with_retry(target, question, settings, principal, attempts: int = 4):
+    """The embedding provider is remote: a transient connection failure must not abort a
+    long run — retry with backoff, then give up loudly."""
+    for attempt in range(attempts):
+        try:
+            return await retrieve(target, question, settings, principal)
+        except EmbeddingError:
+            if attempt == attempts - 1:
+                raise
+            await asyncio.sleep(2 * 2**attempt)
+    raise AssertionError("unreachable")
+
+
 async def run_retrieval_layer(
     collection_id: uuid.UUID,
     collection_de_id: uuid.UUID | None,
@@ -117,10 +138,11 @@ async def run_retrieval_layer(
             role=entry.get("role"),
             hidden_docs=[s["doc"] for s in entry.get("hidden_sources", [])],
             expected_hidden_labels=list(entry.get("expected_hidden_labels", [])),
+            hidden_values=list(entry.get("hidden_values", [])),
         )
         target = _target_collection(collection_id, collection_de_id, expected_docs)
         principal = resolve_principal(settings, result.role or role)
-        retrieval = await retrieve(target, entry["question"], settings, principal)
+        retrieval = await _retrieve_with_retry(target, entry["question"], settings, principal)
         result.retrieved_docs = [_doc_of(c.filename) for c in retrieval.chunks]
         result.gate_score = retrieval.top_score
         if retrieval.hidden is not None:
@@ -132,7 +154,7 @@ async def run_retrieval_layer(
             chunk.access_label not in principal.labels for chunk in retrieval.chunks
         )
         if expected_docs:
-            # multi_doc questions require ALL expected documents in the top-8 —
+            # multi_doc questions require ALL expected documents in the returned window —
             # that is the whole point of the category
             result.recall_hit = all(doc in result.retrieved_docs for doc in expected_docs)
         results.append(result)
@@ -190,6 +212,9 @@ async def run_answer_layer(
                 body = response.json()
                 result.answered_refused = body["refused"]
                 result.answer_text = body.get("answer")
+                if result.hidden_values:
+                    answer = result.answer_text or ""
+                    result.value_leak = any(value in answer for value in result.hidden_values)
                 result.citation_docs = [_doc_of(s["filename"]) for s in body.get("sources", [])]
                 print(f"  {result.qid} refused={body['refused']}")
 
@@ -215,11 +240,15 @@ def _parse_verdict(raw: str, key: str) -> bool:
     return match is not None and match.group(1).lower() == "true"
 
 
+NO_EXPECTED = "(none — the corpus holds nothing on this; judge faithfulness only)"
+
+
 def _judge_prompt(result: QuestionResult, excerpts: list[str]) -> str:
     numbered = "\n\n".join(f"[{i}] {text}" for i, text in enumerate(excerpts, 1))
     return (
         f"QUESTION:\n{result.question}\n\n"
-        f"EXPECTED answer (golden):\n{result.expected_answer}\n\n"
+        "EXPECTED answer (golden):\n"
+        f"{result.expected_answer or NO_EXPECTED}\n\n"
         f"ANSWER (to judge):\n{result.answer_text}\n\n"
         f"EXCERPTS:\n{numbered}"
     )
@@ -245,11 +274,13 @@ async def run_judge_layer(
     semaphore = asyncio.Semaphore(concurrency)
 
     async def one(result: QuestionResult) -> None:
+        # answerable questions are judged for faithfulness + correctness; an off-corpus
+        # question that got an answer anyway is judged for faithfulness only — a grounded
+        # "no such benefit, but…" is honest, an invented rule is not
         judgeable = (
-            not result.expected_refusal
-            and result.expected_answer
-            and result.answered_refused is False
+            result.answered_refused is False
             and result.answer_text
+            and (result.expected_answer or result.expected_refusal)
         )
         if not judgeable:
             return
@@ -322,10 +353,11 @@ def render_results(
         "",
         "## Retrieval quality by category",
         "",
-        "| Category | Questions | Recall@8 | Mean gate score |",
+        f"| Category | Questions | Recall@{get_settings().rerank_top_n} | Mean gate score |",
         "| --- | --- | --- | --- |",
     ]
-    for category in CATEGORY_ORDER:
+    extra = sorted({r.category for r in results} - set(CATEGORY_ORDER))
+    for category in CATEGORY_ORDER + extra:
         rows = [r for r in results if r.category == category]
         if not rows:
             continue
@@ -377,7 +409,7 @@ def render_results(
             f"- Citation precision (cited docs ∩ expected docs): {precise}/{len(cited)}",
             "",
         ]
-        judged = [r for r in results if r.judge_faithful is not None]
+        judged = [r for r in results if r.judge_faithful is not None and not r.expected_refusal]
         if judged and judge_model:
             faithful = sum(1 for r in judged if r.judge_faithful)
             correct = sum(1 for r in judged if r.judge_correct)
@@ -386,8 +418,15 @@ def render_results(
                 "",
                 f"- Faithfulness (every claim supported by the excerpts): {faithful}/{len(judged)}",
                 f"- Correctness vs the golden expected answer: {correct}/{len(judged)}",
-                "",
             ]
+            off = [r for r in results if r.expected_refusal and r.judge_faithful is not None]
+            if off:
+                unfaithful = sum(1 for r in off if not r.judge_faithful)
+                lines.append(
+                    f"- Off-corpus questions answered instead of refused: {len(off)} — "
+                    f"of which unfaithful (claims not supported by the excerpts): {unfaithful}"
+                )
+            lines.append("")
     else:
         lines += [
             "## Answer layer",
@@ -397,10 +436,10 @@ def render_results(
             "",
         ]
 
-    access = [r for r in results if r.category == "access"]
+    access = [r for r in results if r.category in ("access", "partial")]
     if access:
-        restricted = [r for r in access if r.expected_refusal]
-        unlock = [r for r in access if not r.expected_refusal and r.recall_hit is not None]
+        restricted = [r for r in access if r.expected_refusal or r.expected_hidden_labels]
+        unlock = [r for r in access if not r.expected_hidden_labels and r.recall_hit is not None]
         leak_checked = [r for r in restricted if r.retrieval_leak is not None]
         leaks = sum(1 for r in leak_checked if r.retrieval_leak)
         leaked_ids = [r.qid for r in leak_checked if r.retrieval_leak]
@@ -414,7 +453,7 @@ def render_results(
         lines += [
             "## Access control",
             "",
-            f"- Restricted questions (asked under a role that may not see the answer): "
+            f"- Restricted questions (asked under a role that may not see all of the answer): "
             f"{len(restricted)}",
             f"- Retrieval leaks (a chunk outside the role's labels surfaced): "
             f"{leaks}/{len(leak_checked)}" + (f" — {', '.join(leaked_ids)}" if leaked_ids else ""),
@@ -422,15 +461,22 @@ def render_results(
         if hint_checked:
             lines.append(f"- Reveal hint names the unlocking label: {hint_ok}/{len(hint_checked)}")
         if with_answers:
-            answered = [r for r in restricted if r.answered_refused is not None]
+            answered = [
+                r for r in restricted if r.expected_refusal and r.answered_refused is not None
+            ]
             e2e_leaks = sum(1 for r in answered if r.answered_refused is False)
+            value_leaks = sum(1 for r in answered if r.value_leak)
             lines.append(
-                f"- End-to-end leaks (an answer instead of a refusal): {e2e_leaks}/{len(answered)}"
+                f"- Restricted values appearing in an answer (the real leak test): "
+                f"{value_leaks}/{len(answered)}"
+            )
+            lines.append(
+                f"- Answered from open content instead of refusing: {e2e_leaks}/{len(answered)}"
             )
         if unlock:
             lines.append(
-                f"- Unlock questions (asked under the right role), recall@8: "
-                f"{unlock_hits}/{len(unlock)}"
+                f"- Unlock questions (asked under the right role), "
+                f"recall@{get_settings().rerank_top_n}: {unlock_hits}/{len(unlock)}"
             )
         lines.append("")
 
@@ -438,9 +484,10 @@ def render_results(
     if misses:
         lines += ["## Misses", ""]
         for r in misses:
+            window = get_settings().rerank_top_n
             lines.append(
                 f"- `{r.qid}` [{r.category}] expected {r.expected_docs}, "
-                f"top-8: {r.retrieved_docs[:8]}"
+                f"top-{window}: {r.retrieved_docs[:window]}"
             )
         lines.append("")
     return "\n".join(lines)
@@ -474,7 +521,8 @@ async def main() -> None:
     settings = get_settings()
     settings_note = (
         f"Embeddings: {settings.embedding_model_id} · rerank: {settings.rerank_provider} · "
-        f"top-8 after fusion of vector top-{settings.top_k_vector} + FTS top-{settings.top_k_fts}"
+        f"top-{settings.rerank_top_n} after fusion of vector top-{settings.top_k_vector} "
+        f"+ FTS top-{settings.top_k_fts}"
     )
     if args.with_answers:
         settings_note += f" · LLM: {settings.llm_model}"

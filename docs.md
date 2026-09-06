@@ -75,6 +75,21 @@ Details, threshold sweep and the reproduce command: [eval/results_large.md](eval
 
 The same 447 questions were also run end-to-end on **OpenAI `text-embedding-3-small@1024`** (the deploy configuration): recall@8 stays 0.99, faithfulness 292/292, correctness 287/292 (98.3%), citation precision 294/297, and the NO_ANSWER sentinel alone refuses 149/150 off-corpus questions with only 5/297 false refusals — the one "leak" is a correct grounded negative, not an invention. The cosine scale differs per embedding model, so the gate threshold is measured per provider: 0.28 for OpenAI vs 0.48 for bge-m3 — analysis in [eval/results_large_openai.md](eval/results_large_openai.md).
 
+### Access levels (32-question set, OpenAI embeddings + `deepseek-v4-flash`)
+
+[eval/golden_access.yaml](eval/golden_access.yaml) asks about the eight restricted passages (F25–F32) under roles that may and may not read them, plus three partial questions that mix an open and a restricted fact. Results ([eval/results_access.md](eval/results_access.md)):
+
+| Access metric | Result |
+| --- | --- |
+| Retrieval leaks — a chunk outside the role's labels surfaced (15 restricted questions) | **0/15** |
+| End-to-end leaks — an answer instead of a refusal | **0/15** |
+| Reveal hint names the label that unlocks the passage | 15/15 |
+| Unlock questions (asked under the right role), recall@8 | 17/17 |
+| Citation precision on unlock questions | 17/17 |
+| False refusals | 1/17 — a partial question (open equipment budget + restricted write-off threshold) that the model answered with `NO_ANSWER` instead of the open half |
+
+The classic 30-question set keeps recall@8 = 1.00 under both `leadership` and `employee` — restricting sections did not disturb retrieval of the open ones.
+
 ### Original 30-question set (local `qwen2.5:7b-instruct`)
 
 The same pipeline measured fully offline — recall@8 = 1.00 on all 25 answerable questions (incl. German → bge-m3 is multilingual), 5/5 refusals, citation precision 24/24, faithfulness 20/21, correctness 19/21. A 7B model plays it safe: 3 of its 4 false refusals were `NO_ANSWER` on paraphrase-heavy traps — the hosted rerun above reclaimed them. Details: [eval/results.md](eval/results.md).
@@ -160,11 +175,62 @@ Real corporate documents mix audiences: the expense policy everyone reads has a 
 
 **Who asserts the role.** The API key identifies a trusted client (an integrator's backend); `role` on the query is that client's claim about its end user, exactly as with any RAG API behind an identity provider. A missing role resolves to the least-privileged one — never to "everything". Binding allowed roles to the key is the natural hardening step and is not implemented.
 
-**The 403-versus-404 trade-off, made explicit.** Everywhere else DocQA answers a foreign resource with 404, because a 403 confirms it exists. For access-filtered retrieval the honest default is the same: an employee asking about salary bands gets "not in the documents". A demo that behaves that way looks broken, so `ACCESS_REVEAL_HIDDEN=true` adds one extra vector query over the *complement* of the role's labels and reports only a count above the refusal threshold and the labels involved — never content. The UI turns that into "3 passages are restricted to Leadership — view as Leadership". Production deployments that must not confirm existence leave the flag off; the response then carries `hidden_passages: null`.
+**The 403-versus-404 trade-off, made explicit.** Everywhere else DocQA answers a foreign resource with 404, because a 403 confirms it exists. For access-filtered retrieval the honest default is the same: an employee asking about salary bands gets "not in the documents". A demo that behaves that way looks broken, so `ACCESS_REVEAL_HIDDEN=true` adds one extra vector query over the *complement* of the role's labels and reports only a count and the labels involved — never content. A hidden passage counts when it scores at least as well as the best passage the role can see (minus a small margin) and above the refusal threshold, so the hint names the group that actually holds the answer rather than every restricted section loosely related to the question. The UI turns that into "3 passages are restricted to Leadership — view as Leadership". Production deployments that must not confirm existence leave the flag off; the response then carries `hidden_passages: null`.
 
 **Things that had to be made role-aware too.** `Idempotency-Key` results are fingerprinted with (collection, role, question): the same key under another role is refused (422 `idempotency_key_reused`) instead of replaying an answer produced with different access. Suggested questions are scored under every role and stored with a `min_role`; a question drafted from a restricted excerpt must not carry the figure it asks about, so candidates containing digits or currency signs are dropped. The eval harness runs with `--role leadership` for the classic categories and, for the `access` category, checks that a hidden document never surfaces under a restricted role.
 
 **Out of scope, on purpose.** The original file (`GET /v1/documents/{id}/file`) and the Library are the administrator's view and are not filtered; the role governs what the question-answering path may read.
+
+## Corpus v2: a 300-document company, generated facts-first
+
+The 21-document Kranich corpus saturates retrieval (recall@8 = 0.99: top-8 is 13% of the corpus). Corpus v2 is the same fictional company at realistic scale — **298 documents, ~230k words, EN + DE in one collection** — built so that every number in it is traceable to a registry and the golden set is derived from that registry rather than written by hand.
+
+**How it is made** ([scripts/corpus_v2/](scripts/corpus_v2/), sources in [corpus/large/](corpus/large/)):
+
+1. `spec.py` describes the world: 28 policies with 1–3 versions each (older versions carry older values, some without a "superseded" banner), six country handbooks with the same structure and different figures, per-year rate sheets, HR/Finance/Security/Engineering/Operations guides, leadership memos, meeting notes whose decisions change over time, FAQs (six of them stale, still quoting an old value), customer-facing pages and 30 German mirrors. `make_spec.py` materializes `facts.yaml` (218 facts; pinned v1 values where the topics overlap, seeded random values elsewhere, unique per unit so a figure traces to one fact) and `manifest.yaml` (which facts, sections, access labels and cross references each document carries).
+2. `generate.py` writes one document per LLM call (`deepseek-chat`) from the document's own fact slice; the model never sees the rest of the registry. `validate.py` rejects a draft when a value is missing from its section, a value of *another* document appears, any digit outside the whitelist appears (section numbers, ids, versions, dates, years), a forbidden topic is mentioned, a marker is misplaced or the length is off — and the findings go back into the prompt for up to three regenerations. German mirrors translate the accepted English text with German number formatting.
+3. `make_golden.py` derives `eval/golden_v2.yaml`: two paraphrased questions per fact (the LLM sees one fact at a time and may not use digits), expected sources from the manifest, categories from fact metadata — `direct`, `table`, `version` / `version_history`, `buried`, `distractor_country`, `multi_doc` (cross references), `stale_faq`, `as_of_date`, `german`, `access` (refuse/unlock pairs), `partial`, and grep-verified `no_answer` questions about topics that do not exist in the corpus.
+4. `build_corpus.py --src corpus/large/docs --manifest …` renders PDF/DOCX/MD by family; `seed.py` uploads the build through the API into the `kranich` collection.
+
+**Traps at scale:** version conflicts across 28 policies, cross-document references without values, exceptions buried in long handbooks, the same tables per country and per year, stale FAQs that contradict the current policy, meeting decisions superseded by later meetings, restricted sections and fully restricted documents.
+
+### Measured on corpus v2
+
+Retrieval layer, 602 answerable questions (of 828), asked as `leadership` so nothing is filtered; every question is a paraphrase without digits, so exact-match signals are deliberately weak ([eval/results_v2_A_vector_only.md](eval/results_v2_A_vector_only.md), [eval/results_v2_B_hybrid.md](eval/results_v2_B_hybrid.md), [eval/results_v2_D_hybrid_top12.md](eval/results_v2_D_hybrid_top12.md), [eval/results_v2.md](eval/results_v2.md)):
+
+| Category (questions) | vector only, top-8 | hybrid, top-8 | hybrid, top-12 | hybrid, top-20 (deploy config) |
+| --- | --- | --- | --- | --- |
+| direct (142) | 0.95 | 0.95 | 0.96 | 0.97 |
+| table (16) | 0.62 | 0.62 | 0.81 | 1.00 |
+| multi-doc, all sources found (80) | 0.82 | 0.82 | 0.89 | 0.99 |
+| version, current value (52) | 0.94 | 0.94 | 1.00 | 1.00 |
+| version history, old value (24) | 0.79 | 0.79 | 0.88 | 1.00_history |
+| stale FAQ vs policy (6) | 0.67 | 0.67 | 1.00 | 1.00 |
+| as-of-date meeting decisions (12) | 0.67 | 0.67 | 0.75 | 0.92 |
+| country variants (84) | 1.00 | 1.00 | 1.00 | 1.00 |
+| German (78) | 1.00 | 1.00 | 1.00 | 1.00 |
+| access, unlocked (90) | — | 0.99 | 1.00 | 1.00 |
+| **all answerable** | **0.92** | **0.93** | **0.96** | **0.99** |
+
+Reading it: the 21-document corpus hid the retrieval window entirely (top-8 was 13% of the corpus); at 1,165 chunks the window is the lever. Tables lose most at top-8 because six country supplements and three policy versions crowd out the one rate sheet that holds the current figure; the same crowding hits version history and meeting decisions. Hybrid retrieval equals vector-only here to the last digit — the golden set forbids digits and shared keywords in questions, which is exactly the regime where FTS has nothing to anchor on (on v1's ID- and number-bearing questions it mattered). Country variants and German mirrors are solved by the embedding alone.
+
+**Full pipeline** (hybrid, top-20, `deepseek-v4-flash`, judge `deepseek-chat`; 828 questions, [eval/results_v2.md](eval/results_v2.md)):
+
+| Answer-layer metric | Result |
+| --- | --- |
+| Faithfulness — every claim supported by the retrieved excerpts (LLM-judged, 582 answered) | **580/582** |
+| Correctness vs the golden answer (LLM-judged) | 570/582 (97.9%) |
+| Citation precision (cited docs ∈ expected docs) | 596/602 |
+| False refusals on answerable questions | 20/602 (3.3%) |
+| Off-corpus questions (136): refused | 106/136 — the other 30 got a *grounded* answer (mileage rules when asked about a "car allowance", the learning budget when asked about tuition); the judge found **1** of the 36 answered off-corpus questions unfaithful |
+| Access: restricted values appearing in any answer | **0/90** |
+| Access: chunks outside the role's labels retrieved | **0/102** |
+| Access: answered from open content instead of refusing (no restricted value involved) | 6/90 |
+| Access: reveal hint names the unlocking group | 95/102 |
+
+Two things v1 could not show. First, the retrieval gate threshold is a property of the corpus, not only of the embedding model: on the same `text-embedding-3-small` the sweep recommends `0.46` here versus `0.28` on the 21-document set, because a dense corpus always has *something* near an off-corpus question (mean gate score of unanswerable questions: 0.46 vs 0.38); at the deployed 0.28 the gate refuses almost nothing for free and the `NO_ANSWER` sentinel carries the load — still with zero invented rules. Second, "refused" is the wrong yardstick for off-corpus questions once the corpus is rich: the honest metric is *faithfulness of what was answered*, which is why the harness now judges those answers too.
+
+The seven remaining top-20 misses are informal documents losing to formal ones on the same topic: all-hands notes stating the headcount or the NPS rank below FAQs and handbooks that discuss the same subject without the figure, and one meeting decision outranked by a later meeting on a neighbouring topic.
 
 ## Known limits
 

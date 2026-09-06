@@ -19,6 +19,12 @@ from app.retrieval.fusion import reciprocal_rank_fusion
 from app.retrieval.rerank import get_rerank_provider
 from app.retrieval.vector import hidden_probe, vector_search
 
+# reveal mode: a hidden passage is worth mentioning when it scores at least this close to
+# the best passage the role CAN see — the refusal threshold alone is too lenient a bar
+# (it is tuned to pass ~all answerable questions, so loosely related restricted chunks
+# would be reported too and dilute the hint)
+HIDDEN_MARGIN = 0.05
+
 
 @dataclass
 class RetrievalResult:
@@ -58,13 +64,14 @@ async def retrieve(
             if sees_everything(settings, principal):
                 hidden = HiddenStats(passages=0, labels=())
             else:
+                best_visible = vector_hits[0].score if vector_hits else 0.0
                 hidden = await hidden_probe(
                     db,
                     collection_id,
                     query_embedding,
                     principal.labels,
                     settings.rerank_top_n,
-                    settings.refusal_threshold,
+                    max(settings.refusal_threshold, best_visible - HIDDEN_MARGIN),
                 )
 
     fused = reciprocal_rank_fusion(
