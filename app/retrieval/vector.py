@@ -33,6 +33,12 @@ async def vector_search(
     # SET LOCAL lives and dies with the current transaction — it must precede the
     # search in the same one. int() guards the literal (SET does not take bind params).
     await db.execute(text(f"SET LOCAL hnsw.ef_search = {int(ef_search)}"))
+    # One HNSW index spans every collection. Without iterative scanning the index yields
+    # ef_search neighbours from the WHOLE table and the collection filter runs afterwards,
+    # so a small collection sitting next to large ones can come back empty (observed on
+    # prod: 509 contracts next to 250k chunks of reports). Iterative scan (pgvector >= 0.8)
+    # keeps walking the graph until the LIMIT is satisfied under the filter.
+    await db.execute(text("SET LOCAL hnsw.iterative_scan = relaxed_order"))
 
     distance = Chunk.embedding.cosine_distance(query_embedding)
     stmt = (
