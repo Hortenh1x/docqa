@@ -92,6 +92,43 @@ collection id, then rebuild the UI (the key is baked at build time):
 docker compose -f docker-compose.prod.yml -f deploy/docker-compose.deploy.yml up -d --build ui
 ```
 
+### 4b. Corpus v2 (`kranich`, 298 documents) and the access-levels patch of the v1 set
+
+Build both on the workstation, copy them over, then seed through the API from inside the
+container (same caveats as above: `DEMO_MODE=false` while seeding, and `RATE_LIMIT_ENABLED=false`
+unless you are happy to wait 30 minutes for the upload limiter). `ACCESS_REVEAL_HIDDEN=true`
+stays on afterwards — it powers the "not available at your access level / view as …" panel.
+
+```bash
+# workstation
+uv run python -m scripts.build_corpus                                   # v1 (now with restricted sections)
+uv run python -m scripts.build_corpus --src corpus/large/docs --out corpus/large/build \
+    --manifest corpus/large/manifest.yaml                               # v2
+mkdir -p /tmp/corpus-build-en && cp corpus/build/* /tmp/corpus-build-en/ && rm /tmp/corpus-build-en/*-DE.*
+scp -r /tmp/corpus-build-en <host>:/tmp/corpus-build-en && scp -r corpus/large/build <host>:/tmp/corpus-large-build
+
+# server
+grep -q ^ACCESS_REVEAL_HIDDEN .env || echo ACCESS_REVEAL_HIDDEN=true >> .env
+sed -i 's/^DEMO_MODE=true/DEMO_MODE=false/' .env; echo RATE_LIMIT_ENABLED=false >> .env
+C="docker compose -f docker-compose.prod.yml -f deploy/docker-compose.shared-host.yml"; $C up -d api
+docker exec -u 0 docqa-api-1 mkdir -p /app/corpus/large
+docker cp scripts docqa-api-1:/app/ && docker cp /tmp/corpus-build-en docqa-api-1:/app/corpus/build \
+    && docker cp /tmp/corpus-large-build docqa-api-1:/app/corpus/large/build
+KEY=$(grep ^NEXT_PUBLIC_DEMO_API_KEY= .env | cut -d= -f2)
+$C exec -T api python -m scripts.corpus_v2.seed --api http://localhost:8000 --api-key "$KEY" \
+    --slug kranich --name "Kranich (300 docs, EN+DE)" --build /app/corpus/large/build
+$C exec -T api python -m app.cli mark-readonly --collection-id <policies-en id> --writable
+$C exec -T api python -m scripts.corpus_v2.seed --api http://localhost:8000 --api-key "$KEY" \
+    --slug policies-en --build /app/corpus/build                          # re-uploads only the changed files
+$C exec -T api python -m app.cli mark-readonly --collection-id <policies-en id>
+$C exec -T api python -m app.cli mark-readonly --collection-id <kranich id>
+sed -i 's/^DEMO_MODE=false/DEMO_MODE=true/; /^RATE_LIMIT_ENABLED=false/d' .env; $C up -d api
+```
+
+Suggested questions regenerate on their own once each collection settles (one `deepseek-chat`
+call per collection); the seeder prints per-label chunk counts so you can see the restricted
+sections landed.
+
 ## 5. Cron: backups and the sandbox wipe
 
 Resolve the sandbox collection id once (seed_demo also prints it in step 4):
