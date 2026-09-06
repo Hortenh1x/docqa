@@ -41,8 +41,10 @@ REFUSAL_THRESHOLD=0.28               # measured for text-embedding-3-small@1024 
                                      # a collection seeded with it and take the sweep's recommendation.
 RERANK_PROVIDER=none                 # cohere + COHERE_API_KEY for better precision
 RATE_LIMIT_QUERY_PER_MINUTE=10       # demo pacing
-RATE_LIMIT_QUERY_PER_DAY=900         # cost cap: ~$1.5/day worst case per visitor with thinking allowed
-                                     # (typical stays ~$0.35/day); set 550 for a hard ≤$1/day
+RATE_LIMIT_QUERY_PER_DAY=600         # cost cap: ~$1.4/day worst case per visitor (typical ~$0.8).
+                                     # Lowered from 900 when the retrieval window widened: a query now
+                                     # carries ~8.7k context tokens instead of ~3k, so it costs ~$0.0014
+                                     # typical / ~$0.0024 worst case instead of ~$0.0004 / ~$0.0017.
 RATE_LIMIT_TRUST_FORWARDED_FOR=true  # per-visitor quota scope from Caddy's X-Forwarded-For
 NEXT_PUBLIC_DEMO_API_KEY=            # filled in after step 4
 ```
@@ -50,11 +52,11 @@ NEXT_PUBLIC_DEMO_API_KEY=            # filled in after step 4
 Cost math for the daily cap (thinking allowed, `LLM_MAX_TOKENS=4096`): reasoning
 bills as ordinary output tokens at `deepseek-v4-flash` prices (`app/usage/costs.py`);
 typical bursts are 150–500 tokens on a low single-digit % of calls, so a typical query
-stays ~$0.0004 (~$0.35/day practical ceiling at 900/day). The worst case — 3.6k-token
-context + max-length question + a full 4096-token completion — is ~$0.0017, i.e.
-**~$1.5/day per visitor at 900/day (accepted)**; set `RATE_LIMIT_QUERY_PER_DAY=550`
-for a hard ≤$1/day, or switch to non-thinking `deepseek-chat` + `LLM_MAX_TOKENS=1024`
-to return to the ~$0.9/day worst case. Re-derive when switching models.
+is ~$0.0014 at the current context budget (9k tokens, measured average 8.7k), so
+600/day lands at ~$0.8/day per visitor. The worst case — full context plus a 4096-token
+completion — is ~$0.0024, i.e. **~$1.4/day per visitor at 600/day (accepted)**. Re-derive
+after changing `CONTEXT_TOKEN_BUDGET`, `RERANK_TOP_N` or the model: context size is now
+the dominant term, not the completion.
 
 ## 3. First start
 
