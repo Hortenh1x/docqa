@@ -58,7 +58,7 @@ Reproduce: `uv run python -m eval.run_eval --collection <policies-en id>`
 ## Access control
 
 - Restricted questions (asked under a role that may not see the answer): 15
-- Retrieval leaks (a hidden document surfaced anyway): 9/15
+- Retrieval leaks (a chunk outside the role's labels surfaced): 0/15
 - Reveal hint names the unlocking label: 15/15
 - End-to-end leaks (an answer instead of a refusal): 0/15
 - Unlock questions (asked under the right role), recall@8: 17/17
