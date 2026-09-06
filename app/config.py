@@ -32,12 +32,17 @@ class Settings(BaseSettings):
     chunk_max_tokens: int = 512
 
     # retrieval (tuned against the eval set in week 4)
-    top_k_vector: int = 30
-    top_k_fts: int = 30
+    # candidate windows: widened after measuring the recall curve on real corpora
+    # (eval/results_retrieval_tuning.md) — a bigger fusion window lifts the right
+    # document into the top ranks on collections of near-identical documents
+    top_k_vector: int = 100
+    top_k_fts: int = 100
     rrf_k: int = 60
-    rrf_top_n: int = 20
-    rerank_top_n: int = 8
-    hnsw_ef_search: int = 100
+    rrf_top_n: int = 40
+    # how many chunks reach the prompt. 8 was the single biggest source of false
+    # refusals on long real-world documents: the evidence was retrieved but cut off
+    rerank_top_n: int = 20
+    hnsw_ef_search: int = 200
     # tuned against eval/golden.yaml for the rerank=none cosine gate (see eval/results.md);
     # retune when switching to a real reranker — their score scales differ
     refusal_threshold: float = 0.50
@@ -55,7 +60,9 @@ class Settings(BaseSettings):
     llm_api_key: str | None = None
     llm_temperature: float = 0.1
     llm_max_tokens: int = 1024
-    context_token_budget: int = 3600
+    # must be large enough for rerank_top_n chunks, or the budget silently
+    # re-imposes the old cut (20 chunks x ~450 tokens + headers)
+    context_token_budget: int = 9000
     context_chunk_max_tokens: int = 700
     # suggested questions: the worker refreshes them when a collection's ingestion
     # settles — count kept, count+2 drafted, ranked by retrieval score
