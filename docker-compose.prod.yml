@@ -21,6 +21,9 @@ x-app-env: &app-env
   RATE_LIMIT_QUERY_PER_MINUTE: ${RATE_LIMIT_QUERY_PER_MINUTE:-30}
   RATE_LIMIT_QUERY_PER_DAY: ${RATE_LIMIT_QUERY_PER_DAY:-0}
   RATE_LIMIT_TRUST_FORWARDED_FOR: ${RATE_LIMIT_TRUST_FORWARDED_FOR:-false}
+  # access levels: the demo reveals how many restricted passages a role could not see
+  ACCESS_REVEAL_HIDDEN: ${ACCESS_REVEAL_HIDDEN:-false}
+  ACCESS_DEFAULT_ROLE: ${ACCESS_DEFAULT_ROLE:-employee}
   LOG_LEVEL: ${LOG_LEVEL:-INFO}
 
 services:

@@ -97,7 +97,8 @@ docker compose -f docker-compose.prod.yml -f deploy/docker-compose.deploy.yml up
 Build both on the workstation, copy them over, then seed through the API from inside the
 container (same caveats as above: `DEMO_MODE=false` while seeding, and `RATE_LIMIT_ENABLED=false`
 unless you are happy to wait 30 minutes for the upload limiter). `ACCESS_REVEAL_HIDDEN=true`
-stays on afterwards — it powers the "not available at your access level / view as …" panel.
+stays on afterwards — it powers the "not available at your access level / view as …" panel
+(the compose file passes it through explicitly; a variable that is only in `.env` never reaches the container).
 
 ```bash
 # workstation
