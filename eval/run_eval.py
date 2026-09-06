@@ -29,14 +29,17 @@ from typing import Any
 
 import httpx
 import yaml
+from sqlalchemy import select
 
 from app.access import resolve_principal
-from app.config import get_settings
-from app.db.base import dispose_engine
+from app.config import Settings, get_settings
+from app.db.base import dispose_engine, get_sessionmaker
+from app.db.models import Collection
 from app.embeddings.base import EmbeddingError
 from app.generation.llm import TextDelta
 from app.generation.llm.openai_compat import OpenAICompatLLM
 from app.generation.prompts import build_context_blocks
+from app.generation.service import DoneEvent, ErrorEvent, SourcesEvent, run_query
 from app.retrieval.service import retrieve
 
 GOLDEN = Path("eval/golden.yaml")
@@ -168,6 +171,46 @@ async def run_retrieval_layer(
     return results
 
 
+def _record_answer(result: QuestionResult, body: dict[str, Any]) -> None:
+    result.answered_refused = body["refused"]
+    result.answer_text = body.get("answer")
+    if result.hidden_values:
+        answer = result.answer_text or ""
+        result.value_leak = any(value in answer for value in result.hidden_values)
+    result.citation_docs = [_doc_of(s["filename"]) for s in body.get("sources", [])]
+    print(f"  {result.qid} refused={body['refused']}")
+
+
+async def _answer_direct(
+    collection_id: uuid.UUID, question: str, role: str, settings: Settings
+) -> dict[str, Any]:
+    """Run the query pipeline in-process, bypassing HTTP.
+
+    A long eval against a live demo API fights that API's own rate limiter and dies
+    whenever the service restarts. The pipeline is the same object the route wraps,
+    so measuring it directly measures the same thing — only without the queue.
+    """
+    async with get_sessionmaker()() as db:
+        tenant_id = await db.scalar(
+            select(Collection.tenant_id).where(Collection.id == collection_id)
+        )
+    if tenant_id is None:
+        raise RuntimeError(f"collection {collection_id} not found")
+
+    answer: str | None = None
+    refused = False
+    sources: list[dict[str, Any]] = []
+    principal = resolve_principal(settings, role)
+    async for event in run_query(tenant_id, collection_id, question, settings, principal):
+        if isinstance(event, SourcesEvent):
+            sources = event.sources
+        elif isinstance(event, DoneEvent):
+            answer, refused = event.answer, event.refused
+        elif isinstance(event, ErrorEvent):
+            raise RuntimeError(f"{event.code}: {event.message}")
+    return {"answer": answer, "refused": refused, "sources": sources}
+
+
 async def run_answer_layer(
     api: str,
     api_key: str,
@@ -176,7 +219,9 @@ async def run_answer_layer(
     results: list[QuestionResult],
     role: str,
     concurrency: int = 1,
+    direct: bool = False,
 ) -> None:
+    settings = get_settings()
     semaphore = asyncio.Semaphore(concurrency)
     async with httpx.AsyncClient(
         base_url=api, headers={"Authorization": f"Bearer {api_key}"}, timeout=300
@@ -185,6 +230,16 @@ async def run_answer_layer(
         async def one(result: QuestionResult) -> None:
             target = _target_collection(collection_id, collection_de_id, result.expected_docs)
             async with semaphore:
+                if direct:
+                    try:
+                        body = await _answer_direct(
+                            target, result.question, result.role or role, settings
+                        )
+                    except Exception as exc:  # noqa: BLE001 — one lost row must not kill the run
+                        print(f"  {result.qid} ERROR {exc!r} — skipped")
+                        return
+                    _record_answer(result, body)
+                    return
                 try:
                     # a well-behaved client: respect 429 + Retry-After from our own limiter,
                     # back off on transient 5xx instead of killing a long run
@@ -209,14 +264,7 @@ async def run_answer_layer(
                 except httpx.HTTPError as exc:
                     print(f"  {result.qid} ERROR {exc!r} — skipped")
                     return
-                body = response.json()
-                result.answered_refused = body["refused"]
-                result.answer_text = body.get("answer")
-                if result.hidden_values:
-                    answer = result.answer_text or ""
-                    result.value_leak = any(value in answer for value in result.hidden_values)
-                result.citation_docs = [_doc_of(s["filename"]) for s in body.get("sources", [])]
-                print(f"  {result.qid} refused={body['refused']}")
+                _record_answer(result, response.json())
 
         await asyncio.gather(*(one(result) for result in results))
 
@@ -510,6 +558,11 @@ async def main() -> None:
         "--concurrency", type=int, default=1, help="parallel requests in answer/judge layers"
     )
     parser.add_argument(
+        "--direct",
+        action="store_true",
+        help="run the pipeline in-process instead of over HTTP (no API, no rate limiter)",
+    )
+    parser.add_argument(
         "--role",
         default="leadership",
         help="access role for questions that name none (default: leadership = full corpus)",
@@ -532,8 +585,8 @@ async def main() -> None:
 
     judge_model: str | None = None
     if args.with_answers:
-        if not args.api_key:
-            raise SystemExit("--with-answers requires --api-key")
+        if not args.api_key and not args.direct:
+            raise SystemExit("--with-answers requires --api-key (or --direct)")
         print("answer layer…")
         await run_answer_layer(
             args.api,
@@ -543,6 +596,7 @@ async def main() -> None:
             results,
             args.role,
             concurrency=args.concurrency,
+            direct=args.direct,
         )
     if args.judge:
         print("judge layer…")
