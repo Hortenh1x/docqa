@@ -1,0 +1,1144 @@
+# CUAD (Atticus, CC-BY-4.0) clause annotations converted to the DocQA golden schema.
+# 130 collection-level questions over expert-labeled clauses; the company
+# and agreement type are embedded in each question so retrieval must locate the
+# right contract among 510.
+
+- id: cu001
+  category: direct
+  question: When was the Strategic Alliance Agreement involving AURA SYSTEMS INC. ("Aura") signed?
+  expected_answer: 3/18/10
+  expected_sources:
+  - doc: AURASYSTEMSINC_06_16_2010-EX-10.25-STRATEGIC_ALLIANCE_AGREEMENT
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu002
+  category: direct
+  question: Which state's or country's law governs the Strategic Alliance Agreement involving AURA SYSTEMS
+    INC. ("Aura")?
+  expected_answer: California
+  expected_sources:
+  - doc: AURASYSTEMSINC_06_16_2010-EX-10.25-STRATEGIC_ALLIANCE_AGREEMENT
+    section: ''
+  notes: CUAD Governing Law
+- id: cu003
+  category: direct
+  question: Who are the parties to the Strategic Alliance Agreement involving AURA SYSTEMS INC. ("Aura")?
+  expected_answer: AURA SYSTEMS INC. ("Aura"); ZANOTTI EAST INC. ("Zanotti") (collectively the “Parties”)
+  expected_sources:
+  - doc: AURASYSTEMSINC_06_16_2010-EX-10.25-STRATEGIC_ALLIANCE_AGREEMENT
+    section: ''
+  notes: CUAD Parties
+- id: cu004
+  category: direct
+  question: When does the Strategic Alliance Agreement involving AURA SYSTEMS INC. ("Aura") expire?
+  expected_answer: 3/18/15
+  expected_sources:
+  - doc: AURASYSTEMSINC_06_16_2010-EX-10.25-STRATEGIC_ALLIANCE_AGREEMENT
+    section: ''
+  notes: CUAD Expiration Date
+- id: cu005
+  category: direct
+  question: What is the renewal term of the Strategic Alliance Agreement involving AURA SYSTEMS INC. ("Aura")?
+  expected_answer: successive 5 years
+  expected_sources:
+  - doc: AURASYSTEMSINC_06_16_2010-EX-10.25-STRATEGIC_ALLIANCE_AGREEMENT
+    section: ''
+  notes: CUAD Renewal Term
+- id: cu006
+  category: direct
+  question: Does the Strategic Alliance Agreement involving AURA SYSTEMS INC. ("Aura") contain a non-compete
+    restriction?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: AURASYSTEMSINC_06_16_2010-EX-10.25-STRATEGIC_ALLIANCE_AGREEMENT
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu007
+  category: direct
+  question: Does the Strategic Alliance Agreement involving AURA SYSTEMS INC. ("Aura") grant any exclusivity?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: AURASYSTEMSINC_06_16_2010-EX-10.25-STRATEGIC_ALLIANCE_AGREEMENT
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu008
+  category: direct
+  question: Is there a cap on liability in the Strategic Alliance Agreement involving AURA SYSTEMS INC.
+    ("Aura")?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: AURASYSTEMSINC_06_16_2010-EX-10.25-STRATEGIC_ALLIANCE_AGREEMENT
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu009
+  category: direct
+  question: Does the Strategic Alliance Agreement involving AURA SYSTEMS INC. ("Aura") include a minimum
+    commitment?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: AURASYSTEMSINC_06_16_2010-EX-10.25-STRATEGIC_ALLIANCE_AGREEMENT
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu010
+  category: direct
+  question: Can rights under the Strategic Alliance Agreement involving AURA SYSTEMS INC. ("Aura") be
+    assigned freely?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: AURASYSTEMSINC_06_16_2010-EX-10.25-STRATEGIC_ALLIANCE_AGREEMENT
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu011
+  category: direct
+  question: When was the Premium Managed Hosting Agreement involving AstroNutrition.com signed?
+  expected_answer: 3/1/05
+  expected_sources:
+  - doc: BANGIINC_05_25_2005-EX-10-Premium_Managed_Hosting_Agreement
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu012
+  category: direct
+  question: Who are the parties to the Premium Managed Hosting Agreement involving AstroNutrition.com?
+  expected_answer: AstroNutrition.com; deep systems
+  expected_sources:
+  - doc: BANGIINC_05_25_2005-EX-10-Premium_Managed_Hosting_Agreement
+    section: ''
+  notes: CUAD Parties
+- id: cu013
+  category: direct
+  question: When does the Premium Managed Hosting Agreement involving AstroNutrition.com expire?
+  expected_answer: 2/28/06
+  expected_sources:
+  - doc: BANGIINC_05_25_2005-EX-10-Premium_Managed_Hosting_Agreement
+    section: ''
+  notes: CUAD Expiration Date
+- id: cu014
+  category: direct
+  question: Does the Premium Managed Hosting Agreement involving AstroNutrition.com contain a non-compete
+    restriction?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: BANGIINC_05_25_2005-EX-10-Premium_Managed_Hosting_Agreement
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu015
+  category: direct
+  question: Does the Premium Managed Hosting Agreement involving AstroNutrition.com grant any exclusivity?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: BANGIINC_05_25_2005-EX-10-Premium_Managed_Hosting_Agreement
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu016
+  category: direct
+  question: Is there a cap on liability in the Premium Managed Hosting Agreement involving AstroNutrition.com?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: BANGIINC_05_25_2005-EX-10-Premium_Managed_Hosting_Agreement
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu017
+  category: direct
+  question: Does the Premium Managed Hosting Agreement involving AstroNutrition.com include a minimum
+    commitment?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: BANGIINC_05_25_2005-EX-10-Premium_Managed_Hosting_Agreement
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu018
+  category: direct
+  question: Can rights under the Premium Managed Hosting Agreement involving AstroNutrition.com be assigned
+    freely?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: BANGIINC_05_25_2005-EX-10-Premium_Managed_Hosting_Agreement
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu019
+  category: direct
+  question: When was the Services Agreement involving PFS Funds ("Trust") signed?
+  expected_answer: 6/24/20
+  expected_sources:
+  - doc: PFSFUNDS_06_26_2020-EX-99.H_OTH_MAT_CONT-SERVICES_AGREEMENT
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu020
+  category: direct
+  question: Which state's or country's law governs the Services Agreement involving PFS Funds ("Trust")?
+  expected_answer: Massachusetts
+  expected_sources:
+  - doc: PFSFUNDS_06_26_2020-EX-99.H_OTH_MAT_CONT-SERVICES_AGREEMENT
+    section: ''
+  notes: CUAD Governing Law
+- id: cu021
+  category: direct
+  question: Who are the parties to the Services Agreement involving PFS Funds ("Trust")?
+  expected_answer: PFS Funds ("Trust"); Potomac Fund Management, Inc. ("Adviser")
+  expected_sources:
+  - doc: PFSFUNDS_06_26_2020-EX-99.H_OTH_MAT_CONT-SERVICES_AGREEMENT
+    section: ''
+  notes: CUAD Parties
+- id: cu022
+  category: direct
+  question: When does the Services Agreement involving PFS Funds ("Trust") expire?
+  expected_answer: 6/24/22
+  expected_sources:
+  - doc: PFSFUNDS_06_26_2020-EX-99.H_OTH_MAT_CONT-SERVICES_AGREEMENT
+    section: ''
+  notes: CUAD Expiration Date
+- id: cu023
+  category: direct
+  question: Does the Services Agreement involving PFS Funds ("Trust") contain a non-compete restriction?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: PFSFUNDS_06_26_2020-EX-99.H_OTH_MAT_CONT-SERVICES_AGREEMENT
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu024
+  category: direct
+  question: Does the Services Agreement involving PFS Funds ("Trust") grant any exclusivity?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: PFSFUNDS_06_26_2020-EX-99.H_OTH_MAT_CONT-SERVICES_AGREEMENT
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu025
+  category: direct
+  question: Is there a cap on liability in the Services Agreement involving PFS Funds ("Trust")?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: PFSFUNDS_06_26_2020-EX-99.H_OTH_MAT_CONT-SERVICES_AGREEMENT
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu026
+  category: direct
+  question: Does the Services Agreement involving PFS Funds ("Trust") include a minimum commitment?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: PFSFUNDS_06_26_2020-EX-99.H_OTH_MAT_CONT-SERVICES_AGREEMENT
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu027
+  category: direct
+  question: Can rights under the Services Agreement involving PFS Funds ("Trust") be assigned freely?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: PFSFUNDS_06_26_2020-EX-99.H_OTH_MAT_CONT-SERVICES_AGREEMENT
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu028
+  category: direct
+  question: When was the Outsourcing Agreement involving (Dragon Systems, Inc. ("Dragon Systems") signed?
+  expected_answer: 1/19/98
+  expected_sources:
+  - doc: DRAGONSYSTEMSINC_01_08_1999-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu029
+  category: direct
+  question: Which state's or country's law governs the Outsourcing Agreement involving (Dragon Systems,
+    Inc. ("Dragon Systems")?
+  expected_answer: Massachusetts; Netherlands
+  expected_sources:
+  - doc: DRAGONSYSTEMSINC_01_08_1999-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Governing Law
+- id: cu030
+  category: direct
+  question: Who are the parties to the Outsourcing Agreement involving (Dragon Systems, Inc. ("Dragon
+    Systems")?
+  expected_answer: (Dragon Systems, Inc. ("Dragon Systems"); Modus Media International ("MMI")
+  expected_sources:
+  - doc: DRAGONSYSTEMSINC_01_08_1999-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Parties
+- id: cu031
+  category: direct
+  question: When does the Outsourcing Agreement involving (Dragon Systems, Inc. ("Dragon Systems") expire?
+  expected_answer: perpetual
+  expected_sources:
+  - doc: DRAGONSYSTEMSINC_01_08_1999-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Expiration Date
+- id: cu032
+  category: direct
+  question: Does the Outsourcing Agreement involving (Dragon Systems, Inc. ("Dragon Systems") contain
+    a non-compete restriction?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: DRAGONSYSTEMSINC_01_08_1999-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu033
+  category: direct
+  question: Does the Outsourcing Agreement involving (Dragon Systems, Inc. ("Dragon Systems") grant any
+    exclusivity?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: DRAGONSYSTEMSINC_01_08_1999-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu034
+  category: direct
+  question: Is there a cap on liability in the Outsourcing Agreement involving (Dragon Systems, Inc. ("Dragon
+    Systems")?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: DRAGONSYSTEMSINC_01_08_1999-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu035
+  category: direct
+  question: Does the Outsourcing Agreement involving (Dragon Systems, Inc. ("Dragon Systems") include
+    a minimum commitment?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: DRAGONSYSTEMSINC_01_08_1999-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu036
+  category: direct
+  question: Can rights under the Outsourcing Agreement involving (Dragon Systems, Inc. ("Dragon Systems")
+    be assigned freely?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: DRAGONSYSTEMSINC_01_08_1999-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu037
+  category: direct
+  question: When was the Joint Filing Statement involving SCULPTOR CAPITAL LP signed?
+  expected_answer: 4/8/20
+  expected_sources:
+  - doc: VIRGINGALACTICHOLDINGS,INC_04_08_2020-EX-99.1-JOINT_FILING_STATEMENT
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu038
+  category: direct
+  question: Who are the parties to the Joint Filing Statement involving SCULPTOR CAPITAL LP?
+  expected_answer: SCULPTOR CAPITAL LP; SCULPTOR CAPITAL HOLDING CORPORATION; SCULPTOR MANAGEMENT, INC.;
+    SCULPTOR MASTER FUND LTD
+  expected_sources:
+  - doc: VIRGINGALACTICHOLDINGS,INC_04_08_2020-EX-99.1-JOINT_FILING_STATEMENT
+    section: ''
+  notes: CUAD Parties
+- id: cu039
+  category: direct
+  question: Does the Joint Filing Statement involving SCULPTOR CAPITAL LP contain a non-compete restriction?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: VIRGINGALACTICHOLDINGS,INC_04_08_2020-EX-99.1-JOINT_FILING_STATEMENT
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu040
+  category: direct
+  question: Does the Joint Filing Statement involving SCULPTOR CAPITAL LP grant any exclusivity?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: VIRGINGALACTICHOLDINGS,INC_04_08_2020-EX-99.1-JOINT_FILING_STATEMENT
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu041
+  category: direct
+  question: Is there a cap on liability in the Joint Filing Statement involving SCULPTOR CAPITAL LP?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: VIRGINGALACTICHOLDINGS,INC_04_08_2020-EX-99.1-JOINT_FILING_STATEMENT
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu042
+  category: direct
+  question: Does the Joint Filing Statement involving SCULPTOR CAPITAL LP include a minimum commitment?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: VIRGINGALACTICHOLDINGS,INC_04_08_2020-EX-99.1-JOINT_FILING_STATEMENT
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu043
+  category: direct
+  question: Can rights under the Joint Filing Statement involving SCULPTOR CAPITAL LP be assigned freely?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: VIRGINGALACTICHOLDINGS,INC_04_08_2020-EX-99.1-JOINT_FILING_STATEMENT
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu044
+  category: direct
+  question: When was the Manufacturing Agreement involving Sonos, Inc. ("Sonos") signed?
+  expected_answer: 9/4/14
+  expected_sources:
+  - doc: Sonos,_Inc._-_Manufacturing_Agreement_
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu045
+  category: direct
+  question: Which state's or country's law governs the Manufacturing Agreement involving Sonos, Inc. ("Sonos")?
+  expected_answer: California
+  expected_sources:
+  - doc: Sonos,_Inc._-_Manufacturing_Agreement_
+    section: ''
+  notes: CUAD Governing Law
+- id: cu046
+  category: direct
+  question: Who are the parties to the Manufacturing Agreement involving Sonos, Inc. ("Sonos")?
+  expected_answer: Sonos, Inc. ("Sonos"); Inventec Appliances Corporation ("IAC")
+  expected_sources:
+  - doc: Sonos,_Inc._-_Manufacturing_Agreement_
+    section: ''
+  notes: CUAD Parties
+- id: cu047
+  category: direct
+  question: When does the Manufacturing Agreement involving Sonos, Inc. ("Sonos") expire?
+  expected_answer: 9/4/17
+  expected_sources:
+  - doc: Sonos,_Inc._-_Manufacturing_Agreement_
+    section: ''
+  notes: CUAD Expiration Date
+- id: cu048
+  category: direct
+  question: What is the renewal term of the Manufacturing Agreement involving Sonos, Inc. ("Sonos")?
+  expected_answer: successive 1 year
+  expected_sources:
+  - doc: Sonos,_Inc._-_Manufacturing_Agreement_
+    section: ''
+  notes: CUAD Renewal Term
+- id: cu049
+  category: direct
+  question: Does the Manufacturing Agreement involving Sonos, Inc. ("Sonos") contain a non-compete restriction?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: Sonos,_Inc._-_Manufacturing_Agreement_
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu050
+  category: direct
+  question: Does the Manufacturing Agreement involving Sonos, Inc. ("Sonos") grant any exclusivity?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: Sonos,_Inc._-_Manufacturing_Agreement_
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu051
+  category: direct
+  question: Is there a cap on liability in the Manufacturing Agreement involving Sonos, Inc. ("Sonos")?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: Sonos,_Inc._-_Manufacturing_Agreement_
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu052
+  category: direct
+  question: Does the Manufacturing Agreement involving Sonos, Inc. ("Sonos") include a minimum commitment?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: Sonos,_Inc._-_Manufacturing_Agreement_
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu053
+  category: direct
+  question: Can rights under the Manufacturing Agreement involving Sonos, Inc. ("Sonos") be assigned freely?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: Sonos,_Inc._-_Manufacturing_Agreement_
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu054
+  category: direct
+  question: Which state's or country's law governs the Distributorship Agreement involving STARAR SURGICAL
+    AG ("STAAR")?
+  expected_answer: California
+  expected_sources:
+  - doc: StaarSurgicalCompany_20180801_10-Q_EX-10.37_11289449_EX-10.37_Distributor_Agreement
+    section: ''
+  notes: CUAD Governing Law
+- id: cu055
+  category: direct
+  question: Who are the parties to the Distributorship Agreement involving STARAR SURGICAL AG ("STAAR")?
+  expected_answer: STARAR SURGICAL AG ("STAAR"); Distributor ("Distributor")
+  expected_sources:
+  - doc: StaarSurgicalCompany_20180801_10-Q_EX-10.37_11289449_EX-10.37_Distributor_Agreement
+    section: ''
+  notes: CUAD Parties
+- id: cu056
+  category: direct
+  question: What is the renewal term of the Distributorship Agreement involving STARAR SURGICAL AG ("STAAR")?
+  expected_answer: successive 1 year
+  expected_sources:
+  - doc: StaarSurgicalCompany_20180801_10-Q_EX-10.37_11289449_EX-10.37_Distributor_Agreement
+    section: ''
+  notes: CUAD Renewal Term
+- id: cu057
+  category: direct
+  question: Does the Distributorship Agreement involving STARAR SURGICAL AG ("STAAR") contain a non-compete
+    restriction?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: StaarSurgicalCompany_20180801_10-Q_EX-10.37_11289449_EX-10.37_Distributor_Agreement
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu058
+  category: direct
+  question: Does the Distributorship Agreement involving STARAR SURGICAL AG ("STAAR") grant any exclusivity?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: StaarSurgicalCompany_20180801_10-Q_EX-10.37_11289449_EX-10.37_Distributor_Agreement
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu059
+  category: direct
+  question: Is there a cap on liability in the Distributorship Agreement involving STARAR SURGICAL AG
+    ("STAAR")?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: StaarSurgicalCompany_20180801_10-Q_EX-10.37_11289449_EX-10.37_Distributor_Agreement
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu060
+  category: direct
+  question: Does the Distributorship Agreement involving STARAR SURGICAL AG ("STAAR") include a minimum
+    commitment?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: StaarSurgicalCompany_20180801_10-Q_EX-10.37_11289449_EX-10.37_Distributor_Agreement
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu061
+  category: direct
+  question: Can rights under the Distributorship Agreement involving STARAR SURGICAL AG ("STAAR") be assigned
+    freely?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: StaarSurgicalCompany_20180801_10-Q_EX-10.37_11289449_EX-10.37_Distributor_Agreement
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu062
+  category: direct
+  question: When was the Sponsorship Agreement involving Southern Racing Promotions, Inc. ("SRP") signed?
+  expected_answer: 2/24/98
+  expected_sources:
+  - doc: LOGANSROADHOUSEINC_03_27_1998-EX-10.17-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu063
+  category: direct
+  question: Which state's or country's law governs the Sponsorship Agreement involving Southern Racing
+    Promotions, Inc. ("SRP")?
+  expected_answer: Tennessee
+  expected_sources:
+  - doc: LOGANSROADHOUSEINC_03_27_1998-EX-10.17-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Governing Law
+- id: cu064
+  category: direct
+  question: Who are the parties to the Sponsorship Agreement involving Southern Racing Promotions, Inc.
+    ("SRP")?
+  expected_answer: Southern Racing Promotions, Inc. ("SRP"); Logan's Roadhouse, Inc. ("Logan's")
+  expected_sources:
+  - doc: LOGANSROADHOUSEINC_03_27_1998-EX-10.17-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Parties
+- id: cu065
+  category: direct
+  question: When does the Sponsorship Agreement involving Southern Racing Promotions, Inc. ("SRP") expire?
+  expected_answer: 11/30/98
+  expected_sources:
+  - doc: LOGANSROADHOUSEINC_03_27_1998-EX-10.17-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Expiration Date
+- id: cu066
+  category: direct
+  question: Does the Sponsorship Agreement involving Southern Racing Promotions, Inc. ("SRP") contain
+    a non-compete restriction?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: LOGANSROADHOUSEINC_03_27_1998-EX-10.17-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu067
+  category: direct
+  question: Does the Sponsorship Agreement involving Southern Racing Promotions, Inc. ("SRP") grant any
+    exclusivity?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: LOGANSROADHOUSEINC_03_27_1998-EX-10.17-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu068
+  category: direct
+  question: Is there a cap on liability in the Sponsorship Agreement involving Southern Racing Promotions,
+    Inc. ("SRP")?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: LOGANSROADHOUSEINC_03_27_1998-EX-10.17-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu069
+  category: direct
+  question: Does the Sponsorship Agreement involving Southern Racing Promotions, Inc. ("SRP") include
+    a minimum commitment?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: LOGANSROADHOUSEINC_03_27_1998-EX-10.17-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu070
+  category: direct
+  question: Can rights under the Sponsorship Agreement involving Southern Racing Promotions, Inc. ("SRP")
+    be assigned freely?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: LOGANSROADHOUSEINC_03_27_1998-EX-10.17-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu071
+  category: direct
+  question: When was the Endorsement Licensing And Co-Branding Agreement involving Marine MP, LLC (“Lender”)
+    signed?
+  expected_answer: 7/26/13
+  expected_sources:
+  - doc: MusclepharmCorp_20170208_10-KA_EX-10.38_9893581_EX-10.38_Co-Branding_Agreement
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu072
+  category: direct
+  question: Which state's or country's law governs the Endorsement Licensing And Co-Branding Agreement
+    involving Marine MP, LLC (“Lender”)?
+  expected_answer: California
+  expected_sources:
+  - doc: MusclepharmCorp_20170208_10-KA_EX-10.38_9893581_EX-10.38_Co-Branding_Agreement
+    section: ''
+  notes: CUAD Governing Law
+- id: cu073
+  category: direct
+  question: Who are the parties to the Endorsement Licensing And Co-Branding Agreement involving Marine
+    MP, LLC (“Lender”)?
+  expected_answer: Marine MP, LLC (“Lender”); Arnold Schwarzenegger (“Endorser”); Fitness Publications,
+    Inc. (“Fitness”); Lender, Endorser and Fitness (“AS Parties”);  MusclePharm Corporation ("MusclePharm"
+    or "Company")
+  expected_sources:
+  - doc: MusclepharmCorp_20170208_10-KA_EX-10.38_9893581_EX-10.38_Co-Branding_Agreement
+    section: ''
+  notes: CUAD Parties
+- id: cu074
+  category: direct
+  question: When does the Endorsement Licensing And Co-Branding Agreement involving Marine MP, LLC (“Lender”)
+    expire?
+  expected_answer: 7/22/16
+  expected_sources:
+  - doc: MusclepharmCorp_20170208_10-KA_EX-10.38_9893581_EX-10.38_Co-Branding_Agreement
+    section: ''
+  notes: CUAD Expiration Date
+- id: cu075
+  category: direct
+  question: What is the renewal term of the Endorsement Licensing And Co-Branding Agreement involving
+    Marine MP, LLC (“Lender”)?
+  expected_answer: 7/22/2019; 7/22/2022
+  expected_sources:
+  - doc: MusclepharmCorp_20170208_10-KA_EX-10.38_9893581_EX-10.38_Co-Branding_Agreement
+    section: ''
+  notes: CUAD Renewal Term
+- id: cu076
+  category: direct
+  question: Does the Endorsement Licensing And Co-Branding Agreement involving Marine MP, LLC (“Lender”)
+    contain a non-compete restriction?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: MusclepharmCorp_20170208_10-KA_EX-10.38_9893581_EX-10.38_Co-Branding_Agreement
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu077
+  category: direct
+  question: Does the Endorsement Licensing And Co-Branding Agreement involving Marine MP, LLC (“Lender”)
+    grant any exclusivity?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: MusclepharmCorp_20170208_10-KA_EX-10.38_9893581_EX-10.38_Co-Branding_Agreement
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu078
+  category: direct
+  question: Is there a cap on liability in the Endorsement Licensing And Co-Branding Agreement involving
+    Marine MP, LLC (“Lender”)?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: MusclepharmCorp_20170208_10-KA_EX-10.38_9893581_EX-10.38_Co-Branding_Agreement
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu079
+  category: direct
+  question: Does the Endorsement Licensing And Co-Branding Agreement involving Marine MP, LLC (“Lender”)
+    include a minimum commitment?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: MusclepharmCorp_20170208_10-KA_EX-10.38_9893581_EX-10.38_Co-Branding_Agreement
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu080
+  category: direct
+  question: Can rights under the Endorsement Licensing And Co-Branding Agreement involving Marine MP,
+    LLC (“Lender”) be assigned freely?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: MusclepharmCorp_20170208_10-KA_EX-10.38_9893581_EX-10.38_Co-Branding_Agreement
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu081
+  category: direct
+  question: Which state's or country's law governs the Distributor Agreement involving Lucid Inc.?
+  expected_answer: New York
+  expected_sources:
+  - doc: LUCIDINC_04_15_2011-EX-10.9-DISTRIBUTOR_AGREEMENT
+    section: ''
+  notes: CUAD Governing Law
+- id: cu082
+  category: direct
+  question: Who are the parties to the Distributor Agreement involving Lucid Inc.?
+  expected_answer: Lucid Inc.; [*] ("Distributor")
+  expected_sources:
+  - doc: LUCIDINC_04_15_2011-EX-10.9-DISTRIBUTOR_AGREEMENT
+    section: ''
+  notes: CUAD Parties
+- id: cu083
+  category: direct
+  question: What is the renewal term of the Distributor Agreement involving Lucid Inc.?
+  expected_answer: successive 1 year
+  expected_sources:
+  - doc: LUCIDINC_04_15_2011-EX-10.9-DISTRIBUTOR_AGREEMENT
+    section: ''
+  notes: CUAD Renewal Term
+- id: cu084
+  category: direct
+  question: Does the Distributor Agreement involving Lucid Inc. contain a non-compete restriction?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: LUCIDINC_04_15_2011-EX-10.9-DISTRIBUTOR_AGREEMENT
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu085
+  category: direct
+  question: Does the Distributor Agreement involving Lucid Inc. grant any exclusivity?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: LUCIDINC_04_15_2011-EX-10.9-DISTRIBUTOR_AGREEMENT
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu086
+  category: direct
+  question: Is there a cap on liability in the Distributor Agreement involving Lucid Inc.?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: LUCIDINC_04_15_2011-EX-10.9-DISTRIBUTOR_AGREEMENT
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu087
+  category: direct
+  question: Does the Distributor Agreement involving Lucid Inc. include a minimum commitment?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: LUCIDINC_04_15_2011-EX-10.9-DISTRIBUTOR_AGREEMENT
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu088
+  category: direct
+  question: Can rights under the Distributor Agreement involving Lucid Inc. be assigned freely?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: LUCIDINC_04_15_2011-EX-10.9-DISTRIBUTOR_AGREEMENT
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu089
+  category: direct
+  question: When was the Agency Agreement involving Bluerock Residential Growth REIT, Inc. (“Company”)
+    signed?
+  expected_answer: 5/25/16
+  expected_sources:
+  - doc: BLUEROCKRESIDENTIALGROWTHREIT,INC_06_01_2016-EX-1.1-AGENCY_AGREEMENT
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu090
+  category: direct
+  question: Which state's or country's law governs the Agency Agreement involving Bluerock Residential
+    Growth REIT, Inc. (“Company”)?
+  expected_answer: New York
+  expected_sources:
+  - doc: BLUEROCKRESIDENTIALGROWTHREIT,INC_06_01_2016-EX-1.1-AGENCY_AGREEMENT
+    section: ''
+  notes: CUAD Governing Law
+- id: cu091
+  category: direct
+  question: Who are the parties to the Agency Agreement involving Bluerock Residential Growth REIT, Inc.
+    (“Company”)?
+  expected_answer: Bluerock Residential Growth REIT, Inc. (“Company”); Bluerock Residential Holdings,
+    L.P. (“Operating Partnership”) (collectively, Company, and Bluerock Residential Growth REIT, Inc.
+    are referred to as the “Transaction Entities”); BRG Manager, LLC (“Manager”); Compass Point Research
+    & Trading, LLC (“A
+  expected_sources:
+  - doc: BLUEROCKRESIDENTIALGROWTHREIT,INC_06_01_2016-EX-1.1-AGENCY_AGREEMENT
+    section: ''
+  notes: CUAD Parties
+- id: cu092
+  category: direct
+  question: Does the Agency Agreement involving Bluerock Residential Growth REIT, Inc. (“Company”) contain
+    a non-compete restriction?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: BLUEROCKRESIDENTIALGROWTHREIT,INC_06_01_2016-EX-1.1-AGENCY_AGREEMENT
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu093
+  category: direct
+  question: Does the Agency Agreement involving Bluerock Residential Growth REIT, Inc. (“Company”) grant
+    any exclusivity?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: BLUEROCKRESIDENTIALGROWTHREIT,INC_06_01_2016-EX-1.1-AGENCY_AGREEMENT
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu094
+  category: direct
+  question: Is there a cap on liability in the Agency Agreement involving Bluerock Residential Growth
+    REIT, Inc. (“Company”)?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: BLUEROCKRESIDENTIALGROWTHREIT,INC_06_01_2016-EX-1.1-AGENCY_AGREEMENT
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu095
+  category: direct
+  question: Does the Agency Agreement involving Bluerock Residential Growth REIT, Inc. (“Company”) include
+    a minimum commitment?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: BLUEROCKRESIDENTIALGROWTHREIT,INC_06_01_2016-EX-1.1-AGENCY_AGREEMENT
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu096
+  category: direct
+  question: Can rights under the Agency Agreement involving Bluerock Residential Growth REIT, Inc. (“Company”)
+    be assigned freely?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: BLUEROCKRESIDENTIALGROWTHREIT,INC_06_01_2016-EX-1.1-AGENCY_AGREEMENT
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu097
+  category: direct
+  question: 'When was the Asp And Outsourcing Agreement
+
+
+    Order Form involving E.PIPHANY, INC. ("E.piphany") signed?'
+  expected_answer: 07/31/2000; 07/[]/2000
+  expected_sources:
+  - doc: OASYSMOBILE,INC_07_05_2001-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu098
+  category: direct
+  question: 'Which state''s or country''s law governs the Asp And Outsourcing Agreement
+
+
+    Order Form involving E.PIPHANY, INC. ("E.piphany")?'
+  expected_answer: California
+  expected_sources:
+  - doc: OASYSMOBILE,INC_07_05_2001-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Governing Law
+- id: cu099
+  category: direct
+  question: 'Who are the parties to the Asp And Outsourcing Agreement
+
+
+    Order Form involving E.PIPHANY, INC. ("E.piphany")?'
+  expected_answer: E.PIPHANY, INC. ("E.piphany"); HIGH SPEED NET SOLUTIONS, INC. ("HSNS")
+  expected_sources:
+  - doc: OASYSMOBILE,INC_07_05_2001-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Parties
+- id: cu100
+  category: direct
+  question: 'When does the Asp And Outsourcing Agreement
+
+
+    Order Form involving E.PIPHANY, INC. ("E.piphany") expire?'
+  expected_answer: 07/[]/2003
+  expected_sources:
+  - doc: OASYSMOBILE,INC_07_05_2001-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Expiration Date
+- id: cu101
+  category: direct
+  question: 'Does the Asp And Outsourcing Agreement
+
+
+    Order Form involving E.PIPHANY, INC. ("E.piphany") contain a non-compete restriction?'
+  expected_answer: 'No'
+  expected_sources:
+  - doc: OASYSMOBILE,INC_07_05_2001-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu102
+  category: direct
+  question: 'Does the Asp And Outsourcing Agreement
+
+
+    Order Form involving E.PIPHANY, INC. ("E.piphany") grant any exclusivity?'
+  expected_answer: 'No'
+  expected_sources:
+  - doc: OASYSMOBILE,INC_07_05_2001-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu103
+  category: direct
+  question: 'Is there a cap on liability in the Asp And Outsourcing Agreement
+
+
+    Order Form involving E.PIPHANY, INC. ("E.piphany")?'
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: OASYSMOBILE,INC_07_05_2001-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu104
+  category: direct
+  question: 'Does the Asp And Outsourcing Agreement
+
+
+    Order Form involving E.PIPHANY, INC. ("E.piphany") include a minimum commitment?'
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: OASYSMOBILE,INC_07_05_2001-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu105
+  category: direct
+  question: 'Can rights under the Asp And Outsourcing Agreement
+
+
+    Order Form involving E.PIPHANY, INC. ("E.piphany") be assigned freely?'
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: OASYSMOBILE,INC_07_05_2001-EX-10.17-OUTSOURCING_AGREEMENT
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu106
+  category: direct
+  question: When was the Intellectual Property Agreement involving Motorola Solutions, Inc. ("Seller")
+    signed?
+  expected_answer: 4/14/14
+  expected_sources:
+  - doc: ZEBRATECHNOLOGIESCORP_04_16_2014-EX-10.1-INTELLECTUAL_PROPERTY_AGREEMENT
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu107
+  category: direct
+  question: Which state's or country's law governs the Intellectual Property Agreement involving Motorola
+    Solutions, Inc. ("Seller")?
+  expected_answer: Delaware
+  expected_sources:
+  - doc: ZEBRATECHNOLOGIESCORP_04_16_2014-EX-10.1-INTELLECTUAL_PROPERTY_AGREEMENT
+    section: ''
+  notes: CUAD Governing Law
+- id: cu108
+  category: direct
+  question: Who are the parties to the Intellectual Property Agreement involving Motorola Solutions, Inc.
+    ("Seller")?
+  expected_answer: Motorola Solutions, Inc. ("Seller"); Zebra Technologies Corporation ("Purchaser")
+  expected_sources:
+  - doc: ZEBRATECHNOLOGIESCORP_04_16_2014-EX-10.1-INTELLECTUAL_PROPERTY_AGREEMENT
+    section: ''
+  notes: CUAD Parties
+- id: cu109
+  category: direct
+  question: Does the Intellectual Property Agreement involving Motorola Solutions, Inc. ("Seller") contain
+    a non-compete restriction?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: ZEBRATECHNOLOGIESCORP_04_16_2014-EX-10.1-INTELLECTUAL_PROPERTY_AGREEMENT
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu110
+  category: direct
+  question: Does the Intellectual Property Agreement involving Motorola Solutions, Inc. ("Seller") grant
+    any exclusivity?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: ZEBRATECHNOLOGIESCORP_04_16_2014-EX-10.1-INTELLECTUAL_PROPERTY_AGREEMENT
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu111
+  category: direct
+  question: Is there a cap on liability in the Intellectual Property Agreement involving Motorola Solutions,
+    Inc. ("Seller")?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: ZEBRATECHNOLOGIESCORP_04_16_2014-EX-10.1-INTELLECTUAL_PROPERTY_AGREEMENT
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu112
+  category: direct
+  question: Does the Intellectual Property Agreement involving Motorola Solutions, Inc. ("Seller") include
+    a minimum commitment?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: ZEBRATECHNOLOGIESCORP_04_16_2014-EX-10.1-INTELLECTUAL_PROPERTY_AGREEMENT
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu113
+  category: direct
+  question: Can rights under the Intellectual Property Agreement involving Motorola Solutions, Inc. ("Seller")
+    be assigned freely?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: ZEBRATECHNOLOGIESCORP_04_16_2014-EX-10.1-INTELLECTUAL_PROPERTY_AGREEMENT
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu114
+  category: direct
+  question: When was the Joint Supply And Marketing Agreement involving Bunker One (USA) Inc. ("Bunker
+    One") signed?
+  expected_answer: 1/10/20
+  expected_sources:
+  - doc: VertexEnergyInc_20200113_8-K_EX-10.1_11943624_EX-10.1_Marketing_Agreement
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu115
+  category: direct
+  question: Which state's or country's law governs the Joint Supply And Marketing Agreement involving
+    Bunker One (USA) Inc. ("Bunker One")?
+  expected_answer: Alabama
+  expected_sources:
+  - doc: VertexEnergyInc_20200113_8-K_EX-10.1_11943624_EX-10.1_Marketing_Agreement
+    section: ''
+  notes: CUAD Governing Law
+- id: cu116
+  category: direct
+  question: Who are the parties to the Joint Supply And Marketing Agreement involving Bunker One (USA)
+    Inc. ("Bunker One")?
+  expected_answer: Bunker One (USA) Inc. ("Bunker One"); Vertex Energy Operating LLC ("Vertex")
+  expected_sources:
+  - doc: VertexEnergyInc_20200113_8-K_EX-10.1_11943624_EX-10.1_Marketing_Agreement
+    section: ''
+  notes: CUAD Parties
+- id: cu117
+  category: direct
+  question: When does the Joint Supply And Marketing Agreement involving Bunker One (USA) Inc. ("Bunker
+    One") expire?
+  expected_answer: 4/30/29
+  expected_sources:
+  - doc: VertexEnergyInc_20200113_8-K_EX-10.1_11943624_EX-10.1_Marketing_Agreement
+    section: ''
+  notes: CUAD Expiration Date
+- id: cu118
+  category: direct
+  question: What is the renewal term of the Joint Supply And Marketing Agreement involving Bunker One
+    (USA) Inc. ("Bunker One")?
+  expected_answer: successive 5 years
+  expected_sources:
+  - doc: VertexEnergyInc_20200113_8-K_EX-10.1_11943624_EX-10.1_Marketing_Agreement
+    section: ''
+  notes: CUAD Renewal Term
+- id: cu119
+  category: direct
+  question: Does the Joint Supply And Marketing Agreement involving Bunker One (USA) Inc. ("Bunker One")
+    contain a non-compete restriction?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: VertexEnergyInc_20200113_8-K_EX-10.1_11943624_EX-10.1_Marketing_Agreement
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu120
+  category: direct
+  question: Does the Joint Supply And Marketing Agreement involving Bunker One (USA) Inc. ("Bunker One")
+    grant any exclusivity?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: VertexEnergyInc_20200113_8-K_EX-10.1_11943624_EX-10.1_Marketing_Agreement
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu121
+  category: direct
+  question: Is there a cap on liability in the Joint Supply And Marketing Agreement involving Bunker One
+    (USA) Inc. ("Bunker One")?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: VertexEnergyInc_20200113_8-K_EX-10.1_11943624_EX-10.1_Marketing_Agreement
+    section: ''
+  notes: CUAD Cap On Liability
+- id: cu122
+  category: direct
+  question: Does the Joint Supply And Marketing Agreement involving Bunker One (USA) Inc. ("Bunker One")
+    include a minimum commitment?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: VertexEnergyInc_20200113_8-K_EX-10.1_11943624_EX-10.1_Marketing_Agreement
+    section: ''
+  notes: CUAD Minimum Commitment
+- id: cu123
+  category: direct
+  question: Can rights under the Joint Supply And Marketing Agreement involving Bunker One (USA) Inc.
+    ("Bunker One") be assigned freely?
+  expected_answer: Yes — Yes
+  expected_sources:
+  - doc: VertexEnergyInc_20200113_8-K_EX-10.1_11943624_EX-10.1_Marketing_Agreement
+    section: ''
+  notes: CUAD Anti-Assignment
+- id: cu124
+  category: direct
+  question: When was the Sponsorship Agreement involving HYDRON TECHNOLOGIES, INC. ("Hydron") signed?
+  expected_answer: 1/1/97
+  expected_sources:
+  - doc: HYDRONTECHNOLOGIESINC_03_31_1997-EX-10.47-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Agreement Date
+- id: cu125
+  category: direct
+  question: Which state's or country's law governs the Sponsorship Agreement involving HYDRON TECHNOLOGIES,
+    INC. ("Hydron")?
+  expected_answer: Florida
+  expected_sources:
+  - doc: HYDRONTECHNOLOGIESINC_03_31_1997-EX-10.47-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Governing Law
+- id: cu126
+  category: direct
+  question: Who are the parties to the Sponsorship Agreement involving HYDRON TECHNOLOGIES, INC. ("Hydron")?
+  expected_answer: HYDRON TECHNOLOGIES, INC. ("Hydron"); MIAMI DOLPHINS, LTD. ("Dolphins")
+  expected_sources:
+  - doc: HYDRONTECHNOLOGIESINC_03_31_1997-EX-10.47-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Parties
+- id: cu127
+  category: direct
+  question: When does the Sponsorship Agreement involving HYDRON TECHNOLOGIES, INC. ("Hydron") expire?
+  expected_answer: 1/1/01
+  expected_sources:
+  - doc: HYDRONTECHNOLOGIESINC_03_31_1997-EX-10.47-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Expiration Date
+- id: cu128
+  category: direct
+  question: Does the Sponsorship Agreement involving HYDRON TECHNOLOGIES, INC. ("Hydron") contain a non-compete
+    restriction?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: HYDRONTECHNOLOGIESINC_03_31_1997-EX-10.47-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Non-Compete
+- id: cu129
+  category: direct
+  question: Does the Sponsorship Agreement involving HYDRON TECHNOLOGIES, INC. ("Hydron") grant any exclusivity?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: HYDRONTECHNOLOGIESINC_03_31_1997-EX-10.47-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Exclusivity
+- id: cu130
+  category: direct
+  question: Is there a cap on liability in the Sponsorship Agreement involving HYDRON TECHNOLOGIES, INC.
+    ("Hydron")?
+  expected_answer: 'No'
+  expected_sources:
+  - doc: HYDRONTECHNOLOGIESINC_03_31_1997-EX-10.47-SPONSORSHIP_AGREEMENT
+    section: ''
+  notes: CUAD Cap On Liability
