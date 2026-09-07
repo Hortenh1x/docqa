@@ -52,6 +52,8 @@ async def test_questions_generated_after_ingest(client, tenant):
     assert {q["question"] for q in questions} <= STUB_CANDIDATES
     assert {q["min_role"] for q in questions} == {"employee"}  # nothing restricted here
     assert row["access_labels"] == []
+    assert row["document_count"] == 1
+    assert collection["document_count"] == 0  # the creation response, before any upload
 
 
 async def test_ingest_status_reports_tokens_cost_and_questions(client, tenant):

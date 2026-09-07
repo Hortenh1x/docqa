@@ -119,7 +119,7 @@ docker cp scripts docqa-api-1:/app/ && docker cp /tmp/corpus-build-en docqa-api-
     && docker cp /tmp/corpus-large-build docqa-api-1:/app/corpus/large/build
 KEY=$(grep ^NEXT_PUBLIC_DEMO_API_KEY= .env | cut -d= -f2)
 $C exec -T api python -m scripts.corpus_v2.seed --api http://localhost:8000 --api-key "$KEY" \
-    --slug kranich --name "Kranich (300 docs, EN+DE)" --build /app/corpus/large/build
+    --slug kranich --name "Kranich (EN+DE)" --build /app/corpus/large/build
 $C exec -T api python -m app.cli mark-readonly --collection-id <policies-en id> --writable
 $C exec -T api python -m scripts.corpus_v2.seed --api http://localhost:8000 --api-key "$KEY" \
     --slug policies-en --build /app/corpus/build                          # re-uploads only the changed files

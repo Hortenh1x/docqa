@@ -51,6 +51,8 @@ class CollectionOut(BaseModel):
     suggested_questions: list[SuggestedQuestionOut] | None
     # restricted content labels present in the collection (empty = nothing restricted)
     access_labels: list[str] = []
+    # documents in the collection, any status (what the Library lists)
+    document_count: int = 0
     created_at: datetime
 
 
@@ -109,9 +111,22 @@ async def list_collections(tenant: CurrentTenant, db: DbSession) -> list[Collect
         select(Collection).where(Collection.tenant_id == tenant.id).order_by(Collection.created_at)
     )
     collections = list(result.scalars().all())
-    labels = await restricted_labels_by_collection(db, [c.id for c in collections])
+    ids = [c.id for c in collections]
+    labels = await restricted_labels_by_collection(db, ids)
+    counts: dict[uuid.UUID, int] = {}
+    if ids:
+        rows = (
+            await db.execute(
+                select(Document.collection_id, func.count())
+                .where(Document.collection_id.in_(ids))
+                .group_by(Document.collection_id)
+            )
+        ).all()
+        counts = {collection_id: int(n) for collection_id, n in rows}
     return [
-        CollectionOut.model_validate(c).model_copy(update={"access_labels": labels.get(c.id, [])})
+        CollectionOut.model_validate(c).model_copy(
+            update={"access_labels": labels.get(c.id, []), "document_count": counts.get(c.id, 0)}
+        )
         for c in collections
     ]
 

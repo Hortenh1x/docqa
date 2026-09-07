@@ -6,7 +6,7 @@ until nothing is in flight. Rate-limit aware (429 + Retry-After).
 
 Usage:
   uv run python -m scripts.corpus_v2.seed --api http://localhost:8000 --api-key <key> \
-      --slug kranich --name "Kranich (300 docs, EN+DE)" --build corpus/large/build
+      --slug kranich --name "Kranich (EN+DE)" --build corpus/large/build
 """
 
 from __future__ import annotations

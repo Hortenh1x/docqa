@@ -37,6 +37,8 @@ export interface Collection {
   suggested_questions: SuggestedQuestion[] | null;
   /** restricted content labels present in the collection (empty = nothing restricted) */
   access_labels: string[];
+  /** documents in the collection, any status */
+  document_count: number;
   created_at: string;
 }
 

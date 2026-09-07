@@ -127,8 +127,7 @@ export function TopBar() {
             >
               {collections.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name}
-                  {c.read_only ? " · read-only" : ""}
+                  {c.name} · {c.document_count} {c.document_count === 1 ? "doc" : "docs"}
                 </option>
               ))}
             </Select>

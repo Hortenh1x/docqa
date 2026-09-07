@@ -38,7 +38,11 @@ function CollectionProvider({ children }: { children: React.ReactNode }) {
   }, [selectedId]);
 
   const value = useMemo<CollectionContextValue>(() => {
-    const collections = data ?? [];
+    // API order (creation time), with the sandbox pinned to the end: it is the one
+    // collection that is "yours to fill", the others are the exhibits
+    const collections = [...(data ?? [])].sort(
+      (a, b) => Number(a.slug === "sandbox") - Number(b.slug === "sandbox"),
+    );
     const selected =
       collections.find((c) => c.id === selectedId) ??
       collections.find((c) => c.slug === "policies-en") ??
