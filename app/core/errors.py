@@ -134,6 +134,14 @@ class InvalidRoleError(DomainError):
     title = "Unknown role"
 
 
+class DocumentRestrictedError(DomainError):
+    # the Library already lists the document with its labels, so unlike a foreign
+    # resource there is nothing to hide here — a 403 names the label that would unlock it
+    status = 403
+    code = "document_restricted"
+    title = "Document restricted for this role"
+
+
 class IdempotencyKeyReusedError(DomainError):
     status = 422
     code = "idempotency_key_reused"

@@ -10,10 +10,11 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, ConfigDict
 from sqlalchemy import func, select
 
+from app.access import resolve_principal
 from app.access.labels import restricted_labels_by_document
 from app.api.deps import CurrentCollection, CurrentTenant, DbSession
 from app.config import get_settings
-from app.core.errors import NotFoundError
+from app.core.errors import DocumentRestrictedError, NotFoundError
 from app.core.idempotency import replay_headers, run_idempotent
 from app.core.rate_limit import rate_limit
 from app.db.models import Collection, Document
@@ -174,13 +175,33 @@ async def get_document(document_id: uuid.UUID, tenant: CurrentTenant, db: DbSess
     "/documents/{document_id}/file",
     response_class=FileResponse,
     dependencies=[Depends(rate_limit("default"))],
-    responses={404: {"description": "Unknown document (or another tenant's)"}},
-    description="The original uploaded file, served inline — powers the in-app reader.",
+    responses={
+        403: {"description": "The document holds sections the given role may not read"},
+        404: {"description": "Unknown document (or another tenant's)"},
+    },
+    description=(
+        "The original uploaded file, served inline — powers the in-app reader. `role` "
+        "applies the same access labels as retrieval: a file with a section the role "
+        "cannot read is refused as a whole (403 `document_restricted`), because the file "
+        "cannot be served partially. Omitted → the least-privileged role."
+    ),
 )
 async def get_document_file(
-    document_id: uuid.UUID, tenant: CurrentTenant, db: DbSession
+    document_id: uuid.UUID,
+    tenant: CurrentTenant,
+    db: DbSession,
+    role: Annotated[str | None, Query(max_length=50)] = None,
 ) -> FileResponse:
     document = await _get_scoped_document(document_id, tenant.id, db)
+    principal = resolve_principal(get_settings(), role)
+    labels = (await restricted_labels_by_document(db, [document.id])).get(document.id, [])
+    blocked = [label for label in labels if not principal.sees(label)]
+    if blocked:
+        raise DocumentRestrictedError(
+            "This document contains sections restricted to another group.",
+            labels=blocked,
+            role=principal.role,
+        )
     path = get_storage().path_for(
         str(tenant.id), document.sha256, EXT_BY_MIME.get(document.mime_type, "")
     )

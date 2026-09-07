@@ -2,8 +2,9 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useRole } from "@/app/providers";
 import { LockIcon } from "@/components/LockIcon";
-import { labelName } from "@/lib/access";
+import { canRead, joinNames, labelName } from "@/lib/access";
 import { deleteDocument } from "@/lib/api/client";
 import type { DocumentOut } from "@/lib/api/types";
 import { formatBytes, formatDate } from "@/lib/format";
@@ -20,6 +21,7 @@ export function DocumentTable({
   readOnly: boolean;
 }) {
   const queryClient = useQueryClient();
+  const { roles, role } = useRole();
   const [reading, setReading] = useState<DocumentOut | null>(null);
   const remove = useMutation({
     mutationFn: deleteDocument,
@@ -47,14 +49,24 @@ export function DocumentTable({
           {documents.map((doc) => (
             <tr key={doc.id} className="border-b border-hairline last:border-0">
               <td className="max-w-64 px-4 py-2.5">
-                <button
-                  type="button"
-                  onClick={() => setReading(doc)}
-                  title={`Read ${doc.filename}`}
-                  className="font-data block max-w-full truncate text-xs underline-offset-2 hover:text-stamp hover:underline"
-                >
-                  {doc.filename}
-                </button>
+                {canRead(roles, role, doc.access_labels) ? (
+                  <button
+                    type="button"
+                    onClick={() => setReading(doc)}
+                    title={`Read ${doc.filename}`}
+                    className="font-data block max-w-full truncate text-xs underline-offset-2 hover:text-stamp hover:underline"
+                  >
+                    {doc.filename}
+                  </button>
+                ) : (
+                  <span
+                    title={`Restricted to ${joinNames(doc.access_labels.map(labelName))} — switch the role to read it`}
+                    className="font-data flex max-w-full items-center gap-1.5 truncate text-xs text-ink-soft"
+                  >
+                    <LockIcon />
+                    {doc.filename}
+                  </span>
+                )}
               </td>
               <td className="font-data px-3 py-2.5 text-xs text-ink-soft">
                 {doc.page_count ?? "—"}

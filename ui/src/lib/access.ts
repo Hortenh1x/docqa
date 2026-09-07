@@ -52,3 +52,11 @@ export function joinNames(names: string[]): string {
   if (names.length <= 1) return names.join("");
   return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
 }
+
+/** A role may read a whole document only when it can read every label the document holds. */
+export function canRead(roles: Role[], current: string, labels: string[]): boolean {
+  if (!labels.length) return true;
+  const mine = roles.find((r) => r.role === current)?.labels;
+  if (!mine) return false;
+  return labels.every((label) => mine.includes(label));
+}

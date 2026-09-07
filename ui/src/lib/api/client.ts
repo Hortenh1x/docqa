@@ -91,8 +91,9 @@ export const deleteDocument = (documentId: string) =>
   api<void>(`/v1/documents/${documentId}`, { method: "DELETE" });
 
 /** The original uploaded file as a blob — the reader shows PDFs natively, text inline. */
-export async function fetchDocumentFile(documentId: string): Promise<Blob> {
-  const res = await fetch(`${API_BASE}/v1/documents/${documentId}/file`, {
+export async function fetchDocumentFile(documentId: string, role?: string): Promise<Blob> {
+  const query = role ? `?role=${encodeURIComponent(role)}` : "";
+  const res = await fetch(`${API_BASE}/v1/documents/${documentId}/file${query}`, {
     headers: { Authorization: `Bearer ${apiKey}` },
   });
   if (!res.ok) throw await toApiError(res);

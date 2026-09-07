@@ -10,6 +10,8 @@ export interface AskError {
 
 export interface AskState {
   phase: Phase;
+  /** the collection the question was asked in — a switch elsewhere resets the screen */
+  collectionId: string | null;
   question: string;
   /** the access role the question was asked as (the switch may have moved since) */
   askedAs: string | null;
@@ -24,6 +26,7 @@ export interface AskState {
 
 export const initialState: AskState = {
   phase: "idle",
+  collectionId: null,
   question: "",
   askedAs: null,
   queryId: null,
@@ -36,14 +39,16 @@ export const initialState: AskState = {
 };
 
 export type AskAction =
-  | { type: "submit"; question: string; role: string }
+  | { type: "submit"; question: string; role: string; collectionId: string }
   | { type: "meta"; queryId: string; access: AccessInfo }
   | { type: "sources"; sources: Source[] }
   | { type: "delta"; text: string }
   | { type: "done"; payload: DonePayload }
   | { type: "error"; error: AskError }
   | { type: "openSource"; n: number }
-  | { type: "closeSource" };
+  | { type: "closeSource" }
+  | { type: "restore"; state: AskState }
+  | { type: "reset" };
 
 export function askReducer(state: AskState, action: AskAction): AskState {
   switch (action.type) {
@@ -51,6 +56,7 @@ export function askReducer(state: AskState, action: AskAction): AskState {
       return {
         ...initialState,
         phase: "searching",
+        collectionId: action.collectionId,
         question: action.question,
         askedAs: action.role,
       };
@@ -73,7 +79,14 @@ export function askReducer(state: AskState, action: AskAction): AskState {
       return { ...state, activeSource: action.n };
     case "closeSource":
       return { ...state, activeSource: null };
+    case "restore":
+      return { ...action.state, activeSource: null };
+    case "reset":
+      return initialState;
     default:
       return state;
   }
 }
+
+/** Terminal phases are worth remembering across navigation and reloads. */
+export const isSettled = (phase: Phase) => phase === "done" || phase === "refused" || phase === "error";

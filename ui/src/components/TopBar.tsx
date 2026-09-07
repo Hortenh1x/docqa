@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { getApiKey, setApiKey } from "@/lib/api/client";
 import { useCollections, useRole } from "@/app/providers";
+import { Select } from "@/components/Select";
 import { PERSONAS, roleName } from "@/lib/access";
 
 function NavLink({ href, label }: { href: string; label: string }) {
@@ -80,11 +81,11 @@ function RoleSwitch() {
     >
       <span className="hidden sm:inline">Viewing as</span>
       <span className="visually-hidden">Access role</span>
-      <select
+      <Select
         value={role}
         onChange={(e) => setRole(e.target.value)}
         aria-label="Access role"
-        className="max-w-56 rounded-[6px] border border-hairline bg-sheet px-2 py-1 text-sm text-ink"
+        className="max-w-44 sm:max-w-60"
       >
         {roles.map((r) => (
           <option key={r.role} value={r.role}>
@@ -92,7 +93,7 @@ function RoleSwitch() {
             {PERSONAS[r.role] ? ` · ${PERSONAS[r.role]}` : ""}
           </option>
         ))}
-      </select>
+      </Select>
     </label>
   );
 }
@@ -109,11 +110,11 @@ export function TopBar() {
 
         <label className="flex items-center gap-1.5 text-sm text-ink-soft">
           <span className="visually-hidden">Collection</span>
-          <select
+          <Select
             value={selected?.id ?? ""}
             onChange={(e) => selectById(e.target.value)}
             aria-label="Collection"
-            className="max-w-52 rounded-[6px] border border-hairline bg-sheet px-2 py-1 text-sm text-ink"
+            className="max-w-44 sm:max-w-64"
           >
             {collections.map((c) => (
               <option key={c.id} value={c.id}>
@@ -121,7 +122,7 @@ export function TopBar() {
                 {c.read_only ? " · read-only" : ""}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
 
         <RoleSwitch />

@@ -2,7 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { fetchDocumentFile } from "@/lib/api/client";
+import { useRole } from "@/app/providers";
+import { ApiError, fetchDocumentFile } from "@/lib/api/client";
 import type { DocumentOut } from "@/lib/api/types";
 import { formatBytes } from "@/lib/format";
 
@@ -19,11 +20,14 @@ export function DocumentViewer({
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
+  const { role } = useRole();
   const file = useQuery({
-    queryKey: ["document-file", doc.id],
-    queryFn: () => fetchDocumentFile(doc.id),
+    queryKey: ["document-file", doc.id, role],
+    queryFn: () => fetchDocumentFile(doc.id, role),
     staleTime: Infinity,
+    retry: false,
   });
+  const restricted = file.error instanceof ApiError && file.error.code === "document_restricted";
 
   const objectUrl = useMemo(
     () => (file.data ? URL.createObjectURL(file.data) : null),
@@ -122,7 +126,13 @@ export function DocumentViewer({
         {file.isPending && (
           <p className="p-5 text-sm text-ink-soft">Loading the file…</p>
         )}
-        {file.isError && (
+        {file.isError && restricted && (
+          <p role="alert" className="p-5 text-sm text-ink-soft">
+            This document holds a section restricted to another group — switch the role in
+            the top bar to read it.
+          </p>
+        )}
+        {file.isError && !restricted && (
           <p role="alert" className="p-5 text-sm text-error">
             Couldn&apos;t load the file.
           </p>

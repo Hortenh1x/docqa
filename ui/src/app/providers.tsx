@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { AskProvider } from "@/features/ask/AskProvider";
 import { listCollections, listRoles } from "@/lib/api/client";
 import type { Collection, Role } from "@/lib/api/types";
 
@@ -107,7 +108,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <CollectionProvider>
-        <RoleProvider>{children}</RoleProvider>
+        <RoleProvider>
+          <AskProvider>{children}</AskProvider>
+        </RoleProvider>
       </CollectionProvider>
     </QueryClientProvider>
   );

@@ -248,3 +248,37 @@ async def test_idempotency_key_is_bound_to_the_role(client, tenant, fin_collecti
     # same key, another question: rejected as well
     other_q = await _ask(client, tenant, fin_collection, "Something else?", role="employee", **key)
     assert other_q.status_code == 422
+
+
+# --- the original file follows the same labels ---
+
+
+async def test_file_download_respects_the_role(client, tenant, fin_collection):
+    documents = (
+        await client.get(f"/v1/collections/{fin_collection}/documents", headers=tenant["headers"])
+    ).json()
+    doc = next(d for d in documents if d["filename"] == "FIN-001.md")
+    assert doc["access_labels"] == ["finance"]
+
+    # default role (employee): the file holds a Finance-only section → refused as a whole
+    refused = await client.get(f"/v1/documents/{doc['id']}/file", headers=tenant["headers"])
+    assert refused.status_code == 403
+    body = refused.json()
+    assert body["code"] == "document_restricted"
+    assert body["labels"] == ["finance"] and body["role"] == "employee"
+
+    hr = await client.get(
+        f"/v1/documents/{doc['id']}/file", params={"role": "hr"}, headers=tenant["headers"]
+    )
+    assert hr.status_code == 403
+
+    finance = await client.get(
+        f"/v1/documents/{doc['id']}/file", params={"role": "finance"}, headers=tenant["headers"]
+    )
+    assert finance.status_code == 200
+    assert b"1500" in finance.content
+
+    unknown = await client.get(
+        f"/v1/documents/{doc['id']}/file", params={"role": "intern"}, headers=tenant["headers"]
+    )
+    assert unknown.status_code == 422

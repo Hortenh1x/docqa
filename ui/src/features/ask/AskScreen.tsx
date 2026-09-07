@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useCollections, useRole } from "@/app/providers";
 import { joinNames, labelName, roleName } from "@/lib/access";
-import { ApiError } from "@/lib/api/client";
-import { streamQuery } from "@/lib/api/sse";
 import { AccessLine } from "./AccessLine";
+import { useAsk } from "./AskProvider";
 import { AnswerView } from "./AnswerView";
 import { Composer } from "./Composer";
 import { ErrorPanel } from "./ErrorPanel";
@@ -14,68 +13,13 @@ import { QuestionChips } from "./QuestionChips";
 import { RefusalPanel } from "./RefusalPanel";
 import { SourceDrawer } from "./SourceDrawer";
 import { SourceRail } from "./SourceRail";
-import { askReducer, initialState } from "./state";
 
 export function AskScreen() {
   const { selected } = useCollections();
-  const { roles, role, setRole } = useRole();
-  const [state, dispatch] = useReducer(askReducer, initialState);
-  const abortRef = useRef<AbortController | null>(null);
+  const { roles, role } = useRole();
+  const { state, dispatch, ask, viewAs } = useAsk();
   const markTriggerRef = useRef<HTMLElement | null>(null);
   const liveRef = useRef<HTMLDivElement>(null);
-
-  const ask = useCallback(
-    (question: string, asRole: string = role) => {
-      if (!selected || !question.trim()) return;
-      abortRef.current?.abort();
-      const controller = new AbortController();
-      abortRef.current = controller;
-      dispatch({ type: "submit", question: question.trim(), role: asRole });
-
-      streamQuery(
-        { collection_id: selected.id, question: question.trim(), role: asRole },
-        (event) => {
-          if (event.event === "meta")
-            dispatch({ type: "meta", queryId: event.data.query_id, access: event.data.access });
-          else if (event.event === "sources")
-            dispatch({ type: "sources", sources: event.data.sources });
-          else if (event.event === "delta") dispatch({ type: "delta", text: event.data.text });
-          else if (event.event === "done") dispatch({ type: "done", payload: event.data });
-          else if (event.event === "error")
-            dispatch({
-              type: "error",
-              error: { message: event.data.message, code: event.data.code, retryAfterS: null },
-            });
-        },
-        controller.signal,
-      ).catch((err: unknown) => {
-        if (controller.signal.aborted) return;
-        if (err instanceof ApiError) {
-          dispatch({
-            type: "error",
-            error: { message: err.message, code: err.code, retryAfterS: err.retryAfterS },
-          });
-        } else {
-          dispatch({
-            type: "error",
-            error: { message: "Network error — is the API reachable?", code: "network", retryAfterS: null },
-          });
-        }
-      });
-    },
-    [selected, role],
-  );
-
-  // "View as Finance" on a refusal: switch the role AND re-ask right away
-  const viewAs = useCallback(
-    (next: string) => {
-      setRole(next);
-      ask(state.question, next);
-    },
-    [ask, setRole, state.question],
-  );
-
-  useEffect(() => () => abortRef.current?.abort(), []);
 
   // screen-reader announcements: batched (~600ms) while streaming — never per token,
   // a live region updated on every delta would drown the screen reader
@@ -124,12 +68,7 @@ export function AskScreen() {
 
       {state.phase === "idle" ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-6 py-16 text-center">
-          <div>
-            <h1 className="font-display text-4xl tracking-tight">Ask the documents.</h1>
-            <p className="mt-2 text-ink-soft">
-              Answers come with page-level citations — or an honest &lsquo;not found&rsquo;.
-            </p>
-          </div>
+          <h1 className="font-display text-4xl tracking-tight">Ask the documents.</h1>
           <QuestionChips questions={selected?.suggested_questions} onPick={ask} />
           {restricted.length > 0 && (
             <p className="max-w-md text-xs leading-5 text-ink-soft">
@@ -160,7 +99,9 @@ export function AskScreen() {
             </div>
           )}
 
-          {state.sources.length > 0 && (
+          {/* a refusal shows no rail: those passages did not answer the question, and
+              next to "not available at your access level" they would read as if they had */}
+          {state.sources.length > 0 && state.phase !== "refused" && (
             <SourceRail
               sources={state.sources}
               activeN={state.activeSource}

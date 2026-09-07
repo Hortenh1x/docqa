@@ -179,7 +179,7 @@ Real corporate documents mix audiences: the expense policy everyone reads has a 
 
 **Things that had to be made role-aware too.** `Idempotency-Key` results are fingerprinted with (collection, role, question): the same key under another role is refused (422 `idempotency_key_reused`) instead of replaying an answer produced with different access. Suggested questions are scored under every role and stored with a `min_role`; a question drafted from a restricted excerpt must not carry the figure it asks about, so candidates containing digits or currency signs are dropped. The eval harness runs with `--role leadership` for the classic categories and, for the `access` category, checks that a hidden document never surfaces under a restricted role.
 
-**Out of scope, on purpose.** The original file (`GET /v1/documents/{id}/file`) and the Library are the administrator's view and are not filtered; the role governs what the question-answering path may read.
+**The original file follows the same labels.** `GET /v1/documents/{id}/file?role=…` refuses a file that holds any section the role may not read (403 `document_restricted`, naming the label) — a PDF cannot be served in part. The Library still lists every document with its labels (the inventory is not secret, and the listing is what tells a manager which documents exist), but the reader is locked for restricted ones. Uploads and deletion are not role-scoped.
 
 ## Corpus v2: a 300-document company, generated facts-first
 
