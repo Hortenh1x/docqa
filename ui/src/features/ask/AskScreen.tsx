@@ -128,6 +128,7 @@ export function AskScreen() {
 
           {state.phase === "refused" && (
             <RefusalPanel
+              question={state.question}
               questions={selected?.suggested_questions}
               onPick={ask}
               access={state.access}

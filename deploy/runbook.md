@@ -128,6 +128,10 @@ $C exec -T api python -m app.cli mark-readonly --collection-id <kranich id>
 sed -i 's/^DEMO_MODE=false/DEMO_MODE=true/; /^RATE_LIMIT_ENABLED=false/d' .env; $C up -d api
 ```
 
+After a parser or chunker change, re-chunk in place instead of re-uploading:
+`$C exec -T api python -m app.cli reprocess --collection-id <id> [--suffix .md]` (the worker
+re-parses the stored files; demo cap and rate limiter are not involved).
+
 Suggested questions regenerate on their own once each collection settles (one `deepseek-chat`
 call per collection); the seeder prints per-label chunk counts so you can see the restricted
 sections landed.

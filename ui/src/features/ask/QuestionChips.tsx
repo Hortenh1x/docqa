@@ -13,15 +13,23 @@ import type { SuggestedQuestion } from "@/lib/api/types";
 export function QuestionChips({
   questions,
   onPick,
+  exclude,
+  compact = false,
 }: {
   questions?: SuggestedQuestion[] | null;
   onPick: (question: string) => void;
+  /** a question to leave out — the one just asked, on a refusal panel */
+  exclude?: string;
+  compact?: boolean;
 }) {
   const { roles, role } = useRole();
-  if (!questions?.length) return null;
+  const shown = (questions ?? []).filter(
+    (q) => !exclude || q.question.trim().toLowerCase() !== exclude.trim().toLowerCase(),
+  );
+  if (!shown.length) return null;
   return (
-    <div className="flex max-w-xl flex-wrap justify-center gap-2">
-      {questions.map(({ question, min_role }) => {
+    <div className={`flex flex-wrap gap-2 ${compact ? "" : "max-w-xl justify-center"}`}>
+      {shown.map(({ question, min_role }) => {
         const locked = !unlocks(roles, role, min_role);
         return (
           <button
@@ -29,7 +37,11 @@ export function QuestionChips({
             type="button"
             onClick={() => onPick(question)}
             aria-label={locked ? `${question} (requires the ${roleName(min_role)} role)` : undefined}
-            className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-sheet px-3.5 py-1.5 text-sm text-ink-soft shadow-card hover:border-stamp/40 hover:text-ink"
+            className={
+              compact
+                ? "inline-flex items-center gap-1.5 rounded-full border border-hairline bg-sheet px-3 py-1 text-xs text-ink-soft hover:text-ink"
+                : "inline-flex items-center gap-1.5 rounded-full border border-hairline bg-sheet px-3.5 py-1.5 text-sm text-ink-soft shadow-card hover:border-stamp/40 hover:text-ink"
+            }
           >
             {question}
             {locked && (

@@ -11,6 +11,15 @@ export function Composer({
 }) {
   const [value, setValue] = useState("");
   const ref = useRef<HTMLTextAreaElement>(null);
+  // the "/" hint only makes sense with a keyboard; phones get the short placeholder
+  const [wide, setWide] = useState(true);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 640px)");
+    const update = () => setWide(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   // "/" focuses the composer from anywhere (unless already typing somewhere)
   useEffect(() => {
@@ -63,7 +72,7 @@ export function Composer({
             submit();
           }
         }}
-        placeholder="Ask the documents…  (press / to focus)"
+        placeholder={wide ? "Ask the documents…  (press / to focus)" : "Ask the documents…"}
         aria-label="Your question"
         className="max-h-[140px] min-h-[28px] flex-1 resize-none bg-transparent px-2 py-1 outline-none placeholder:text-ink-soft/70"
       />

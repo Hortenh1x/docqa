@@ -72,6 +72,7 @@ async def retrieve(
                     principal.labels,
                     settings.rerank_top_n,
                     max(settings.refusal_threshold, best_visible - HIDDEN_MARGIN),
+                    best_visible,
                 )
 
     fused = reciprocal_rank_fusion(

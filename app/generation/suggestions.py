@@ -57,7 +57,10 @@ Rules:
    different documents and topics, no near-duplicates.
 5. Never quote figures, amounts, dates, thresholds or names in a question — ask
    about them instead ("What is the card limit?", not "Is the card limit 1500?").
-6. Excerpts marked "(Access: …)" are restricted to that group; include one question
+6. Each question is about ONE excerpt and asks for something that excerpt actually
+   states — a rule, a deadline, an owner, a procedure. No hypothetical situations,
+   no combining two excerpts, nothing the excerpt merely alludes to.
+7. Excerpts marked "(Access: …)" are restricted to that group; include one question
    about such an excerpt when there is one."""
 
 

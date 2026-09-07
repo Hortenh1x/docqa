@@ -21,9 +21,18 @@ class RetrievedChunk:
 
 @dataclass(frozen=True)
 class HiddenStats:
-    """What the caller's role could not see (demo reveal mode only): how many passages
-    above the refusal threshold were filtered out, and which labels would unlock them
-    (best-scoring label first)."""
+    """What the caller's role could not see (demo reveal mode only).
+
+    ``passages``: filtered-out chunks scoring above the floor the caller set (the refusal
+    gate, or the best visible score minus a margin); ``documents``: how many distinct
+    documents they come from; ``outranking``: how many of them scored at least as well as
+    the best passage the role *could* see — after a successful answer these are the ones
+    that might have changed it; ``truncated``: the probe window was full, so ``passages``
+    is a lower bound; ``labels``: which labels unlock them, best-scoring first.
+    """
 
     passages: int
     labels: tuple[str, ...]
+    documents: int = 0
+    outranking: int = 0
+    truncated: bool = False

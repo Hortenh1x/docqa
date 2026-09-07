@@ -16,8 +16,15 @@ export interface Role {
  *  could not see (null = not revealed). */
 export interface AccessInfo {
   role: string;
+  /** filtered-out passages above the relevance floor (null = not revealed) */
   hidden_passages: number | null;
   hidden_labels: string[] | null;
+  /** distinct documents those passages come from */
+  hidden_documents: number | null;
+  /** how many of them scored at least as well as the best passage the role could see */
+  hidden_outranking: number | null;
+  /** the probe window was full — hidden_passages is a lower bound */
+  hidden_truncated: boolean | null;
 }
 
 export interface Collection {

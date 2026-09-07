@@ -51,7 +51,8 @@ EMPTY_COMPLETION_REASON = "empty_completion"
 @dataclass(frozen=True)
 class MetaEvent:
     query_id: uuid.UUID
-    # {"role", "hidden_passages", "hidden_labels"} — hidden_* are null unless reveal mode
+    # {"role", "hidden_passages", "hidden_labels", "hidden_documents", "hidden_outranking",
+    # "hidden_truncated"} — hidden_* are null unless reveal mode
     access: dict[str, Any]
 
 
@@ -109,6 +110,9 @@ def access_payload(principal: Principal, hidden: HiddenStats | None) -> dict[str
         "role": principal.role,
         "hidden_passages": hidden.passages if hidden is not None else None,
         "hidden_labels": list(hidden.labels) if hidden is not None else None,
+        "hidden_documents": hidden.documents if hidden is not None else None,
+        "hidden_outranking": hidden.outranking if hidden is not None else None,
+        "hidden_truncated": hidden.truncated if hidden is not None else None,
     }
 
 

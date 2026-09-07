@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { getUsage } from "@/lib/api/client";
-import { formatCost, formatTokens } from "@/lib/format";
+import { formatCost, formatDate, formatTokens } from "@/lib/format";
 
 function BigNumber({ label, value }: { label: string; value: string }) {
   return (
@@ -60,6 +60,13 @@ export default function UsagePage() {
                 style={{ height: `${Math.max(8, (day.queries / maxDaily) * 100)}%` }}
               />
             ))}
+          </div>
+        )}
+        {data.daily.length > 0 && (
+          <div className="font-data mt-1.5 flex justify-between text-[11px] text-ink-soft">
+            <span>{formatDate(data.daily[0].date)}</span>
+            <span>peak {maxDaily} / day</span>
+            <span>{formatDate(data.daily[data.daily.length - 1].date)}</span>
           </div>
         )}
       </div>

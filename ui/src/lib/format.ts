@@ -18,6 +18,7 @@ export function formatLatency(ms: number): string {
 
 export function formatTokens(n: number | null): string {
   if (n === null) return "—";
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   return n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n);
 }
 

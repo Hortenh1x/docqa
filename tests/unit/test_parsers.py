@@ -123,3 +123,38 @@ def test_plain_text(tmp_path):
 def test_registry_rejects_unknown_mime():
     with pytest.raises(ParserError):
         get_parser("application/zip")
+
+
+def test_markdown_front_matter_becomes_a_metadata_line_not_yaml(tmp_path):
+    from app.ingestion.parsers.markdown import MarkdownParser
+
+    path = tmp_path / "note.md"
+    path.write_text(
+        "---\n"
+        "doc_id: MTG-21\n"
+        'title: "Meeting Notes"\n'
+        "effective_date: 2025-10-10\n"
+        "owner: Fleet Insights\n"
+        "layout: post\n"
+        "access: Leadership only\n"
+        "---\n\n"
+        "# Meeting Notes\n\n"
+        "## 1. Attendees\n\n- Sofia\n",
+        encoding="utf-8",
+    )
+    page = MarkdownParser().parse(path).pages[0]
+    blocks = page.text.split("\n\n")
+    assert blocks[0] == "Doc Id: MTG-21 · Effective Date: 2025-10-10 · Owner: Fleet Insights"
+    assert blocks[1] == "Access: Leadership only"  # a marker line the chunker understands
+    assert "---" not in page.text and "layout" not in page.text and "title:" not in page.text
+    assert page.headings == [(1, "Meeting Notes"), (2, "1. Attendees")]
+
+
+def test_markdown_without_front_matter_is_untouched(tmp_path):
+    from app.ingestion.parsers.markdown import MarkdownParser
+
+    path = tmp_path / "plain.md"
+    path.write_text("# Title\n\n---\n\nA horizontal rule, not front matter.\n", encoding="utf-8")
+    page = MarkdownParser().parse(path).pages[0]
+    assert page.text.startswith("Title")
+    assert "horizontal rule" in page.text

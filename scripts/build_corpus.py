@@ -108,6 +108,12 @@ def build_pdf(meta: dict[str, str], body: str, dest: Path) -> None:
         story.draw(device)
         writer.end_page()
     writer.close()
+    # PDF viewers show the Title metadata as the document name (a blob URL otherwise)
+    with fitz.open(dest) as pdf:
+        pdf.set_metadata(
+            {"title": meta.get("title", dest.stem), "subject": meta.get("doc_id", dest.stem)}
+        )
+        pdf.saveIncr()
 
 
 def build_docx(meta: dict[str, str], body: str, dest: Path) -> None:

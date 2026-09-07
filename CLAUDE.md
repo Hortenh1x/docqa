@@ -45,6 +45,7 @@ uv run celery -A app.workers.celery_app worker -Q ingestion -c 2
 uv run python -m app.cli create-tenant --name acme
 uv run python -m app.cli create-key --tenant-id <uuid>
 uv run python -m app.cli revoke-key --prefix <8 chars>
+uv run python -m app.cli reprocess --collection-id <uuid> [--suffix .md]   # re-chunk stored files in place (after parser/chunker changes)
 uv run pytest                       # integration tests need Docker (testcontainers)
 uv run pytest tests/unit            # fast, no Docker
 uv run ruff check . && uv run ruff format --check . && uv run mypy app

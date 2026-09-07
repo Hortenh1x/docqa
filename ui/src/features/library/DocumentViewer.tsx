@@ -139,7 +139,13 @@ export function DocumentViewer({
         )}
 
         {isPdf && objectUrl && (
-          <iframe title={doc.filename} src={objectUrl} className="min-h-0 w-full flex-1" />
+          <iframe
+            title={doc.filename}
+            // the browser's PDF toolbar would show the blob URL's id as the document name;
+            // the panel header already names the file and offers the download
+            src={`${objectUrl}#toolbar=0&navpanes=0`}
+            className="min-h-0 w-full flex-1"
+          />
         )}
         {isText && text !== null && (
           <pre className="min-h-0 flex-1 overflow-y-auto whitespace-pre-wrap px-5 py-4 font-sans text-sm leading-6">

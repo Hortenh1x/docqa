@@ -87,7 +87,14 @@ async def test_default_role_never_sees_the_restricted_passage(client, tenant, fi
     response = await _ask(client, tenant, fin_collection, RESTRICTED_CHUNK)
     assert response.status_code == 200
     body = response.json()
-    assert body["access"] == {"role": "employee", "hidden_passages": None, "hidden_labels": None}
+    assert body["access"] == {
+        "role": "employee",
+        "hidden_passages": None,
+        "hidden_labels": None,
+        "hidden_documents": None,
+        "hidden_outranking": None,
+        "hidden_truncated": None,
+    }
     assert all(s["access_label"] == "all" for s in body["sources"])
     assert not any("1500" in s["snippet"] for s in body["sources"])
     assert "1500" not in (body["answer"] or "")
@@ -132,10 +139,14 @@ async def test_search_functions_filter_in_sql(fin_collection):
         fts_fin = await fulltext_search(db, cid, "1500 euro CFO", 10, ["all", "finance"])
         assert [c.access_label for c in fts_fin] == ["finance"]
 
-        hidden = await hidden_probe(db, cid, embedding, ["all"], 8, 0.5)
+        hidden = await hidden_probe(db, cid, embedding, ["all"], 8, 0.5, best_visible=0.1)
         assert hidden.passages == 1 and hidden.labels == ("finance",)
+        assert hidden.documents == 1 and hidden.outranking == 1 and hidden.truncated is False
         nothing_hidden = await hidden_probe(db, cid, embedding, ["all", "finance"], 8, 0.5)
         assert nothing_hidden.passages == 0 and nothing_hidden.labels == ()
+        # a window filled to the brim is reported as a lower bound
+        full = await hidden_probe(db, cid, embedding, ["all"], 1, 0.5, best_visible=2.0)
+        assert full.truncated is True and full.outranking == 0
 
 
 # --- reveal mode ---
@@ -149,12 +160,22 @@ async def test_reveal_mode_reports_what_the_role_cannot_see(
         "role": "employee",
         "hidden_passages": 1,
         "hidden_labels": ["finance"],
+        "hidden_documents": 1,
+        "hidden_outranking": 1,
+        "hidden_truncated": False,
     }
     # the hint never carries content
     assert "1500" not in json.dumps(employee)
 
     finance = (await _ask(client, tenant, fin_collection, RESTRICTED_CHUNK, role="finance")).json()
-    assert finance["access"] == {"role": "finance", "hidden_passages": 0, "hidden_labels": []}
+    assert finance["access"] == {
+        "role": "finance",
+        "hidden_passages": 0,
+        "hidden_labels": [],
+        "hidden_documents": 0,
+        "hidden_outranking": 0,
+        "hidden_truncated": False,
+    }
 
     # a full-access role reports zero without probing
     leadership = (
@@ -164,6 +185,9 @@ async def test_reveal_mode_reports_what_the_role_cannot_see(
         "role": "leadership",
         "hidden_passages": 0,
         "hidden_labels": [],
+        "hidden_documents": 0,
+        "hidden_outranking": 0,
+        "hidden_truncated": False,
     }
 
 
@@ -177,11 +201,9 @@ async def test_sse_meta_carries_access(client, tenant, fin_collection, reveal_mo
     frames = [f.splitlines() for f in body.strip().split("\n\n")]
     assert frames[0][0] == "event: meta"
     meta = json.loads(frames[0][1][6:])
-    assert meta["access"] == {
-        "role": "employee",
-        "hidden_passages": 1,
-        "hidden_labels": ["finance"],
-    }
+    assert meta["access"]["role"] == "employee"
+    assert meta["access"]["hidden_passages"] == 1
+    assert meta["access"]["hidden_labels"] == ["finance"]
 
 
 # --- contract ---
@@ -282,3 +304,30 @@ async def test_file_download_respects_the_role(client, tenant, fin_collection):
         f"/v1/documents/{doc['id']}/file", params={"role": "intern"}, headers=tenant["headers"]
     )
     assert unknown.status_code == 422
+
+
+# --- reprocessing in place ---
+
+
+async def test_reprocess_rechunks_without_reupload(client, tenant, fin_collection):
+    import uuid as _uuid
+
+    from app.cli import reprocess_documents
+    from app.db.base import get_sessionmaker
+    from app.db.models import Chunk, Document
+
+    async with get_sessionmaker()() as session:
+        before = (await session.execute(select(Chunk.id).order_by(Chunk.id))).scalars().all()
+    await reprocess_documents(_uuid.UUID(fin_collection), ".md")  # celery is eager: runs inline
+    async with get_sessionmaker()() as session:
+        after = (await session.execute(select(Chunk.id).order_by(Chunk.id))).scalars().all()
+        statuses = (await session.execute(select(Document.status))).scalars().all()
+        labels = (await session.execute(select(Chunk.access_label))).scalars().all()
+    assert len(after) == len(before) and set(after).isdisjoint(before)  # replaced, not duplicated
+    assert statuses == ["ready"]
+    assert sorted(labels) == ["all", "finance"]
+    # documents with another suffix are left alone
+    await reprocess_documents(_uuid.UUID(fin_collection), ".pdf")
+    async with get_sessionmaker()() as session:
+        untouched = (await session.execute(select(Chunk.id).order_by(Chunk.id))).scalars().all()
+    assert untouched == after

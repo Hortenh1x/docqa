@@ -88,17 +88,18 @@ async def hidden_probe(
     allowed_labels: Sequence[str],
     top_k: int,
     threshold: float,
+    best_visible: float | None = None,
 ) -> HiddenStats:
     """The complement of ``vector_search``: the best chunks the role can NOT see.
 
-    Only the count of those scoring at least ``threshold`` (the caller's floor: the
-    refusal gate, or the best visible score minus a margin) and their labels are
-    returned — never the content. Runs in the same transaction as the search (SET LOCAL
-    already applied).
+    Only counts and labels are returned — never the content. ``threshold`` is the floor a
+    hidden chunk must reach to count at all; ``best_visible`` (the best score the role did
+    see) separates the ones that would have outranked everything visible. Runs in the
+    same transaction as the search (SET LOCAL already applied).
     """
     distance = Chunk.embedding.cosine_distance(query_embedding)
     stmt = (
-        select(Chunk.access_label, (1 - distance).label("score"))
+        select(Chunk.access_label, Chunk.document_id, (1 - distance).label("score"))
         .join(Document, Chunk.document_id == Document.id)
         .where(
             Document.collection_id == collection_id,
@@ -113,4 +114,15 @@ async def hidden_probe(
     labels: dict[str, None] = {}
     for row in relevant:
         labels.setdefault(row.access_label, None)
-    return HiddenStats(passages=len(relevant), labels=tuple(labels))
+    outranking = (
+        sum(1 for row in relevant if float(row.score) >= best_visible)
+        if best_visible is not None
+        else len(relevant)
+    )
+    return HiddenStats(
+        passages=len(relevant),
+        labels=tuple(labels),
+        documents=len({row.document_id for row in relevant}),
+        outranking=outranking,
+        truncated=len(relevant) == top_k and top_k > 0,
+    )

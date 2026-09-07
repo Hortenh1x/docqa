@@ -7,6 +7,7 @@ Usage:
     python -m app.cli list-tenants
     python -m app.cli mark-readonly --collection-id <uuid>
     python -m app.cli wipe-collection --collection-id <uuid>   # sandbox nightly cron
+    python -m app.cli reprocess --collection-id <uuid> [--suffix .md]   # re-chunk in place
 """
 
 import argparse
@@ -19,7 +20,7 @@ from sqlalchemy import delete, select
 
 from app.core.security import display_key, generate_api_key
 from app.db.base import dispose_engine, get_sessionmaker
-from app.db.models import ApiKey, Collection, Document, Tenant
+from app.db.models import ApiKey, Collection, Document, DocumentStatus, Tenant
 from app.ingestion.mime import EXT_BY_MIME
 from app.storage import get_storage
 
@@ -96,6 +97,36 @@ async def wipe_collection(collection_id: uuid.UUID) -> None:
         print(f"wiped {len(documents)} documents from {collection.slug!r}")
 
 
+async def reprocess_documents(collection_id: uuid.UUID, suffix: str | None) -> None:
+    """Re-run ingestion for stored documents (after a parser or chunker change): status
+    back to pending, then one task per document — the worker re-parses the file it
+    already has, replaces the chunks and refreshes the suggested questions when done.
+    No upload, so neither the demo cap nor the rate limiter is involved."""
+    from app.ingestion.tasks import ingest_document
+
+    async with get_sessionmaker()() as session:
+        if await session.get(Collection, collection_id) is None:
+            print(f"error: collection {collection_id} not found", file=sys.stderr)
+            raise SystemExit(1)
+        documents = (
+            (await session.execute(select(Document).where(Document.collection_id == collection_id)))
+            .scalars()
+            .all()
+        )
+        targets = [
+            d for d in documents if suffix is None or d.filename.lower().endswith(suffix.lower())
+        ]
+        for document in targets:
+            document.status = DocumentStatus.PENDING
+            document.error = None
+        await session.commit()
+        ids = [str(d.id) for d in targets]
+    # enqueue only after the commit — the worker must see 'pending'
+    for document_id in ids:
+        ingest_document.delay(document_id)
+    print(f"re-enqueued {len(ids)} of {len(documents)} documents")
+
+
 async def list_tenants() -> None:
     async with get_sessionmaker()() as session:
         result = await session.execute(select(Tenant).order_by(Tenant.created_at))
@@ -128,6 +159,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--collection-id", required=True, type=uuid.UUID)
     p.add_argument("--writable", action="store_true", help="undo: make writable again")
 
+    p = sub.add_parser("reprocess", help="re-chunk a collection's stored documents in place")
+    p.add_argument("--collection-id", type=uuid.UUID, required=True)
+    p.add_argument("--suffix", default=None, help="only filenames ending with this, e.g. .md")
     p = sub.add_parser("wipe-collection", help="delete all documents in a collection (sandbox)")
     p.add_argument("--collection-id", required=True, type=uuid.UUID)
 
@@ -151,6 +185,8 @@ def main(argv: list[str] | None = None) -> None:
                 await mark_readonly(args.collection_id, writable=args.writable)
             elif args.command == "wipe-collection":
                 await wipe_collection(args.collection_id)
+            elif args.command == "reprocess":
+                await reprocess_documents(args.collection_id, args.suffix)
         finally:
             await dispose_engine()
 
