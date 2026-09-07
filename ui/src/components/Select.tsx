@@ -3,14 +3,15 @@
 import type { SelectHTMLAttributes } from "react";
 
 /** A native select with our own chevron so long option labels get an ellipsis instead of
- *  running underneath the browser's arrow. The select itself stays native (keyboard,
- *  mobile pickers, screen readers) — only its skin is ours. */
+ *  running underneath the browser's arrow. The select keeps its intrinsic width (widest
+ *  option) up to the `max-w-*` passed in `className`; the wrapper only positions the
+ *  chevron. Native behaviour (keyboard, mobile pickers, screen readers) is untouched. */
 export function Select({ className = "", children, ...rest }: SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <span className="relative inline-flex min-w-0">
+    <span className="relative inline-block max-w-full align-middle">
       <select
         {...rest}
-        className={`w-full appearance-none truncate rounded-[6px] border border-hairline bg-sheet py-1 pl-2 pr-7 text-sm text-ink ${className}`}
+        className={`appearance-none truncate rounded-[6px] border border-hairline bg-sheet py-1 pl-2 pr-7 text-sm text-ink ${className}`}
       >
         {children}
       </select>
