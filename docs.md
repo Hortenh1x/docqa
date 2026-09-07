@@ -232,6 +232,49 @@ Two things v1 could not show. First, the retrieval gate threshold is a property 
 
 The seven remaining top-20 misses are informal documents losing to formal ones on the same topic: all-hands notes stating the headcount or the NPS rank below FAQs and handbooks that discuss the same subject without the figure, and one meeting decision outranked by a later meeting on a neighbouring topic.
 
+## Public corpora: GitLab Handbook, GovReport, CUAD, FinanceBench
+
+The demo also carries four collections of **real** documents — 9,461 files, ~295k chunks —
+so the interface can be exercised against text nobody engineered for it: the GitLab
+handbook (3,639 pages), 4,979 US congressional research reports, 509 commercial contracts
+(CUAD, CC-BY-4.0) and 334 SEC filings (FinanceBench, Apache-2.0). The last two ship with
+expert annotations, which yielded two more golden sets without hand-writing questions:
+[eval/golden_cuad.yaml](eval/golden_cuad.yaml) (130 clause questions) and
+[eval/golden_financebench.yaml](eval/golden_financebench.yaml) (140 of the 150 published
+questions).
+
+| | CUAD (509 contracts) | FinanceBench (334 filings) |
+| --- | --- | --- |
+| Recall (expected document in the retrieved chunks) | **0.98** | 0.89 |
+| Citation precision | **98%** | 88% |
+| Faithfulness (LLM-judged) | 84/87 (97%) | 68/70 (97%) |
+| Correctness vs the expert answer | 78/87 (90%) | 61/70 (87%) |
+| Refused instead of answering | 33% | 50% |
+
+These numbers are lower than the synthetic sets above, and that is the point of having
+them. Two findings came out of the gap, both documented in
+[eval/results_financebench.md](eval/results_financebench.md) and
+[eval/results_cuad.md](eval/results_cuad.md):
+
+- **The pipeline was retrieving the evidence and then cutting it off.** With eight chunks
+  and a 3,600-token context budget, the expected document sat *just below the cut* for 40
+  of 140 finance questions while only 3 were missing from retrieval entirely. Widening the
+  window (`top_k` 30→100, `rerank_top_n` 8→20, context 3,600→9,000) moved FinanceBench
+  recall 0.70→0.89 and CUAD 0.87→0.98, and cut refusals by 10 and 13 points. Widening the
+  *search* costs nothing measurable (1,673 ms at `top_k=100` vs 1,693 ms at 30); the added
+  latency is entirely the larger prompt, and the per-query cost roughly tripled — which is
+  why the demo's daily quota moved 900→600.
+- **A quarter of FinanceBench is not a retrieval task.** Where the expected number never
+  surfaces, it usually does not exist in the filing: the answers are derived metrics
+  (quick ratio, per-share figures) an analyst computes from balance-sheet lines. This
+  system answers what documents *say*, with a page reference, and refuses otherwise — so
+  those count as refusals and are deliberately not "fixed".
+
+A cross-encoder reranker would address about 16% of the finance questions (measured: the
+share whose answering chunk is retrieved but ranks below the cut), at the price of a second
+paid API on the query path. The pluggable path is in the code (`RERANK_PROVIDER`); it is
+not enabled here.
+
 ## Known limits
 
 - pgvector/HNSW is the right tool up to roughly ~10M vectors; beyond that, revisit (partitioning or a dedicated vector DB).

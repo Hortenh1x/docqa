@@ -87,21 +87,50 @@ and checking whether the answer was actually in front of the model:
 | Right filing, but the answering passage was not among the 20 chunks | 15/25 (60%) |
 | The value **was** in the context and the model still refused | 6/25 (24%) |
 
-So three quarters of the remaining refusals are a retrieval problem at the *chunk*
-level: a 200-page 10-K holds hundreds of table chunks and the one carrying "capital
-expenditure, fiscal 2018" does not always rank in the top twenty. Document-level recall
-(0.89) flatters what the model actually sees.
+So most of the remaining refusals are a retrieval problem at the *chunk* level: a
+200-page 10-K holds hundreds of table chunks and the one carrying "capital expenditure,
+fiscal 2018" does not always rank in the top twenty. Document-level recall (0.89)
+flatters what the model actually sees.
 
-What is left to try, in order of expected value: a cross-encoder reranker over the
-40-candidate fusion window (`RERANK_PROVIDER=cohere`), and prepending the document
-title — company and fiscal year — to each chunk before embedding, which targets the
-"right company, wrong year" misses directly. Both are real work rather than settings.
+### How much of this is fixable, and by what
 
-**A negative result worth recording:** the 24% bucket looked like a prompt problem, so
-the prompt was amended to explicitly allow arithmetic over retrieved values ("sums,
-differences, ratios… this is not guessing"). It did not help — refusals went 70 → 72
-and correctness fell 87% → 84%, because the model started computing and getting it
-wrong. Reverted.
+Locating the *answering chunk* (the one that literally contains the expected value) in a
+150-candidate window, over the 110 questions whose answer is a checkable number:
+
+| Where the answering chunk ranks | Share |
+| --- | --- |
+| 1–20 — already in the prompt | 55% |
+| 21–150 — retrieved but below the cut | **16%** |
+| Not in the window at all | 28% |
+
+Only the middle band is what a cross-encoder reranker can win, and only partly: a
+reranker reorders candidates, it cannot conjure a chunk the search never returned. So
+the realistic ceiling for `RERANK_PROVIDER=cohere` here is roughly 7–10 points of
+refusal rate — bought with a second paid API on the query path (rerank pricing is of
+the same order as this pipeline's entire per-query cost), an extra dependency and
+~0.2–0.4 s of latency. Not taken; the pluggable path stays in the code for anyone whose
+economics differ.
+
+### A quarter of this benchmark is not a retrieval task
+
+The 28% "not in the window" band turned out not to be a search failure at all. Checking
+whether the expected number appears *anywhere* in the parsed filing: in 12 of 15 sampled
+cases **it does not exist in the document**. The expected answers there are derived
+metrics — "quick ratio 0.96", "0.66", "24.26" — which no 10-K prints. They are computed
+from balance-sheet lines by the analyst who wrote the question.
+
+That is a fair thing for FinanceBench to ask of a financial-analysis system, and it is
+outside what a grounded-citation RAG pipeline promises: this system answers what the
+documents *say*, with a page reference, and refuses otherwise. Those questions are
+counted as refusals above and are not treated as a defect to fix — a system that
+"answers" them by doing unverifiable arithmetic over numbers it scraped from a table
+would be trading the one property this project is built around.
+
+**A negative result worth recording:** the "value was in context and it still refused"
+bucket looked like a prompt problem, so the prompt was amended to explicitly allow
+arithmetic over retrieved values ("sums, differences, ratios… this is not guessing"). It
+did not help — refusals went 70 → 72 and correctness fell 87% → 84%, because the model
+started computing and getting it wrong. Reverted.
 
 ## Misses
 
