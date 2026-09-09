@@ -75,9 +75,10 @@ class Settings(BaseSettings):
     rate_limit_upload_per_minute: int = 10
     rate_limit_default_per_minute: int = 120
     # demo cost cap: fixed-window daily query quota per (api key, client address);
-    # 0 disables. Sized against usage/costs.py: a worst-case deepseek-v4-flash query
-    # (3.6k-token context + 4000-char question + 1024-token completion) costs ~$0.001,
-    # so 900/day keeps a single visitor under $1/day even in the pathological case.
+    # 0 disables. Sized against usage/costs.py at the peak-hour rate: a worst-case
+    # deepseek-v4-flash query (9k-token context + 4000-char question + 4096-token
+    # completion) costs ~$0.010, so 50/day keeps a single visitor under $0.50/day even
+    # in the pathological case; a typical query is ~$0.004, i.e. ~$0.20/day.
     rate_limit_query_per_day: int = 0
     # honor X-Forwarded-For for the client half of the quota scope — enable only
     # behind a proxy that overwrites the header (the deploy Caddy does)

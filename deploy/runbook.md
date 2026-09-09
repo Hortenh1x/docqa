@@ -41,22 +41,24 @@ REFUSAL_THRESHOLD=0.28               # measured for text-embedding-3-small@1024 
                                      # a collection seeded with it and take the sweep's recommendation.
 RERANK_PROVIDER=none                 # cohere + COHERE_API_KEY for better precision
 RATE_LIMIT_QUERY_PER_MINUTE=10       # demo pacing
-RATE_LIMIT_QUERY_PER_DAY=600         # cost cap: ~$1.4/day worst case per visitor (typical ~$0.8).
-                                     # Lowered from 900 when the retrieval window widened: a query now
-                                     # carries ~8.7k context tokens instead of ~3k, so it costs ~$0.0014
-                                     # typical / ~$0.0024 worst case instead of ~$0.0004 / ~$0.0017.
+RATE_LIMIT_QUERY_PER_DAY=50          # cost cap: ≤$0.50/day worst case per visitor (typical ~$0.20).
+                                     # 900 → 600 when the retrieval window widened (~8.7k context tokens
+                                     # per query instead of ~3k), 600 → 50 on DeepSeek's V4 peak/off-peak
+                                     # pricing (2026-08-16): input $0.14 → $0.44, output $0.28 → $1.32
+                                     # per 1M at the peak rate, i.e. ~4x per query.
 RATE_LIMIT_TRUST_FORWARDED_FOR=true  # per-visitor quota scope from Caddy's X-Forwarded-For
 NEXT_PUBLIC_DEMO_API_KEY=            # filled in after step 4
 ```
 
-Cost math for the daily cap (thinking allowed, `LLM_MAX_TOKENS=4096`): reasoning
-bills as ordinary output tokens at `deepseek-v4-flash` prices (`app/usage/costs.py`);
-typical bursts are 150–500 tokens on a low single-digit % of calls, so a typical query
-is ~$0.0014 at the current context budget (9k tokens, measured average 8.7k), so
-600/day lands at ~$0.8/day per visitor. The worst case — full context plus a 4096-token
-completion — is ~$0.0024, i.e. **~$1.4/day per visitor at 600/day (accepted)**. Re-derive
-after changing `CONTEXT_TOKEN_BUDGET`, `RERANK_TOP_N` or the model: context size is now
-the dominant term, not the completion.
+Cost math for the daily cap (thinking allowed, `LLM_MAX_TOKENS=4096`), at the peak-hour
+cache-miss rate `app/usage/costs.py` records — DeepSeek halves it outside 01:00–04:00 and
+06:00–10:00 UTC on weekdays, so this is an upper bound roughly 79% of the week: reasoning
+bills as ordinary output tokens; typical bursts are 150–500 tokens on a low single-digit %
+of calls, so a typical query is ~$0.004 at the current context budget (9k tokens, measured
+average 8.7k) and 50/day lands at ~$0.20/day per visitor. The worst case — full context
+plus a 4096-token completion — is ~$0.010, i.e. **≤$0.50/day per visitor at 50/day**.
+Re-derive after changing `CONTEXT_TOKEN_BUDGET`, `RERANK_TOP_N` or the model: context size
+is the dominant term, not the completion.
 
 ## 3. First start
 

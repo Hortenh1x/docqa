@@ -27,7 +27,7 @@ The [README](README.md) covers the quick start; this file holds everything else:
 **Run it like a service:**
 
 - **Per-key rate limiting** — Redis token bucket (atomic Lua), per endpoint class (query 30/min, upload 10/min, default 120/min); 429 with `Retry-After` and `X-RateLimit-*`; fails open when Redis is down (availability beats quota enforcement)
-- **Demo cost cap** — optional daily query quota per (api key, client address), so a public demo where every visitor shares one key still bounds spend per visitor: at `deepseek-v4-flash` prices a worst-case query is ~$0.001, so `RATE_LIMIT_QUERY_PER_DAY=900` keeps one visitor under **$1/day**; 429 `daily_quota_exceeded` with `Retry-After` to UTC midnight and `X-Quota-Daily-*` headers
+- **Demo cost cap** — optional daily query quota per (api key, client address), so a public demo where every visitor shares one key still bounds spend per visitor: at `deepseek-v4-flash` peak-hour prices a worst-case query is ~$0.010, so `RATE_LIMIT_QUERY_PER_DAY=50` keeps one visitor under **$0.50/day**; 429 `daily_quota_exceeded` with `Retry-After` to UTC midnight and `X-Quota-Daily-*` headers
 - **Idempotency** — `Idempotency-Key` on uploads and non-streaming queries: concurrent duplicate → 409 `request_in_flight`, repeat → stored response replayed with `X-Idempotency-Replay: true`
 - **Strict tenant isolation** — every query carries the tenant scope in its WHERE clause; a foreign resource is indistinguishable from a missing one (404, never 403); covered by an IDOR test matrix and a concurrent-dedup race test
 - **Docker** — multi-stage uv image, non-root; `docker-compose.prod.yml` runs api + worker + Postgres + Redis with healthchecks, DB/Redis ports unpublished, `noeviction` Redis (a broker must never drop messages)
@@ -144,7 +144,7 @@ Copy `.env.example` and adjust. Highlights:
 | `ACCESS_DEFAULT_ROLE` | `employee` | role assumed when a query names none — least privilege by design |
 | `ACCESS_REVEAL_HIDDEN` | `false` | demo mode: report how many relevant passages the role could not see and which labels unlock them (this confirms restricted content exists — keep it off where that matters) |
 | `RATE_LIMIT_ENABLED` | `true` | per-key token buckets (query 30/min, upload 10/min, default 120/min) |
-| `RATE_LIMIT_QUERY_PER_DAY` | `0` (off) | daily query quota per key+address; `900` ≈ ≤ $1/day per visitor on `deepseek-v4-flash` |
+| `RATE_LIMIT_QUERY_PER_DAY` | `0` (off) | daily query quota per key+address; `50` ≈ ≤ $0.50/day per visitor on `deepseek-v4-flash` |
 | `MAX_UPLOAD_MB` | `25` | upload size cap → 413 |
 | `MAX_PAGES` | `300` | PDF page cap → 422 |
 
@@ -263,7 +263,7 @@ them. Two findings came out of the gap, both documented in
   recall 0.70→0.89 and CUAD 0.87→0.98, and cut refusals by 10 and 13 points. Widening the
   *search* costs nothing measurable (1,673 ms at `top_k=100` vs 1,693 ms at 30); the added
   latency is entirely the larger prompt, and the per-query cost roughly tripled — which is
-  why the demo's daily quota moved 900→600.
+  why the demo's daily quota moved 900→600 (and 600→50 when DeepSeek's V4 pricing landed).
 - **A quarter of FinanceBench is not a retrieval task.** Where the expected number never
   surfaces, it usually does not exist in the filing: the answers are derived metrics
   (quick ratio, per-share figures) an analyst computes from balance-sheet lines. This

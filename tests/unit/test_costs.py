@@ -31,5 +31,5 @@ def test_embedding_cost_none_tokens():
 
 
 def test_llm_cost_table_still_intact():
-    assert cost_usd("deepseek-v4-flash", 1_000_000, 0) == Decimal("0.140000")
+    assert cost_usd("deepseek-v4-flash", 1_000_000, 0) == Decimal("0.440000")
     assert cost_usd("unknown", 10, 10) is None
