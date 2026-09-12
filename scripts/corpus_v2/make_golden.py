@@ -96,6 +96,25 @@ def load() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
     return facts, docs
 
 
+def effective_label(fact: dict[str, Any], document: dict[str, Any]) -> str:
+    """A section marker covers every fact in that section, including open declarations."""
+    restricted = document.get("restricted", {})
+    return str(
+        restricted.get(
+            str(fact["section"]),
+            restricted.get(fact["section"], document.get("default_label", "all")),
+        )
+    )
+
+
+def facts_for_document(
+    document: dict[str, Any], by_id: dict[str, dict[str, Any]]
+) -> list[dict[str, Any]]:
+    return [
+        {**by_id[fid], "label": effective_label(by_id[fid], document)} for fid in document["facts"]
+    ]
+
+
 def doc_for_fact(
     fact: dict[str, Any], docs: dict[str, dict[str, Any]], lang: str = "en"
 ) -> str | None:
@@ -218,6 +237,7 @@ async def main() -> None:
         doc_id = doc_for_fact(f, docs)
         if doc_id is None:
             continue
+        f = {**f, "label": effective_label(f, docs[doc_id])}
         cat = category_of(f, docs)
         extra = ""
         if cat == "distractor_country":
@@ -346,7 +366,7 @@ async def main() -> None:
             if not f or f["label"] != "all":
                 continue
             target = doc_for_fact(f, docs)
-            if not target:
+            if not target or effective_label(f, docs[target]) != "all":
                 continue
             mention_items.append(
                 {
@@ -388,7 +408,7 @@ async def main() -> None:
     for d in docs.values():
         if d["lang"] != "en" or d.get("superseded_by"):
             continue
-        fs = [by_id[fid] for fid in d["facts"]]
+        fs = facts_for_document(d, by_id)
         open_facts = [f for f in fs if f["label"] == "all"]
         closed = [f for f in fs if f["label"] != "all"]
         if open_facts and closed and d["default_label"] == "all":
@@ -449,7 +469,7 @@ async def main() -> None:
             continue
         for fid in d["facts"]:
             f = by_id[fid]
-            if f["label"] != "all" or not f["current"]:
+            if effective_label(f, d) != "all" or not f["current"]:
                 continue
             de_items.append(
                 {

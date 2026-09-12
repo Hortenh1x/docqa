@@ -1,0 +1,6834 @@
+[
+  {
+    "run": 1,
+    "immediate": {
+      "label": "after slash",
+      "time": 477,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 496.30000001192093,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 263.5,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 270.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 272.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 273.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 276.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 280.5,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 283.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 285.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 288.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 290.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 294.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 306.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 369.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 371.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 373.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 374.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 376.90000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 379.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 381.5,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 383,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 384.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 386.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 387.40000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 393.30000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 427.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 428.40000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 429.69999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 432.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 435.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 436.90000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 438.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 440.40000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 446.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "keydown listener added",
+        "time": 467.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "before slash",
+        "time": 472.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 474.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 474.5,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 475.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 477,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 496.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      }
+    ]
+  },
+  {
+    "run": 2,
+    "immediate": {
+      "label": "after slash",
+      "time": 394.5,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 425,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 197.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 201.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 203.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 205.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 206.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 211.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 213.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 216.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 217.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 219.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 222,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 231.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 286.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 288,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 289.5,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 291.5,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 294.59999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 296.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 298.5,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 299.90000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 301.5,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 302.90000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 304.30000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 311.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 344,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 345,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 346.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 347.5,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 349.90000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 351.5,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 352.69999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 354,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 362.30000001192093,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "keydown listener added",
+        "time": 378.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "before slash",
+        "time": 389.5,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 392.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 392.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 393.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 394.5,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 425,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      }
+    ]
+  },
+  {
+    "run": 3,
+    "immediate": {
+      "label": "after slash",
+      "time": 390.60000002384186,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 417.30000001192093,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 181,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 186.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 187.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 190.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 192.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 196.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 199.2000000178814,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 202.10000002384186,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 204.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 207.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 210.60000002384186,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 221.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 285.10000002384186,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 288.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 290.40000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 292.10000002384186,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 294.7000000178814,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 296.2000000178814,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 297.5,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 299.10000002384186,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 300.7000000178814,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 303.60000002384186,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 305.60000002384186,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 311.10000002384186,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 340.30000001192093,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 341.60000002384186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 343.2000000178814,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 344.7000000178814,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 347.2000000178814,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 349.10000002384186,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 351.2000000178814,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 353.30000001192093,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 358.30000001192093,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "keydown listener added",
+        "time": 370.60000002384186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "before slash",
+        "time": 387.10000002384186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 388.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 388.5,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 388.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 390.60000002384186,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 417.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      }
+    ]
+  },
+  {
+    "run": 4,
+    "immediate": {
+      "label": "after slash",
+      "time": 354.30000001192093,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 384.40000000596046,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 176.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 180.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 181.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 183.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 187,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 190.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 192.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 194,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 195.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 197.5,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 199.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 209,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 252.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 254.5,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 256.5,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 257.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 260,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 261.90000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 263.40000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 264.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 266,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 269.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 270.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 276.30000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 304.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 305.09999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 306.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 307.5,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 309.90000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 311.5,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 312.90000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 314.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 321.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "keydown listener added",
+        "time": 337.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "before slash",
+        "time": 349,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 352,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 352.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 352.5,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 354.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 384.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      }
+    ]
+  },
+  {
+    "run": 5,
+    "immediate": {
+      "label": "after slash",
+      "time": 419.7000000178814,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 450,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 224.7000000178814,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 231.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 232.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 235.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 241.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 244.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 246.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 248.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 250.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 253.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 258.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 268.5,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 321.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 322.59999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 323.7000000178814,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 324.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 327,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 328.40000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 329.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 331.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 333.2000000178814,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 334.90000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 336.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 341,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 372.90000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 374.09999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 375.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 376.7000000178814,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 378.40000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 380,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 381.5,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 383.30000001192093,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 389.09999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "keydown listener added",
+        "time": 403.2000000178814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "before slash",
+        "time": 414.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 415.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 415.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 415.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 419.7000000178814,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 450,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      }
+    ]
+  },
+  {
+    "run": 6,
+    "immediate": {
+      "label": "after slash",
+      "time": 327,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 359.90000000596046,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 157.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 161.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 163.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 165.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 166.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 169.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 171.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 173.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 175.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 177.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 179.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 188.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 233,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 234.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 236.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 237.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 238.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 240.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 241.90000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 244,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 246,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 247.59999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 249,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 254.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 282,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 282.90000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 284.30000001192093,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 285.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 287.5,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 289.09999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 290.40000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 291.69999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 298.30000001192093,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "keydown listener added",
+        "time": 312.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "before slash",
+        "time": 323.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 324.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 324.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 325,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 327,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 359.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      }
+    ]
+  },
+  {
+    "run": 7,
+    "immediate": {
+      "label": "after slash",
+      "time": 358.09999999403954,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 376.90000000596046,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 167.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 173.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 175.2999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 177.5,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 179.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 184.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 188.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 190.5,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 192.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 195.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 201.2999999821186,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 210.7999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 262.59999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 263.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 265,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 266.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 268.5,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 270.40000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 271.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 272.7999999821186,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 274,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 275.2999999821186,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 277.59999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 283.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 311,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 313.5,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 315,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 316.7999999821186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 319.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 321.09999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 322.5,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 323.7999999821186,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 329.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "keydown listener added",
+        "time": 346.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "before slash",
+        "time": 356,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 356.7999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 356.7999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 357,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 358.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 376.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      }
+    ]
+  },
+  {
+    "run": 8,
+    "immediate": {
+      "label": "after slash",
+      "time": 373.59999999403954,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 405.90000000596046,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 183.2000000178814,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 187.40000000596046,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 189.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 192.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 194.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 197.2000000178814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 199.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 201.2000000178814,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 202.7000000178814,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 204.2000000178814,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 209.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 218.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 268.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 269.2000000178814,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 270.7000000178814,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 272.40000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 276.5,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 278.7000000178814,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 280.59999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 281.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 283,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 284.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 285.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 295.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 325.7000000178814,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 326.5,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 327.40000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 328.30000001192093,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 330.40000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 331.90000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 333.30000001192093,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 334.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 342,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "keydown listener added",
+        "time": 359.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "before slash",
+        "time": 369.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 370.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 370.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 371,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 373.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 405.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      }
+    ]
+  },
+  {
+    "run": 9,
+    "immediate": {
+      "label": "after slash",
+      "time": 358.5,
+      "path": "/",
+      "active": {
+        "tag": "A",
+        "label": null,
+        "text": "Ask"
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": false
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 382.89999997615814,
+      "path": "/",
+      "active": {
+        "tag": "A",
+        "label": null,
+        "text": "Ask"
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": false
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 187.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 191.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 192.7999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 194.39999997615814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 195.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 198.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 201.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 204.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 206.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 208.39999997615814,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 210.09999999403954,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 218.39999997615814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 270.89999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 273.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 274.89999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 276.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 278.7999999821186,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 280.7999999821186,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 282.59999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 285.5,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 287.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 288.5,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 289.89999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 296.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 332.69999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 334.2999999821186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 335.7999999821186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 337.2999999821186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 339.7999999821186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 341.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 342.89999997615814,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 344.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 348.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "before slash",
+        "time": 356.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 357.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 357.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 358.5,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "keydown listener added",
+        "time": 366.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 382.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      }
+    ]
+  },
+  {
+    "run": 10,
+    "immediate": {
+      "label": "after slash",
+      "time": 335,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 368.2999999821186,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 162.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 166.2999999821186,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 167.39999997615814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 168.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 171.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 174,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 175.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 177.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 179.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 180.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 182.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 192.2999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 238.59999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 240.39999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 242.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 243.39999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 246.2999999821186,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 247.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 248.7999999821186,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 250.2999999821186,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 253.2999999821186,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 254.89999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 256.39999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 261.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 290.09999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 291,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 292.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 293.89999997615814,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 296.09999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 297.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 299,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 300.2999999821186,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 307,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "keydown listener added",
+        "time": 320.59999999403954,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "before slash",
+        "time": 332.2999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 332.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 332.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 333.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 335,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 368.2999999821186,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      }
+    ]
+  },
+  {
+    "run": 11,
+    "immediate": {
+      "label": "after slash",
+      "time": 339.2999999821186,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 364.39999997615814,
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "label": "Your question",
+        "text": ""
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 158.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 162.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 163.7999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 166.5,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 168.2999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 170.2999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 172.5,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 174,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 175.5,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 176.69999998807907,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 178.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 187.7999999821186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 238.5,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 240.5,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 242,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 243.09999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 245.5,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 248.39999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 249.89999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 251.69999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 253.19999998807907,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 254.59999999403954,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 255.89999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 261.89999997615814,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 294.5,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 295.2999999821186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 296.5,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 299.2999999821186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 301.7999999821186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 303.19999998807907,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 304.59999999403954,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 305.89999997615814,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 310,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "keydown listener added",
+        "time": 317.5,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "before slash",
+        "time": 337.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 337.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 337.89999997615814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 338.19999998807907,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 339.2999999821186,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 364.39999997615814,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      }
+    ]
+  },
+  {
+    "run": 12,
+    "immediate": {
+      "label": "after slash",
+      "time": 346.60000002384186,
+      "path": "/",
+      "active": {
+        "tag": "A",
+        "label": null,
+        "text": "Ask"
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": false
+      }
+    },
+    "settled": {
+      "label": "two animation frames later",
+      "time": 370,
+      "path": "/",
+      "active": {
+        "tag": "A",
+        "label": null,
+        "text": "Ask"
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": false
+      }
+    },
+    "trace": [
+      {
+        "label": "focusin",
+        "time": 181,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": ""
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 184.7000000178814,
+        "path": "/",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 186.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 187.90000000596046,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 189.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 192.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 195.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 197,
+        "path": "/",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 199.10000002384186,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 200.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "TEXTAREA",
+          "label": "Your question",
+          "text": "Keyboard question"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": true
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 202.10000002384186,
+        "path": "/",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 211.7000000178814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "focusin",
+        "time": 261.90000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 263.40000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 265.40000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 266.60000002384186,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 268.90000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 272.60000002384186,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 274.40000000596046,
+        "path": "/library",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 275.60000002384186,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 277.2000000178814,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "Choose a file"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 278.5,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "tenant-A.md"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 279.7000000178814,
+        "path": "/library",
+        "active": {
+          "tag": "BUTTON",
+          "label": "Delete tenant-A.md",
+          "text": "Delete"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 284.80000001192093,
+        "path": "/library",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 317.60000002384186,
+        "path": "/usage",
+        "active": {
+          "tag": "BODY",
+          "label": null,
+          "text": "DocQAAskLibraryUsageCollectionTenant A · 1 docView"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 318.5,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "DocQA"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 320.7000000178814,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 322.60000002384186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Library"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 325.40000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Usage"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 327.5,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Collection",
+          "text": "Tenant A · 1 doc"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 328.90000000596046,
+        "path": "/usage",
+        "active": {
+          "tag": "SELECT",
+          "label": "Access role",
+          "text": "Employee · Anna, backend engineerFinance · Tomasz,"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 330.30000001192093,
+        "path": "/usage",
+        "active": {
+          "tag": "BUTTON",
+          "label": null,
+          "text": "set API key"
+        },
+        "field": null
+      },
+      {
+        "label": "focusin",
+        "time": 335.10000002384186,
+        "path": "/usage",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": null
+      },
+      {
+        "label": "before slash",
+        "time": 345.10000002384186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash capture",
+        "time": 345.7000000178814,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "slash microtask",
+        "time": 345.80000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "after slash",
+        "time": 346.60000002384186,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "keydown listener added",
+        "time": 353.30000001192093,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      },
+      {
+        "label": "two animation frames later",
+        "time": 370,
+        "path": "/",
+        "active": {
+          "tag": "A",
+          "label": null,
+          "text": "Ask"
+        },
+        "field": {
+          "disabled": false,
+          "connected": true,
+          "visible": true,
+          "focused": false
+        }
+      }
+    ]
+  }
+]

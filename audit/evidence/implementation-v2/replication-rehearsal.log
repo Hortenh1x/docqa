@@ -1,0 +1,1 @@
+{"acknowledged_row_survived": true, "offline_replica_blocked_commit": true, "unacknowledged_row_not_reported_successful": true, "primary_killed": true, "scope": "isolated containers on one test host; not production independence", "seconds": 15.49}

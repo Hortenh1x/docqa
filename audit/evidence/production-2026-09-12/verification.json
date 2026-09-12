@@ -1,0 +1,89 @@
+{
+  "status": "historical_ready_release_operations_verified_superseded_by_google_release",
+  "date": "2026-09-12",
+  "owner": "Dmytro Bolibok",
+  "country": "Germany",
+  "branch": "codex/production-readiness-audit",
+  "head": "891c7d8499dbf285d4e52e03d5eaa2499545b581",
+  "commits_created": false,
+  "github_push": false,
+  "source_inventory": "d6806bda8d1bd905a267a04cc6504dbb10b5667d1145c40c18c020e776bb18d6",
+  "archive_sha256": "49fae7e91eefd7e1027b9f0bdb53c9b1aa959b3d9882d91e82a30ff0b1c3b571",
+  "source_files": 287,
+  "local_checks": {
+    "accounts_billing_migrations": 43,
+    "source_python": 15,
+    "source_node": 5,
+    "account_browser": 19,
+    "backup": 16,
+    "ui_build_modes": [
+      "accounts",
+      "demo",
+      "keyless"
+    ],
+    "oracle_storage_and_private_logging": 39,
+    "python_application_mypy_files": 108,
+    "private_monitor_fixtures": 18
+  },
+  "reviews": {
+    "publication_spec": "PASS",
+    "publication_quality": "PASS",
+    "backup_streaming": "PASS after formatting"
+  },
+  "backup": {
+    "documents_verified": 9778,
+    "original_verification_seconds": 9.228,
+    "database_restore": {
+      "status": "PASS",
+      "documents": 9778,
+      "migration": "0006",
+      "restore_seconds": 839.056,
+      "isolated": true
+    },
+    "off_host_encrypted_copy": {
+      "status": "PASS",
+      "bytes": 2151473490,
+      "cipher_sha256": "3595a5515f9f7470544cbdb6e43befe1dc9b3b3170a41cf8b701c5c3994d49ab",
+      "authentication_check": "gpg decrypt to /dev/null succeeded"
+    },
+    "independent_versioned_originals": "PASS 9778 remote SHA256",
+    "synchronous_standby": "PASS independent AD2 / TLS verify-full",
+    "independent_failure_drill": "PASS; see durability-drill.json",
+    "offhost_restic": "PASS remote restore byte-identical; see offhost-restic.json",
+    "latest_ready_checkpoint": "final-ready-backup.json; restic a2ecc632; real restore39.32s PASS"
+  },
+  "oci_control_plane": "Authorized temporary OCI browser CLI session; no new permanent API key required",
+  "registration": "enabled; live API and desktop/mobile form verified",
+  "global_ai_cap": false,
+  "daily_account_ip_usd": "0.50",
+  "release": "prod-20260912-ready",
+  "user_acceptance": "End-to-end live verified account, reset and private-upload acceptance not yet confirmed by operator",
+  "smtp": {
+    "provider": "Oracle Email Delivery",
+    "sender": "accounts@docqa.net",
+    "starttls": true,
+    "dkim": "ACTIVE",
+    "spf": "published and externally resolved",
+    "test_smtp": "accepted",
+    "test_delivery": "Operator confirmed arrival in ordinary Gmail inbox, not spam",
+    "user_confirmation_date": "2026-09-12"
+  },
+  "billing": {
+    "existing_main": "A2 4 OCPU /24GB; boot250GB; already billable before these changes",
+    "september_metered_cost_eur": 29.7245175,
+    "card_charge_or_credit_coverage": "not verified",
+    "new_standby": "A1 1 OCPU /4GB /50GB in home region, within verified free allowance",
+    "docqa_object_quota_bytes": 8000000000,
+    "docqa_email_quota_per_day": 90,
+    "free_hardware_migration": "prepared plan only; existing A2 not modified or deleted"
+  },
+  "limits": [
+    "Actual production promotion/failback was not performed",
+    "Full latest production0011 SQL restore was not repeated; historical production0006 SQL restore and separate local0011 account/ledger restore are distinguished",
+    "User retention/legal disclosures/corpus rights remain partial",
+    "Object Storage request count has a separate finite free allowance; byte quota does not cap request charges",
+    "No automatic deletion of documents or backup history; growing retained data is finite"
+  ],
+  "monitoring": "PASS installed every5minutes on main/standby, active checks healthy, Gmail delivery confirmed",
+  "next_release_evidence": "../google-auth-2026-09-12/verification.json"
+}

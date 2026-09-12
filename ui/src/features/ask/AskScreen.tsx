@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import { useCollections, useRole } from "@/app/providers";
+import { ACCOUNTS_ENABLED } from "@/lib/api/client";
 import { joinNames, labelName, roleName } from "@/lib/access";
 import { AccessLine } from "./AccessLine";
 import { useAsk } from "./AskProvider";
@@ -40,6 +41,7 @@ export function AskScreen() {
         ? "Not available at your access level."
         : "Not found in the documents.";
     else if (state.phase === "error") liveRef.current.textContent = "Something went wrong.";
+    else if (state.phase === "idle") liveRef.current.textContent = "";
   }, [state.phase, state.answer, state.access]);
 
   const openSource = useCallback((n: number, trigger: HTMLElement | null) => {
@@ -53,8 +55,9 @@ export function AskScreen() {
   }, []);
 
   const active = state.sources.find((s) => s.n === state.activeSource) ?? null;
-  const restricted = selected?.access_labels ?? [];
-  const roleMoved = state.phase !== "idle" && state.askedAs !== null && state.askedAs !== role;
+  const owned = ACCOUNTS_ENABLED && !!selected?.owned;
+  const restricted = owned ? [] : selected?.access_labels ?? [];
+  const roleMoved = !owned && state.phase !== "idle" && state.askedAs !== null && state.askedAs !== role;
 
   return (
     // ≥1100px the reading column shifts to make room for the source panel;
@@ -68,19 +71,23 @@ export function AskScreen() {
 
       {state.phase === "idle" ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-6 py-16 text-center">
-          <h1 className="font-display text-4xl tracking-tight">Ask the documents.</h1>
+          <h1 className="font-display max-w-full text-4xl tracking-tight [overflow-wrap:anywhere]">
+            Ask the documents.
+          </h1>
           <QuestionChips questions={selected?.suggested_questions} onPick={ask} />
-          {restricted.length > 0 && (
-            <p className="max-w-md text-xs leading-5 text-ink-soft">
-              Viewing as <span className="text-ink">{roleName(role)}</span>. Some sections
-              here are restricted to {joinNames(restricted.map(labelName))} — switch the
-              role in the top bar to see how the answers change.
+          {selected && (
+            <p role="note" aria-label="Document access" className="max-w-md text-xs leading-5 text-ink-soft">
+              {owned ? "Only your account can access these documents. You can search all sections in your private library." : <>
+                Viewing as <span className="text-ink">{roleName(role)}</span>. {restricted.length > 0
+                  ? <>Some sections here are restricted to {joinNames(restricted.map(labelName))} — switch the role in the top bar to see how the answers change.</>
+                  : "This collection has no restricted sections. All roles can access the same documents; use the role menu to explore access levels in other collections."}
+              </>}
             </p>
           )}
         </div>
       ) : (
         <div className="flex flex-col gap-5 py-8">
-          <div className="self-end rounded-[10px] border border-hairline bg-sheet px-4 py-2.5 text-[15px] shadow-card">
+          <div className="max-w-full self-end rounded-[10px] border border-hairline bg-sheet px-4 py-2.5 text-[15px] shadow-card [overflow-wrap:anywhere]">
             {state.question}
           </div>
 
@@ -109,7 +116,7 @@ export function AskScreen() {
             />
           )}
 
-          {state.phase !== "refused" && state.phase !== "searching" && (
+          {!owned && state.phase !== "refused" && state.phase !== "searching" && (
             <AccessLine access={state.access} />
           )}
 
@@ -123,7 +130,7 @@ export function AskScreen() {
           )}
 
           {state.phase === "done" && state.done && (
-            <MetaLine done={state.done} role={state.askedAs} />
+            <MetaLine done={state.done} role={owned ? null : state.askedAs} />
           )}
 
           {state.phase === "refused" && (
@@ -131,8 +138,8 @@ export function AskScreen() {
               question={state.question}
               questions={selected?.suggested_questions}
               onPick={ask}
-              access={state.access}
-              roles={roles}
+              access={owned ? null : state.access}
+              roles={owned ? [] : roles}
               onViewAs={viewAs}
             />
           )}
@@ -161,7 +168,7 @@ export function AskScreen() {
         <Composer disabled={!selected} onSubmit={(q) => ask(q)} />
         {!selected && (
           <p className="mt-2 text-center text-xs text-ink-soft">
-            No collection available — set an API key or create a collection first.
+            {ACCOUNTS_ENABLED ? "No public collection is currently available. Sign in to use your private library." : "No collection available — set an API key or create a collection first."}
           </p>
         )}
       </div>

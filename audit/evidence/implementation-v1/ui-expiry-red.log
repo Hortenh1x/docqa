@@ -1,0 +1,118 @@
+PASS keyless reload never restores a previous tenant answer
+PASS API key survives submit, resets tenant state/cache, stays out of storage and is lost on reload
+PASS changing API key aborts a pending file request and discards its result
+PASS changing API key aborts a pending query request and discards its result
+PASS changing API key aborts a pending upload request and discards its result
+FAIL open Ask expires at UTC midnight on timer
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+true !== false
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:294:14
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:430:13
+FAIL open Ask expires at UTC midnight on visibility
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+true !== false
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:294:14
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:430:13
+FAIL open Ask expires at UTC midnight on interaction
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+true !== false
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:294:14
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:430:13
+PASS reader returns focus for Escape, close and backdrop at 390px
+PASS source drawer returns focus to citation and rail at 390px
+PASS reader returns focus for Escape, close and backdrop at 1280px
+PASS source drawer returns focus to citation and rail at 1280px
+PASS role change hides old reader text while pending and after a restricted response
+PASS reader explains pending document response without exposing the file
+PASS reader explains processing document response without exposing the file
+PASS reader explains failed document response without exposing the file
+PASS delete cancellation sends nothing; failure is visible and Retry succeeds
+PASS upload hint matches 25 MB limit and server size error is visible
+{
+  "demo": false,
+  "passed": 15,
+  "total": 18,
+  "results": [
+    {
+      "name": "keyless reload never restores a previous tenant answer",
+      "pass": true
+    },
+    {
+      "name": "API key survives submit, resets tenant state/cache, stays out of storage and is lost on reload",
+      "pass": true
+    },
+    {
+      "name": "changing API key aborts a pending file request and discards its result",
+      "pass": true
+    },
+    {
+      "name": "changing API key aborts a pending query request and discards its result",
+      "pass": true
+    },
+    {
+      "name": "changing API key aborts a pending upload request and discards its result",
+      "pass": true
+    },
+    {
+      "name": "open Ask expires at UTC midnight on timer",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:294:14\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:430:13"
+    },
+    {
+      "name": "open Ask expires at UTC midnight on visibility",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:294:14\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:430:13"
+    },
+    {
+      "name": "open Ask expires at UTC midnight on interaction",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\ntrue !== false\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:294:14\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:430:13"
+    },
+    {
+      "name": "reader returns focus for Escape, close and backdrop at 390px",
+      "pass": true
+    },
+    {
+      "name": "source drawer returns focus to citation and rail at 390px",
+      "pass": true
+    },
+    {
+      "name": "reader returns focus for Escape, close and backdrop at 1280px",
+      "pass": true
+    },
+    {
+      "name": "source drawer returns focus to citation and rail at 1280px",
+      "pass": true
+    },
+    {
+      "name": "role change hides old reader text while pending and after a restricted response",
+      "pass": true
+    },
+    {
+      "name": "reader explains pending document response without exposing the file",
+      "pass": true
+    },
+    {
+      "name": "reader explains processing document response without exposing the file",
+      "pass": true
+    },
+    {
+      "name": "reader explains failed document response without exposing the file",
+      "pass": true
+    },
+    {
+      "name": "delete cancellation sends nothing; failure is visible and Retry succeeds",
+      "pass": true
+    },
+    {
+      "name": "upload hint matches 25 MB limit and server size error is visible",
+      "pass": true
+    }
+  ]
+}

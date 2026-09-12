@@ -1,0 +1,5 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+checking context: file ('/home/horten/VS Code Projects/docqa/.coverage') not found or excluded by .dockerignore

@@ -4,7 +4,7 @@ from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from typing import Protocol
 
-from app.config import Settings
+from app.config import Settings, is_local_llm_url
 
 
 class GenerationError(Exception):
@@ -32,15 +32,11 @@ class LLMProvider(Protocol):
     def model_name(self) -> str: ...
 
 
-def _is_local(base_url: str) -> bool:
-    return "localhost" in base_url or "127.0.0.1" in base_url or "host.docker.internal" in base_url
-
-
 def get_llm_provider(settings: Settings) -> LLMProvider:
     if settings.llm_provider == "openai_compat":
         # hosted endpoints reject keyless requests anyway — fail fast and readable
         # instead of surfacing a 401 as provider_unavailable at query time
-        if not settings.llm_api_key and not _is_local(settings.llm_base_url):
+        if not settings.llm_api_key and not is_local_llm_url(settings.llm_base_url):
             raise RuntimeError(
                 f"LLM_API_KEY is required for hosted endpoint {settings.llm_base_url!r} "
                 "(only local Ollama/vLLM endpoints may go keyless)"
@@ -53,6 +49,7 @@ def get_llm_provider(settings: Settings) -> LLMProvider:
             model=settings.llm_model,
             temperature=settings.llm_temperature,
             max_tokens=settings.llm_max_tokens,
+            total_timeout_s=settings.llm_timeout_s,
         )
     from app.generation.llm.stub import StubLLM
 

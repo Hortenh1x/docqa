@@ -1,0 +1,166 @@
+Traceback (most recent call last):
+  File "/home/horten/VS Code Projects/docqa/deploy/tests/rehearse_ops.py", line 98, in main
+    compose.call("up", "--detach", "--no-build", "--wait", "--wait-timeout", "150")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horten/VS Code Projects/docqa/deploy/scripts/backup.py", line 83, in call
+    return run([*self.command, *args], **kwargs)
+  File "/home/horten/VS Code Projects/docqa/deploy/scripts/backup.py", line 45, in run
+    raise RuntimeError(
+        f"{command[0]} exited {result.returncode}: {result.stderr.decode()[-2000:]}"
+    )
+RuntimeError: docker exited 1: ops-61a4007ac0_files Created 
+ Volume docqa-ops-61a4007ac0_pgdata Created 
+ Volume docqa-ops-61a4007ac0_pgdata Created 
+ Network docqa-ops-61a4007ac0_default Created 
+ Network docqa-ops-61a4007ac0_default Created 
+ Container docqa-ops-61a4007ac0-redis-1 Creating 
+ Container docqa-ops-61a4007ac0-db-1 Creating 
+ Container docqa-ops-61a4007ac0-db-1 Created 
+ Container docqa-ops-61a4007ac0-migrate-1 Creating 
+ Container docqa-ops-61a4007ac0-redis-1 Created 
+ Container docqa-ops-61a4007ac0-migrate-1 Created 
+ Container docqa-ops-61a4007ac0-worker-1 Creating 
+ Container docqa-ops-61a4007ac0-api-1 Creating 
+ Container docqa-ops-61a4007ac0-beat-1 Creating 
+ Container docqa-ops-61a4007ac0-beat-1 Created 
+ Container docqa-ops-61a4007ac0-api-1 Created 
+ Container docqa-ops-61a4007ac0-worker-1 Created 
+ Container docqa-ops-61a4007ac0-redis-1 Starting 
+ Container docqa-ops-61a4007ac0-db-1 Starting 
+ Container docqa-ops-61a4007ac0-redis-1 Started 
+ Container docqa-ops-61a4007ac0-db-1 Started 
+ Container docqa-ops-61a4007ac0-db-1 Waiting 
+ Container docqa-ops-61a4007ac0-db-1 Healthy 
+ Container docqa-ops-61a4007ac0-migrate-1 Starting 
+ Container docqa-ops-61a4007ac0-migrate-1 Started 
+ Container docqa-ops-61a4007ac0-migrate-1 Waiting 
+ Container docqa-ops-61a4007ac0-redis-1 Waiting 
+ Container docqa-ops-61a4007ac0-migrate-1 Waiting 
+ Container docqa-ops-61a4007ac0-redis-1 Waiting 
+ Container docqa-ops-61a4007ac0-redis-1 Waiting 
+ Container docqa-ops-61a4007ac0-migrate-1 Waiting 
+ Container docqa-ops-61a4007ac0-redis-1 Healthy 
+ Container docqa-ops-61a4007ac0-redis-1 Healthy 
+ Container docqa-ops-61a4007ac0-redis-1 Healthy 
+ Container docqa-ops-61a4007ac0-migrate-1 Error service "migrate" didn't complete successfully: exit 1
+ Container docqa-ops-61a4007ac0-migrate-1 Error service "migrate" didn't complete successfully: exit 1
+ Container docqa-ops-61a4007ac0-migrate-1 Error service "migrate" didn't complete successfully: exit 1
+service "migrate" didn't complete successfully: exit 1
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/horten/VS Code Projects/docqa/deploy/tests/rehearse_ops.py", line 162, in <module>
+    main()
+    ~~~~^^
+  File "/home/horten/VS Code Projects/docqa/deploy/tests/rehearse_ops.py", line 103, in main
+    raise RuntimeError(f"Synthetic stack startup failed: {diagnostics}") from error
+RuntimeError: Synthetic stack startup failed: migrate-1  | Traceback (most recent call last):
+migrate-1  |   File "/app/.venv/bin/alembic", line 10, in <module>
+migrate-1  |     sys.exit(main())
+migrate-1  |              ^^^^^^
+migrate-1  |   File "/app/.venv/lib/python3.12/site-packages/alembic/config.py", line 1047, in main
+migrate-1  |     CommandLine(prog=prog).main(argv=argv)
+migrate-1  |   File "/app/.venv/lib/python3.12/site-packages/alembic/config.py", line 1037, in main
+migrate-1  |     self.run_cmd(cfg, options)
+migrate-1  |   File "/app/.venv/lib/python3.12/site-packages/alembic/config.py", line 971, in run_cmd
+migrate-1  |     fn(
+migrate-1  |   File "/app/.venv/lib/python3.12/site-packages/alembic/command.py", line 490, in upgrade
+migrate-1  |     script.run_env()
+migrate-1  |   File "/app/.venv/lib/python3.12/site-packages/alembic/script/base.py", line 556, in run_env
+migrate-1  |     util.load_python_file(self.dir, "env.py")
+migrate-1  |   File "/app/.venv/lib/python3.12/site-packages/alembic/util/pyfiles.py", line 116, in load_python_file
+migrate-1  |     module = load_module_py(module_id, path)
+db-1       | The files belonging to this database system will be owned by user "postgres".
+migrate-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+migrate-1  |   File "/app/.venv/lib/python3.12/site-packages/alembic/util/pyfiles.py", line 136, in load_module_py
+migrate-1  |     spec.loader.exec_module(module)  # type: ignore
+migrate-1  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+migrate-1  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+migrate-1  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+migrate-1  |   File "/app/alembic/env.py", line 64, in <module>
+migrate-1  |     run_migrations_online()
+migrate-1  |   File "/app/alembic/env.py", line 58, in run_migrations_online
+db-1       | This user must also own the server process.
+db-1       | 
+migrate-1  |     asyncio.run(run_async_migrations())
+migrate-1  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+migrate-1  |     return runner.run(main)
+migrate-1  |            ^^^^^^^^^^^^^^^^
+migrate-1  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+migrate-1  |     return self._loop.run_until_complete(task)
+migrate-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+migrate-1  |   File "/usr/local/lib/python3.12/asyncio/base_events.py", line 691, in run_until_complete
+migrate-1  |     return future.result()
+migrate-1  |            ^^^^^^^^^^^^^^^
+migrate-1  |   File "/app/alembic/env.py", line 44, in run_async_migrations
+migrate-1  |     configuration["sqlalchemy.url"] = get_settings().database_url
+migrate-1  |                                       ^^^^^^^^^^^^^^
+migrate-1  |   File "/app/app/config.py", line 197, in get_settings
+migrate-1  |     return Settings()
+migrate-1  |            ^^^^^^^^^^
+migrate-1  |   File "/app/.venv/lib/python3.12/site-packages/pydantic_settings/main.py", line 247, in __init__
+migrate-1  |     super().__init__(**__pydantic_self__.__class__._settings_build_values(sources, init_kwargs))
+db-1       | The database cluster will be initialized with locale "en_US.utf8".
+db-1       | The default database encoding has accordingly been set to "UTF8".
+db-1       | The default text search configuration will be set to "english".
+db-1       | 
+db-1       | Data page checksums are enabled.
+db-1       | 
+db-1       | fixing permissions on existing directory /var/lib/postgresql/18/docker ... ok
+db-1       | creating subdirectories ... ok
+db-1       | selecting dynamic shared memory implementation ... posix
+db-1       | selecting default "max_connections" ... 100
+db-1       | selecting default "shared_buffers" ... 128MB
+db-1       | selecting default time zone ... Etc/UTC
+db-1       | creating configuration files ... ok
+db-1       | running bootstrap script ... ok
+migrate-1  |   File "/app/.venv/lib/python3.12/site-packages/pydantic/main.py", line 263, in __init__
+db-1       | performing post-bootstrap initialization ... ok
+db-1       | syncing data to disk ... ok
+migrate-1  |     validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+db-1       | 
+migrate-1  |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+db-1       | 
+db-1       | Success. You can now start the database server using:
+db-1       | 
+db-1       |     pg_ctl -D /var/lib/postgresql/18/docker -l logfile start
+db-1       | 
+db-1       | initdb: warning: enabling "trust" authentication for local connections
+migrate-1  | pydantic_core._pydantic_core.ValidationError: 1 validation error for Settings
+migrate-1  | embedding_dim
+migrate-1  |   Input should be 1024 [type=literal_error]
+migrate-1  |     For further information visit https://errors.pydantic.dev/2.13/v/literal_error
+db-1       | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+db-1       | waiting for server to start....2026-09-10 13:54:03.367 UTC [53] LOG:  starting PostgreSQL 18.4 (Debian 18.4-1.pgdg12+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit
+db-1       | 2026-09-10 13:54:03.370 UTC [53] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1       | 2026-09-10 13:54:03.383 UTC [59] LOG:  database system was shut down at 2026-09-10 13:53:59 UTC
+db-1       | 2026-09-10 13:54:03.390 UTC [53] LOG:  database system is ready to accept connections
+db-1       |  done
+db-1       | server started
+db-1       | CREATE DATABASE
+db-1       | 
+db-1       | 
+db-1       | /usr/local/bin/docker-entrypoint.sh: sourcing /docker-entrypoint-initdb.d/10-docqa-runtime.sh
+db-1       | 
+db-1       | 2026-09-10 13:54:03.659 UTC [53] LOG:  received fast shutdown request
+db-1       | waiting for server to shut down....2026-09-10 13:54:03.663 UTC [53] LOG:  aborting any active transactions
+db-1       | 2026-09-10 13:54:03.664 UTC [53] LOG:  background worker "logical replication launcher" (PID 62) exited with exit code 1
+db-1       | 2026-09-10 13:54:03.664 UTC [57] LOG:  shutting down
+db-1       | 2026-09-10 13:54:03.668 UTC [57] LOG:  checkpoint starting: shutdown immediate
+db-1       | 2026-09-10 13:54:04.330 UTC [78] FATAL:  the database system is shutting down
+db-1       | .2026-09-10 13:54:04.705 UTC [57] LOG:  checkpoint complete: wrote 945 buffers (5.8%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.042 s, sync=0.976 s, total=1.042 s; sync files=307, longest=0.005 s, average=0.004 s; distance=4338 kB, estimate=4338 kB; lsn=0/1B93DB8, redo lsn=0/1B93DB8
+db-1       | 2026-09-10 13:54:04.725 UTC [53] LOG:  database system is shut down
+db-1       |  done
+db-1       | server stopped
+db-1       | 
+db-1       | PostgreSQL init process complete; ready for start up.
+db-1       | 
+db-1       | 2026-09-10 13:54:04.792 UTC [1] LOG:  starting PostgreSQL 18.4 (Debian 18.4-1.pgdg12+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 12.2.0-14+deb12u1) 12.2.0, 64-bit
+db-1       | 2026-09-10 13:54:04.792 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+db-1       | 2026-09-10 13:54:04.792 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+db-1       | 2026-09-10 13:54:04.800 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1       | 2026-09-10 13:54:04.810 UTC [85] LOG:  database system was shut down at 2026-09-10 13:54:04 UTC
+db-1       | 2026-09-10 13:54:04.817 UTC [1] LOG:  database system is ready to accept connections
+

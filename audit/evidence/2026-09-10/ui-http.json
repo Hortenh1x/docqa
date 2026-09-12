@@ -1,0 +1,96 @@
+[
+  {
+    "route": "/",
+    "status": 200,
+    "headers": {
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "x-nextjs-cache": "HIT",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "X-Powered-By": "Next.js",
+      "Cache-Control": "s-maxage=31536000",
+      "ETag": "\"kqnd6qnotca4n\"",
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": "13167",
+      "Date": "Thu, 10 Sep 2026 11:11:05 GMT",
+      "Connection": "close"
+    }
+  },
+  {
+    "route": "/library",
+    "status": 200,
+    "headers": {
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "x-nextjs-cache": "HIT",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "X-Powered-By": "Next.js",
+      "Cache-Control": "s-maxage=31536000",
+      "ETag": "\"7qas4vc26u9si\"",
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": "12726",
+      "Date": "Thu, 10 Sep 2026 11:11:05 GMT",
+      "Connection": "close"
+    }
+  },
+  {
+    "route": "/usage",
+    "status": 200,
+    "headers": {
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "x-nextjs-cache": "HIT",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "X-Powered-By": "Next.js",
+      "Cache-Control": "s-maxage=31536000",
+      "ETag": "\"re4fenlmst9w0\"",
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": "12854",
+      "Date": "Thu, 10 Sep 2026 11:11:05 GMT",
+      "Connection": "close"
+    }
+  },
+  {
+    "route": "/.env",
+    "status": 404,
+    "headers": {
+      "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "x-nextjs-cache": "HIT",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "X-Powered-By": "Next.js",
+      "ETag": "\"ipjhdsx99va7t\"",
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": "13277",
+      "Date": "Thu, 10 Sep 2026 11:11:05 GMT",
+      "Connection": "close"
+    }
+  },
+  {
+    "route": "/.git/config",
+    "status": 404,
+    "headers": {
+      "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "x-nextjs-cache": "HIT",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "X-Powered-By": "Next.js",
+      "ETag": "\"ipjhdsx99va7t\"",
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": "13277",
+      "Date": "Thu, 10 Sep 2026 11:11:05 GMT",
+      "Connection": "close"
+    }
+  },
+  {
+    "route": "/_next/image?url=%2Ficon.svg&w=64&q=75",
+    "status": 400,
+    "headers": {
+      "Date": "Thu, 10 Sep 2026 11:11:05 GMT",
+      "Connection": "close",
+      "Transfer-Encoding": "chunked"
+    }
+  }
+]

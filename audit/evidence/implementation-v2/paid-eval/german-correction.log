@@ -1,0 +1,16 @@
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, core tables: tenants, api_keys, collections, documents
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, chunks with hnsw and gin indexes
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, queries and query_citations
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, collections read_only flag
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, collections suggested_questions
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, access labels on chunks, role on queries
+INFO  [alembic.runtime.migration] Running upgrade 0006 -> 0007, Durable ingestion attempts and leases.
+INFO  [alembic.runtime.migration] Running upgrade 0007 -> 0008, Fence results against collection cleanup.
+  a021 [access] score=0.365 ·
+  a022 [access] score=0.669 ·
+2026-09-10 17:15:05 [info     ] query_refused_by_model         query_id=377c354f-a239-4c5d-b60c-433205ce9e27 role=employee
+2026-09-10 17:15:05 [info     ] query_answered                 citations=[1] latency_ms=1596 query_id=15851fec-1b0e-47a3-afe8-908addfae6e0 role=hr
+  a021 refused=True
+  a022 refused=False

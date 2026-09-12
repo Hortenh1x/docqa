@@ -1,0 +1,31 @@
+# Run on a DIFFERENT host with the same architecture and PostgreSQL image version.
+# Its volume must already contain pg_basebackup -R output (see durability.md).
+services:
+  standby:
+    image: ${DOCQA_POSTGRES_IMAGE:-pgvector/pgvector:pg18}
+    restart: unless-stopped
+    volumes:
+      - standby_data:/var/lib/postgresql
+      - ${PG_REPLICATION_SECRET_DIR:?Set TLS CA and pgpass directory}:/run/replication:ro
+    command:
+      - postgres
+      - -c
+      - "primary_conninfo=host=${PG_PRIMARY_HOST:?Set primary TLS hostname} port=5432 user=docqa_replicator application_name=docqa_standby sslmode=verify-full sslrootcert=/run/replication/ca.crt passfile=/run/replication/pgpass"
+      - -c
+      - primary_slot_name=docqa_standby
+      - -c
+      - hot_standby=on
+      - -c
+      - fsync=on
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U docqa -d docqa"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: local
+      options: {max-size: "10m", max-file: "5"}
+volumes:
+  standby_data:
+    external: true
+    name: ${PG_STANDBY_VOLUME:?Set the existing seeded standby volume}

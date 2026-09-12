@@ -1,0 +1,620 @@
+- category: access
+  expected_answer: Revenue grew 12% year over year in 2024 Q3.
+  expected_sources: &id001
+  - doc: FIN-UPD-2024-Q3
+    section: '2'
+  id: u0027
+  notes: F2-144 finance.revenue_growth unlocked
+  question: What was the year-over-year revenue growth in the third quarter of 2024?
+  role: finance
+- category: access
+  expected_answer: The incident caused 345 minutes of customer-facing downtime.
+  expected_sources:
+  - doc: SEC-PM-02
+    section: '2'
+  id: u0042
+  notes: F2-159 sec.postmortem_downtime unlocked
+  question: For the second post-incident review, how long were customers unable to
+    use the service?
+  role: manager
+- category: access
+  expected_hidden_labels:
+  - managers
+  expected_refusal: true
+  hidden_sources:
+  - doc: SEC-PM-03
+    section: '2'
+  hidden_values:
+  - 80 minutes
+  id: a0363
+  notes: F2-160 sec.postmortem_downtime under a role without 'managers'
+  question: For the third post-incident review, how much time passed before service
+    was restored to clients?
+  role: employee
+- category: access
+  expected_hidden_labels:
+  - managers
+  expected_refusal: true
+  hidden_sources:
+  - doc: SEC-PM-03
+    section: '2'
+  hidden_values:
+  - 80 minutes
+  id: a0361
+  notes: F2-160 sec.postmortem_downtime under a role without 'managers'
+  question: In the postmortem of incident three, what was the duration of customer-facing
+    downtime?
+  role: employee
+- category: access
+  expected_hidden_labels:
+  - finance
+  expected_refusal: true
+  hidden_sources: *id001
+  hidden_values:
+  - 12%
+  id: a0315
+  notes: F2-144 finance.revenue_growth under a role without 'finance'
+  question: What was the year-over-year revenue growth in the third quarter of 2024?
+  role: hr
+- category: as_of_date
+  expected_answer: Daily standups are capped at 17 minutes.
+  expected_sources:
+  - doc: MTG-03
+    section: '3'
+  id: m0513
+  notes: F2-212 mtg.standup_minutes
+  question: In the meeting on 2025-04-10, what was decided about the maximum length
+    of daily standups?
+- category: as_of_date
+  expected_answer: The deploy window is 3 hours per day.
+  expected_sources:
+  - doc: MTG-05
+    section: '3'
+  id: m0518
+  notes: F2-214 mtg.deploy_window_hours
+  question: Per the 2025-06-16 meeting notes, how many hours per day are we allowed
+    to deploy?
+- category: as_of_date
+  expected_answer: The deploy window is 7 hours per day.
+  expected_sources:
+  - doc: MTG-06
+    section: '3'
+  id: m0520
+  notes: F2-215 mtg.deploy_window_hours
+  question: As per the latest update, what is the daily time frame for deployments?
+- category: as_of_date
+  expected_answer: On-call rotations last 19 days.
+  expected_sources:
+  - doc: MTG-02
+    section: '3'
+  id: m0512
+  notes: F2-211 mtg.oncall_rotation_days
+  question: As per the latest update, how long does an on-call period last?
+- category: as_of_date
+  expected_answer: Daily standups are capped at 14 minutes.
+  expected_sources:
+  - doc: MTG-04
+    section: '3'
+  id: m0516
+  notes: F2-213 mtg.standup_minutes
+  question: According to the latest update, how many minutes are our morning meetings
+    limited to?
+- category: buried
+  expected_answer: Trips should be booked at least 7 days before departure.
+  expected_sources:
+  - doc: POL-004-v3.0
+    section: '3'
+  id: b0035
+  notes: F2-016 travel.booking_advance_days
+  question: What is the minimum booking window for travel arrangements?
+- category: buried
+  expected_answer: Decision meetings are capped at 6 people.
+  expected_sources:
+  - doc: POL-020-v1.1
+    section: '3'
+  id: b0129
+  notes: F2-056 meetings.max_attendees
+  question: What is the maximum number of attendees allowed in a decision-making meeting?
+- category: buried
+  expected_answer: The transition period between teams is 5 weeks.
+  expected_sources:
+  - doc: POL-015-v1.1
+    section: '4'
+  id: b0098
+  notes: F2-045 mobility.transition_weeks
+  question: What is the duration of the overlap phase during an internal job change?
+- category: buried
+  expected_answer: Decision meetings are capped at 6 people.
+  expected_sources:
+  - doc: POL-020-v1.1
+    section: '3'
+  id: b0130
+  notes: F2-056 meetings.max_attendees
+  question: How many people can be in a meeting where choices are made?
+- category: buried
+  expected_answer: Trips should be booked at least 7 days before departure.
+  expected_sources:
+  - doc: POL-004-v3.0
+    section: '3'
+  id: b0034
+  notes: F2-016 travel.booking_advance_days
+  question: How far in advance should I book my business trips?
+- category: direct
+  expected_answer: Trips under eight hours pay 50% of the country rate.
+  expected_sources:
+  - doc: FIN-RATES-2023
+    section: '3'
+  id: d0263
+  notes: F2-120 perdiem.partial_day
+  question: What percentage of the country's per diem do we receive for trips lasting
+    less than eight hours?
+- category: direct
+  expected_answer: Kranich continues full pay for the first 6 weeks of illness.
+  expected_sources:
+  - doc: POL-007-v1.2
+    section: '4'
+  id: d0059
+  notes: F2-027 sick.full_pay_weeks
+  question: How long does Kranich pay full salary during illness?
+- category: direct
+  expected_answer: Internal transfers require at least 15 months in the current role.
+  expected_sources:
+  - doc: POL-015-v1.1
+    section: '2'
+  id: d0095
+  notes: F2-044 mobility.min_tenure_months
+  question: What is the minimum time you need to stay in your current role before
+    you can transfer internally?
+- category: direct
+  expected_answer: Telemetry events are retained for 18 days.
+  expected_sources:
+  - doc: ENG-RFC-03
+    section: '3'
+  id: d0389
+  notes: F2-168 eng.event_retention_days
+  question: How many days are telemetry events kept before they are deleted?
+- category: direct
+  expected_answer: Trains are preferred over flights for routes under 5 hours door
+    to door.
+  expected_sources:
+  - doc: POL-004-v3.0
+    section: '3'
+  id: d0032
+  notes: F2-015 travel.train_threshold_hours
+  question: When should I choose the train instead of flying?
+- category: distractor_country
+  expected_answer: The standard working week in France is 37.5 hours per week.
+  expected_sources:
+  - doc: HB-FR
+    section: '7'
+  id: c0236
+  notes: F2-104 country.weekly_hours
+  question: How many hours per week are considered the norm for full-time work in
+    France?
+- category: distractor_country
+  expected_answer: Mileage in a private car in Germany is reimbursed at €0.48 per
+    km.
+  expected_sources:
+  - doc: HB-S-DE
+    section: '4'
+  id: c0184
+  notes: F2-078 country.mileage_rate
+  question: In Germany, how much do employees get paid per kilometer when using their
+    own vehicle for work?
+- category: distractor_country
+  expected_answer: The contractual notice period in Poland is 3 weeks.
+  expected_sources:
+  - doc: HB-PL
+    section: '5'
+  id: c0218
+  notes: F2-095 country.notice_weeks
+  question: How much advance warning must be given when ending a contract in Poland?
+- category: distractor_country
+  expected_answer: Employees in Germany observe 11 days of public holidays in the
+    reference year.
+  expected_sources:
+  - doc: HB-DE
+    section: '6'
+  id: c0177
+  notes: F2-075 country.public_holidays
+  question: How many public holidays do employees in Germany have in the reference
+    year?
+- category: distractor_country
+  expected_answer: The probation period in United Kingdom is 2 months.
+  expected_sources:
+  - doc: HB-UK
+    section: '4'
+  id: c0243
+  notes: F2-108 country.probation_months
+  question: How long is the probation period for new employees in the United Kingdom?
+- category: german
+  expected_answer: 30 Tage — Tenure adds one day per two full years of service, up
+    to a total of 30 days.
+  expected_sources:
+  - doc: POL-001-DE
+    section: '3'
+  id: g0633
+  notes: F2-007 German mirror
+  question: Wie viele Urlaubstage erhält man maximal durch Betriebszugehörigkeit?
+- category: german
+  expected_answer: 3rd calendar day — A doctor's certificate is required from the
+    3rd calendar day of absence.
+  expected_sources:
+  - doc: POL-007-DE
+    section: '3'
+  id: g0661
+  notes: F2-026 German mirror
+  question: Ab wann benötige ich eine ärztliche Bescheinigung, wenn ich krank bin?
+- category: german
+  expected_answer: 5 Arbeitstage — Up to 5 working days per year may be spent at conferences
+    without using vacation.
+  expected_sources:
+  - doc: POL-011-DE
+    section: '3'
+  id: g0678
+  notes: F2-036 German mirror
+  question: An wie vielen Tagen im Jahr ist die Teilnahme an Fachveranstaltungen möglich,
+    ohne dass man sich dafür freinehmen muss?
+- category: german
+  expected_answer: 18 Monate — Your home workspace is reviewed with your manager every
+    18 months.
+  expected_sources:
+  - doc: POL-002-DE
+    section: '4'
+  id: g0638
+  notes: F2-010 German mirror
+  question: Wie oft findet die Überprüfung meines häuslichen Arbeitsumfelds gemeinsam
+    mit dem Vorgesetzten statt?
+- category: german
+  expected_answer: 5 Jahre — Applicant data is deleted 5 years after the hiring decision.
+  expected_sources:
+  - doc: POL-010-DE
+    section: '3'
+  id: g0671
+  notes: F2-031 German mirror
+  question: Wie lange werden die Daten von Bewerbern gespeichert?
+- category: multi_doc
+  expected_answer: New hires complete the mandatory security training within 14 days
+    of their start date.
+  expected_sources:
+  - doc: POL-005-v4.1
+    section: '3'
+  - doc: HR-ONB-03
+    section: null
+  id: x0571
+  notes: F2-017 via HR-ONB-03
+  question: The Onboarding Guide for Platform & Infrastructure mentions a deadline
+    for new hires to complete mandatory security training. How long after starting
+    do they have?
+- category: multi_doc
+  expected_answer: New hires complete the mandatory security training within 14 days
+    of their start date.
+  expected_sources:
+  - doc: POL-005-v4.1
+    section: '3'
+  - doc: SEC-TRAIN
+    section: null
+  id: x0600
+  notes: F2-017 via SEC-TRAIN
+  question: The security awareness programme says that new hires must take the mandatory
+    security course within a certain period from their start. How many days is that?
+- category: multi_doc
+  expected_answer: Equipment must be returned within 10 business days after the last
+    working day.
+  expected_sources:
+  - doc: POL-006-v2.2
+    section: '5'
+  - doc: POL-023-v2.0
+    section: null
+  id: x0533
+  notes: F2-024 via POL-023-v2.0
+  question: The Access Control & Identity Policy states the equipment return timeline
+    is in another document. How many business days after my last day do I have to
+    send back the device?
+- category: multi_doc
+  expected_answer: The 2026 per-diem for Germany is €28 per day.
+  expected_sources:
+  - doc: FIN-RATES-2026
+    section: '2'
+  - doc: HB-S-DE
+    section: null
+  id: x0544
+  notes: F2-135 via HB-S-DE
+  question: Could you tell me the per-diem amount for Germany next year as specified
+    in the travel addendum?
+- category: multi_doc
+  expected_answer: The 2026 per-diem for Portugal is €24 per day.
+  expected_sources:
+  - doc: FIN-RATES-2026
+    section: '2'
+  - doc: HB-S-PT
+    section: null
+  id: x0548
+  notes: F2-136 via HB-S-PT
+  question: The travel supplement for Portugal lists a per-diem for 2026. What is
+    that daily rate?
+- category: no_answer
+  expected_refusal: true
+  id: n0779
+  notes: 'absent topic: referral bonus'
+  question: What is the amount of the referral bonus for recommending a successful
+    candidate?
+- category: no_answer
+  expected_refusal: true
+  id: n0791
+  notes: 'absent topic: sign-on bonus'
+  question: What is the sign-on bonus amount for new hires in engineering roles?
+- category: no_answer
+  expected_refusal: true
+  id: n0810
+  notes: 'absent topic: hazard pay'
+  question: Is there additional compensation for dangerous duties?
+- category: no_answer
+  expected_refusal: true
+  id: n0706
+  notes: 'absent topic: sabbatical'
+  question: How do I go about getting an extended break from work?
+- category: no_answer
+  expected_refusal: true
+  id: n0755
+  notes: 'absent topic: 4-day week'
+  question: Is the company currently offering a four-day workweek schedule?
+- category: partial
+  expected_answer: Access rights are reviewed every 4 months. (the restricted part
+    is not available at this access level)
+  expected_hidden_labels:
+  - managers
+  expected_sources:
+  - doc: POL-023-v2.0
+    section: '3'
+  hidden_sources:
+  - doc: POL-023-v2.0
+    section: '4'
+  hidden_values:
+  - 1 hour
+  id: p0613
+  notes: 'partial: F2-059 open + F2-061 managers'
+  question: At what interval do we recheck permissions, and what is the turnaround
+    for disabling accounts when someone is terminated for cause?
+  role: employee
+- category: partial
+  expected_answer: The equipment budget for a standard role is €2,200. (the restricted
+    part is not available at this access level)
+  expected_hidden_labels:
+  - finance
+  expected_sources:
+  - doc: POL-006-v2.2
+    section: '3'
+  hidden_sources:
+  - doc: POL-006-v2.2
+    section: '6'
+  hidden_values:
+  - €400
+  id: p0603
+  notes: 'partial: F2-020 open + F2-025 finance'
+  question: What is the standard equipment budget and at what write-off threshold
+    is no separate approval needed?
+  role: employee
+- category: partial
+  expected_answer: Suspected incidents are reported within 24 hours to security@kranich.example.
+    (the restricted part is not available at this access level)
+  expected_hidden_labels:
+  - leadership
+  expected_sources:
+  - doc: POL-027-v1.3
+    section: '3'
+  hidden_sources:
+  - doc: POL-027-v1.3
+    section: '5'
+  hidden_values:
+  - 48 hours
+  id: p0625
+  notes: 'partial: F2-068 open + F2-069 leadership'
+  question: What are the time frames for flagging a possible security event and for
+    determining whether clients need to be informed once the issue is verified?
+  role: employee
+- category: partial
+  expected_answer: The wellness budget is €50 per month. (the restricted part is not
+    available at this access level)
+  expected_hidden_labels:
+  - hr
+  expected_sources:
+  - doc: POL-026-v3.1
+    section: '2'
+  hidden_sources:
+  - doc: POL-026-v3.1
+    section: '4'
+  hidden_values:
+  - €2,000
+  id: p0621
+  notes: 'partial: F2-065 open + F2-066 hr'
+  question: How much can I claim each month for wellbeing, and what is the most I
+    can get as an emergency loan?
+  role: employee
+- category: partial
+  expected_answer: Purchases up to €600 are approved by your manager. (the restricted
+    part is not available at this access level)
+  expected_hidden_labels:
+  - finance
+  expected_sources:
+  - doc: POL-018-v1.2
+    section: '3'
+  hidden_sources:
+  - doc: POL-018-v1.2
+    section: '3'
+  hidden_values:
+  - €20,000
+  id: p0609
+  notes: 'partial: F2-050 open + F2-051 finance'
+  question: Which spending limits trigger your supervisor's sign-off versus the finance
+    chief's authorization?
+  role: employee
+- category: stale_faq
+  expected_answer: Overtime is compensated with time off within 10 weeks.
+  expected_sources:
+  - doc: POL-013-v2.0
+    section: '3'
+  id: s0088
+  notes: FAQ-006 still states the old value 18 weeks; the current policy wins
+  question: How soon must I schedule the time off I earn from extra hours?
+- category: stale_faq
+  expected_answer: Employees may work up to 100% remotely within their country of
+    employment.
+  expected_sources:
+  - doc: POL-002-v2.0
+    section: '2'
+  id: s0018
+  notes: FAQ-002 still states the old value 60%; the current policy wins
+  question: Is it possible to work completely from home if I stay in the same country?
+- category: stale_faq
+  expected_answer: Full-time employees receive 27 days of vacation per calendar year.
+  expected_sources:
+  - doc: POL-001-v2.3
+    section: '3'
+  id: s0003
+  notes: FAQ-001 still states the old value 25 days; the current policy wins
+  question: What is the annual leave allowance for staff on a full-time contract?
+- category: stale_faq
+  expected_answer: Every employee has a learning budget of €1,100 per year.
+  expected_sources:
+  - doc: POL-011-v2.0
+    section: '2'
+  id: s0075
+  notes: FAQ-005 still states the old value €500 per year; the current policy wins
+  question: What annual amount is set aside for my professional development?
+- category: stale_faq
+  expected_answer: Passwords must be at least 16 characters long.
+  expected_sources:
+  - doc: POL-005-v4.1
+    section: '2'
+  id: s0040
+  notes: FAQ-004 still states the old value 10 characters; the current policy wins
+  question: How many characters are required at least for our passwords?
+- category: table
+  expected_answer: The equipment budget for an engineering role is €2,800.
+  expected_sources:
+  - doc: POL-006-v2.2
+    section: '3'
+  id: t0048
+  notes: F2-022 equipment.budget_engineering
+  question: How much money is set aside for gear for engineers?
+- category: table
+  expected_answer: The equipment budget for a standard role is €2,200.
+  expected_sources:
+  - doc: POL-006-v2.2
+    section: '3'
+  id: t0044
+  notes: F2-020 equipment.budget_standard
+  question: How much can we spend on gear for a typical position?
+- category: table
+  expected_answer: The 2026 per-diem for Germany is €28 per day.
+  expected_sources:
+  - doc: FIN-RATES-2026
+    section: '2'
+  id: t0293
+  notes: F2-135 perdiem.rate
+  question: What is the current per-diem for Germany?
+- category: table
+  expected_answer: The 2026 per-diem for Spain is €26 per day.
+  expected_sources:
+  - doc: FIN-RATES-2026
+    section: '2'
+  id: t0298
+  notes: F2-137 perdiem.rate
+  question: How much do we get per day when traveling to Spain on company business
+    now?
+- category: table
+  expected_answer: The 2026 per-diem for United Kingdom is €36 per day.
+  expected_sources:
+  - doc: FIN-RATES-2026
+    section: '2'
+  id: t0304
+  notes: F2-140 perdiem.rate
+  question: How much is the per-day travel stipend for the UK right now?
+- category: version
+  expected_answer: The 2023 per-diem for Germany is €46 per day.
+  expected_sources:
+  - doc: FIN-RATES-2023
+    section: '2'
+  id: v0256
+  notes: F2-114 perdiem.rate
+  question: For the year 2023, what is the fixed amount we receive per day for meals
+    and incidentals when traveling in Germany?
+- category: version
+  expected_answer: Applicant data is deleted 5 years after the hiring decision.
+  expected_sources:
+  - doc: POL-010-v2.0
+    section: '3'
+  id: v0068
+  notes: F2-031 privacy.retention_years
+  question: What is the retention period for candidate information once we've chosen
+    someone?
+- category: version
+  expected_answer: The 2025 per-diem for Portugal is €41 per day.
+  expected_sources:
+  - doc: FIN-RATES-2025
+    section: '2'
+  id: v0282
+  notes: F2-129 perdiem.rate
+  question: How much is the 2025 daily expense reimbursement for business trips to
+    Portugal?
+- category: version
+  expected_answer: Passwords must be at least 16 characters long.
+  expected_sources:
+  - doc: POL-005-v4.1
+    section: '2'
+  id: v0039
+  notes: F2-018 security.password_min_chars
+  question: How many characters are required at least for our passwords?
+- category: version
+  expected_answer: The 2024 per-diem for Spain is €21 per day.
+  expected_sources:
+  - doc: FIN-RATES-2024
+    section: '2'
+  id: v0270
+  notes: F2-123 perdiem.rate
+  question: How much is the 2024 daily expense compensation in Spain?
+- category: version_history
+  expected_answer: Access rights are reviewed every 8 months.
+  expected_sources:
+  - doc: POL-023-v1.0
+    section: '3'
+  id: h0138
+  notes: F2-060 access.review_months
+  question: In the previous version of the rules, what was the interval between access
+    permission checks?
+- category: version_history
+  expected_answer: The equipment budget for a standard role is €2,000.
+  expected_sources:
+  - doc: POL-006-v1.0
+    section: '3'
+  id: h0045
+  notes: F2-021 equipment.budget_standard
+  question: In the old policy version 1.0, what was the equipment budget for a standard
+    role?
+- category: version_history
+  expected_answer: Overtime is compensated with time off within 16 weeks.
+  expected_sources:
+  - doc: POL-013-v1.5
+    section: '3'
+  id: h0090
+  notes: F2-041 worktime.comp_time_weeks
+  question: Under the previous rule, how long did staff have to use their lieu hours?
+- category: version_history
+  expected_answer: Full-time employees receive 24 days of vacation per calendar year.
+  expected_sources:
+  - doc: POL-001-v1.0
+    section: '3'
+  id: h0007
+  notes: F2-003 vacation.base_days
+  question: In the first version of the policy, how many days off per year were full-time
+    employees allowed?
+- category: version_history
+  expected_answer: Overtime is compensated with time off within 18 weeks.
+  expected_sources:
+  - doc: POL-013-v1.0
+    section: '3'
+  id: h0091
+  notes: F2-042 worktime.comp_time_weeks
+  question: Under the old overtime policy, within how many weeks did comp time have
+    to be used?

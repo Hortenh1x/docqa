@@ -1,0 +1,20 @@
+- category: access
+  expected_hidden_labels:
+  - hr
+  expected_refusal: true
+  hidden_sources:
+  - doc: HR-004-DE
+    section: '9'
+  id: a021
+  notes: F30 German mirror under employee (DE collection)
+  question: Wie hoch kann ein Vorschuss in einer Notlage sein?
+  role: employee
+- category: access
+  expected_answer: Bis zu 2.000 €
+  expected_sources:
+  - doc: HR-004-DE
+    section: '9'
+  id: a022
+  notes: F30 German mirror unlocked
+  question: Wie hoch kann ein Vorschuss in einer Notlage sein?
+  role: hr

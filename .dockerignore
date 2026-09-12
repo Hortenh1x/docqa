@@ -17,3 +17,8 @@ docker-compose*.yml
 Dockerfile
 README.md
 CLAUDE.md
+ui
+audit
+.release
+corpus
+eval

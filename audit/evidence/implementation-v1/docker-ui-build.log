@@ -1,0 +1,121 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  220.2kB
+Step 1/23 : FROM node:22-alpine AS deps
+ ---> c610fcdfb1d5
+Step 2/23 : WORKDIR /app
+ ---> Using cache
+ ---> 27ab1783c34b
+Step 3/23 : COPY package.json package-lock.json ./
+ ---> Using cache
+ ---> a457243bf90e
+Step 4/23 : RUN npm ci --no-audit --no-fund
+ ---> Using cache
+ ---> 848f866217d9
+Step 5/23 : FROM node:22-alpine AS build
+ ---> c610fcdfb1d5
+Step 6/23 : WORKDIR /app
+ ---> Using cache
+ ---> 27ab1783c34b
+Step 7/23 : COPY --from=deps /app/node_modules ./node_modules
+ ---> Using cache
+ ---> cfc4a7d9d171
+Step 8/23 : COPY . .
+ ---> 405fa8b4ca2a
+Step 9/23 : ARG NEXT_PUBLIC_API_BASE_URL
+ ---> Running in c7a0eefe5b5e
+ ---> Removed intermediate container c7a0eefe5b5e
+ ---> 8b4d69baf533
+Step 10/23 : ARG NEXT_PUBLIC_DEMO_API_KEY
+ ---> Running in adfb5fda12c4
+ ---> Removed intermediate container adfb5fda12c4
+ ---> cbc34796f414
+Step 11/23 : ARG NEXT_PUBLIC_DEMO_MODE=true
+ ---> Running in f2640d0320c9
+ ---> Removed intermediate container f2640d0320c9
+ ---> 9e3a5988c6e8
+Step 12/23 : ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL     NEXT_PUBLIC_DEMO_API_KEY=$NEXT_PUBLIC_DEMO_API_KEY     NEXT_PUBLIC_DEMO_MODE=$NEXT_PUBLIC_DEMO_MODE
+ ---> Running in 62ea831e63de
+ ---> Removed intermediate container 62ea831e63de
+ ---> 96bfc2488e8e
+Step 13/23 : RUN npm run build
+ ---> Running in 3d59fb9e94ba
+
+> docqa-ui@0.1.0 build
+> next build
+
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+   ▲ Next.js 15.5.25
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 7.0s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/8) ...
+[91m ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+[0m   Generating static pages (2/8) 
+   Generating static pages (4/8) 
+   Generating static pages (6/8) 
+ ✓ Generating static pages (8/8)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    5.69 kB         124 kB
+├ ○ /_not-found                            991 B         104 kB
+├ ○ /icon.svg                                0 B            0 B
+├ ○ /library                             6.29 kB         124 kB
+├ ○ /opengraph-image                       123 B         103 kB
+└ ○ /usage                               2.52 kB         113 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/255-37e0f0325134c4d7.js       46.4 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          1.93 kB
+
+
+○  (Static)  prerendered as static content
+
+[91mnpm notice
+npm notice New major version of npm available! 10.9.8 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
+[0m ---> Removed intermediate container 3d59fb9e94ba
+ ---> 9d300c19b1da
+Step 14/23 : FROM node:22-alpine
+ ---> c610fcdfb1d5
+Step 15/23 : WORKDIR /app
+ ---> Using cache
+ ---> 27ab1783c34b
+Step 16/23 : ENV NODE_ENV=production HOSTNAME=0.0.0.0 PORT=3000
+ ---> Using cache
+ ---> 40ebd374c28a
+Step 17/23 : RUN adduser -D appuser
+ ---> Using cache
+ ---> d13ee34a52f1
+Step 18/23 : COPY --from=build --chown=appuser /app/.next/standalone ./
+ ---> 1b92bd416202
+Step 19/23 : COPY --from=build --chown=appuser /app/.next/static ./.next/static
+ ---> 4c09cd01a2b9
+Step 20/23 : COPY --from=build --chown=appuser /app/public ./public
+ ---> 964931884503
+Step 21/23 : USER appuser
+ ---> Running in 085e2fd2d831
+ ---> Removed intermediate container 085e2fd2d831
+ ---> 75c8692c1a5d
+Step 22/23 : EXPOSE 3000
+ ---> Running in d12e15939bbb
+ ---> Removed intermediate container d12e15939bbb
+ ---> 6e4fc3105a85
+Step 23/23 : CMD ["node", "server.js"]
+ ---> Running in d59d076ef3f6
+ ---> Removed intermediate container d59d076ef3f6
+ ---> b8079306e8ba
+Successfully built b8079306e8ba
+Successfully tagged docqa-readiness-ui:local

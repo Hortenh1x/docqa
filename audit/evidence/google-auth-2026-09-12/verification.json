@@ -1,0 +1,76 @@
+{
+  "status": "PASS_deployed_scope_user_acceptance_pending",
+  "date": "2026-09-12",
+  "branch": "codex/production-readiness-audit",
+  "commits_created": false,
+  "source_inventory": "65e7a2335fb811742006e46562e140a9f4a6ac8adaee67a46564da8b4bc72f29",
+  "archive_sha256": "82ca4198dc1d111397eaf174aaf8f0c40f4794f016bac694b83430445db90369",
+  "source_files": 298,
+  "checks": {
+    "targeted_python_unit_and_backup": 82,
+    "google_accounts_billing_migration_integrations": 71,
+    "accounts_production_browser": 24,
+    "source_node": 5,
+    "ruff": "PASS",
+    "ruff_format": "203 files formatted",
+    "mypy": "PASS 113 source files",
+    "ui_typecheck": "PASS",
+    "api_ui_ARM_images": "PASS same immutable source tree",
+    "supplied_secret_absent_from_release_and_download": "PASS",
+    "live_chromium_375_1280": "PASS after selecting Google field by its visible label",
+    "production_dependency_advisories": {
+      "packages": 73,
+      "known_vulnerabilities": 0,
+      "evidence": "python-audit.json"
+    },
+    "audit_structure": {
+      "required_base_ids": 71,
+      "all_present_and_unique": true
+    },
+    "current_source_matches_deployed_release": true,
+    "branch_head_unchanged_index_empty": true
+  },
+  "reviews": {
+    "spec": "PASS",
+    "quality": "PASS",
+    "private_cutover": "PASS after fixing atomic release-pointer rollback and preflight ordering"
+  },
+  "live_google_account_consent": "not completed; user acceptance remains pending",
+  "paid_AI_calls_for_auth_change": 0,
+  "pre_migration_backup": {
+    "status": "PASS",
+    "bundle": "/home/ubuntu/backups/docqa-complete/20260912T115954Z",
+    "completed_at": "2026-09-12T12:04:40Z",
+    "migration": "0011",
+    "documents": 9778,
+    "chunks": 295856,
+    "writers_resumed": true,
+    "standby_streaming_sync": true
+  },
+  "release": "prod-20260912-google",
+  "migration": "0012",
+  "registration_available": true,
+  "google_available": true,
+  "live_google_provider": "PASS real Google email-entry page for docqa.net",
+  "ingress_auth_query_access_logging": false,
+  "backup_resume_issue": {
+    "cause": "Cutover used a one-off migration and left the older persistent migrate container; Compose start traversed that stale dependency and could not resolve0012",
+    "data_snapshot": "0012 raw dump/originals/manifest completed and verified before resume failure",
+    "application_recovery": "Existing api/worker/beat restarted directly; public API and UI returned200",
+    "permanent_fix": "Refresh persistent migrate from current Google source/image; verify original Compose start succeeds",
+    "verification": "PASS; persistent migrate aligned, original resume command works, verified bundle recovered, remote restore and active monitoring healthy",
+    "raw_bundle": "/home/ubuntu/backups/docqa-complete/20260912T121233Z",
+    "raw_finalization": "recovered_after_resume_failure; existing dump and originals SHA reverified; no new raw/S3 scan"
+  },
+  "completed_at": "2026-09-12T12:28:42.718028+00:00",
+  "final_operations": {
+    "status": "PASS",
+    "evidence": "backup-monitoring.json",
+    "bundle": "20260912T121233Z",
+    "snapshot_id": "a7ba2b6b8f7de3f3cfa65db88106c2e0352a836c47c1c6c67077d560706baeef",
+    "remote_byte_restore_seconds": 52.421611,
+    "sql_import_repeated": false,
+    "monitoring_main_and_standby": "enabled, healthy, cron active"
+  },
+  "final_public_health": "final-public-health.json"
+}

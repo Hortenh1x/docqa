@@ -1,0 +1,146 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/horten/VS Code Projects/docqa
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.14.2, asyncio-1.4.0, cov-7.1.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=session, asyncio_default_test_loop_scope=session
+collected 460 items
+
+tests/integration/test_access_e2e.py ...............                     [  3%]
+tests/integration/test_accounts.py .............................         [  9%]
+tests/integration/test_auth.py ......                                    [ 10%]
+tests/integration/test_billing.py ................                       [ 14%]
+tests/integration/test_billing_jobs.py ....                              [ 15%]
+tests/integration/test_cleanup.py .....                                  [ 16%]
+tests/integration/test_concurrency.py .                                  [ 16%]
+tests/integration/test_demo_mode.py ..                                   [ 16%]
+tests/integration/test_google_auth.py ........................           [ 22%]
+tests/integration/test_google_runtime.py .                               [ 22%]
+tests/integration/test_idempotency.py ....                               [ 23%]
+tests/integration/test_ingestion_e2e.py ........                         [ 25%]
+tests/integration/test_ingestion_recovery.py ....                        [ 25%]
+tests/integration/test_input_boundaries.py ...........                   [ 28%]
+tests/integration/test_migration_upgrade.py .                            [ 28%]
+tests/integration/test_publication.py ..                                 [ 28%]
+tests/integration/test_query_e2e.py .....                                [ 30%]
+tests/integration/test_rate_limit.py .....                               [ 31%]
+tests/integration/test_readiness_regressions.py ...................      [ 35%]
+tests/integration/test_runtime_privileges.py .                           [ 35%]
+tests/integration/test_storage_quota.py .................                [ 39%]
+tests/integration/test_stream_disconnect.py ..                           [ 39%]
+tests/integration/test_suggested_questions.py ......                     [ 40%]
+tests/integration/test_usage.py ..                                       [ 41%]
+tests/integration/test_worker_recovery.py ..                             [ 41%]
+tests/unit/test_access.py .................................              [ 48%]
+tests/unit/test_account_security.py ...............                      [ 52%]
+tests/unit/test_billing.py ......                                        [ 53%]
+tests/unit/test_chunking.py ...............                              [ 56%]
+tests/unit/test_corpus_v2_spec.py .....                                  [ 57%]
+tests/unit/test_corpus_v2_validate.py ............                       [ 60%]
+tests/unit/test_costs.py ......                                          [ 61%]
+tests/unit/test_embeddings.py ....                                       [ 62%]
+tests/unit/test_eval_context.py ..                                       [ 63%]
+tests/unit/test_fusion.py ....                                           [ 63%]
+tests/unit/test_generation.py ................                           [ 67%]
+tests/unit/test_golden_visibility.py ..                                  [ 67%]
+tests/unit/test_google_config.py ............                            [ 70%]
+tests/unit/test_google_provider.py ........................              [ 75%]
+tests/unit/test_llm_openai_compat.py .....                               [ 76%]
+tests/unit/test_parsers.py .........                                     [ 78%]
+tests/unit/test_private_error_logging.py ..                              [ 79%]
+tests/unit/test_rerank.py ....                                           [ 80%]
+tests/unit/test_security.py ....                                         [ 80%]
+tests/unit/test_settings.py ....................                         [ 85%]
+tests/unit/test_source_release.py ...............                        [ 88%]
+tests/unit/test_storage_durability.py .................................. [ 95%]
+...                                                                      [ 96%]
+tests/unit/test_suggestions.py ................                          [100%]
+
+=============================== warnings summary ===============================
+tests/integration/test_access_e2e.py::test_restricted_chunk_is_stored_with_its_label
+  /home/horten/VS Code Projects/docqa/.venv/lib/python3.12/site-packages/testcontainers/redis/__init__.py:46: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready(redis.exceptions.ConnectionError)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.13-final-0 _______________
+
+Name                                  Stmts   Miss  Cover
+---------------------------------------------------------
+app/accounts/__init__.py                  0      0   100%
+app/accounts/actor.py                    20      0   100%
+app/accounts/errors.py                   37      0   100%
+app/accounts/google_accounts.py          72     50    31%
+app/accounts/google_provider.py          91      5    95%
+app/accounts/google_router.py            51      7    86%
+app/accounts/google_state.py             60     15    75%
+app/accounts/limits.py                   46      3    93%
+app/accounts/mail.py                     37      5    86%
+app/accounts/passwords.py                24      0   100%
+app/accounts/router.py                  106     16    85%
+app/accounts/service.py                  54     22    59%
+app/accounts/sessions.py                 51     18    65%
+app/accounts/tokens.py                   35     11    69%
+app/billing/__init__.py                   0      0   100%
+app/billing/context.py                   58      4    93%
+app/billing/errors.py                     9      0   100%
+app/billing/jobs.py                      42      9    79%
+app/billing/pricing.py                   24      1    96%
+app/billing/providers.py                 18      0   100%
+app/billing/service.py                  105     10    90%
+app/core/__init__.py                      0      0   100%
+app/core/errors.py                      128      2    98%
+app/core/idempotency.py                  65      9    86%
+app/core/logging.py                      46      4    91%
+app/core/rate_limit.py                   82      6    93%
+app/core/redis.py                        11      0   100%
+app/core/response_headers.py             14      2    86%
+app/core/security.py                     23      1    96%
+app/generation/__init__.py                0      0   100%
+app/generation/citations.py              41      0   100%
+app/generation/llm/__init__.py            2      0   100%
+app/generation/llm/base.py               22      1    95%
+app/generation/llm/openai_compat.py      55      1    98%
+app/generation/llm/stub.py               39      5    87%
+app/generation/prompts.py                38      0   100%
+app/generation/sentinel.py               28      0   100%
+app/generation/service.py               157     16    90%
+app/generation/suggestions.py           143      6    96%
+app/generation/tasks.py                  75     16    79%
+app/ingestion/__init__.py                 0      0   100%
+app/ingestion/access.py                  30      0   100%
+app/ingestion/chunking.py               214     12    94%
+app/ingestion/mime.py                     6      0   100%
+app/ingestion/parsers/__init__.py         2      0   100%
+app/ingestion/parsers/base.py            23      0   100%
+app/ingestion/parsers/docx.py            43      4    91%
+app/ingestion/parsers/markdown.py        66      3    95%
+app/ingestion/parsers/pdf.py            106      6    94%
+app/ingestion/service.py                144     18    88%
+app/ingestion/tasks.py                  172     26    85%
+app/retrieval/__init__.py                 2      0   100%
+app/retrieval/base.py                    20      0   100%
+app/retrieval/fulltext.py                13      0   100%
+app/retrieval/fusion.py                  12      0   100%
+app/retrieval/rerank/__init__.py          2      0   100%
+app/retrieval/rerank/base.py             19      8    58%
+app/retrieval/rerank/cohere.py           30      2    93%
+app/retrieval/rerank/local.py            25     25     0%
+app/retrieval/rerank/none.py              8      1    88%
+app/retrieval/rerank/stub.py             14      1    93%
+app/retrieval/service.py                 37      2    95%
+app/retrieval/vector.py                  28      0   100%
+app/storage/__init__.py                   3      0   100%
+app/storage/base.py                       4      0   100%
+app/storage/errors.py                     5      0   100%
+app/storage/lifecycle.py                  9      1    89%
+app/storage/local.py                     73      6    92%
+app/storage/migrate_originals.py         30     30     0%
+app/storage/s3.py                       102     17    83%
+app/storage/snapshot.py                  18     18     0%
+app/storage/usage.py                     16      2    88%
+---------------------------------------------------------
+TOTAL                                  3185    427    87%
+Required test coverage of 80% reached. Total coverage: 86.59%
+================== 460 passed, 1 warning in 81.15s (0:01:21) ===================

@@ -1,0 +1,75 @@
+....F.                                                                   [100%]
+=================================== FAILURES ===================================
+________ test_restricted_content_yields_a_locked_suggestion_and_labels _________
+
+client = <httpx.AsyncClient object at 0x7f533b279af0>
+tenant = {'id': UUID('10156445-9273-4f71-9229-e606440daf74'), 'key': 'dqa_live_F4IP23iLgTxbvsSRwghyVSpZ7JGxfNbq', 'prefix': 'F4IP23iL', 'headers': {'Authorization': 'Bearer dqa_live_F4IP23iLgTxbvsSRwghyVSpZ7JGxfNbq'}}
+
+    async def test_restricted_content_yields_a_locked_suggestion_and_labels(client, tenant):
+        collection = await _create_collection(client, tenant)
+        await _upload(client, tenant, collection["id"])
+        note = await _upload(client, tenant, collection["id"], filename="FIN-note.md", content=FIN_NOTE)
+    
+        listing = await client.get("/v1/collections", headers=tenant["headers"])
+        row = next(c for c in listing.json() if c["id"] == collection["id"])
+        assert row["access_labels"] == ["finance"]
+        questions = row["suggested_questions"]
+        assert len(questions) == 3
+        locked = [q for q in questions if q["min_role"] != "employee"]
+        assert len(locked) == 1 and locked[0]["min_role"] == "finance"
+>       assert FIN_NOTE.decode().strip() not in str(questions)
+E       assert 'Access: Fin...e the limit.' not in "[{'question...'employee'}]"
+E         
+E         'Access: Finance on...on above the limit.' is contained here:
+E         ?                ^^
+E           [{'question': 'Access: Finance only. The CFO approves every card transaction above the limit.', 'min_role': 'finance'}, {'question': 'When do unused vacation days expire?', 'min_role': 'employee'}, {'question': 'Who approves business trips?', 'min_role': 'employee'}]
+E         ?                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/integration/test_suggested_questions.py:120: AssertionError
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 12.8, "event": "request", "request_id": "1692a2c4b10645e3a7158e19eb9e7635", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:26:54.464323Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "request_id": "1692a2c4b10645e3a7158e19eb9e7635", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:26:54.464889Z"}
+{"document_id": "f6f9d007-e359-4250-852b-20877a819d2e", "chunks": 1, "event": "ingest_done", "request_id": "e25cdccc946a4b028de02b593f73eb4e", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:26:54.496878Z"}
+{"collection_id": "0cd575c7-3c89-417d-bc10-af552b16b52e", "count": 3, "questions": ["Who approves business trips? [employee]", "How many remote days are allowed? [employee]", "What is the travel allowance for France? [employee]"], "event": "suggestions_stored", "request_id": "e25cdccc946a4b028de02b593f73eb4e", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "docqa.suggestions", "timestamp": "2026-09-10T13:26:54.544933Z"}
+{"event": "Task generation.suggest_questions[9ad3d8be-d2fc-47a0-8cdd-d3b8f38c11a2] succeeded in 0.04540501401061192s: None", "request_id": "e25cdccc946a4b028de02b593f73eb4e", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:26:54.545318Z"}
+{"event": "Task ingestion.ingest_document[e806f676-b323-41e2-b519-2219fd312640] succeeded in 0.06311750601162203s: None", "request_id": "e25cdccc946a4b028de02b593f73eb4e", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:26:54.545503Z"}
+{"document_id": "f6f9d007-e359-4250-852b-20877a819d2e", "mime": "text/markdown", "size_bytes": 117, "event": "document_enqueued", "request_id": "e25cdccc946a4b028de02b593f73eb4e", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:26:54.545572Z"}
+{"method": "POST", "path": "/v1/collections/0cd575c7-3c89-417d-bc10-af552b16b52e/documents", "status": 202, "latency_ms": 80.9, "event": "request", "request_id": "e25cdccc946a4b028de02b593f73eb4e", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:26:54.546453Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/0cd575c7-3c89-417d-bc10-af552b16b52e/documents \"HTTP/1.1 202 Accepted\"", "request_id": "e25cdccc946a4b028de02b593f73eb4e", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:26:54.546711Z"}
+{"document_id": "61982798-e7df-4c82-aa6b-d7b67064aaa3", "chunks": 1, "event": "ingest_done", "request_id": "7ba0d2ffca474601b1b77b22612d58bb", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:26:54.570366Z"}
+{"collection_id": "0cd575c7-3c89-417d-bc10-af552b16b52e", "count": 3, "questions": ["Access: Finance only. The CFO approves every card transaction above the limit. [finance]", "When do unused vacation days expire? [employee]", "Who approves business trips? [employee]"], "event": "suggestions_stored", "request_id": "7ba0d2ffca474601b1b77b22612d58bb", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "docqa.suggestions", "timestamp": "2026-09-10T13:26:54.625133Z"}
+{"event": "Task generation.suggest_questions[e1e237dc-1dea-46d3-8a82-8512e0306d5c] succeeded in 0.05252126301638782s: None", "request_id": "7ba0d2ffca474601b1b77b22612d58bb", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:26:54.625392Z"}
+{"event": "Task ingestion.ingest_document[e21c5017-2b27-42c4-bc67-de2a36f7fc83] succeeded in 0.06738739198772237s: None", "request_id": "7ba0d2ffca474601b1b77b22612d58bb", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:26:54.625523Z"}
+{"document_id": "61982798-e7df-4c82-aa6b-d7b67064aaa3", "mime": "text/markdown", "size_bytes": 79, "event": "document_enqueued", "request_id": "7ba0d2ffca474601b1b77b22612d58bb", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:26:54.625586Z"}
+{"method": "POST", "path": "/v1/collections/0cd575c7-3c89-417d-bc10-af552b16b52e/documents", "status": 202, "latency_ms": 79.1, "event": "request", "request_id": "7ba0d2ffca474601b1b77b22612d58bb", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:26:54.626250Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/0cd575c7-3c89-417d-bc10-af552b16b52e/documents \"HTTP/1.1 202 Accepted\"", "request_id": "7ba0d2ffca474601b1b77b22612d58bb", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:26:54.626441Z"}
+{"method": "GET", "path": "/v1/collections", "status": 200, "latency_ms": 5.4, "event": "request", "request_id": "92a7cb4db811492f881e319ce95b9a5a", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:26:54.632243Z"}
+{"event": "HTTP Request: GET http://test/v1/collections \"HTTP/1.1 200 OK\"", "request_id": "92a7cb4db811492f881e319ce95b9a5a", "tenant_id": "10156445-9273-4f71-9229-e606440daf74", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:26:54.632474Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 12.8, 'event': 'request', 'request_id': '1692a2c4b10645e3a7158e19eb9e7635', 'tenant_id': '10156445-9273-4f71-9229-e606440daf74', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:26:54.464323Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:tasks.py:247 {'document_id': 'f6f9d007-e359-4250-852b-20877a819d2e', 'chunks': 1, 'event': 'ingest_done', 'request_id': 'e25cdccc946a4b028de02b593f73eb4e', 'tenant_id': '10156445-9273-4f71-9229-e606440daf74', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:26:54.496878Z'}
+INFO     docqa.suggestions:tasks.py:91 {'collection_id': '0cd575c7-3c89-417d-bc10-af552b16b52e', 'count': 3, 'questions': ['Who approves business trips? [employee]', 'How many remote days are allowed? [employee]', 'What is the travel allowance for France? [employee]'], 'event': 'suggestions_stored', 'request_id': 'e25cdccc946a4b028de02b593f73eb4e', 'tenant_id': '10156445-9273-4f71-9229-e606440daf74', 'level': 'info', 'logger': 'docqa.suggestions', 'timestamp': '2026-09-10T13:26:54.544933Z'}
+INFO     celery.app.trace:trace.py:128 Task generation.suggest_questions[9ad3d8be-d2fc-47a0-8cdd-d3b8f38c11a2] succeeded in 0.04540501401061192s: None
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[e806f676-b323-41e2-b519-2219fd312640] succeeded in 0.06311750601162203s: None
+INFO     docqa.ingestion:service.py:176 {'document_id': 'f6f9d007-e359-4250-852b-20877a819d2e', 'mime': 'text/markdown', 'size_bytes': 117, 'event': 'document_enqueued', 'request_id': 'e25cdccc946a4b028de02b593f73eb4e', 'tenant_id': '10156445-9273-4f71-9229-e606440daf74', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:26:54.545572Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/0cd575c7-3c89-417d-bc10-af552b16b52e/documents', 'status': 202, 'latency_ms': 80.9, 'event': 'request', 'request_id': 'e25cdccc946a4b028de02b593f73eb4e', 'tenant_id': '10156445-9273-4f71-9229-e606440daf74', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:26:54.546453Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/0cd575c7-3c89-417d-bc10-af552b16b52e/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.ingestion:tasks.py:247 {'document_id': '61982798-e7df-4c82-aa6b-d7b67064aaa3', 'chunks': 1, 'event': 'ingest_done', 'request_id': '7ba0d2ffca474601b1b77b22612d58bb', 'tenant_id': '10156445-9273-4f71-9229-e606440daf74', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:26:54.570366Z'}
+INFO     docqa.suggestions:tasks.py:91 {'collection_id': '0cd575c7-3c89-417d-bc10-af552b16b52e', 'count': 3, 'questions': ['Access: Finance only. The CFO approves every card transaction above the limit. [finance]', 'When do unused vacation days expire? [employee]', 'Who approves business trips? [employee]'], 'event': 'suggestions_stored', 'request_id': '7ba0d2ffca474601b1b77b22612d58bb', 'tenant_id': '10156445-9273-4f71-9229-e606440daf74', 'level': 'info', 'logger': 'docqa.suggestions', 'timestamp': '2026-09-10T13:26:54.625133Z'}
+INFO     celery.app.trace:trace.py:128 Task generation.suggest_questions[e1e237dc-1dea-46d3-8a82-8512e0306d5c] succeeded in 0.05252126301638782s: None
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[e21c5017-2b27-42c4-bc67-de2a36f7fc83] succeeded in 0.06738739198772237s: None
+INFO     docqa.ingestion:service.py:176 {'document_id': '61982798-e7df-4c82-aa6b-d7b67064aaa3', 'mime': 'text/markdown', 'size_bytes': 79, 'event': 'document_enqueued', 'request_id': '7ba0d2ffca474601b1b77b22612d58bb', 'tenant_id': '10156445-9273-4f71-9229-e606440daf74', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:26:54.625586Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/0cd575c7-3c89-417d-bc10-af552b16b52e/documents', 'status': 202, 'latency_ms': 79.1, 'event': 'request', 'request_id': '7ba0d2ffca474601b1b77b22612d58bb', 'tenant_id': '10156445-9273-4f71-9229-e606440daf74', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:26:54.626250Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/0cd575c7-3c89-417d-bc10-af552b16b52e/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.request:logging.py:94 {'method': 'GET', 'path': '/v1/collections', 'status': 200, 'latency_ms': 5.4, 'event': 'request', 'request_id': '92a7cb4db811492f881e319ce95b9a5a', 'tenant_id': '10156445-9273-4f71-9229-e606440daf74', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:26:54.632243Z'}
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/v1/collections "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+tests/integration/test_suggested_questions.py::test_questions_generated_after_ingest
+  /home/horten/VS Code Projects/docqa/.venv/lib/python3.12/site-packages/testcontainers/redis/__init__.py:46: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready(redis.exceptions.ConnectionError)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_suggested_questions.py::test_restricted_content_yields_a_locked_suggestion_and_labels
+1 failed, 5 passed, 1 warning in 10.27s

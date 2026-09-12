@@ -1,0 +1,82 @@
+- banner:
+  - link "DocQA":
+    - /url: /
+  - navigation "Screens":
+    - link "Ask":
+      - /url: /
+    - link "Library":
+      - /url: /library
+    - link "Usage":
+      - /url: /usage
+  - text: Collection
+  - combobox "Collection":
+    - option "Tenant A · 1 doc" [selected]
+  - text: Viewing as Access role
+  - combobox "Access role":
+    - option "Employee · Anna, backend engineer" [selected]
+    - option "Finance · Tomasz, CFO"
+  - button "set API key"
+- main:
+  - heading "Tenant A" [level=1]
+  - paragraph: sandbox · stub@1024
+  - paragraph: Drop PDF, DOCX, MD or TXT · up to 25 MB
+  - button "Choose a file"
+  - paragraph: 20 tokens embedded
+  - alert:
+    - paragraph: Couldn't delete ready.md. Storage is temporarily unavailable. Try again.
+    - button "Retry delete ready.md": Retry
+  - table:
+    - rowgroup:
+      - row "Document Pages Size Status Access Added":
+        - columnheader "Document"
+        - columnheader "Pages"
+        - columnheader "Size"
+        - columnheader "Status"
+        - columnheader "Access"
+        - columnheader "Added"
+        - columnheader
+    - rowgroup:
+      - row "pending.md — 100 B pending — Sep 10, 2026 Delete pending.md":
+        - cell "pending.md":
+          - button "pending.md"
+        - cell "—"
+        - cell "100 B"
+        - cell "pending"
+        - cell "—"
+        - cell "Sep 10, 2026"
+        - cell "Delete pending.md":
+          - button "Delete pending.md": Delete
+      - row "processing.md — 100 B processing — Sep 10, 2026 Delete processing.md":
+        - cell "processing.md":
+          - button "processing.md"
+        - cell "—"
+        - cell "100 B"
+        - cell "processing"
+        - cell "—"
+        - cell "Sep 10, 2026"
+        - cell "Delete processing.md":
+          - button "Delete processing.md": Delete
+      - row "ready.md — 100 B ready — Sep 10, 2026 Delete ready.md":
+        - cell "ready.md":
+          - button "ready.md"
+        - cell "—"
+        - cell "100 B"
+        - cell "ready"
+        - cell "—"
+        - cell "Sep 10, 2026"
+        - cell "Delete ready.md":
+          - button "Delete ready.md": Delete
+      - row "failed.md — 100 B failed — Sep 10, 2026 Delete failed.md":
+        - cell "failed.md":
+          - button "failed.md"
+        - cell "—"
+        - cell "100 B"
+        - cell "failed"
+        - cell "—"
+        - cell "Sep 10, 2026"
+        - cell "Delete failed.md":
+          - button "Delete failed.md": Delete
+- contentinfo:
+  - link "About":
+    - /url: /about
+- alert

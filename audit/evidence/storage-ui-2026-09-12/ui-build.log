@@ -1,0 +1,40 @@
+
+> docqa-ui@0.1.0 build
+> node scripts/verify-source.mjs --optional && next build
+
+Local build: no corresponding-source download packaged.
+   ▲ Next.js 15.5.25
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 2.2s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/10) ...
+ ⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+   Generating static pages (2/10) 
+   Generating static pages (4/10) 
+   Generating static pages (7/10) 
+ ✓ Generating static pages (10/10)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    6.13 kB         127 kB
+├ ○ /_not-found                            990 B         104 kB
+├ ○ /about                                 127 B         103 kB
+├ ○ /account                               124 B         111 kB
+├ ƒ /account/[action]                      124 B         111 kB
+├ ○ /icon.svg                                0 B            0 B
+├ ○ /library                             7.82 kB         132 kB
+├ ○ /opengraph-image                       127 B         103 kB
+└ ○ /usage                               4.06 kB         115 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/255-37e0f0325134c4d7.js       46.4 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          1.93 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,16 @@
+{
+  "prior_ledger": "audit/evidence/implementation-v2/paid-eval/german-correction/spend.json",
+  "started_at": "2026-09-10T16:53:31.372733+00:00",
+  "scope": "isolated synthetic in-process regression; exact original context",
+  "mode": "diagnose",
+  "snapshot": {
+    "rows": {
+      "tenants": 2,
+      "collections": 3,
+      "documents": 320,
+      "chunks": 1209
+    },
+    "chunks_sha256": "4f238d8a7d0196313ca09b357297102f8c6fa0ca4417e01cda5694a801233691"
+  },
+  "ended_at": "2026-09-10T16:53:44.999642+00:00"
+}

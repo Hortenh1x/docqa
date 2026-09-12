@@ -1,0 +1,135 @@
+FF..F                                                                    [100%]
+=================================== FAILURES ===================================
+____________ test_closing_sse_after_meta_or_sources_records_once[1] ____________
+
+client = <httpx.AsyncClient object at 0x7fc503eb76e0>
+tenant = {'id': UUID('a0ab008a-6cb1-46f4-96a0-599be0b4b1ed'), 'key': 'dqa_live_vropDuUqxa8LsQyOWYeMaxkTG6C4gajA', 'prefix': 'vropDuUq', 'headers': {'Authorization': 'Bearer dqa_live_vropDuUqxa8LsQyOWYeMaxkTG6C4gajA'}}
+frames = 1
+
+    @pytest.mark.parametrize("frames", [1, 2])
+    async def test_closing_sse_after_meta_or_sources_records_once(client, tenant, frames):
+        from app.api.v1.query import _sse_stream
+        from app.generation.service import run_query
+    
+        cid = await collection(client, tenant)
+        await upload(client, tenant, cid)
+        events = run_query(tenant["id"], uuid.UUID(cid), "How many vacation days?", get_settings())
+        stream = _sse_stream(events)
+        for _ in range(frames):
+            await anext(stream)
+        await stream.aclose()
+        async with get_sessionmaker()() as db:
+            rows = (await db.scalars(select(Query).where(Query.collection_id == uuid.UUID(cid)))).all()
+>           assert len(rows) == 1
+E           assert 0 == 1
+E            +  where 0 = len([])
+
+tests/integration/test_stream_disconnect.py:26: AssertionError
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, core tables: tenants, api_keys, collections, documents
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, chunks with hnsw and gin indexes
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, queries and query_citations
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, collections read_only flag
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, collections suggested_questions
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, access labels on chunks, role on queries
+INFO  [alembic.runtime.migration] Running upgrade 0006 -> 0007, Durable ingestion attempts and leases.
+INFO  [alembic.runtime.migration] Running upgrade 0007 -> 0008, Fence results against collection cleanup.
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 28.2, "event": "request", "tenant_id": "a0ab008a-6cb1-46f4-96a0-599be0b4b1ed", "request_id": "5eeaf4f540cc48f08f8de41dbcef3852", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:44:06.038189Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "tenant_id": "a0ab008a-6cb1-46f4-96a0-599be0b4b1ed", "request_id": "5eeaf4f540cc48f08f8de41dbcef3852", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:44:06.038850Z"}
+{"document_id": "3af9ff93-ac90-46d1-bdc2-4fb2575b4976", "chunks": 1, "event": "ingest_done", "tenant_id": "a0ab008a-6cb1-46f4-96a0-599be0b4b1ed", "request_id": "8921dc9beb664cd6aae296de67fbfdaf", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:44:06.616267Z"}
+{"collection_id": "edb334ff-a3f5-494f-9eab-b6889262fae8", "count": 3, "event": "suggestions_stored", "tenant_id": "a0ab008a-6cb1-46f4-96a0-599be0b4b1ed", "request_id": "8921dc9beb664cd6aae296de67fbfdaf", "level": "info", "logger": "docqa.suggestions", "timestamp": "2026-09-10T13:44:06.675208Z"}
+{"event": "Task generation.suggest_questions[c65d2380-de88-4b96-9bab-2af1e43d3a0c] succeeded in 0.059725441999034956s: None", "tenant_id": "a0ab008a-6cb1-46f4-96a0-599be0b4b1ed", "request_id": "8921dc9beb664cd6aae296de67fbfdaf", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:44:06.682033Z"}
+{"event": "Task ingestion.ingest_document[26e94b21-3520-4953-a4b1-eae9c0d6906b] succeeded in 0.5894434369984083s: None", "tenant_id": "a0ab008a-6cb1-46f4-96a0-599be0b4b1ed", "request_id": "8921dc9beb664cd6aae296de67fbfdaf", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:44:06.682230Z"}
+{"document_id": "3af9ff93-ac90-46d1-bdc2-4fb2575b4976", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "tenant_id": "a0ab008a-6cb1-46f4-96a0-599be0b4b1ed", "request_id": "8921dc9beb664cd6aae296de67fbfdaf", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:44:06.682317Z"}
+{"method": "POST", "path": "/v1/collections/edb334ff-a3f5-494f-9eab-b6889262fae8/documents", "status": 202, "latency_ms": 643.6, "event": "request", "tenant_id": "a0ab008a-6cb1-46f4-96a0-599be0b4b1ed", "request_id": "8921dc9beb664cd6aae296de67fbfdaf", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:44:06.683290Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/edb334ff-a3f5-494f-9eab-b6889262fae8/documents \"HTTP/1.1 202 Accepted\"", "tenant_id": "a0ab008a-6cb1-46f4-96a0-599be0b4b1ed", "request_id": "8921dc9beb664cd6aae296de67fbfdaf", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:44:06.683707Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 28.2, 'event': 'request', 'tenant_id': 'a0ab008a-6cb1-46f4-96a0-599be0b4b1ed', 'request_id': '5eeaf4f540cc48f08f8de41dbcef3852', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:44:06.038189Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:tasks.py:247 {'document_id': '3af9ff93-ac90-46d1-bdc2-4fb2575b4976', 'chunks': 1, 'event': 'ingest_done', 'tenant_id': 'a0ab008a-6cb1-46f4-96a0-599be0b4b1ed', 'request_id': '8921dc9beb664cd6aae296de67fbfdaf', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:44:06.616267Z'}
+INFO     docqa.suggestions:tasks.py:99 {'collection_id': 'edb334ff-a3f5-494f-9eab-b6889262fae8', 'count': 3, 'event': 'suggestions_stored', 'tenant_id': 'a0ab008a-6cb1-46f4-96a0-599be0b4b1ed', 'request_id': '8921dc9beb664cd6aae296de67fbfdaf', 'level': 'info', 'logger': 'docqa.suggestions', 'timestamp': '2026-09-10T13:44:06.675208Z'}
+INFO     celery.app.trace:trace.py:128 Task generation.suggest_questions[c65d2380-de88-4b96-9bab-2af1e43d3a0c] succeeded in 0.059725441999034956s: None
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[26e94b21-3520-4953-a4b1-eae9c0d6906b] succeeded in 0.5894434369984083s: None
+INFO     docqa.ingestion:service.py:176 {'document_id': '3af9ff93-ac90-46d1-bdc2-4fb2575b4976', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'tenant_id': 'a0ab008a-6cb1-46f4-96a0-599be0b4b1ed', 'request_id': '8921dc9beb664cd6aae296de67fbfdaf', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:44:06.682317Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/edb334ff-a3f5-494f-9eab-b6889262fae8/documents', 'status': 202, 'latency_ms': 643.6, 'event': 'request', 'tenant_id': 'a0ab008a-6cb1-46f4-96a0-599be0b4b1ed', 'request_id': '8921dc9beb664cd6aae296de67fbfdaf', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:44:06.683290Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/edb334ff-a3f5-494f-9eab-b6889262fae8/documents "HTTP/1.1 202 Accepted"
+____________ test_closing_sse_after_meta_or_sources_records_once[2] ____________
+
+client = <httpx.AsyncClient object at 0x7fc4fee47830>
+tenant = {'id': UUID('1629a0f1-651e-4fed-ae31-c36493ac66dc'), 'key': 'dqa_live_Ncx9yvZznQsPLAxAEAJpeQjZqzSS6vwj', 'prefix': 'Ncx9yvZz', 'headers': {'Authorization': 'Bearer dqa_live_Ncx9yvZznQsPLAxAEAJpeQjZqzSS6vwj'}}
+frames = 2
+
+    @pytest.mark.parametrize("frames", [1, 2])
+    async def test_closing_sse_after_meta_or_sources_records_once(client, tenant, frames):
+        from app.api.v1.query import _sse_stream
+        from app.generation.service import run_query
+    
+        cid = await collection(client, tenant)
+        await upload(client, tenant, cid)
+        events = run_query(tenant["id"], uuid.UUID(cid), "How many vacation days?", get_settings())
+        stream = _sse_stream(events)
+        for _ in range(frames):
+            await anext(stream)
+        await stream.aclose()
+        async with get_sessionmaker()() as db:
+            rows = (await db.scalars(select(Query).where(Query.collection_id == uuid.UUID(cid)))).all()
+>           assert len(rows) == 1
+E           assert 0 == 1
+E            +  where 0 = len([])
+
+tests/integration/test_stream_disconnect.py:26: AssertionError
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 12.9, "event": "request", "tenant_id": "1629a0f1-651e-4fed-ae31-c36493ac66dc", "request_id": "814aa6b6b9a4441ca54a209da019dd9d", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:44:06.801620Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "tenant_id": "1629a0f1-651e-4fed-ae31-c36493ac66dc", "request_id": "814aa6b6b9a4441ca54a209da019dd9d", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:44:06.801939Z"}
+{"document_id": "f1d45aba-8371-4a8b-9e54-95eaeb6c1c08", "chunks": 1, "event": "ingest_done", "tenant_id": "1629a0f1-651e-4fed-ae31-c36493ac66dc", "request_id": "0862552aa96d4410be1e42ee6048cd74", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:44:06.836560Z"}
+{"collection_id": "cec60b95-6c2c-433b-809f-7e1f81df8686", "count": 3, "event": "suggestions_stored", "tenant_id": "1629a0f1-651e-4fed-ae31-c36493ac66dc", "request_id": "0862552aa96d4410be1e42ee6048cd74", "level": "info", "logger": "docqa.suggestions", "timestamp": "2026-09-10T13:44:06.883451Z"}
+{"event": "Task generation.suggest_questions[3056ba8a-3293-4f85-8169-ae16419bfe55] succeeded in 0.043995876010740176s: None", "tenant_id": "1629a0f1-651e-4fed-ae31-c36493ac66dc", "request_id": "0862552aa96d4410be1e42ee6048cd74", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:44:06.883811Z"}
+{"event": "Task ingestion.ingest_document[ca10fa6b-67a8-41e5-9e82-f0d8564babfc] succeeded in 0.06229015899589285s: None", "tenant_id": "1629a0f1-651e-4fed-ae31-c36493ac66dc", "request_id": "0862552aa96d4410be1e42ee6048cd74", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:44:06.884126Z"}
+{"document_id": "f1d45aba-8371-4a8b-9e54-95eaeb6c1c08", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "tenant_id": "1629a0f1-651e-4fed-ae31-c36493ac66dc", "request_id": "0862552aa96d4410be1e42ee6048cd74", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:44:06.884255Z"}
+{"method": "POST", "path": "/v1/collections/cec60b95-6c2c-433b-809f-7e1f81df8686/documents", "status": 202, "latency_ms": 82.7, "event": "request", "tenant_id": "1629a0f1-651e-4fed-ae31-c36493ac66dc", "request_id": "0862552aa96d4410be1e42ee6048cd74", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:44:06.885087Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/cec60b95-6c2c-433b-809f-7e1f81df8686/documents \"HTTP/1.1 202 Accepted\"", "tenant_id": "1629a0f1-651e-4fed-ae31-c36493ac66dc", "request_id": "0862552aa96d4410be1e42ee6048cd74", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:44:06.885358Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 12.9, 'event': 'request', 'tenant_id': '1629a0f1-651e-4fed-ae31-c36493ac66dc', 'request_id': '814aa6b6b9a4441ca54a209da019dd9d', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:44:06.801620Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:tasks.py:247 {'document_id': 'f1d45aba-8371-4a8b-9e54-95eaeb6c1c08', 'chunks': 1, 'event': 'ingest_done', 'tenant_id': '1629a0f1-651e-4fed-ae31-c36493ac66dc', 'request_id': '0862552aa96d4410be1e42ee6048cd74', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:44:06.836560Z'}
+INFO     docqa.suggestions:tasks.py:99 {'collection_id': 'cec60b95-6c2c-433b-809f-7e1f81df8686', 'count': 3, 'event': 'suggestions_stored', 'tenant_id': '1629a0f1-651e-4fed-ae31-c36493ac66dc', 'request_id': '0862552aa96d4410be1e42ee6048cd74', 'level': 'info', 'logger': 'docqa.suggestions', 'timestamp': '2026-09-10T13:44:06.883451Z'}
+INFO     celery.app.trace:trace.py:128 Task generation.suggest_questions[3056ba8a-3293-4f85-8169-ae16419bfe55] succeeded in 0.043995876010740176s: None
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[ca10fa6b-67a8-41e5-9e82-f0d8564babfc] succeeded in 0.06229015899589285s: None
+INFO     docqa.ingestion:service.py:176 {'document_id': 'f1d45aba-8371-4a8b-9e54-95eaeb6c1c08', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'tenant_id': '1629a0f1-651e-4fed-ae31-c36493ac66dc', 'request_id': '0862552aa96d4410be1e42ee6048cd74', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:44:06.884255Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/cec60b95-6c2c-433b-809f-7e1f81df8686/documents', 'status': 202, 'latency_ms': 82.7, 'event': 'request', 'tenant_id': '1629a0f1-651e-4fed-ae31-c36493ac66dc', 'request_id': '0862552aa96d4410be1e42ee6048cd74', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:44:06.885087Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/cec60b95-6c2c-433b-809f-7e1f81df8686/documents "HTTP/1.1 202 Accepted"
+_______ test_replay_checks_cleanup_version_before_returning_cached_body ________
+
+tenant = {'id': UUID('2fccb679-027c-414d-aff6-bfc6a95e4b40'), 'key': 'dqa_live_iE78H1B8jDVmVTgXox2cdvqrIfgFziM2', 'prefix': 'iE78H1B8', 'headers': {'Authorization': 'Bearer dqa_live_iE78H1B8jDVmVTgXox2cdvqrIfgFziM2'}}
+
+    async def test_replay_checks_cleanup_version_before_returning_cached_body(tenant):
+        from app.core.errors import IdempotencyKeyReusedError
+        from app.core.idempotency import run_idempotent
+        import pytest
+    
+        async def handler():
+            return 200, {"answer": "private"}
+    
+        async def invalid():
+            return False
+    
+        await run_idempotent(tenant["id"], "stale", handler, "fp")
+>       with pytest.raises(IdempotencyKeyReusedError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE IdempotencyKeyReusedError
+
+tests/integration/test_cleanup.py:84: Failed
+=============================== warnings summary ===============================
+tests/integration/test_stream_disconnect.py::test_closing_sse_after_meta_or_sources_records_once[1]
+  /home/horten/VS Code Projects/docqa/.venv/lib/python3.12/site-packages/testcontainers/redis/__init__.py:46: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready(redis.exceptions.ConnectionError)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_stream_disconnect.py::test_closing_sse_after_meta_or_sources_records_once[1]
+FAILED tests/integration/test_stream_disconnect.py::test_closing_sse_after_meta_or_sources_records_once[2]
+FAILED tests/integration/test_cleanup.py::test_replay_checks_cleanup_version_before_returning_cached_body
+3 failed, 2 passed, 1 warning in 10.91s

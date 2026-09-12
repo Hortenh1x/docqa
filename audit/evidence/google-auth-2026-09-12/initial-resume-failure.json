@@ -1,0 +1,170 @@
+{
+  "started_at": "2026-09-12T12:12:31.735221+00:00",
+  "status": "FAIL",
+  "release": "/opt/docqa-releases/prod-20260912-google",
+  "schema": "0012",
+  "sql_import_performed": false,
+  "test_email_sent": false,
+  "stages": {
+    "raw_backup": {
+      "status": "failed",
+      "exit_code": 1
+    }
+  },
+  "monitoring": {
+    "main": {
+      "role": "main",
+      "previous_enabled": true,
+      "enabled": true,
+      "restored_at": "2026-09-12T12:17:13.361056+00:00",
+      "active_check_exit": 0,
+      "active_check": {
+        "checked_at": "2026-09-12T12:17:13.437285+00:00",
+        "role": "main",
+        "dry_run": false,
+        "status": "attention",
+        "observations": {
+          "containers": {
+            "api": {
+              "status": "exited",
+              "health": "unhealthy"
+            },
+            "worker": {
+              "status": "exited",
+              "health": "unhealthy"
+            },
+            "beat": {
+              "status": "exited",
+              "health": "unhealthy"
+            },
+            "db": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "redis": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "ui": {
+              "status": "running",
+              "health": "healthy"
+            }
+          },
+          "readiness": {
+            "error": "URLError"
+          },
+          "database": {
+            "standbys": [
+              {
+                "application_name": "docqa_standby",
+                "state": "streaming",
+                "sync_state": "sync"
+              }
+            ],
+            "slots": [
+              {
+                "slot_name": "docqa_standby",
+                "active": true,
+                "retained_bytes": 0
+              }
+            ]
+          },
+          "disk_free_bytes": 188495077376,
+          "raw_backup": {
+            "started_at": "20260912T121233Z",
+            "release": "/opt/docqa-releases/prod-20260912-google",
+            "status": "failed",
+            "reason": "SystemExit"
+          },
+          "offhost_backup": {
+            "started_at": "2026-09-12T11:27:01.811209+00:00",
+            "status": "ok",
+            "bundle": "20260912T112123Z",
+            "documents": 9778,
+            "migration": "0011",
+            "manifest_sha256": "bef6d7c0f6d225ad215b87f2e480a19bbf2f4a1257f277f62b77b572cacacbf1",
+            "source_manifest_sha256": "a852f8c9a932d33515e8cf937ce6e934fe3cf4b85ec7353c7306b89cd97ab219",
+            "source_release": "d6806bda8d1bd905a267a04cc6504dbb10b5667d1145c40c18c020e776bb18d6",
+            "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/29a96a1a38b8a14af71c47cf616ba0acb4ef8da19c97f4ebe83d3b495b809f36",
+            "action": "snapshot_created",
+            "snapshot_id": "a2ecc632c10dd91c7ec6d1516067e825e23ad7f12fc43513b0edef4ab76088c1",
+            "total_bytes_processed": 2146827364,
+            "data_added": 621269526,
+            "data_added_packed": null,
+            "completed_at": "2026-09-12T11:29:33.271851+00:00"
+          },
+          "cert_pg": "2028-09-11T10:49:34+00:00",
+          "cert_public_api": "2026-11-24T15:08:25+00:00",
+          "cert_public_ui": "2026-11-24T15:08:25+00:00"
+        },
+        "issues": {
+          "container.api": "api container is unavailable or unhealthy",
+          "container.worker": "worker container is unavailable or unhealthy",
+          "container.beat": "beat container is unavailable or unhealthy",
+          "availability.readyz": "DocQA readiness check failed",
+          "backup.raw_backup": "backup success metadata is unavailable or invalid"
+        },
+        "suppressed_issue_ids": [],
+        "would_alert": [
+          "availability.readyz",
+          "backup.raw_backup",
+          "container.api",
+          "container.beat",
+          "container.worker"
+        ],
+        "would_recover": [],
+        "mail_sent": true
+      },
+      "cron_service": "active",
+      "cron_entry_present": true
+    },
+    "standby": {
+      "role": "standby",
+      "previous_enabled": true,
+      "enabled": true,
+      "restored_at": "2026-09-12T12:17:15.386304+00:00",
+      "active_check_exit": 0,
+      "active_check": {
+        "checked_at": "2026-09-12T12:17:15.454201+00:00",
+        "role": "standby",
+        "dry_run": false,
+        "status": "attention",
+        "observations": {
+          "containers": {
+            "standby": {
+              "status": "running",
+              "health": "healthy"
+            }
+          },
+          "readiness": {
+            "error": "HTTPError",
+            "http_status": 502
+          },
+          "database": {
+            "in_recovery": true,
+            "receivers": [
+              {
+                "status": "streaming"
+              }
+            ]
+          },
+          "disk_free_bytes": 41609768960,
+          "cert_pg_ca": "2036-09-09T10:49:34+00:00"
+        },
+        "issues": {
+          "availability.readyz": "DocQA readiness check failed"
+        },
+        "suppressed_issue_ids": [],
+        "would_alert": [
+          "availability.readyz"
+        ],
+        "would_recover": [],
+        "mail_sent": true
+      },
+      "cron_service": "active",
+      "cron_entry_present": true
+    }
+  },
+  "failure": "raw_backup_exit_1",
+  "completed_at": "2026-09-12T12:17:16.176416+00:00"
+}

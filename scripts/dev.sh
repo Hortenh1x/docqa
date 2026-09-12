@@ -21,6 +21,9 @@ fi
 uv run alembic upgrade head
 
 uv run celery -A app.workers.celery_app worker -Q ingestion -c 2 --loglevel=WARNING &
+beat_state=$(mktemp -d "${TMPDIR:-/tmp}/docqa-beat.XXXXXX")
+uv run celery -A app.workers.celery_app beat \
+  --schedule="$beat_state/schedule" --pidfile="$beat_state/beat.pid" --loglevel=WARNING &
 uv run uvicorn app.main:app --reload --no-access-log &
 
 # next start needs a production build; build once, then reuse

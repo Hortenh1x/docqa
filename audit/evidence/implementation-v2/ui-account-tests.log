@@ -1,0 +1,20 @@
+PASS guest has public Ask, no upload, and 0.20 spend leaves 0.30 after login
+PASS verification and reset consume fragment, choose final password and require explicit login
+PASS owner can download failed historical-label original, retry, upload and delete with credentials
+PASS logout clears private answers and readers across tabs, then account B starts fresh
+PASS expired session discards private state and explicitly obtains guest session
+PASS missing mail is honest, existing login works and narrow keyboard forms fit
+PASS registration, resend and recovery use neutral responses and keep passwords out of storage
+PASS unverified accounts cannot upload or delete and can request verification
+PASS HTTP and SSE budget exhaustion show the UTC reset and preserve guest spending at login
+PASS cross-tab logout aborts pending original fetch, upload XHR and query SSE requests
+PASS session refresh hides old private answer before a delayed session response
+PASS mutation preflight detects another account and never sends the old upload
+PASS mobile private source keeps keyboard focus and fits the viewport
+PASS verification and reset keep their in-memory proof and password after same-session tab return
+PASS proof forms are discarded when tab return finds an expired or different session
+PASS Usage distinguishes settled daily spend and pending reservations from remaining allowance
+PASS signed-in password reset preserves confirmed success through revoked-cookie recovery
+PASS confirmed password reset survives a failed guest-session bootstrap and retry
+PASS a fresh proof fragment starts a new form after an earlier proof completed
+{"suite":"accounts","failed":0,"total":19}

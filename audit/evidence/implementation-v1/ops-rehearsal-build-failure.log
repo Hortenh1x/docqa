@@ -1,0 +1,65 @@
+Traceback (most recent call last):
+  File "/home/horten/VS Code Projects/docqa/deploy/tests/rehearse_ops.py", line 156, in <module>
+    main()
+    ~~~~^^
+  File "/home/horten/VS Code Projects/docqa/deploy/tests/rehearse_ops.py", line 94, in main
+    raise RuntimeError(
+        "Disposable backend build failed: " + build_log.read_text()[-3000:]
+    )
+RuntimeError: Disposable backend build failed: DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  728.1kB
+
+Step 1/18 : FROM python:3.12-slim AS builder
+ ---> c3d81d25b315
+Step 2/18 : COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+ ---> Using cache
+ ---> 2505d5e46ab0
+Step 3/18 : WORKDIR /app
+ ---> Using cache
+ ---> d4a8f14b510e
+Step 4/18 : ENV UV_LINK_MODE=copy UV_COMPILE_BYTECODE=1
+ ---> Using cache
+ ---> f5603fd776f8
+Step 5/18 : COPY pyproject.toml uv.lock ./
+ ---> Using cache
+ ---> aac385184649
+Step 6/18 : RUN uv sync --frozen --no-dev
+ ---> Using cache
+ ---> 2b60d0b27c7e
+Step 7/18 : COPY app ./app
+ ---> 08e57da3023e
+Step 8/18 : COPY alembic ./alembic
+ ---> abe9c1de86f3
+Step 9/18 : COPY alembic.ini ./
+ ---> b1ef4579cc19
+Step 10/18 : FROM python:3.12-slim
+ ---> c3d81d25b315
+Step 11/18 : RUN useradd -m appuser
+ ---> Running in 04813dc1ee0e
+ ---> Removed intermediate container 04813dc1ee0e
+ ---> d5f322a95887
+Step 12/18 : WORKDIR /app
+ ---> Running in 8c6e1a0fea3d
+ ---> Removed intermediate container 8c6e1a0fea3d
+ ---> 58bfe90c04d8
+Step 13/18 : COPY --from=builder /app /app
+ ---> 81e8f367e54b
+Step 14/18 : RUN mkdir -p /app/data && chown -R appuser:appuser /app/data
+ ---> Running in 95713c403868
+ ---> Removed intermediate container 95713c403868
+ ---> 358059d0add3
+Step 15/18 : USER appuser
+ ---> Running in 30392d51b295
+ ---> Removed intermediate container 30392d51b295
+ ---> 2040963e51f7
+Step 16/18 : ENV PATH="/app/.venv/bin:$PATH"
+ ---> Running in 8e2632652eab
+ ---> Removed intermediate container 8e2632652eab
+ ---> 1e160a175188
+Step 17/18 : EXPOSE 8000
+ ---> Running in 9bda67d20450
+failed to open writer: lease does not exist: not found
+

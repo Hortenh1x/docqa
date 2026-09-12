@@ -6,6 +6,7 @@ export interface AskError {
   message: string;
   code: string;
   retryAfterS: number | null;
+  resetAt?: string | null;
 }
 
 export interface AskState {

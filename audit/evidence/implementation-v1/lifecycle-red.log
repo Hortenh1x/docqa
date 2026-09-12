@@ -1,0 +1,338 @@
+FFFFFF.F                                                                 [100%]
+=================================== FAILURES ===================================
+_________ test_readonly_delete_preserves_document_chunks_and_original __________
+
+client = <httpx.AsyncClient object at 0x7f011c174290>
+tenant = {'id': UUID('da6b77e3-7776-4b5f-9e70-b4672fb9bc2a'), 'key': 'dqa_live_49mEqO6ZavptolSJm4km0izae5CojqpY', 'prefix': '49mEqO6Z', 'headers': {'Authorization': 'Bearer dqa_live_49mEqO6ZavptolSJm4km0izae5CojqpY'}}
+make_tenant = <function make_tenant.<locals>._make at 0x7f011cfe4860>
+
+    async def test_readonly_delete_preserves_document_chunks_and_original(client, tenant, make_tenant):
+        cid = await collection(client, tenant)
+        document_id = (await upload(client, tenant, cid)).json()["id"]
+        async with get_sessionmaker()() as db:
+            row = await db.get(Collection, uuid.UUID(cid))
+            row.read_only = True
+            await db.commit()
+        stranger = await make_tenant()
+        assert (await client.delete(f"/v1/documents/{document_id}", headers=stranger["headers"])).status_code == 404
+        denied = await client.delete(f"/v1/documents/{document_id}", headers=tenant["headers"])
+>       assert denied.status_code == 403
+E       assert 204 == 403
+E        +  where 204 = <Response [204 No Content]>.status_code
+
+tests/integration/test_readiness_regressions.py:42: AssertionError
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, core tables: tenants, api_keys, collections, documents
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, chunks with hnsw and gin indexes
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, queries and query_citations
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, collections read_only flag
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, collections suggested_questions
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, access labels on chunks, role on queries
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 27.5, "event": "request", "request_id": "a2a30998f342400e90b8802dfd9cb14c", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:18.583071Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "request_id": "a2a30998f342400e90b8802dfd9cb14c", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:18.583736Z"}
+{"document_id": "066c94d1-8064-4380-baae-a42c77717314", "chunks": 1, "event": "ingest_done", "request_id": "ccfc8c69cab54ef9b949b22b39fa0393", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:19.251855Z"}
+{"collection_id": "c7fe3d86-3283-421b-bf93-5f3c7e1117ff", "count": 3, "questions": ["When do unused vacation days expire? [employee]", "Who approves business trips? [employee]", "What is the travel allowance for France? [employee]"], "event": "suggestions_stored", "request_id": "ccfc8c69cab54ef9b949b22b39fa0393", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "docqa.suggestions", "timestamp": "2026-09-10T13:13:19.309146Z"}
+{"event": "Task generation.suggest_questions[3492a272-2215-43d0-8b39-b8a1af99a535] succeeded in 0.05861851098597981s: None", "request_id": "ccfc8c69cab54ef9b949b22b39fa0393", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:13:19.315630Z"}
+{"event": "Task ingestion.ingest_document[0a6a97ba-bda2-4085-8bac-af26761c5484] succeeded in 0.6888115350157022s: None", "request_id": "ccfc8c69cab54ef9b949b22b39fa0393", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:13:19.315862Z"}
+{"document_id": "066c94d1-8064-4380-baae-a42c77717314", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "request_id": "ccfc8c69cab54ef9b949b22b39fa0393", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:19.315955Z"}
+{"method": "POST", "path": "/v1/collections/c7fe3d86-3283-421b-bf93-5f3c7e1117ff/documents", "status": 202, "latency_ms": 732.4, "event": "request", "request_id": "ccfc8c69cab54ef9b949b22b39fa0393", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.316850Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/c7fe3d86-3283-421b-bf93-5f3c7e1117ff/documents \"HTTP/1.1 202 Accepted\"", "request_id": "ccfc8c69cab54ef9b949b22b39fa0393", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.317183Z"}
+{"method": "DELETE", "path": "/v1/documents/066c94d1-8064-4380-baae-a42c77717314", "status": 404, "latency_ms": 4.9, "event": "request", "request_id": "0405b68acdc0447ba672fa08f0772428", "tenant_id": "93a90004-00bc-4c13-b360-cb180fc3fc5a", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.334498Z"}
+{"event": "HTTP Request: DELETE http://test/v1/documents/066c94d1-8064-4380-baae-a42c77717314 \"HTTP/1.1 404 Not Found\"", "request_id": "0405b68acdc0447ba672fa08f0772428", "tenant_id": "93a90004-00bc-4c13-b360-cb180fc3fc5a", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.334845Z"}
+{"collection_id": "c7fe3d86-3283-421b-bf93-5f3c7e1117ff", "reason": "no_ready_chunks", "event": "suggestions_cleared", "request_id": "d0528318bb5b4e28ae1a57d0e83f1b7b", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "docqa.suggestions", "timestamp": "2026-09-10T13:13:19.354057Z"}
+{"event": "Task generation.suggest_questions[2577bf92-20be-41a7-8353-7d66ce0e9b93] succeeded in 0.008934021985623986s: None", "request_id": "d0528318bb5b4e28ae1a57d0e83f1b7b", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:13:19.354303Z"}
+{"method": "DELETE", "path": "/v1/documents/066c94d1-8064-4380-baae-a42c77717314", "status": 204, "latency_ms": 19.5, "event": "request", "request_id": "d0528318bb5b4e28ae1a57d0e83f1b7b", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.354888Z"}
+{"event": "HTTP Request: DELETE http://test/v1/documents/066c94d1-8064-4380-baae-a42c77717314 \"HTTP/1.1 204 No Content\"", "request_id": "d0528318bb5b4e28ae1a57d0e83f1b7b", "tenant_id": "da6b77e3-7776-4b5f-9e70-b4672fb9bc2a", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.355086Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 27.5, 'event': 'request', 'request_id': 'a2a30998f342400e90b8802dfd9cb14c', 'tenant_id': 'da6b77e3-7776-4b5f-9e70-b4672fb9bc2a', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:18.583071Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:tasks.py:194 {'document_id': '066c94d1-8064-4380-baae-a42c77717314', 'chunks': 1, 'event': 'ingest_done', 'request_id': 'ccfc8c69cab54ef9b949b22b39fa0393', 'tenant_id': 'da6b77e3-7776-4b5f-9e70-b4672fb9bc2a', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:19.251855Z'}
+INFO     docqa.suggestions:tasks.py:91 {'collection_id': 'c7fe3d86-3283-421b-bf93-5f3c7e1117ff', 'count': 3, 'questions': ['When do unused vacation days expire? [employee]', 'Who approves business trips? [employee]', 'What is the travel allowance for France? [employee]'], 'event': 'suggestions_stored', 'request_id': 'ccfc8c69cab54ef9b949b22b39fa0393', 'tenant_id': 'da6b77e3-7776-4b5f-9e70-b4672fb9bc2a', 'level': 'info', 'logger': 'docqa.suggestions', 'timestamp': '2026-09-10T13:13:19.309146Z'}
+INFO     celery.app.trace:trace.py:128 Task generation.suggest_questions[3492a272-2215-43d0-8b39-b8a1af99a535] succeeded in 0.05861851098597981s: None
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[0a6a97ba-bda2-4085-8bac-af26761c5484] succeeded in 0.6888115350157022s: None
+INFO     docqa.ingestion:service.py:154 {'document_id': '066c94d1-8064-4380-baae-a42c77717314', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'request_id': 'ccfc8c69cab54ef9b949b22b39fa0393', 'tenant_id': 'da6b77e3-7776-4b5f-9e70-b4672fb9bc2a', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:19.315955Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/c7fe3d86-3283-421b-bf93-5f3c7e1117ff/documents', 'status': 202, 'latency_ms': 732.4, 'event': 'request', 'request_id': 'ccfc8c69cab54ef9b949b22b39fa0393', 'tenant_id': 'da6b77e3-7776-4b5f-9e70-b4672fb9bc2a', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.316850Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/c7fe3d86-3283-421b-bf93-5f3c7e1117ff/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.request:logging.py:94 {'method': 'DELETE', 'path': '/v1/documents/066c94d1-8064-4380-baae-a42c77717314', 'status': 404, 'latency_ms': 4.9, 'event': 'request', 'request_id': '0405b68acdc0447ba672fa08f0772428', 'tenant_id': '93a90004-00bc-4c13-b360-cb180fc3fc5a', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.334498Z'}
+INFO     httpx:_client.py:1740 HTTP Request: DELETE http://test/v1/documents/066c94d1-8064-4380-baae-a42c77717314 "HTTP/1.1 404 Not Found"
+INFO     docqa.suggestions:tasks.py:59 {'collection_id': 'c7fe3d86-3283-421b-bf93-5f3c7e1117ff', 'reason': 'no_ready_chunks', 'event': 'suggestions_cleared', 'request_id': 'd0528318bb5b4e28ae1a57d0e83f1b7b', 'tenant_id': 'da6b77e3-7776-4b5f-9e70-b4672fb9bc2a', 'level': 'info', 'logger': 'docqa.suggestions', 'timestamp': '2026-09-10T13:13:19.354057Z'}
+INFO     celery.app.trace:trace.py:128 Task generation.suggest_questions[2577bf92-20be-41a7-8353-7d66ce0e9b93] succeeded in 0.008934021985623986s: None
+INFO     docqa.request:logging.py:94 {'method': 'DELETE', 'path': '/v1/documents/066c94d1-8064-4380-baae-a42c77717314', 'status': 204, 'latency_ms': 19.5, 'event': 'request', 'request_id': 'd0528318bb5b4e28ae1a57d0e83f1b7b', 'tenant_id': 'da6b77e3-7776-4b5f-9e70-b4672fb9bc2a', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.354888Z'}
+INFO     httpx:_client.py:1740 HTTP Request: DELETE http://test/v1/documents/066c94d1-8064-4380-baae-a42c77717314 "HTTP/1.1 204 No Content"
+______ test_wipe_keeps_other_collection_file_and_removes_final_reference _______
+
+client = <httpx.AsyncClient object at 0x7f010c95f1a0>
+tenant = {'id': UUID('f095914f-000b-4dba-848b-2763bf3ece62'), 'key': 'dqa_live_oaRafjtaKtPhKiJcxOMZ7qOz5iwrB2Y7', 'prefix': 'oaRafjta', 'headers': {'Authorization': 'Bearer dqa_live_oaRafjtaKtPhKiJcxOMZ7qOz5iwrB2Y7'}}
+
+    async def test_wipe_keeps_other_collection_file_and_removes_final_reference(client, tenant):
+        from app.cli import wipe_collection
+        from app.ingestion.mime import EXT_BY_MIME
+        from app.storage import get_storage
+    
+        first, second = await collection(client, tenant), await collection(client, tenant, "Exhibit")
+        first_id = (await upload(client, tenant, first)).json()["id"]
+        second_id = (await upload(client, tenant, second)).json()["id"]
+        async with get_sessionmaker()() as db:
+            row = await db.get(Document, uuid.UUID(first_id))
+            path = get_storage().path_for(str(tenant["id"]), row.sha256, EXT_BY_MIME[row.mime_type])
+        await wipe_collection(uuid.UUID(first))
+        original = await client.get(f"/v1/documents/{second_id}/file", headers=tenant["headers"])
+>       assert original.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <Response [404 Not Found]>.status_code
+
+tests/integration/test_readiness_regressions.py:64: AssertionError
+----------------------------- Captured stdout call -----------------------------
+wiped 1 documents from 'sandbox'
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 15.3, "event": "request", "request_id": "5a516d8a845346c89fa675ae80a0d095", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.468322Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "request_id": "5a516d8a845346c89fa675ae80a0d095", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.468709Z"}
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 8.2, "event": "request", "request_id": "05ac3af68f674fbe823932a9a9173ce0", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.477496Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "request_id": "05ac3af68f674fbe823932a9a9173ce0", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.477975Z"}
+{"document_id": "ecceedb6-2d75-4c15-ae59-ae527ff0868d", "chunks": 1, "event": "ingest_done", "request_id": "abc124e166dc435a9281029636151b3f", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:19.517653Z"}
+{"collection_id": "33787d45-6fbe-4b2e-b61c-ba14ec03db10", "count": 3, "questions": ["When do unused vacation days expire? [employee]", "Who approves business trips? [employee]", "What is the travel allowance for France? [employee]"], "event": "suggestions_stored", "request_id": "abc124e166dc435a9281029636151b3f", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.suggestions", "timestamp": "2026-09-10T13:13:19.568332Z"}
+{"event": "Task generation.suggest_questions[32cb0d7a-e12a-47fd-b48c-aa4380d83f6e] succeeded in 0.04788797200308181s: None", "request_id": "abc124e166dc435a9281029636151b3f", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:13:19.568569Z"}
+{"event": "Task ingestion.ingest_document[34a36710-2731-4f1e-8ba6-f3f04d051b68] succeeded in 0.06593383298604749s: None", "request_id": "abc124e166dc435a9281029636151b3f", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:13:19.568698Z"}
+{"document_id": "ecceedb6-2d75-4c15-ae59-ae527ff0868d", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "request_id": "abc124e166dc435a9281029636151b3f", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:19.568755Z"}
+{"method": "POST", "path": "/v1/collections/33787d45-6fbe-4b2e-b61c-ba14ec03db10/documents", "status": 202, "latency_ms": 90.7, "event": "request", "request_id": "abc124e166dc435a9281029636151b3f", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.569543Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/33787d45-6fbe-4b2e-b61c-ba14ec03db10/documents \"HTTP/1.1 202 Accepted\"", "request_id": "abc124e166dc435a9281029636151b3f", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.569871Z"}
+{"document_id": "09db6bae-216f-4619-a24b-2b1c2e888308", "chunks": 1, "event": "ingest_done", "request_id": "3218b51766a742a2b54a94358715c2a3", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:19.592925Z"}
+{"collection_id": "8cebf009-9956-4c64-9046-46e9304695ff", "count": 3, "questions": ["When do unused vacation days expire? [employee]", "Who approves business trips? [employee]", "What is the travel allowance for France? [employee]"], "event": "suggestions_stored", "request_id": "3218b51766a742a2b54a94358715c2a3", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.suggestions", "timestamp": "2026-09-10T13:13:19.637389Z"}
+{"event": "Task generation.suggest_questions[4254331b-96fe-4236-8422-e735995f1fed] succeeded in 0.0403264929773286s: None", "request_id": "3218b51766a742a2b54a94358715c2a3", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:13:19.637640Z"}
+{"event": "Task ingestion.ingest_document[eacf15e6-c9ab-4027-b2a6-d672df1d4cca] succeeded in 0.05835786697571166s: None", "request_id": "3218b51766a742a2b54a94358715c2a3", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:13:19.637756Z"}
+{"document_id": "09db6bae-216f-4619-a24b-2b1c2e888308", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "request_id": "3218b51766a742a2b54a94358715c2a3", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:19.637807Z"}
+{"method": "POST", "path": "/v1/collections/8cebf009-9956-4c64-9046-46e9304695ff/documents", "status": 202, "latency_ms": 68.1, "event": "request", "request_id": "3218b51766a742a2b54a94358715c2a3", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.638462Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/8cebf009-9956-4c64-9046-46e9304695ff/documents \"HTTP/1.1 202 Accepted\"", "request_id": "3218b51766a742a2b54a94358715c2a3", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.638698Z"}
+{"method": "GET", "path": "/v1/documents/09db6bae-216f-4619-a24b-2b1c2e888308/file", "status": 404, "latency_ms": 5.7, "event": "request", "request_id": "eafebe39da594b9ba55dc9ca87f483f1", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.655549Z"}
+{"event": "HTTP Request: GET http://test/v1/documents/09db6bae-216f-4619-a24b-2b1c2e888308/file \"HTTP/1.1 404 Not Found\"", "request_id": "eafebe39da594b9ba55dc9ca87f483f1", "tenant_id": "f095914f-000b-4dba-848b-2763bf3ece62", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.655810Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 15.3, 'event': 'request', 'request_id': '5a516d8a845346c89fa675ae80a0d095', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.468322Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 8.2, 'event': 'request', 'request_id': '05ac3af68f674fbe823932a9a9173ce0', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.477496Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:tasks.py:194 {'document_id': 'ecceedb6-2d75-4c15-ae59-ae527ff0868d', 'chunks': 1, 'event': 'ingest_done', 'request_id': 'abc124e166dc435a9281029636151b3f', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:19.517653Z'}
+INFO     docqa.suggestions:tasks.py:91 {'collection_id': '33787d45-6fbe-4b2e-b61c-ba14ec03db10', 'count': 3, 'questions': ['When do unused vacation days expire? [employee]', 'Who approves business trips? [employee]', 'What is the travel allowance for France? [employee]'], 'event': 'suggestions_stored', 'request_id': 'abc124e166dc435a9281029636151b3f', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.suggestions', 'timestamp': '2026-09-10T13:13:19.568332Z'}
+INFO     celery.app.trace:trace.py:128 Task generation.suggest_questions[32cb0d7a-e12a-47fd-b48c-aa4380d83f6e] succeeded in 0.04788797200308181s: None
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[34a36710-2731-4f1e-8ba6-f3f04d051b68] succeeded in 0.06593383298604749s: None
+INFO     docqa.ingestion:service.py:154 {'document_id': 'ecceedb6-2d75-4c15-ae59-ae527ff0868d', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'request_id': 'abc124e166dc435a9281029636151b3f', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:19.568755Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/33787d45-6fbe-4b2e-b61c-ba14ec03db10/documents', 'status': 202, 'latency_ms': 90.7, 'event': 'request', 'request_id': 'abc124e166dc435a9281029636151b3f', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.569543Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/33787d45-6fbe-4b2e-b61c-ba14ec03db10/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.ingestion:tasks.py:194 {'document_id': '09db6bae-216f-4619-a24b-2b1c2e888308', 'chunks': 1, 'event': 'ingest_done', 'request_id': '3218b51766a742a2b54a94358715c2a3', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:19.592925Z'}
+INFO     docqa.suggestions:tasks.py:91 {'collection_id': '8cebf009-9956-4c64-9046-46e9304695ff', 'count': 3, 'questions': ['When do unused vacation days expire? [employee]', 'Who approves business trips? [employee]', 'What is the travel allowance for France? [employee]'], 'event': 'suggestions_stored', 'request_id': '3218b51766a742a2b54a94358715c2a3', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.suggestions', 'timestamp': '2026-09-10T13:13:19.637389Z'}
+INFO     celery.app.trace:trace.py:128 Task generation.suggest_questions[4254331b-96fe-4236-8422-e735995f1fed] succeeded in 0.0403264929773286s: None
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[eacf15e6-c9ab-4027-b2a6-d672df1d4cca] succeeded in 0.05835786697571166s: None
+INFO     docqa.ingestion:service.py:154 {'document_id': '09db6bae-216f-4619-a24b-2b1c2e888308', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'request_id': '3218b51766a742a2b54a94358715c2a3', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:19.637807Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/8cebf009-9956-4c64-9046-46e9304695ff/documents', 'status': 202, 'latency_ms': 68.1, 'event': 'request', 'request_id': '3218b51766a742a2b54a94358715c2a3', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.638462Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/8cebf009-9956-4c64-9046-46e9304695ff/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.request:logging.py:94 {'method': 'GET', 'path': '/v1/documents/09db6bae-216f-4619-a24b-2b1c2e888308/file', 'status': 404, 'latency_ms': 5.7, 'event': 'request', 'request_id': 'eafebe39da594b9ba55dc9ca87f483f1', 'tenant_id': 'f095914f-000b-4dba-848b-2763bf3ece62', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.655549Z'}
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/v1/documents/09db6bae-216f-4619-a24b-2b1c2e888308/file "HTTP/1.1 404 Not Found"
+______________ test_unclassified_original_is_not_served[pending] _______________
+
+client = <httpx.AsyncClient object at 0x7f011edb6b10>
+tenant = {'id': UUID('e2fd1ef5-71c2-4930-bae5-32d8f15c1dce'), 'key': 'dqa_live_wdkll5OsfGqjxKAPbA3D25XDRofjJ5I0', 'prefix': 'wdkll5Os', 'headers': {'Authorization': 'Bearer dqa_live_wdkll5OsfGqjxKAPbA3D25XDRofjJ5I0'}}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f011ede3050>
+status = 'pending'
+
+    @pytest.mark.parametrize("status", ["pending", "processing", "failed"])
+    async def test_unclassified_original_is_not_served(client, tenant, monkeypatch, status):
+        from app.ingestion.tasks import ingest_document
+    
+        monkeypatch.setattr(ingest_document, "delay", lambda *_: None)
+        cid = await collection(client, tenant)
+        doc_id = (await upload(client, tenant, cid)).json()["id"]
+        async with get_sessionmaker()() as db:
+            row = await db.get(Document, uuid.UUID(doc_id))
+            row.status = status
+            await db.commit()
+        response = await client.get(f"/v1/documents/{doc_id}/file", headers=tenant["headers"])
+>       assert response.status_code == 409
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/integration/test_readiness_regressions.py:82: AssertionError
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 13.1, "event": "request", "request_id": "e8e8b77c81ce494ba307c73462867ac4", "tenant_id": "e2fd1ef5-71c2-4930-bae5-32d8f15c1dce", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.699562Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "request_id": "e8e8b77c81ce494ba307c73462867ac4", "tenant_id": "e2fd1ef5-71c2-4930-bae5-32d8f15c1dce", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.699890Z"}
+{"document_id": "1fd4a4a1-368d-4b2f-854b-529e8785fc4d", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "request_id": "00ab33ab654c42fab7075c837a8340f3", "tenant_id": "e2fd1ef5-71c2-4930-bae5-32d8f15c1dce", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:19.715461Z"}
+{"method": "POST", "path": "/v1/collections/ca746b90-9822-48c1-b64c-7919e46a8e12/documents", "status": 202, "latency_ms": 15.6, "event": "request", "request_id": "00ab33ab654c42fab7075c837a8340f3", "tenant_id": "e2fd1ef5-71c2-4930-bae5-32d8f15c1dce", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.715964Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/ca746b90-9822-48c1-b64c-7919e46a8e12/documents \"HTTP/1.1 202 Accepted\"", "request_id": "00ab33ab654c42fab7075c837a8340f3", "tenant_id": "e2fd1ef5-71c2-4930-bae5-32d8f15c1dce", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.716167Z"}
+{"method": "GET", "path": "/v1/documents/1fd4a4a1-368d-4b2f-854b-529e8785fc4d/file", "status": 200, "latency_ms": 3.9, "event": "request", "request_id": "66874d86afc6476698f55ecdf9ad6e75", "tenant_id": "e2fd1ef5-71c2-4930-bae5-32d8f15c1dce", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.721915Z"}
+{"event": "HTTP Request: GET http://test/v1/documents/1fd4a4a1-368d-4b2f-854b-529e8785fc4d/file \"HTTP/1.1 200 OK\"", "request_id": "66874d86afc6476698f55ecdf9ad6e75", "tenant_id": "e2fd1ef5-71c2-4930-bae5-32d8f15c1dce", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.722130Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 13.1, 'event': 'request', 'request_id': 'e8e8b77c81ce494ba307c73462867ac4', 'tenant_id': 'e2fd1ef5-71c2-4930-bae5-32d8f15c1dce', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.699562Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:service.py:154 {'document_id': '1fd4a4a1-368d-4b2f-854b-529e8785fc4d', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'request_id': '00ab33ab654c42fab7075c837a8340f3', 'tenant_id': 'e2fd1ef5-71c2-4930-bae5-32d8f15c1dce', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:19.715461Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/ca746b90-9822-48c1-b64c-7919e46a8e12/documents', 'status': 202, 'latency_ms': 15.6, 'event': 'request', 'request_id': '00ab33ab654c42fab7075c837a8340f3', 'tenant_id': 'e2fd1ef5-71c2-4930-bae5-32d8f15c1dce', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.715964Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/ca746b90-9822-48c1-b64c-7919e46a8e12/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.request:logging.py:94 {'method': 'GET', 'path': '/v1/documents/1fd4a4a1-368d-4b2f-854b-529e8785fc4d/file', 'status': 200, 'latency_ms': 3.9, 'event': 'request', 'request_id': '66874d86afc6476698f55ecdf9ad6e75', 'tenant_id': 'e2fd1ef5-71c2-4930-bae5-32d8f15c1dce', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.721915Z'}
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/v1/documents/1fd4a4a1-368d-4b2f-854b-529e8785fc4d/file "HTTP/1.1 200 OK"
+_____________ test_unclassified_original_is_not_served[processing] _____________
+
+client = <httpx.AsyncClient object at 0x7f011ee10740>
+tenant = {'id': UUID('11939f57-25d7-4294-8302-46b993a02445'), 'key': 'dqa_live_fAhwiK4p5NnFKQNGe1iwqPrkNKAYllVS', 'prefix': 'fAhwiK4p', 'headers': {'Authorization': 'Bearer dqa_live_fAhwiK4p5NnFKQNGe1iwqPrkNKAYllVS'}}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f011ee10aa0>
+status = 'processing'
+
+    @pytest.mark.parametrize("status", ["pending", "processing", "failed"])
+    async def test_unclassified_original_is_not_served(client, tenant, monkeypatch, status):
+        from app.ingestion.tasks import ingest_document
+    
+        monkeypatch.setattr(ingest_document, "delay", lambda *_: None)
+        cid = await collection(client, tenant)
+        doc_id = (await upload(client, tenant, cid)).json()["id"]
+        async with get_sessionmaker()() as db:
+            row = await db.get(Document, uuid.UUID(doc_id))
+            row.status = status
+            await db.commit()
+        response = await client.get(f"/v1/documents/{doc_id}/file", headers=tenant["headers"])
+>       assert response.status_code == 409
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/integration/test_readiness_regressions.py:82: AssertionError
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 12.0, "event": "request", "request_id": "c6eca6628d7741dbac52e0583fa9c7f3", "tenant_id": "11939f57-25d7-4294-8302-46b993a02445", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.760620Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "request_id": "c6eca6628d7741dbac52e0583fa9c7f3", "tenant_id": "11939f57-25d7-4294-8302-46b993a02445", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.760908Z"}
+{"document_id": "5699b4d8-0619-4a4c-813a-c5e9969deb63", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "request_id": "a6bb5869d6a94c3888ebb13db495218b", "tenant_id": "11939f57-25d7-4294-8302-46b993a02445", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:19.776222Z"}
+{"method": "POST", "path": "/v1/collections/a8ff8526-7845-4d4c-af2b-fee3483bfbd9/documents", "status": 202, "latency_ms": 15.4, "event": "request", "request_id": "a6bb5869d6a94c3888ebb13db495218b", "tenant_id": "11939f57-25d7-4294-8302-46b993a02445", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.776804Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/a8ff8526-7845-4d4c-af2b-fee3483bfbd9/documents \"HTTP/1.1 202 Accepted\"", "request_id": "a6bb5869d6a94c3888ebb13db495218b", "tenant_id": "11939f57-25d7-4294-8302-46b993a02445", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.777088Z"}
+{"method": "GET", "path": "/v1/documents/5699b4d8-0619-4a4c-813a-c5e9969deb63/file", "status": 200, "latency_ms": 4.1, "event": "request", "request_id": "563dcb54595446ec8182862daddf0b0d", "tenant_id": "11939f57-25d7-4294-8302-46b993a02445", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.786869Z"}
+{"event": "HTTP Request: GET http://test/v1/documents/5699b4d8-0619-4a4c-813a-c5e9969deb63/file \"HTTP/1.1 200 OK\"", "request_id": "563dcb54595446ec8182862daddf0b0d", "tenant_id": "11939f57-25d7-4294-8302-46b993a02445", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.787090Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 12.0, 'event': 'request', 'request_id': 'c6eca6628d7741dbac52e0583fa9c7f3', 'tenant_id': '11939f57-25d7-4294-8302-46b993a02445', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.760620Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:service.py:154 {'document_id': '5699b4d8-0619-4a4c-813a-c5e9969deb63', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'request_id': 'a6bb5869d6a94c3888ebb13db495218b', 'tenant_id': '11939f57-25d7-4294-8302-46b993a02445', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:19.776222Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/a8ff8526-7845-4d4c-af2b-fee3483bfbd9/documents', 'status': 202, 'latency_ms': 15.4, 'event': 'request', 'request_id': 'a6bb5869d6a94c3888ebb13db495218b', 'tenant_id': '11939f57-25d7-4294-8302-46b993a02445', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.776804Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/a8ff8526-7845-4d4c-af2b-fee3483bfbd9/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.request:logging.py:94 {'method': 'GET', 'path': '/v1/documents/5699b4d8-0619-4a4c-813a-c5e9969deb63/file', 'status': 200, 'latency_ms': 4.1, 'event': 'request', 'request_id': '563dcb54595446ec8182862daddf0b0d', 'tenant_id': '11939f57-25d7-4294-8302-46b993a02445', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.786869Z'}
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/v1/documents/5699b4d8-0619-4a4c-813a-c5e9969deb63/file "HTTP/1.1 200 OK"
+_______________ test_unclassified_original_is_not_served[failed] _______________
+
+client = <httpx.AsyncClient object at 0x7f011ee85df0>
+tenant = {'id': UUID('37152613-2e8c-41ec-8a7c-6123a398a60d'), 'key': 'dqa_live_S9khXfKykYuZUZ4Hl0tyYj7jQs1yfnED', 'prefix': 'S9khXfKy', 'headers': {'Authorization': 'Bearer dqa_live_S9khXfKykYuZUZ4Hl0tyYj7jQs1yfnED'}}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f011ee86ea0>
+status = 'failed'
+
+    @pytest.mark.parametrize("status", ["pending", "processing", "failed"])
+    async def test_unclassified_original_is_not_served(client, tenant, monkeypatch, status):
+        from app.ingestion.tasks import ingest_document
+    
+        monkeypatch.setattr(ingest_document, "delay", lambda *_: None)
+        cid = await collection(client, tenant)
+        doc_id = (await upload(client, tenant, cid)).json()["id"]
+        async with get_sessionmaker()() as db:
+            row = await db.get(Document, uuid.UUID(doc_id))
+            row.status = status
+            await db.commit()
+        response = await client.get(f"/v1/documents/{doc_id}/file", headers=tenant["headers"])
+>       assert response.status_code == 409
+E       assert 200 == 409
+E        +  where 200 = <Response [200 OK]>.status_code
+
+tests/integration/test_readiness_regressions.py:82: AssertionError
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 12.2, "event": "request", "request_id": "c001bc91031c4e5a92a29e60b38cbfb2", "tenant_id": "37152613-2e8c-41ec-8a7c-6123a398a60d", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.820824Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "request_id": "c001bc91031c4e5a92a29e60b38cbfb2", "tenant_id": "37152613-2e8c-41ec-8a7c-6123a398a60d", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.821107Z"}
+{"document_id": "053bdf7f-821f-44cd-ba32-f5fd71df4924", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "request_id": "e30299d8d752490f8e3af98104dc3536", "tenant_id": "37152613-2e8c-41ec-8a7c-6123a398a60d", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:19.836229Z"}
+{"method": "POST", "path": "/v1/collections/8758c565-9b63-4a24-82de-bfd5cb741613/documents", "status": 202, "latency_ms": 15.1, "event": "request", "request_id": "e30299d8d752490f8e3af98104dc3536", "tenant_id": "37152613-2e8c-41ec-8a7c-6123a398a60d", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.836715Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/8758c565-9b63-4a24-82de-bfd5cb741613/documents \"HTTP/1.1 202 Accepted\"", "request_id": "e30299d8d752490f8e3af98104dc3536", "tenant_id": "37152613-2e8c-41ec-8a7c-6123a398a60d", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.836972Z"}
+{"method": "GET", "path": "/v1/documents/053bdf7f-821f-44cd-ba32-f5fd71df4924/file", "status": 200, "latency_ms": 5.4, "event": "request", "request_id": "33f3e77c8aab41b38d49c5efca317cd6", "tenant_id": "37152613-2e8c-41ec-8a7c-6123a398a60d", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.847803Z"}
+{"event": "HTTP Request: GET http://test/v1/documents/053bdf7f-821f-44cd-ba32-f5fd71df4924/file \"HTTP/1.1 200 OK\"", "request_id": "33f3e77c8aab41b38d49c5efca317cd6", "tenant_id": "37152613-2e8c-41ec-8a7c-6123a398a60d", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.848288Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 12.2, 'event': 'request', 'request_id': 'c001bc91031c4e5a92a29e60b38cbfb2', 'tenant_id': '37152613-2e8c-41ec-8a7c-6123a398a60d', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.820824Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:service.py:154 {'document_id': '053bdf7f-821f-44cd-ba32-f5fd71df4924', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'request_id': 'e30299d8d752490f8e3af98104dc3536', 'tenant_id': '37152613-2e8c-41ec-8a7c-6123a398a60d', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:19.836229Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/8758c565-9b63-4a24-82de-bfd5cb741613/documents', 'status': 202, 'latency_ms': 15.1, 'event': 'request', 'request_id': 'e30299d8d752490f8e3af98104dc3536', 'tenant_id': '37152613-2e8c-41ec-8a7c-6123a398a60d', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.836715Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/8758c565-9b63-4a24-82de-bfd5cb741613/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.request:logging.py:94 {'method': 'GET', 'path': '/v1/documents/053bdf7f-821f-44cd-ba32-f5fd71df4924/file', 'status': 200, 'latency_ms': 5.4, 'event': 'request', 'request_id': '33f3e77c8aab41b38d49c5efca317cd6', 'tenant_id': '37152613-2e8c-41ec-8a7c-6123a398a60d', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.847803Z'}
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/v1/documents/053bdf7f-821f-44cd-ba32-f5fd71df4924/file "HTTP/1.1 200 OK"
+__________________ test_demo_cannot_create_extra_collections ___________________
+
+client = <httpx.AsyncClient object at 0x7f010ef2dc40>
+tenant = {'id': UUID('8c41ae13-a62f-4f52-9cb0-785c256e886c'), 'key': 'dqa_live_j0wJyBd4G0vXipJM2pyk8x8isnycQT9K', 'prefix': 'j0wJyBd4', 'headers': {'Authorization': 'Bearer dqa_live_j0wJyBd4G0vXipJM2pyk8x8isnycQT9K'}}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f010ef2ca40>
+
+    async def test_demo_cannot_create_extra_collections(client, tenant, monkeypatch):
+        from app.config import get_settings
+    
+        monkeypatch.setattr(get_settings(), "demo_mode", True)
+        response = await client.post("/v1/collections", json={"name": "Escape"}, headers=tenant["headers"])
+>       assert response.status_code == 403
+E       assert 201 == 403
+E        +  where 201 = <Response [201 Created]>.status_code
+
+tests/integration/test_readiness_regressions.py:92: AssertionError
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 12.0, "event": "request", "request_id": "43cdb0f2ba83432c91e707369ff0f114", "tenant_id": "8c41ae13-a62f-4f52-9cb0-785c256e886c", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:19.882370Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "request_id": "43cdb0f2ba83432c91e707369ff0f114", "tenant_id": "8c41ae13-a62f-4f52-9cb0-785c256e886c", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:19.882610Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 12.0, 'event': 'request', 'request_id': '43cdb0f2ba83432c91e707369ff0f114', 'tenant_id': '8c41ae13-a62f-4f52-9cb0-785c256e886c', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:19.882370Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+________ test_upload_idempotency_rejects_different_collection_and_bytes ________
+
+client = <httpx.AsyncClient object at 0x7f010ef2fe90>
+tenant = {'id': UUID('a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3'), 'key': 'dqa_live_J6ZtZyFjGs4dNiDGZaLYlB2tophYn6V4', 'prefix': 'J6ZtZyFj', 'headers': {'Authorization': 'Bearer dqa_live_J6ZtZyFjGs4dNiDGZaLYlB2tophYn6V4'}}
+
+    async def test_upload_idempotency_rejects_different_collection_and_bytes(client, tenant):
+        first, second = await collection(client, tenant), await collection(client, tenant, "Other")
+        original = await upload(client, tenant, first, key="one")
+        replay = await upload(client, tenant, first, key="one")
+        assert replay.json() == original.json()
+        assert replay.headers["x-idempotency-replay"] == "true"
+        for cid, content in [(second, CONTENT), (first, CONTENT + b" changed")]:
+            changed = await upload(client, tenant, cid, content, key="one")
+>           assert changed.status_code == 422
+E           assert 202 == 422
+E            +  where 202 = <Response [202 Accepted]>.status_code
+
+tests/integration/test_readiness_regressions.py:115: AssertionError
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 14.4, "event": "request", "request_id": "695984d8d3454496a0000d057540b4b0", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:20.016219Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "request_id": "695984d8d3454496a0000d057540b4b0", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:20.016550Z"}
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 8.0, "event": "request", "request_id": "119cc72c1182498b81264187a08db761", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:20.025073Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "request_id": "119cc72c1182498b81264187a08db761", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:20.025325Z"}
+{"document_id": "035bee94-1373-4c21-918d-efb4acaa3140", "chunks": 1, "event": "ingest_done", "request_id": "f49ca8fec4324f51bd55f52f4beb674d", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:20.057112Z"}
+{"collection_id": "cf620ff6-5356-47f5-8c81-a4d8248815bc", "count": 3, "questions": ["When do unused vacation days expire? [employee]", "Who approves business trips? [employee]", "What is the travel allowance for France? [employee]"], "event": "suggestions_stored", "request_id": "f49ca8fec4324f51bd55f52f4beb674d", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "docqa.suggestions", "timestamp": "2026-09-10T13:13:20.102687Z"}
+{"event": "Task generation.suggest_questions[4045fa91-bf92-44ce-a952-e5421f39d9ae] succeeded in 0.04243752598995343s: None", "request_id": "f49ca8fec4324f51bd55f52f4beb674d", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:13:20.102939Z"}
+{"event": "Task ingestion.ingest_document[5d317b7f-0394-4820-b3f2-65bf83a0aa53] succeeded in 0.060525416978634894s: None", "request_id": "f49ca8fec4324f51bd55f52f4beb674d", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:13:20.103071Z"}
+{"document_id": "035bee94-1373-4c21-918d-efb4acaa3140", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "request_id": "f49ca8fec4324f51bd55f52f4beb674d", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:13:20.103125Z"}
+{"method": "POST", "path": "/v1/collections/cf620ff6-5356-47f5-8c81-a4d8248815bc/documents", "status": 202, "latency_ms": 78.2, "event": "request", "request_id": "f49ca8fec4324f51bd55f52f4beb674d", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:20.103999Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/cf620ff6-5356-47f5-8c81-a4d8248815bc/documents \"HTTP/1.1 202 Accepted\"", "request_id": "f49ca8fec4324f51bd55f52f4beb674d", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:20.104228Z"}
+{"method": "POST", "path": "/v1/collections/cf620ff6-5356-47f5-8c81-a4d8248815bc/documents", "status": 202, "latency_ms": 4.8, "event": "request", "request_id": "9da7c0266ffd47198909ede7128d5ffc", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:20.109458Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/cf620ff6-5356-47f5-8c81-a4d8248815bc/documents \"HTTP/1.1 202 Accepted\"", "request_id": "9da7c0266ffd47198909ede7128d5ffc", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:20.109852Z"}
+{"method": "POST", "path": "/v1/collections/0fdc94db-acb4-485a-a0fe-b7a04023b337/documents", "status": 202, "latency_ms": 4.2, "event": "request", "request_id": "39f30ff56ff040d7ac3f4895d4ad8524", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:13:20.114739Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/0fdc94db-acb4-485a-a0fe-b7a04023b337/documents \"HTTP/1.1 202 Accepted\"", "request_id": "39f30ff56ff040d7ac3f4895d4ad8524", "tenant_id": "a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:13:20.114987Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 14.4, 'event': 'request', 'request_id': '695984d8d3454496a0000d057540b4b0', 'tenant_id': 'a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:20.016219Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 8.0, 'event': 'request', 'request_id': '119cc72c1182498b81264187a08db761', 'tenant_id': 'a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:20.025073Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:tasks.py:194 {'document_id': '035bee94-1373-4c21-918d-efb4acaa3140', 'chunks': 1, 'event': 'ingest_done', 'request_id': 'f49ca8fec4324f51bd55f52f4beb674d', 'tenant_id': 'a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:20.057112Z'}
+INFO     docqa.suggestions:tasks.py:91 {'collection_id': 'cf620ff6-5356-47f5-8c81-a4d8248815bc', 'count': 3, 'questions': ['When do unused vacation days expire? [employee]', 'Who approves business trips? [employee]', 'What is the travel allowance for France? [employee]'], 'event': 'suggestions_stored', 'request_id': 'f49ca8fec4324f51bd55f52f4beb674d', 'tenant_id': 'a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3', 'level': 'info', 'logger': 'docqa.suggestions', 'timestamp': '2026-09-10T13:13:20.102687Z'}
+INFO     celery.app.trace:trace.py:128 Task generation.suggest_questions[4045fa91-bf92-44ce-a952-e5421f39d9ae] succeeded in 0.04243752598995343s: None
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[5d317b7f-0394-4820-b3f2-65bf83a0aa53] succeeded in 0.060525416978634894s: None
+INFO     docqa.ingestion:service.py:154 {'document_id': '035bee94-1373-4c21-918d-efb4acaa3140', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'request_id': 'f49ca8fec4324f51bd55f52f4beb674d', 'tenant_id': 'a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:13:20.103125Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/cf620ff6-5356-47f5-8c81-a4d8248815bc/documents', 'status': 202, 'latency_ms': 78.2, 'event': 'request', 'request_id': 'f49ca8fec4324f51bd55f52f4beb674d', 'tenant_id': 'a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:20.103999Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/cf620ff6-5356-47f5-8c81-a4d8248815bc/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/cf620ff6-5356-47f5-8c81-a4d8248815bc/documents', 'status': 202, 'latency_ms': 4.8, 'event': 'request', 'request_id': '9da7c0266ffd47198909ede7128d5ffc', 'tenant_id': 'a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:20.109458Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/cf620ff6-5356-47f5-8c81-a4d8248815bc/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/0fdc94db-acb4-485a-a0fe-b7a04023b337/documents', 'status': 202, 'latency_ms': 4.2, 'event': 'request', 'request_id': '39f30ff56ff040d7ac3f4895d4ad8524', 'tenant_id': 'a8d15ef9-7ceb-4a93-9bf3-0d8e13b5ebb3', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:13:20.114739Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/0fdc94db-acb4-485a-a0fe-b7a04023b337/documents "HTTP/1.1 202 Accepted"
+=============================== warnings summary ===============================
+tests/integration/test_readiness_regressions.py::test_readonly_delete_preserves_document_chunks_and_original
+  /home/horten/VS Code Projects/docqa/.venv/lib/python3.12/site-packages/testcontainers/redis/__init__.py:46: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready(redis.exceptions.ConnectionError)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_readiness_regressions.py::test_readonly_delete_preserves_document_chunks_and_original
+FAILED tests/integration/test_readiness_regressions.py::test_wipe_keeps_other_collection_file_and_removes_final_reference
+FAILED tests/integration/test_readiness_regressions.py::test_unclassified_original_is_not_served[pending]
+FAILED tests/integration/test_readiness_regressions.py::test_unclassified_original_is_not_served[processing]
+FAILED tests/integration/test_readiness_regressions.py::test_unclassified_original_is_not_served[failed]
+FAILED tests/integration/test_readiness_regressions.py::test_demo_cannot_create_extra_collections
+FAILED tests/integration/test_readiness_regressions.py::test_upload_idempotency_rejects_different_collection_and_bytes
+7 failed, 1 passed, 1 warning in 41.14s

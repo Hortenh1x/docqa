@@ -163,7 +163,7 @@ async def test_empty_llm_stream_becomes_refusal(monkeypatch):
     events = [
         event
         async for event in service.run_query(
-            uuid.uuid4(), uuid.uuid4(), "How many days?", _settings()
+            uuid.uuid4(), uuid.uuid4(), "How many days?", _settings(), data_version=0
         )
     ]
 
@@ -184,11 +184,12 @@ def _settings(**overrides) -> Settings:
 
 
 def test_hosted_llm_endpoint_requires_api_key():
-    settings = _settings(
-        llm_provider="openai_compat", llm_base_url="https://api.deepseek.com", llm_api_key=None
-    )
-    with pytest.raises(RuntimeError, match="LLM_API_KEY"):
-        get_llm_provider(settings)
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError, match="LLM_API_KEY"):
+        _settings(
+            llm_provider="openai_compat", llm_base_url="https://api.deepseek.com", llm_api_key=None
+        )
 
 
 def test_local_llm_endpoint_may_go_keyless():

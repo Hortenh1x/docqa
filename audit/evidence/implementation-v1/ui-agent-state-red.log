@@ -1,0 +1,55 @@
+FAIL keyless reload never restores a previous tenant answer
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:162:73
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:387:13
+FAIL reader explains pending document response without exposing the file
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('alert').filter({ hasText: 'This document is still being processed. Close the reader and try again when its status is ready.' }) to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:340:68
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:387:13
+FAIL reader explains processing document response without exposing the file
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('alert').filter({ hasText: 'This document is still being processed. Close the reader and try again when its status is ready.' }) to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:340:68
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:387:13
+FAIL reader explains failed document response without exposing the file
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('alert').filter({ hasText: 'Processing failed. This file is unavailable. Check the document status for details.' }) to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:340:68
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:387:13
+{
+  "demo": false,
+  "passed": 0,
+  "total": 4,
+  "results": [
+    {
+      "name": "keyless reload never restores a previous tenant answer",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:162:73\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:387:13"
+    },
+    {
+      "name": "reader explains pending document response without exposing the file",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('alert').filter({ hasText: 'This document is still being processed. Close the reader and try again when its status is ready.' }) to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:340:68\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:387:13"
+    },
+    {
+      "name": "reader explains processing document response without exposing the file",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('alert').filter({ hasText: 'This document is still being processed. Close the reader and try again when its status is ready.' }) to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:340:68\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:387:13"
+    },
+    {
+      "name": "reader explains failed document response without exposing the file",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('alert').filter({ hasText: 'Processing failed. This file is unavailable. Check the document status for details.' }) to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:340:68\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:387:13"
+    }
+  ]
+}

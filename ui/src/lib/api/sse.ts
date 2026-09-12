@@ -1,4 +1,4 @@
-import { API_BASE, ApiError, getApiKey } from "./client";
+import { apiFetch, ApiError } from "./client";
 import type { AccessInfo, DonePayload, Problem, Source } from "./types";
 
 /** Typed SSE events as the query endpoint emits them. */
@@ -7,7 +7,7 @@ export type QueryEvent =
   | { event: "sources"; data: { sources: Source[] } }
   | { event: "delta"; data: { text: string } }
   | { event: "done"; data: DonePayload }
-  | { event: "error"; data: { code: string; message: string } };
+  | { event: "error"; data: { code: string; message: string; reset_at?: string; retry_after_s?: number } };
 
 /**
  * SSE over POST: EventSource can't POST, so we read the body stream manually.
@@ -18,12 +18,8 @@ export async function streamQuery(
   onEvent: (event: QueryEvent) => void,
   signal: AbortSignal,
 ): Promise<void> {
-  const res = await fetch(`${API_BASE}/v1/query`, {
+  const res = await apiFetch("/v1/query", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${getApiKey()}`,
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({ ...body, stream: true }),
     signal,
   });

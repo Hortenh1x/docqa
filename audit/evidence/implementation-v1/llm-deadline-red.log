@@ -1,0 +1,23 @@
+....F                                                                    [100%]
+=================================== FAILURES ===================================
+__________________ test_heartbeat_stream_has_a_total_deadline __________________
+
+    async def test_heartbeat_stream_has_a_total_deadline():
+        import asyncio
+    
+        class Heartbeats(httpx.AsyncByteStream):
+            async def __aiter__(self):
+                for _ in range(100):
+                    await asyncio.sleep(0.01)
+                    yield b": heartbeat\n\n"
+    
+        llm = make_llm(lambda _: httpx.Response(200, stream=Heartbeats()))
+        llm.total_timeout_s = 0.03
+>       with pytest.raises(GenerationError, match="deadline"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE GenerationError
+
+tests/unit/test_llm_openai_compat.py:88: Failed
+=========================== short test summary info ============================
+FAILED tests/unit/test_llm_openai_compat.py::test_heartbeat_stream_has_a_total_deadline
+1 failed, 4 passed in 1.17s

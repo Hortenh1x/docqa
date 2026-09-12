@@ -75,6 +75,7 @@ def app_env(_containers, tmp_path_factory):
 
     celery_app.conf.task_always_eager = True
     celery_app.conf.task_eager_propagates = True
+    celery_app.conf.broker_url = os.environ["REDIS_URL"]
 
     yield
 

@@ -1,0 +1,281 @@
+{
+  "timestamp": "2026-09-10T14:20:46.341Z",
+  "url": "http://127.0.0.1:18127",
+  "mode": "Local production UI; synthetic API fixture; Chromium",
+  "methodology": {
+    "reflow": "Measure document scrollWidth versus layout viewport at 1280, 640, and 320 CSS pixels. Locally scrollable document tables/source rails are recorded separately.",
+    "zoom": "640 CSS-pixel viewport models the layout reflow of a 1280-pixel viewport at 200% page zoom. Text-only resize separately doubles each rendered HTML element’s computed font size and line height without increasing the viewport or layout spacing. This is an injected resize stress test, not a claim of native browser text-zoom equivalence.",
+    "contrast": "Read computed foreground/background colors, resolve CSS colors via canvas, alpha-composite ancestor backgrounds, apply sRGB relative-luminance contrast formula. Compare small non-bold text with a 4.5:1 benchmark; exclude disabled controls. No OCR or anti-aliased edge pixels are used.",
+    "names": "Capture browser accessibility snapshots and inspect DOM-provided labels/live text. No assistive technology was run."
+  },
+  "checks": [],
+  "contrast": [],
+  "keyboard": [
+    {
+      "name": "Ask",
+      "pass": true,
+      "missing": [],
+      "seen": [
+        {
+          "tag": "A",
+          "role": null,
+          "name": "DocQA",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 76,
+          "width": 59.8
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Ask",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 757.6,
+          "width": 44.7
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Library",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 806.4,
+          "width": 66.4
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Usage",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 876.8,
+          "width": 62.4
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Collection",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 151.8,
+          "width": 256
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Access role",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 501.6,
+          "width": 240
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "set API key",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 1141,
+          "width": 63
+        },
+        {
+          "tag": "TEXTAREA",
+          "role": null,
+          "name": "Your question",
+          "outlineStyle": "none",
+          "outlineWidth": "1px",
+          "x": 285,
+          "width": 648.8
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Ask",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 941.8,
+          "width": 53.3
+        }
+      ]
+    },
+    {
+      "name": "Library",
+      "pass": true,
+      "missing": [],
+      "seen": [
+        {
+          "tag": "A",
+          "role": null,
+          "name": "DocQA",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 76,
+          "width": 59.8
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Ask",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 757.6,
+          "width": 44.7
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Library",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 806.4,
+          "width": 66.4
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Usage",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 876.8,
+          "width": 62.4
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Collection",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 151.8,
+          "width": 256
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Access role",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 501.6,
+          "width": 240
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "set API key",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 1141,
+          "width": 63
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Choose a file",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 581.6,
+          "width": 116.7
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "tenant-A.md",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 293,
+          "width": 79.2
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Delete tenant-A.md",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 938.6,
+          "width": 52.4
+        }
+      ]
+    },
+    {
+      "name": "Usage",
+      "pass": true,
+      "missing": [],
+      "seen": [
+        {
+          "tag": "A",
+          "role": null,
+          "name": "DocQA",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 76,
+          "width": 59.8
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Ask",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 757.6,
+          "width": 44.7
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Library",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 806.4,
+          "width": 66.4
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Usage",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 876.8,
+          "width": 62.4
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Collection",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 151.8,
+          "width": 256
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Access role",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 501.6,
+          "width": 240
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "set API key",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 1141,
+          "width": 63
+        }
+      ]
+    }
+  ],
+  "errors": [
+    "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(await page.getByLabel('Your question').evaluate(el => el === document.activeElement))\n\n    at /home/horten/VS Code Projects/docqa/audit/ui-accessibility.cjs:145:7"
+  ],
+  "failures": [],
+  "summary": {
+    "checks": 0,
+    "contrastPairs": 0,
+    "keyboardRoutes": 3,
+    "failures": 0,
+    "executionErrors": 1
+  }
+}

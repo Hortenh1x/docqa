@@ -1,0 +1,2 @@
+app/core/idempotency.py:107: error: Argument 1 to "startswith" of "bytes" has incompatible type "str"; expected "Buffer | tuple[Buffer, ...]"  [arg-type]
+Found 1 error in 1 file (checked 82 source files)

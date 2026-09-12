@@ -1,0 +1,9 @@
+
+> docqa-ui@0.1.0 build
+> next build
+
+ ⨯ Failed to load next.config.ts, see more info here https://nextjs.org/docs/messages/next-config-error
+
+> Build error occurred
+Error: Account builds must not contain NEXT_PUBLIC_DEMO_API_KEY.
+    at Object.<anonymous> (next.config.compiled.js:132:11)

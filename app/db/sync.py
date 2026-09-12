@@ -19,7 +19,9 @@ _sessionmaker: sessionmaker[Session] | None = None
 def get_sync_engine() -> Engine:
     global _engine
     if _engine is None:
-        _engine = create_engine(get_settings().sync_database_url, pool_pre_ping=True)
+        _engine = create_engine(
+            get_settings().sync_database_url, pool_pre_ping=True, hide_parameters=True
+        )
     return _engine
 
 

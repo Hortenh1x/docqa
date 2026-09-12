@@ -1,0 +1,34 @@
+{
+  "release": "/opt/docqa-releases/prod-20260912-google",
+  "env_mode": "0o600",
+  "migration": "0012",
+  "synchronous_commit": "on",
+  "synchronous_standby_names": "FIRST 1 (docqa_standby)",
+  "replication": "streaming:sync",
+  "documents": 9778,
+  "chunks": 295856,
+  "monitoring": {
+    "main": {
+      "enabled": true,
+      "dryrun_exit": 0
+    },
+    "standby": {
+      "enabled": true,
+      "dryrun_exit": 0,
+      "status": "ok"
+    }
+  },
+  "prior_backup": {
+    "status": "ok",
+    "bundle": "/home/ubuntu/backups/docqa-complete/20260912T121233Z",
+    "migration": "0012",
+    "completed_at": "2026-09-12T12:17:07.633778+00:00"
+  },
+  "prior_offhost_snapshot": {
+    "status": "ok",
+    "snapshot_id": "a7ba2b6b8f7de3f3cfa65db88106c2e0352a836c47c1c6c67077d560706baeef",
+    "completed_at": "2026-09-12T12:27:46.460372+00:00"
+  },
+  "checked_at": "2026-09-12T12:56:21.114714+00:00",
+  "status": "PASS"
+}

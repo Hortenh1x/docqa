@@ -1,0 +1,32 @@
+DocQA: document questions and answers with source citations.
+Copyright (C) 2026 Dmytro Bolibok
+
+DocQA's original application code is licensed under the GNU Affero General
+Public License, version 3 only (SPDX-License-Identifier: AGPL-3.0-only).
+See LICENSE for the complete, unmodified license text.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for details.
+
+Third-party dependencies, fonts and other separately licensed material retain
+their own copyright notices and licenses. This notice does not relicense them.
+The font license texts are preserved in ui/public/licenses/. Dependency versions
+and their upstream packages are identified by uv.lock and ui/package-lock.json.
+
+The public About page offers the corresponding source archive of each prepared
+release, including local changes not yet in the GitHub repository. Uploaded
+documents, private configuration, operational data and external text corpora
+are not part of that software source offer.
+
+Project: https://github.com/Hortenh1x/docqa
+Contact: Dmytro Bolibok <dmytro.bolibok@gmail.com>, Germany
+
+Google sign-in mark
+-------------------
+ui/public/branding/google-g.png is the unmodified Google G image supplied at
+https://developers.google.com/static/identity/images/g-logo.png
+for use under the Sign in with Google branding guidelines:
+https://developers.google.com/identity/branding-guidelines
+Google and its logo are trademarks of Google LLC. This project's AGPL license
+does not grant rights to Google's trademarks.

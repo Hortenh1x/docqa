@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { getApiKey, setApiKey } from "@/lib/api/client";
-import { useCollections, useRole } from "@/app/providers";
+import { ACCOUNTS_ENABLED, getApiKey } from "@/lib/api/client";
+import { useChangeApiKey, useCollections, useRole } from "@/app/providers";
 import { Select } from "@/components/Select";
+import { useAccount } from "@/features/account/context";
+import { BudgetNotice } from "@/features/account/BudgetNotice";
 import { PERSONAS, roleName } from "@/lib/access";
 
 function NavLink({ href, label }: { href: string; label: string }) {
@@ -25,6 +27,7 @@ function NavLink({ href, label }: { href: string; label: string }) {
 }
 
 function KeyField() {
+  const changeApiKey = useChangeApiKey();
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState("");
   if (!editing) {
@@ -42,9 +45,9 @@ function KeyField() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        setApiKey(value);
+        changeApiKey(value);
+        setValue("");
         setEditing(false);
-        location.reload(); // simplest way to refetch everything with the new key
       }}
       className="flex items-center gap-1"
     >
@@ -68,7 +71,7 @@ function KeyField() {
 function RoleSwitch() {
   const { roles, role, setRole } = useRole();
   const { selected } = useCollections();
-  if (!roles.length) return null;
+  if (!roles.length || (ACCOUNTS_ENABLED && selected?.owned)) return null;
   const nothingRestricted = !!selected && selected.access_labels.length === 0;
   return (
     <label
@@ -79,7 +82,7 @@ function RoleSwitch() {
           : "Sections restricted to other groups are hidden from this role."
       }
     >
-      <span className="hidden sm:inline">Viewing as</span>
+      <span className="hidden sm:inline">{ACCOUNTS_ENABLED ? "Demo role" : "Viewing as"}</span>
       <span className="visually-hidden">Access role</span>
       <Select
         value={role}
@@ -100,6 +103,7 @@ function RoleSwitch() {
 
 export function TopBar() {
   const { collections, selected, selectById } = useCollections();
+  const { session, signOut } = useAccount();
 
   return (
     // one row from the small breakpoint up; below it the two selects drop to their own
@@ -116,7 +120,7 @@ export function TopBar() {
           <NavLink href="/usage" label="Usage" />
         </nav>
 
-        <div className="order-3 flex w-full min-w-0 items-center gap-2 sm:order-2 sm:w-auto sm:gap-4">
+        <div className="order-3 flex w-full min-w-0 max-w-full flex-wrap items-center gap-2 sm:order-2 sm:w-auto sm:gap-4">
           <label className="flex min-w-0 flex-1 items-center gap-1.5 text-sm text-ink-soft sm:flex-none">
             <span className="visually-hidden">Collection</span>
             <Select
@@ -127,7 +131,7 @@ export function TopBar() {
             >
               {collections.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name} · {c.document_count} {c.document_count === 1 ? "doc" : "docs"}
+                  {ACCOUNTS_ENABLED ? (c.owned ? "Private · " : "Demo · ") : ""}{c.name} · {c.document_count} {c.document_count === 1 ? "doc" : "docs"}
                 </option>
               ))}
             </Select>
@@ -138,12 +142,18 @@ export function TopBar() {
 
         {/* builds with a baked-in NEXT_PUBLIC_DEMO_API_KEY never ask for a key —
             the field exists only so a keyless build has a way to authenticate */}
-        {!process.env.NEXT_PUBLIC_DEMO_API_KEY && (
+        {!ACCOUNTS_ENABLED && !process.env.NEXT_PUBLIC_DEMO_API_KEY && (
           <div className="order-4 ml-auto">
             <KeyField />
           </div>
         )}
+        {ACCOUNTS_ENABLED && (
+          <div className="order-4 flex min-w-0 max-w-full flex-wrap items-center gap-3 text-xs sm:ml-auto">
+            {session?.user ? <><span className="max-w-48 truncate" title={session.user.email}>{session.user.email}</span><button type="button" onClick={() => void signOut()} className="rounded-[6px] border border-hairline px-2 py-1.5 text-ink-soft hover:text-ink">Sign out</button></> : <Link href="/account" className="rounded-[6px] border border-hairline px-3 py-1.5 text-ink hover:border-stamp/40">Sign in</Link>}
+          </div>
+        )}
       </div>
+      <BudgetNotice />
     </header>
   );
 }

@@ -1,0 +1,68 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________ test_wipe_removes_questions_and_cached_answers ________________
+
+client = <httpx.AsyncClient object at 0x7efefc39c230>
+tenant = {'id': UUID('c7626ded-20de-4745-9b04-d622870d85f2'), 'key': 'dqa_live_Lkg47413GV2XhBLw2FIcY9Z9bxtMsUoX', 'prefix': 'Lkg47413', 'headers': {'Authorization': 'Bearer dqa_live_Lkg47413GV2XhBLw2FIcY9Z9bxtMsUoX'}}
+
+    async def test_wipe_removes_questions_and_cached_answers(client, tenant):
+        from app.cli import wipe_collection
+        from app.core.redis import get_redis
+    
+        cid = await collection(client, tenant)
+        await upload(client, tenant, cid)
+        response = await client.post("/v1/query", json={"collection_id": cid, "question": "How many vacation days?", "stream": False}, headers={**tenant["headers"], "Idempotency-Key": "private-question"})
+        assert response.status_code == 200
+        await wipe_collection(uuid.UUID(cid))
+        async with get_sessionmaker()() as db:
+>           assert await db.scalar(select(func.count(Query.id)).where(Query.collection_id == uuid.UUID(cid))) == 0
+E           assert 1 == 0
+
+tests/integration/test_cleanup.py:20: AssertionError
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, core tables: tenants, api_keys, collections, documents
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, chunks with hnsw and gin indexes
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, queries and query_citations
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, collections read_only flag
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, collections suggested_questions
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, access labels on chunks, role on queries
+INFO  [alembic.runtime.migration] Running upgrade 0006 -> 0007, Durable ingestion attempts and leases.
+----------------------------- Captured stdout call -----------------------------
+wiped 1 documents from 'sandbox'
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 16.9, "event": "request", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "c3d26de30c4348c8bc8af966b7c72219", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:22:15.239448Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "c3d26de30c4348c8bc8af966b7c72219", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:22:15.239921Z"}
+{"document_id": "c54e62ad-aea0-489d-b026-bee3283f377b", "chunks": 1, "event": "ingest_done", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "d3a155dc70044508bb79f641b94cf79f", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:22:15.684821Z"}
+{"collection_id": "e710ae40-3b33-458a-acf3-36a0cf929222", "count": 3, "questions": ["When do unused vacation days expire? [employee]", "Who approves business trips? [employee]", "What is the travel allowance for France? [employee]"], "event": "suggestions_stored", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "d3a155dc70044508bb79f641b94cf79f", "level": "info", "logger": "docqa.suggestions", "timestamp": "2026-09-10T13:22:15.736964Z"}
+{"event": "Task generation.suggest_questions[74447041-10f2-4c7f-a9e0-495054fc4699] succeeded in 0.05290244898060337s: None", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "d3a155dc70044508bb79f641b94cf79f", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:22:15.742423Z"}
+{"event": "Task ingestion.ingest_document[33529427-d94e-4083-bb1a-b6b4fcfe73b0] succeeded in 0.4689986220037099s: None", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "d3a155dc70044508bb79f641b94cf79f", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:22:15.742578Z"}
+{"document_id": "c54e62ad-aea0-489d-b026-bee3283f377b", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "d3a155dc70044508bb79f641b94cf79f", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:22:15.742640Z"}
+{"method": "POST", "path": "/v1/collections/e710ae40-3b33-458a-acf3-36a0cf929222/documents", "status": 202, "latency_ms": 503.0, "event": "request", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "d3a155dc70044508bb79f641b94cf79f", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:22:15.743340Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/e710ae40-3b33-458a-acf3-36a0cf929222/documents \"HTTP/1.1 202 Accepted\"", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "d3a155dc70044508bb79f641b94cf79f", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:22:15.743580Z"}
+{"query_id": "c8915ed3-0bfd-429e-8232-d97b4f8326e0", "role": "employee", "citations": [1], "latency_ms": 41, "event": "query_answered", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "1eed6ef64bba47019d599b06eefdfca5", "level": "info", "logger": "docqa.query", "timestamp": "2026-09-10T13:22:15.789281Z"}
+{"method": "POST", "path": "/v1/query", "status": 200, "latency_ms": 54.1, "event": "request", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "1eed6ef64bba47019d599b06eefdfca5", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:22:15.798002Z"}
+{"event": "HTTP Request: POST http://test/v1/query \"HTTP/1.1 200 OK\"", "tenant_id": "c7626ded-20de-4745-9b04-d622870d85f2", "request_id": "1eed6ef64bba47019d599b06eefdfca5", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:22:15.798378Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 16.9, 'event': 'request', 'tenant_id': 'c7626ded-20de-4745-9b04-d622870d85f2', 'request_id': 'c3d26de30c4348c8bc8af966b7c72219', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:22:15.239448Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:tasks.py:238 {'document_id': 'c54e62ad-aea0-489d-b026-bee3283f377b', 'chunks': 1, 'event': 'ingest_done', 'tenant_id': 'c7626ded-20de-4745-9b04-d622870d85f2', 'request_id': 'd3a155dc70044508bb79f641b94cf79f', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:22:15.684821Z'}
+INFO     docqa.suggestions:tasks.py:91 {'collection_id': 'e710ae40-3b33-458a-acf3-36a0cf929222', 'count': 3, 'questions': ['When do unused vacation days expire? [employee]', 'Who approves business trips? [employee]', 'What is the travel allowance for France? [employee]'], 'event': 'suggestions_stored', 'tenant_id': 'c7626ded-20de-4745-9b04-d622870d85f2', 'request_id': 'd3a155dc70044508bb79f641b94cf79f', 'level': 'info', 'logger': 'docqa.suggestions', 'timestamp': '2026-09-10T13:22:15.736964Z'}
+INFO     celery.app.trace:trace.py:128 Task generation.suggest_questions[74447041-10f2-4c7f-a9e0-495054fc4699] succeeded in 0.05290244898060337s: None
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[33529427-d94e-4083-bb1a-b6b4fcfe73b0] succeeded in 0.4689986220037099s: None
+INFO     docqa.ingestion:service.py:176 {'document_id': 'c54e62ad-aea0-489d-b026-bee3283f377b', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'tenant_id': 'c7626ded-20de-4745-9b04-d622870d85f2', 'request_id': 'd3a155dc70044508bb79f641b94cf79f', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:22:15.742640Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/e710ae40-3b33-458a-acf3-36a0cf929222/documents', 'status': 202, 'latency_ms': 503.0, 'event': 'request', 'tenant_id': 'c7626ded-20de-4745-9b04-d622870d85f2', 'request_id': 'd3a155dc70044508bb79f641b94cf79f', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:22:15.743340Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/e710ae40-3b33-458a-acf3-36a0cf929222/documents "HTTP/1.1 202 Accepted"
+INFO     docqa.query:service.py:330 {'query_id': 'c8915ed3-0bfd-429e-8232-d97b4f8326e0', 'role': 'employee', 'citations': [1], 'latency_ms': 41, 'event': 'query_answered', 'tenant_id': 'c7626ded-20de-4745-9b04-d622870d85f2', 'request_id': '1eed6ef64bba47019d599b06eefdfca5', 'level': 'info', 'logger': 'docqa.query', 'timestamp': '2026-09-10T13:22:15.789281Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/query', 'status': 200, 'latency_ms': 54.1, 'event': 'request', 'tenant_id': 'c7626ded-20de-4745-9b04-d622870d85f2', 'request_id': '1eed6ef64bba47019d599b06eefdfca5', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:22:15.798002Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/query "HTTP/1.1 200 OK"
+=============================== warnings summary ===============================
+tests/integration/test_cleanup.py::test_wipe_removes_questions_and_cached_answers
+  /home/horten/VS Code Projects/docqa/.venv/lib/python3.12/site-packages/testcontainers/redis/__init__.py:46: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready(redis.exceptions.ConnectionError)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_cleanup.py::test_wipe_removes_questions_and_cached_answers
+1 failed, 1 warning in 10.53s

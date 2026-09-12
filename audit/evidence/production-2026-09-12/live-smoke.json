@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "public_collections": 6,
+  "documents": 9778,
+  "registration_available": false,
+  "guest_mutation_status": 401,
+  "json_query": "PASS",
+  "sse_query": "PASS",
+  "spoofed_forwarded_ip_does_not_reset_budget": true,
+  "final_budget": {
+    "enabled": true,
+    "limit_usd": "0.50",
+    "spent_usd": "0.00655588",
+    "reserved_usd": "0",
+    "remaining_usd": "0.49344412",
+    "reset_at": "2026-09-13T00:00:00+00:00",
+    "limited_by": "ip"
+  },
+  "source_download_sha256": "5b3ae07786da17b54d2ff2b00c4d3d0d2eacc8bbf80d3ff1350304a872c3ce76"
+}

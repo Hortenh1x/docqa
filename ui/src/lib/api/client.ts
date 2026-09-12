@@ -5,15 +5,69 @@ import type {
   Problem,
   Role,
   UsageSummary,
+  AccountSession,
+  Budget,
+  SiteInfo,
 } from "./types";
 
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 
 /** The key lives in tab memory only — deliberately not persisted anywhere. */
-let apiKey = process.env.NEXT_PUBLIC_DEMO_API_KEY ?? "";
+export const ACCOUNTS_ENABLED = process.env.NEXT_PUBLIC_ACCOUNTS_ENABLED === "true";
+let apiKey = ACCOUNTS_ENABLED ? "" : process.env.NEXT_PUBLIC_DEMO_API_KEY ?? "";
+let requests = new AbortController();
+
+export function abortRequests() {
+  requests.abort();
+  requests = new AbortController();
+}
+
+let browserSession: AccountSession | null = null;
+let sessionHandler: ((session: AccountSession | null) => void) | null = null;
+export function onSessionChange(handler: ((session: AccountSession | null) => void) | null) {
+  sessionHandler = handler;
+}
+export function acceptSession(
+  session: AccountSession | null,
+  { notify = true }: { notify?: boolean } = {},
+) {
+  abortRequests();
+  browserSession = session;
+  if (notify) sessionHandler?.(session);
+}
+const identity = (session: AccountSession | null) =>
+  `${session?.user?.id ?? "guest"}:${session?.user?.email_verified ?? false}`;
+
+export async function fetchSession(): Promise<AccountSession> {
+  const signal = requests.signal;
+  const res = await fetch(`${API_BASE}/v1/auth/session`, {
+    credentials: "include", cache: "no-store", signal,
+  });
+  if (!res.ok) throw await toApiError(res);
+  const session = await res.json() as AccountSession;
+  signal.throwIfAborted();
+  return session;
+}
+
+/** Revalidate before writes so an old tab cannot act as a newly signed-in account. */
+async function mutationSession(): Promise<string> {
+  if (!browserSession) throw new ApiError(401, { detail: "Your session is loading. Try again." });
+  const current = await fetchSession().catch((error: unknown) => {
+    if (error instanceof ApiError && error.code === "invalid_session") acceptSession(null);
+    throw error;
+  });
+  if (identity(current) !== identity(browserSession)) {
+    acceptSession(current);
+    throw new DOMException("Account changed. Please repeat the action.", "AbortError");
+  }
+  browserSession = current;
+  if (!current.csrf_token) throw new ApiError(503, { detail: "Browser accounts are unavailable." });
+  return current.csrf_token;
+}
 
 export function setApiKey(key: string) {
+  abortRequests();
   apiKey = key.trim();
 }
 
@@ -49,13 +103,32 @@ async function toApiError(res: Response): Promise<ApiError> {
   return new ApiError(res.status, problem, retryAfter ? Number(retryAfter) : null);
 }
 
-export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+/** Every request belongs to the current key, including streams and file downloads. */
+export async function apiFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const requestSignal = requests.signal;
   const headers = new Headers(init.headers);
-  headers.set("Authorization", `Bearer ${apiKey}`);
-  if (init.body && typeof init.body === "string") {
-    headers.set("Content-Type", "application/json");
+  if (ACCOUNTS_ENABLED) {
+    headers.delete("Authorization");
+    if (!["GET", "HEAD"].includes((init.method ?? "GET").toUpperCase())) {
+      headers.set("X-CSRF-Token", await mutationSession());
+    }
+  } else headers.set("Authorization", `Bearer ${apiKey}`);
+  requestSignal.throwIfAborted();
+  if (init.body && typeof init.body === "string") headers.set("Content-Type", "application/json");
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...init, headers,
+    ...(ACCOUNTS_ENABLED ? { credentials: "include" as const, cache: "no-store" as const } : {}),
+    signal: init.signal ? AbortSignal.any([init.signal, requestSignal]) : requestSignal,
+  });
+  if (ACCOUNTS_ENABLED && res.status === 401) {
+    const problem = await res.clone().json().catch(() => ({})) as Problem;
+    if (problem.code === "invalid_session") acceptSession(null);
   }
-  const res = await fetch(`${API_BASE}${path}`, { ...init, headers });
+  return res;
+}
+
+export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const res = await apiFetch(path, init);
   if (!res.ok) throw await toApiError(res);
   if (res.status === 204) return undefined as T;
   return (await res.json()) as T;
@@ -74,9 +147,8 @@ export async function listDocumentsPage(
   limit: number,
   offset: number,
 ): Promise<{ documents: DocumentOut[]; total: number }> {
-  const res = await fetch(
-    `${API_BASE}/v1/collections/${collectionId}/documents?limit=${limit}&offset=${offset}`,
-    { headers: { Authorization: `Bearer ${apiKey}` } },
+  const res = await apiFetch(
+    `/v1/collections/${collectionId}/documents?limit=${limit}&offset=${offset}`,
   );
   if (!res.ok) throw await toApiError(res);
   const documents = (await res.json()) as DocumentOut[];
@@ -93,9 +165,7 @@ export const deleteDocument = (documentId: string) =>
 /** The original uploaded file as a blob — the reader shows PDFs natively, text inline. */
 export async function fetchDocumentFile(documentId: string, role?: string): Promise<Blob> {
   const query = role ? `?role=${encodeURIComponent(role)}` : "";
-  const res = await fetch(`${API_BASE}/v1/documents/${documentId}/file${query}`, {
-    headers: { Authorization: `Bearer ${apiKey}` },
-  });
+  const res = await apiFetch(`/v1/documents/${documentId}/file${query}`);
   if (!res.ok) throw await toApiError(res);
   return res.blob();
 }
@@ -103,15 +173,25 @@ export async function fetchDocumentFile(documentId: string, role?: string): Prom
 export const getUsage = (days = 30) => api<UsageSummary>(`/v1/usage?days=${days}`);
 
 /** XHR instead of fetch: upload progress events are still fetch-less territory. */
-export function uploadDocument(
+export async function uploadDocument(
   collectionId: string,
   file: File,
   onProgress?: (fraction: number) => void,
 ): Promise<{ id: string; status: string }> {
+  const signal = requests.signal;
+  const csrf = ACCOUNTS_ENABLED ? await mutationSession() : null;
+  signal.throwIfAborted();
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
+    const abort = () => xhr.abort();
+    signal.addEventListener("abort", abort, { once: true });
+    xhr.onloadend = () => signal.removeEventListener("abort", abort);
+    xhr.onabort = () => reject(new DOMException("API key changed", "AbortError"));
     xhr.open("POST", `${API_BASE}/v1/collections/${collectionId}/documents`);
-    xhr.setRequestHeader("Authorization", `Bearer ${apiKey}`);
+    if (ACCOUNTS_ENABLED) {
+      xhr.withCredentials = true;
+      xhr.setRequestHeader("X-CSRF-Token", csrf!);
+    } else xhr.setRequestHeader("Authorization", `Bearer ${apiKey}`);
     xhr.responseType = "json";
 
     xhr.upload.onprogress = (event) => {
@@ -122,6 +202,7 @@ export function uploadDocument(
         resolve(xhr.response as { id: string; status: string });
       } else {
         const problem: Problem = xhr.response ?? { detail: xhr.statusText };
+        if (ACCOUNTS_ENABLED && xhr.status === 401 && problem.code === "invalid_session") acceptSession(null);
         const retryAfter = xhr.getResponseHeader("retry-after");
         reject(new ApiError(xhr.status, problem, retryAfter ? Number(retryAfter) : null));
       }
@@ -133,4 +214,21 @@ export function uploadDocument(
       return form;
     })());
   });
+}
+
+export const getBudget = () => api<Budget>("/v1/budget");
+export const getSite = () => api<SiteInfo>("/v1/site");
+export const reprocessDocument = (id: string) =>
+  api<{ id: string; status: string }>(`/v1/documents/${id}/reprocess`, { method: "POST", body: "{}" });
+
+export function errorMessage(error: unknown): string {
+  if (!(error instanceof ApiError)) return "Check your connection and try again.";
+  if (error.code === "quota_exceeded") {
+    const reset = typeof error.problem.reset_at === "string" ? error.problem.reset_at : null;
+    return `Daily budget used. ${reset ? `Resets ${new Date(reset).toLocaleString("en-GB", { timeZone: "UTC" })} UTC.` : "Try again after the next 00:00 UTC reset."}`;
+  }
+  if (error.code === "budget_unavailable") return "Budget checks are temporarily unavailable. Please try again later.";
+  // Validation responses can contain a list; never stringify it (it may include submitted input).
+  return typeof error.message === "string" && error.message !== "[object Object]"
+    ? error.message : "Check the form fields and try again.";
 }

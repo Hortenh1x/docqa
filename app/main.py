@@ -8,11 +8,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
-from app.api.v1 import access, collections, documents, health, query, usage
+from app.accounts import google_router
+from app.accounts import router as accounts
+from app.api.v1 import access, budget, collections, documents, health, query, site, storage, usage
+from app.billing.context import BillingContextMiddleware
 from app.config import get_settings
 from app.core.errors import install_error_handlers
 from app.core.logging import RequestContextMiddleware, configure_logging
 from app.core.redis import close_redis
+from app.core.response_headers import PrivateResponseHeaders
 from app.db.base import dispose_engine
 
 _TAGS = [
@@ -80,9 +84,12 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
     app.add_middleware(RequestContextMiddleware)
+    app.add_middleware(PrivateResponseHeaders)
+    app.add_middleware(BillingContextMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origin_list,
+        allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
         expose_headers=[
@@ -96,10 +103,15 @@ def create_app() -> FastAPI:
     )
     install_error_handlers(app)
     app.include_router(health.router)
+    app.include_router(accounts.router)
+    app.include_router(google_router.router)
     app.include_router(collections.router)
     app.include_router(documents.router)
     app.include_router(query.router)
     app.include_router(usage.router)
+    app.include_router(storage.router)
+    app.include_router(budget.router)
+    app.include_router(site.router)
     app.include_router(access.router)
     _install_openapi(app)
     return app

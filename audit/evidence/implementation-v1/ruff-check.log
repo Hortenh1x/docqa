@@ -1,0 +1,7 @@
+tests/integration/test_runtime_privileges.py:18:12: ASYNC240 Async functions should not use pathlib.Path methods, use trio.Path or anyio.path
+tests/integration/test_runtime_privileges.py:29:23: ASYNC240 Async functions should not use pathlib.Path methods, use trio.Path or anyio.path
+tests/integration/test_runtime_privileges.py:49:101: E501 Line too long (106 > 100)
+tests/integration/test_runtime_privileges.py:50:101: E501 Line too long (111 > 100)
+tests/integration/test_runtime_privileges.py:64:101: E501 Line too long (117 > 100)
+tests/integration/test_runtime_privileges.py:68:101: E501 Line too long (113 > 100)
+Found 6 errors.

@@ -1,0 +1,1054 @@
+{
+  "timestamp": "2026-09-12T13:00:33.921Z",
+  "url": "http://127.0.0.1:18137",
+  "mode": "Local production UI; synthetic API fixture; Chromium",
+  "methodology": {
+    "reflow": "Measure document scrollWidth versus layout viewport at 1280, 640, and 320 CSS pixels. Locally scrollable document tables/source rails are recorded separately.",
+    "zoom": "640 CSS-pixel viewport models the layout reflow of a 1280-pixel viewport at 200% page zoom. Text-only resize separately doubles each rendered HTML element’s computed font size and line height without increasing the viewport or layout spacing. This is an injected resize stress test, not a claim of native browser text-zoom equivalence.",
+    "contrast": "Read computed foreground/background colors, resolve CSS colors via canvas, alpha-composite ancestor backgrounds, apply sRGB relative-luminance contrast formula. Compare small non-bold text with a 4.5:1 benchmark; exclude disabled controls. No OCR or anti-aliased edge pixels are used.",
+    "names": "Capture browser accessibility snapshots and inspect DOM-provided labels/live text. No assistive technology was run."
+  },
+  "checks": [
+    {
+      "name": "keyboard route activation and slash shortcut",
+      "pass": true
+    },
+    {
+      "name": "settled answer polite live message",
+      "pass": true,
+      "text": "Answer ready: Tenant A private answer [1]"
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 996,
+      "scrolling": [],
+      "outside": [],
+      "name": "ask 1280px 100% text",
+      "pass": true
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 1077,
+      "scrolling": [],
+      "outside": [],
+      "name": "ask 1280px 200% text",
+      "pass": true
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 900,
+      "scrolling": [],
+      "outside": [],
+      "name": "library 1280px 100% text",
+      "pass": true
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 908,
+      "scrolling": [
+        {
+          "tag": "DIV",
+          "role": null,
+          "class": "overflow-x-auto rounded-[10px] border border-hairline bg-sheet shadow-card",
+          "width": 726,
+          "scrollWidth": 787
+        }
+      ],
+      "outside": [],
+      "name": "library 1280px 200% text",
+      "pass": true
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 900,
+      "scrolling": [],
+      "outside": [],
+      "name": "usage 1280px 100% text",
+      "pass": true
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 921,
+      "scrolling": [],
+      "outside": [],
+      "name": "usage 1280px 200% text",
+      "pass": true
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 1068,
+      "scrolling": [],
+      "outside": [],
+      "name": "ask 640px 100% text",
+      "pass": true
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 1202,
+      "scrolling": [],
+      "outside": [],
+      "name": "ask 640px 200% text",
+      "pass": true
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 900,
+      "scrolling": [],
+      "outside": [],
+      "name": "library 640px 100% text",
+      "pass": true
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 1073,
+      "scrolling": [
+        {
+          "tag": "DIV",
+          "role": null,
+          "class": "overflow-x-auto rounded-[10px] border border-hairline bg-sheet shadow-card",
+          "width": 606,
+          "scrollWidth": 787
+        }
+      ],
+      "outside": [],
+      "name": "library 640px 200% text",
+      "pass": true
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 900,
+      "scrolling": [],
+      "outside": [],
+      "name": "usage 640px 100% text",
+      "pass": true
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 1046,
+      "scrolling": [],
+      "outside": [],
+      "name": "usage 640px 200% text",
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 1063,
+      "scrolling": [],
+      "outside": [],
+      "name": "ask 320px 100% text",
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 1223,
+      "scrolling": [],
+      "outside": [],
+      "name": "ask 320px 200% text",
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 900,
+      "scrolling": [
+        {
+          "tag": "DIV",
+          "role": null,
+          "class": "overflow-x-auto rounded-[10px] border border-hairline bg-sheet shadow-card",
+          "width": 286,
+          "scrollWidth": 495
+        }
+      ],
+      "outside": [],
+      "name": "library 320px 100% text",
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 1102,
+      "scrolling": [
+        {
+          "tag": "DIV",
+          "role": null,
+          "class": "overflow-x-auto rounded-[10px] border border-hairline bg-sheet shadow-card",
+          "width": 286,
+          "scrollWidth": 787
+        }
+      ],
+      "outside": [],
+      "name": "library 320px 200% text",
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 919,
+      "scrolling": [],
+      "outside": [],
+      "name": "usage 320px 100% text",
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 1367,
+      "scrolling": [],
+      "outside": [],
+      "name": "usage 320px 200% text",
+      "pass": true
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 2062,
+      "scrolling": [],
+      "outside": [],
+      "name": "long prose answer 1280px",
+      "pass": true
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 2062,
+      "scrolling": [],
+      "outside": [],
+      "name": "long prose citation focused 1280px",
+      "pass": true
+    },
+    {
+      "name": "citation preview only with desktop room 1280px",
+      "pass": true
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 996,
+      "scrolling": [],
+      "outside": [],
+      "name": "unbroken answer identifier 1280px",
+      "pass": true
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 900,
+      "scrolling": [],
+      "outside": [],
+      "name": "long filename Library 1280px",
+      "pass": true
+    },
+    {
+      "name": "long filename accessible name/title 1280px",
+      "pass": true,
+      "filenameLength": 177
+    },
+    {
+      "viewport": 1280,
+      "scrollWidth": 1280,
+      "height": 900,
+      "scrolling": [],
+      "outside": [],
+      "name": "long filename reader 1280px",
+      "pass": true
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 2134,
+      "scrolling": [],
+      "outside": [],
+      "name": "long prose answer 640px",
+      "pass": true
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 2134,
+      "scrolling": [],
+      "outside": [],
+      "name": "long prose citation focused 640px",
+      "pass": true
+    },
+    {
+      "name": "citation preview only with desktop room 640px",
+      "pass": true
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 1068,
+      "scrolling": [],
+      "outside": [],
+      "name": "unbroken answer identifier 640px",
+      "pass": true
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 900,
+      "scrolling": [
+        {
+          "tag": "DIV",
+          "role": null,
+          "class": "overflow-x-auto rounded-[10px] border border-hairline bg-sheet shadow-card",
+          "width": 606,
+          "scrollWidth": 640
+        }
+      ],
+      "outside": [],
+      "name": "long filename Library 640px",
+      "pass": true
+    },
+    {
+      "name": "long filename accessible name/title 640px",
+      "pass": true,
+      "filenameLength": 177
+    },
+    {
+      "viewport": 640,
+      "scrollWidth": 640,
+      "height": 900,
+      "scrolling": [
+        {
+          "tag": "DIV",
+          "role": null,
+          "class": "overflow-x-auto rounded-[10px] border border-hairline bg-sheet shadow-card",
+          "width": 606,
+          "scrollWidth": 640
+        }
+      ],
+      "outside": [],
+      "name": "long filename reader 640px",
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 3658,
+      "scrolling": [],
+      "outside": [],
+      "name": "long prose answer 320px",
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 3658,
+      "scrolling": [],
+      "outside": [],
+      "name": "long prose citation focused 320px",
+      "pass": true
+    },
+    {
+      "name": "citation preview only with desktop room 320px",
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 1063,
+      "scrolling": [],
+      "outside": [],
+      "name": "unbroken answer identifier 320px",
+      "pass": true
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 900,
+      "scrolling": [
+        {
+          "tag": "DIV",
+          "role": null,
+          "class": "overflow-x-auto rounded-[10px] border border-hairline bg-sheet shadow-card",
+          "width": 286,
+          "scrollWidth": 640
+        }
+      ],
+      "outside": [],
+      "name": "long filename Library 320px",
+      "pass": true
+    },
+    {
+      "name": "long filename accessible name/title 320px",
+      "pass": true,
+      "filenameLength": 177
+    },
+    {
+      "viewport": 320,
+      "scrollWidth": 320,
+      "height": 900,
+      "scrolling": [
+        {
+          "tag": "DIV",
+          "role": null,
+          "class": "overflow-x-auto rounded-[10px] border border-hairline bg-sheet shadow-card",
+          "width": 286,
+          "scrollWidth": 640
+        }
+      ],
+      "outside": [],
+      "name": "long filename reader 320px",
+      "pass": true
+    },
+    {
+      "name": "delete error alert and named retry",
+      "pass": true
+    }
+  ],
+  "contrast": [
+    {
+      "text": "set API key",
+      "foreground": [
+        110,
+        106,
+        95
+      ],
+      "background": [
+        247,
+        245.95,
+        240
+      ],
+      "rawColor": "rgb(110, 106, 95)",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "ratio": 4.985,
+      "name": "API key secondary link on paper",
+      "pass": true
+    },
+    {
+      "text": "Ask the documents…  (press / to focus)",
+      "foreground": [
+        110,
+        106,
+        95
+      ],
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "rawColor": "rgb(110, 106, 95)",
+      "fontSize": "15px",
+      "fontWeight": "400",
+      "ratio": 5.399,
+      "name": "composer placeholder",
+      "pass": true
+    },
+    {
+      "text": "Ask",
+      "foreground": [
+        255,
+        255,
+        255
+      ],
+      "background": [
+        29,
+        78,
+        208
+      ],
+      "rawColor": "rgb(255, 255, 255)",
+      "fontSize": "14px",
+      "fontWeight": "500",
+      "ratio": 6.879,
+      "name": "enabled Ask button",
+      "pass": true
+    },
+    {
+      "text": "● grounded",
+      "foreground": [
+        30,
+        127,
+        92
+      ],
+      "background": [
+        247,
+        245,
+        240
+      ],
+      "rawColor": "rgb(30, 127, 92)",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "ratio": 4.54,
+      "name": "grounded status on paper",
+      "pass": true
+    },
+    {
+      "text": "● grounded · confidence 0.90 · 19 tokens · $0 · 1ms · as Employee",
+      "foreground": [
+        110,
+        106,
+        95
+      ],
+      "background": [
+        247,
+        245,
+        240
+      ],
+      "rawColor": "rgb(110, 106, 95)",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "ratio": 4.955,
+      "name": "answer metadata on paper",
+      "pass": true
+    },
+    {
+      "text": "1",
+      "foreground": [
+        29,
+        78,
+        208
+      ],
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "rawColor": "rgb(29, 78, 208)",
+      "fontSize": "11px",
+      "fontWeight": "400",
+      "ratio": 6.879,
+      "name": "citation link",
+      "pass": true
+    },
+    {
+      "text": "● partial",
+      "foreground": [
+        146,
+        98,
+        22
+      ],
+      "background": [
+        247,
+        245,
+        240
+      ],
+      "rawColor": "rgb(146, 98, 22)",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "ratio": 4.842,
+      "name": "partial status on paper 1280px",
+      "pass": true
+    },
+    {
+      "text": "● partial",
+      "foreground": [
+        146,
+        98,
+        22
+      ],
+      "background": [
+        247,
+        245,
+        240
+      ],
+      "rawColor": "rgb(146, 98, 22)",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "ratio": 4.842,
+      "name": "partial status on paper 640px",
+      "pass": true
+    },
+    {
+      "text": "● partial",
+      "foreground": [
+        146,
+        98,
+        22
+      ],
+      "background": [
+        247,
+        245,
+        240
+      ],
+      "rawColor": "rgb(146, 98, 22)",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "ratio": 4.842,
+      "name": "partial status on paper 320px",
+      "pass": true
+    },
+    {
+      "text": "pending",
+      "foreground": [
+        146,
+        98,
+        22
+      ],
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "rawColor": "rgb(146, 98, 22)",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "ratio": 5.275,
+      "name": "pending document status on white",
+      "pass": true
+    },
+    {
+      "text": "processing",
+      "foreground": [
+        146,
+        98,
+        22
+      ],
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "rawColor": "rgb(146, 98, 22)",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "ratio": 5.275,
+      "name": "processing document status on white",
+      "pass": true
+    },
+    {
+      "text": "ready",
+      "foreground": [
+        30,
+        127,
+        92
+      ],
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "rawColor": "rgb(30, 127, 92)",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "ratio": 4.946,
+      "name": "ready document status on white",
+      "pass": true
+    },
+    {
+      "text": "failed",
+      "foreground": [
+        179,
+        54,
+        43
+      ],
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "rawColor": "rgb(179, 54, 43)",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "ratio": 6.036,
+      "name": "failed document status on white",
+      "pass": true
+    },
+    {
+      "text": "Drop PDF, DOCX, MD or TXT · up to 25 MB",
+      "foreground": [
+        110,
+        106,
+        95
+      ],
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "rawColor": "rgb(110, 106, 95)",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "ratio": 5.399,
+      "name": "upload hint on white",
+      "pass": true
+    },
+    {
+      "text": "Document",
+      "foreground": [
+        110,
+        106,
+        95
+      ],
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "rawColor": "rgb(110, 106, 95)",
+      "fontSize": "12px",
+      "fontWeight": "500",
+      "ratio": 5.399,
+      "name": "document table heading on white",
+      "pass": true
+    },
+    {
+      "text": "Couldn't delete ready.md. Storage is temporarily unavailable. Try again.",
+      "foreground": [
+        179,
+        54,
+        43
+      ],
+      "background": [
+        255,
+        255,
+        255
+      ],
+      "rawColor": "rgb(179, 54, 43)",
+      "fontSize": "14px",
+      "fontWeight": "400",
+      "ratio": 6.036,
+      "name": "delete error on white",
+      "pass": true
+    }
+  ],
+  "keyboard": [
+    {
+      "name": "Ask",
+      "pass": true,
+      "missing": [],
+      "seen": [
+        {
+          "tag": "A",
+          "role": null,
+          "name": "DocQA",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 76,
+          "width": 59.8
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Ask",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 757.6,
+          "width": 44.7
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Library",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 806.4,
+          "width": 66.4
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Usage",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 876.8,
+          "width": 62.4
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Collection",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 151.8,
+          "width": 256
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Access role",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 501.6,
+          "width": 240
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "set API key",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 1141,
+          "width": 63
+        },
+        {
+          "tag": "TEXTAREA",
+          "role": null,
+          "name": "Your question",
+          "outlineStyle": "none",
+          "outlineWidth": "1px",
+          "x": 285,
+          "width": 648.8
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Ask",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 941.8,
+          "width": 53.3
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "About",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 276,
+          "width": 33.8
+        }
+      ]
+    },
+    {
+      "name": "Library",
+      "pass": true,
+      "missing": [],
+      "seen": [
+        {
+          "tag": "A",
+          "role": null,
+          "name": "DocQA",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 76,
+          "width": 59.8
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Ask",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 757.6,
+          "width": 44.7
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Library",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 806.4,
+          "width": 66.4
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Usage",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 876.8,
+          "width": 62.4
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Collection",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 151.8,
+          "width": 256
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Access role",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 501.6,
+          "width": 240
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "set API key",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 1141,
+          "width": 63
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Choose a file",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 581.6,
+          "width": 116.7
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "tenant-A.md",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 293,
+          "width": 79.2
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "Delete tenant-A.md",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 938.6,
+          "width": 52.4
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "About",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 276,
+          "width": 33.8
+        }
+      ]
+    },
+    {
+      "name": "Usage",
+      "pass": true,
+      "missing": [],
+      "seen": [
+        {
+          "tag": "A",
+          "role": null,
+          "name": "DocQA",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 76,
+          "width": 59.8
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Ask",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 757.6,
+          "width": 44.7
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Library",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 806.4,
+          "width": 66.4
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "Usage",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 876.8,
+          "width": 62.4
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Collection",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 151.8,
+          "width": 256
+        },
+        {
+          "tag": "SELECT",
+          "role": null,
+          "name": "Access role",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 501.6,
+          "width": 240
+        },
+        {
+          "tag": "BUTTON",
+          "role": null,
+          "name": "set API key",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 1141,
+          "width": 63
+        },
+        {
+          "tag": "A",
+          "role": null,
+          "name": "About",
+          "outlineStyle": "auto",
+          "outlineWidth": "1px",
+          "x": 276,
+          "width": 33.8
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "failures": [],
+  "keyboardReadiness": {
+    "beforeReadiness": {
+      "path": "/",
+      "active": {
+        "tag": "A",
+        "name": "Ask"
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": false
+      }
+    },
+    "beforeSlash": {
+      "path": "/",
+      "active": {
+        "tag": "A",
+        "name": "Ask"
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": false
+      }
+    },
+    "afterSlash": {
+      "path": "/",
+      "active": {
+        "tag": "TEXTAREA",
+        "name": "Your question"
+      },
+      "field": {
+        "disabled": false,
+        "connected": true,
+        "visible": true,
+        "focused": true
+      }
+    }
+  },
+  "summary": {
+    "checks": 42,
+    "contrastPairs": 16,
+    "keyboardRoutes": 3,
+    "failures": 0,
+    "executionErrors": 0
+  }
+}

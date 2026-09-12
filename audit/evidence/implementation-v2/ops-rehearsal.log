@@ -1,0 +1,4 @@
+{"status": "ok", "bundle": "/tmp/docqa-ops-685f1ebce9-7xkl7676/backups/synthetic", "documents": 1}
+{"status": "ok", "documents": 1, "migration": "0011", "restore_seconds": 7.498, "isolated": true}
+{"status": "ok", "fresh_compose": true, "restricted_runtime": true, "seed": {"document_id": "2e41e008-f455-4de5-b309-e137c3315ab3", "query_recorded": true, "private_owner_fixture": true, "settled_budget_usd": "0.20", "original_sha256": "817097e30ec00c6252395b16cfe74100ced29ba8a1ac683848620d88be5bbe53"}, "monitor_fault_detected": true}
+{"rehearsal_seconds": 83.388}

@@ -1,0 +1,204 @@
+{
+  "date": "2026-09-12",
+  "status": "PASS",
+  "scope": "Pre-Google migration raw backup and temporary monitoring mute",
+  "bundle": "/home/ubuntu/backups/docqa-complete/20260912T115954Z",
+  "scheduler_started_at": "20260912T115954Z",
+  "source_release": "/opt/docqa-releases/prod-20260912-ready",
+  "schema_before_and_after_backup": "0011",
+  "manifest": {
+    "format": 1,
+    "started_at": "2026-09-12T11:59:55.138201+00:00",
+    "project": "docqa",
+    "postgres_image": "pgvector/pgvector:pg18",
+    "quiesced_services": [
+      "beat",
+      "api",
+      "worker"
+    ],
+    "images": {
+      "api": "sha256:3e18afbdde9db6b9f561671b868866fa0fc763ea7de0b304467d5adac1f51c4d",
+      "worker": "sha256:3e18afbdde9db6b9f561671b868866fa0fc763ea7de0b304467d5adac1f51c4d",
+      "beat": "sha256:3e18afbdde9db6b9f561671b868866fa0fc763ea7de0b304467d5adac1f51c4d",
+      "db": "sha256:2ba9ca5f2e7daa0f0e7723cba1ee9167bab54efd3640516a44ac1a928dd67e7a"
+    },
+    "migration": "0011",
+    "table_counts": {
+      "tenants": 1,
+      "api_keys": 1,
+      "collections": 7,
+      "documents": 9778,
+      "chunks": 295856,
+      "queries": 1369,
+      "query_citations": 20636,
+      "users": 0,
+      "account_sessions": 10,
+      "account_tokens": 0,
+      "auth_attempts": 6,
+      "spend_reservations": 6,
+      "spend_allocations": 6
+    },
+    "document_references": 9778,
+    "files": {
+      "database.dump": "c4d33334b8fc485277b93a55ad1f9ab8706d6da3603277c6752c0c50005b3717",
+      "files.tar.gz": "54e06ce6ffc5fbf8f0edc072609448afa7fab6cbbfb891e001cf6265fb45270b"
+    },
+    "completed_at": "2026-09-12T12:04:40.761183+00:00"
+  },
+  "bundle_mode": "0o700",
+  "backup_helper_sha256": "2cb096cbfb496ee29d436ef74074e08a773f32aeeea25602c6375cf672b4914d",
+  "helper_finally_resumes_previously_running_writers": true,
+  "health_after_backup": {
+    "main": {
+      "checked_at": "2026-09-12T12:06:09.722024+00:00",
+      "role": "main",
+      "dry_run": true,
+      "status": "ok",
+      "observations": {
+        "containers": {
+          "api": {
+            "status": "running",
+            "health": "healthy"
+          },
+          "worker": {
+            "status": "running",
+            "health": "healthy"
+          },
+          "beat": {
+            "status": "running",
+            "health": "healthy"
+          },
+          "db": {
+            "status": "running",
+            "health": "healthy"
+          },
+          "redis": {
+            "status": "running",
+            "health": "healthy"
+          },
+          "ui": {
+            "status": "running",
+            "health": "healthy"
+          }
+        },
+        "readiness": {
+          "ok": true,
+          "http_status": 200
+        },
+        "database": {
+          "standbys": [
+            {
+              "application_name": "docqa_standby",
+              "state": "streaming",
+              "sync_state": "sync"
+            }
+          ],
+          "slots": [
+            {
+              "slot_name": "docqa_standby",
+              "active": true,
+              "retained_bytes": 0
+            }
+          ]
+        },
+        "disk_free_bytes": 190641602560,
+        "raw_backup": {
+          "started_at": "20260912T115954Z",
+          "release": "/opt/docqa-releases/prod-20260912-ready",
+          "status": "ok",
+          "bundle": "/home/ubuntu/backups/docqa-complete/20260912T115954Z",
+          "completed_at": "2026-09-12T12:04:40.761183+00:00",
+          "documents": 9778,
+          "migration": "0011"
+        },
+        "offhost_backup": {
+          "started_at": "2026-09-12T11:27:01.811209+00:00",
+          "status": "ok",
+          "bundle": "20260912T112123Z",
+          "documents": 9778,
+          "migration": "0011",
+          "manifest_sha256": "bef6d7c0f6d225ad215b87f2e480a19bbf2f4a1257f277f62b77b572cacacbf1",
+          "source_manifest_sha256": "a852f8c9a932d33515e8cf937ce6e934fe3cf4b85ec7353c7306b89cd97ab219",
+          "source_release": "d6806bda8d1bd905a267a04cc6504dbb10b5667d1145c40c18c020e776bb18d6",
+          "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/29a96a1a38b8a14af71c47cf616ba0acb4ef8da19c97f4ebe83d3b495b809f36",
+          "action": "snapshot_created",
+          "snapshot_id": "a2ecc632c10dd91c7ec6d1516067e825e23ad7f12fc43513b0edef4ab76088c1",
+          "total_bytes_processed": 2146827364,
+          "data_added": 621269526,
+          "data_added_packed": null,
+          "completed_at": "2026-09-12T11:29:33.271851+00:00"
+        },
+        "cert_pg": "2028-09-11T10:49:34+00:00",
+        "cert_public_api": "2026-11-24T15:08:25+00:00",
+        "cert_public_ui": "2026-11-24T15:08:25+00:00"
+      },
+      "issues": {},
+      "suppressed_issue_ids": [],
+      "would_alert": [],
+      "would_recover": [],
+      "mail_sent": false
+    },
+    "standby": {
+      "checked_at": "2026-09-12T12:06:10.452534+00:00",
+      "role": "standby",
+      "dry_run": true,
+      "status": "ok",
+      "observations": {
+        "containers": {
+          "standby": {
+            "status": "running",
+            "health": "healthy"
+          }
+        },
+        "readiness": {
+          "ok": true,
+          "http_status": 200
+        },
+        "database": {
+          "in_recovery": true,
+          "receivers": [
+            {
+              "status": "streaming"
+            }
+          ]
+        },
+        "disk_free_bytes": 41609977856,
+        "cert_pg_ca": "2036-09-09T10:49:34+00:00"
+      },
+      "issues": {},
+      "suppressed_issue_ids": [],
+      "would_alert": [],
+      "would_recover": [],
+      "mail_sent": false
+    }
+  },
+  "monitoring": {
+    "muted_on_both_hosts": true,
+    "prior_enabled_on_both_hosts": true,
+    "prior_state": {
+      "main": {
+        "role": "main",
+        "muted_at": "2026-09-12T11:58:14.522515+00:00",
+        "enabled": false,
+        "preserved_directory": "/home/ubuntu/.config/docqa-monitor/pre-google-mute-20260912T115814Z",
+        "resume_pending": "parent cutover and final verification"
+      },
+      "standby": {
+        "role": "standby",
+        "muted_at": "2026-09-12T11:58:15.685132+00:00",
+        "enabled": false,
+        "preserved_directory": "/home/ubuntu/.config/docqa-monitor/pre-google-mute-20260912T115815Z",
+        "resume_pending": "parent cutover and final verification"
+      }
+    },
+    "restoration_pending": "Parent cutover and final verification; not reenabled in this task"
+  },
+  "boundaries": {
+    "release_env_images_schema_modified": false,
+    "postrelease_backup_run": false,
+    "offhost_backup_run": false,
+    "test_email_sent": false,
+    "monitoring_reenabled": false
+  },
+  "recorded_at": "2026-09-12T12:07:11.486730+00:00"
+}

@@ -109,7 +109,7 @@ export function SourceDrawer({
           <dd>{source.score.toFixed(3)}</dd>
           <dt className="text-ink-soft">Access</dt>
           <dd>
-            {source.access_label === "all"
+            {selected?.owned ? "Private · only your account" : source.access_label === "all"
               ? "All staff"
               : `${labelName(source.access_label)} only`}
           </dd>

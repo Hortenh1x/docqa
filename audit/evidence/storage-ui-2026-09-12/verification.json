@@ -1,0 +1,59 @@
+{
+  "status": "LOCAL_PASS_PRODUCTION_CHECKPOINT_PENDING",
+  "scope": [
+    "50MB original-file quota per account across collections; unlimited count",
+    "Access note on every selected set with accurate public/owner wording",
+    "Three safe suggestions restored in all six public sets",
+    "Google sign-in below password submit with official multicolor mark"
+  ],
+  "backend": {
+    "passed": 460,
+    "coverage_percent": 86.59,
+    "log": "pytest-verified.log",
+    "deploy_tests_passed": 16
+  },
+  "browser": {
+    "accounts_passed": 30,
+    "ui-keyless.log": {
+      "passed": 18,
+      "total": 18
+    },
+    "ui-demo.log": {
+      "passed": 16,
+      "total": 16
+    },
+    "accessibility": {
+      "checks": 42,
+      "contrastPairs": 16,
+      "keyboardRoutes": 3,
+      "failures": 0,
+      "executionErrors": 0
+    }
+  },
+  "static": {
+    "ruff_files": 206,
+    "mypy_files": 115,
+    "typescript": "PASS",
+    "node_source_tests_passed": 5,
+    "production_builds": [
+      "accounts",
+      "keyless",
+      "demo"
+    ]
+  },
+  "review": {
+    "backend_spec": "PASS",
+    "quality": "Delete response ambiguity found; fixed invalidation in onSettled. Regression RED then GREEN; no other concrete findings.",
+    "publication": "Read-only human/tool review plus exact real runtime secret scan PASS."
+  },
+  "source": {
+    "release": "prod-20260912-storage-ui",
+    "inventory_sha256": "f08f7962b072c6e35b4c02027477419b7de7145bc28d017a1fe4264faaf50850",
+    "archive_sha256": "c25bc091c55a2fc5a86febade489f71c7e50d45a948ae37570dd13d3446df466",
+    "files": 302
+  },
+  "limitations": [
+    "Browser accounts use synthetic fixtures for local acceptance; live Google consent and owner personal-file acceptance remain user checks.",
+    "Initial harness/fixture failures and timing-sensitive worker-test attempt retained in check-notes.json; final full run is clean."
+  ]
+}

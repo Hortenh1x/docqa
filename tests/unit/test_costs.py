@@ -30,6 +30,8 @@ def test_embedding_cost_none_tokens():
     assert embedding_cost_usd("text-embedding-3-small@1024", None) is None
 
 
-def test_llm_cost_table_still_intact():
-    assert cost_usd("deepseek-v4-flash", 1_000_000, 0) == Decimal("0.440000")
+def test_llm_cost_table_uses_verified_flash_rates():
+    # Official peak/cache-miss tariff verified 2026-09-10, including the V4 alias.
+    assert cost_usd("deepseek-v4-flash", 1_000_000, 0) == Decimal("0.300000")
+    assert cost_usd("deepseek-flash", 0, 1_000_000) == Decimal("1.200000")
     assert cost_usd("unknown", 10, 10) is None

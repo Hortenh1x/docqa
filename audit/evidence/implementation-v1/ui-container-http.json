@@ -1,0 +1,131 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "headers": {
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:18123; img-src 'self' data: blob:; font-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "x-nextjs-cache": "HIT",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "X-Powered-By": "Next.js",
+      "Cache-Control": "s-maxage=31536000",
+      "ETag": "\"14cfhtdz2g19v4\"",
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": "12820",
+      "Date": "Thu, 10 Sep 2026 14:22:47 GMT",
+      "Connection": "close"
+    },
+    "size": 12820
+  },
+  {
+    "path": "/library",
+    "status": 200,
+    "headers": {
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:18123; img-src 'self' data: blob:; font-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "x-nextjs-cache": "HIT",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "X-Powered-By": "Next.js",
+      "Cache-Control": "s-maxage=31536000",
+      "ETag": "\"2z73t361xq9hu\"",
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": "12338",
+      "Date": "Thu, 10 Sep 2026 14:22:47 GMT",
+      "Connection": "close"
+    },
+    "size": 12338
+  },
+  {
+    "path": "/usage",
+    "status": 200,
+    "headers": {
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:18123; img-src 'self' data: blob:; font-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "x-nextjs-cache": "HIT",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "X-Powered-By": "Next.js",
+      "Cache-Control": "s-maxage=31536000",
+      "ETag": "\"162bdcjxyom9lc\"",
+      "Content-Type": "text/html; charset=utf-8",
+      "Content-Length": "12466",
+      "Date": "Thu, 10 Sep 2026 14:22:47 GMT",
+      "Connection": "close"
+    },
+    "size": 12466
+  },
+  {
+    "path": "/licenses/fraunces-OFL.txt",
+    "status": 200,
+    "headers": {
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:18123; img-src 'self' data: blob:; font-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+      "Accept-Ranges": "bytes",
+      "Cache-Control": "public, max-age=0",
+      "Last-Modified": "Thu, 10 Sep 2026 13:34:38 GMT",
+      "ETag": "W/\"1127-1a08b8709b0\"",
+      "Content-Type": "text/plain; charset=UTF-8",
+      "Content-Length": "4391",
+      "Vary": "Accept-Encoding",
+      "Date": "Thu, 10 Sep 2026 14:22:47 GMT",
+      "Connection": "close"
+    },
+    "size": 4391
+  },
+  {
+    "path": "/_next/image?url=%2Fopengraph-image&w=64&q=75",
+    "status": 200,
+    "headers": {
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Content-Security-Policy": "script-src 'none'; frame-src 'none'; sandbox;",
+      "Vary": "Accept",
+      "Cache-Control": "public, max-age=31536000, must-revalidate",
+      "ETag": "vtNYvWK1Xaw0BjRp9pU4DTQMrpnCqr5CDAChIVhApBY",
+      "Content-Type": "image/png",
+      "Content-Disposition": "attachment; filename=\"opengraph-image.png\"",
+      "X-Nextjs-Cache": "MISS",
+      "Content-Length": "583",
+      "Date": "Thu, 10 Sep 2026 14:22:47 GMT",
+      "Connection": "close"
+    },
+    "size": 583
+  },
+  {
+    "path": "/?_rsc=readiness",
+    "request_headers": {
+      "RSC": "1"
+    },
+    "status": 200,
+    "headers": {
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:18123; img-src 'self' data: blob:; font-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+      "Vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+      "x-nextjs-cache": "HIT",
+      "x-nextjs-prerender": "1",
+      "x-nextjs-stale-time": "300",
+      "Cache-Control": "s-maxage=31536000",
+      "Content-Type": "text/x-component",
+      "Date": "Thu, 10 Sep 2026 14:23:01 GMT",
+      "Connection": "close",
+      "Transfer-Encoding": "chunked"
+    },
+    "size": 5723
+  }
+]

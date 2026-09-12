@@ -41,10 +41,20 @@ async def test_read_only_collection_rejects_uploads(client, tenant):
 
 
 async def test_demo_mode_caps_files_per_collection(client, tenant, demo_mode):
-    created = await client.post(
-        "/v1/collections", json={"name": "Sandbox"}, headers=tenant["headers"]
-    )
-    url = f"/v1/collections/{created.json()['id']}/documents"
+    from app.db.base import get_sessionmaker
+    from app.db.models import Collection
+
+    # Demo provisioning belongs to the operator; public collection creation is denied.
+    async with get_sessionmaker()() as session:
+        sandbox = Collection(
+            tenant_id=tenant["id"],
+            name="Sandbox",
+            slug="sandbox",
+            embedding_model=get_settings().embedding_model_id,
+        )
+        session.add(sandbox)
+        await session.commit()
+        url = f"/v1/collections/{sandbox.id}/documents"
 
     for i in range(2):
         ok = await client.post(

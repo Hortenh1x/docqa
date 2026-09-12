@@ -13,9 +13,11 @@ const TEXT_MIMES = new Set(["text/markdown", "text/plain"]);
 export function DocumentViewer({
   doc,
   onClose,
+  owner = false,
 }: {
   doc: DocumentOut;
   onClose: () => void;
+  owner?: boolean;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -23,11 +25,13 @@ export function DocumentViewer({
   const { role } = useRole();
   const file = useQuery({
     queryKey: ["document-file", doc.id, role],
-    queryFn: () => fetchDocumentFile(doc.id, role),
+    queryFn: () => fetchDocumentFile(doc.id, owner ? undefined : role),
     staleTime: Infinity,
     retry: false,
   });
-  const restricted = file.error instanceof ApiError && file.error.code === "document_restricted";
+  const fileError = file.error instanceof ApiError ? file.error : null;
+  const restricted = fileError?.code === "document_restricted";
+  const notReady = fileError?.code === "document_not_ready";
 
   const objectUrl = useMemo(
     () => (file.data ? URL.createObjectURL(file.data) : null),
@@ -40,12 +44,22 @@ export function DocumentViewer({
   }, [objectUrl]);
 
   const isText = TEXT_MIMES.has(doc.mime_type);
-  const [text, setText] = useState<string | null>(null);
+  const [text, setText] = useState<{ blob: Blob; value: string } | null>(null);
   useEffect(() => {
-    if (file.data && isText) file.data.text().then(setText);
+    let cancelled = false;
+    const blob = file.data;
+    if (blob && isText) {
+      void blob.text().then((value) => {
+        if (!cancelled) setText({ blob, value });
+      });
+    }
+    return () => {
+      cancelled = true;
+    };
   }, [file.data, isText]);
 
   useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     closeRef.current?.focus();
 
     const handler = (e: KeyboardEvent) => {
@@ -71,7 +85,10 @@ export function DocumentViewer({
       }
     };
     document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
+    return () => {
+      document.removeEventListener("keydown", handler);
+      if (opener?.isConnected) opener.focus();
+    };
   }, [onClose]);
 
   const isPdf = doc.mime_type === "application/pdf";
@@ -132,7 +149,14 @@ export function DocumentViewer({
             the top bar to read it.
           </p>
         )}
-        {file.isError && !restricted && (
+        {file.isError && notReady && (
+          <p role="alert" className="p-5 text-sm text-ink-soft">
+            {fileError?.problem.document_status === "failed"
+              ? "Processing failed. This file is unavailable. Check the document status for details."
+              : "This document is still being processed. Close the reader and try again when its status is ready."}
+          </p>
+        )}
+        {file.isError && !restricted && !notReady && (
           <p role="alert" className="p-5 text-sm text-error">
             Couldn&apos;t load the file.
           </p>
@@ -147,9 +171,9 @@ export function DocumentViewer({
             className="min-h-0 w-full flex-1"
           />
         )}
-        {isText && text !== null && (
+        {isText && file.isSuccess && text && text.blob === file.data && (
           <pre className="min-h-0 flex-1 overflow-y-auto whitespace-pre-wrap px-5 py-4 font-sans text-sm leading-6">
-            {text}
+            {text.value}
           </pre>
         )}
         {!isPdf && !isText && objectUrl && (

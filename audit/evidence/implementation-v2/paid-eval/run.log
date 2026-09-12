@@ -1,0 +1,301 @@
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, core tables: tenants, api_keys, collections, documents
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, chunks with hnsw and gin indexes
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, queries and query_citations
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, collections read_only flag
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, collections suggested_questions
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, access labels on chunks, role on queries
+INFO  [alembic.runtime.migration] Running upgrade 0006 -> 0007, Durable ingestion attempts and leases.
+INFO  [alembic.runtime.migration] Running upgrade 0007 -> 0008, Fence results against collection cleanup.
+  u0027 [access] score=0.550 ·
+  u0042 [access] score=0.605 ·
+  a0363 [access] score=0.486 ·
+  a0361 [access] score=0.464 ·
+  a0315 [access] score=0.387 ·
+  m0513 [as_of_date] score=0.514 ·
+  m0518 [as_of_date] score=0.492 ·
+  m0520 [as_of_date] score=0.472 MISS
+  m0512 [as_of_date] score=0.581 ·
+  m0516 [as_of_date] score=0.478 ·
+  b0035 [buried] score=0.468 ·
+  b0129 [buried] score=0.469 ·
+  b0098 [buried] score=0.569 ·
+  b0130 [buried] score=0.494 ·
+  b0034 [buried] score=0.575 ·
+  d0263 [direct] score=0.578 ·
+  d0059 [direct] score=0.779 ·
+  d0095 [direct] score=0.730 ·
+  d0389 [direct] score=0.481 ·
+  d0032 [direct] score=0.536 ·
+  c0236 [distractor_country] score=0.658 ·
+  c0184 [distractor_country] score=0.571 ·
+  c0218 [distractor_country] score=0.571 ·
+  c0177 [distractor_country] score=0.743 ·
+  c0243 [distractor_country] score=0.655 ·
+  g0633 [german] score=0.656 ·
+  g0661 [german] score=0.672 ·
+  g0678 [german] score=0.610 ·
+  g0638 [german] score=0.508 ·
+  g0671 [german] score=0.761 ·
+  x0571 [multi_doc] score=0.684 ·
+  x0600 [multi_doc] score=0.698 ·
+  x0533 [multi_doc] score=0.612 MISS
+  x0544 [multi_doc] score=0.691 ·
+  x0548 [multi_doc] score=0.684 ·
+  n0779 [no_answer] score=0.372 ·
+  n0791 [no_answer] score=0.431 ·
+  n0810 [no_answer] score=0.459 ·
+  n0706 [no_answer] score=0.548 ·
+  n0755 [no_answer] score=0.489 ·
+  p0613 [partial] score=0.570 ·
+  p0603 [partial] score=0.531 ·
+  p0625 [partial] score=0.566 ·
+  p0621 [partial] score=0.547 ·
+  p0609 [partial] score=0.508 ·
+  s0088 [stale_faq] score=0.529 ·
+  s0018 [stale_faq] score=0.612 ·
+  s0003 [stale_faq] score=0.545 ·
+  s0075 [stale_faq] score=0.543 ·
+  s0040 [stale_faq] score=0.532 ·
+  t0048 [table] score=0.521 ·
+  t0044 [table] score=0.484 ·
+  t0293 [table] score=0.621 ·
+  t0298 [table] score=0.633 ·
+  t0304 [table] score=0.607 ·
+  v0256 [version] score=0.628 ·
+  v0068 [version] score=0.660 ·
+  v0282 [version] score=0.705 ·
+  v0039 [version] score=0.532 ·
+  v0270 [version] score=0.588 ·
+  h0138 [version_history] score=0.486 ·
+  h0045 [version_history] score=0.502 ·
+  h0090 [version_history] score=0.447 ·
+  h0007 [version_history] score=0.554 ·
+  h0091 [version_history] score=0.527 ·
+2026-09-10 17:10:09 [info     ] query_answered                 citations=[1] latency_ms=1806 query_id=49413c21-025b-4ed8-be10-33b526c9906e role=finance
+  u0027 refused=False
+2026-09-10 17:10:09 [info     ] query_refused_by_model         query_id=0acfbaea-939b-4e30-9ebe-1d7c11893824 role=employee
+  a0363 refused=True
+2026-09-10 17:10:10 [info     ] query_answered                 citations=[5] latency_ms=3141 query_id=d4a15e18-ae9f-497d-83db-ad7aecc4c72b role=manager
+  u0042 refused=False
+2026-09-10 17:10:11 [info     ] query_refused_by_model         query_id=2bda14da-a3a0-4a4a-b36a-95842047c6c6 role=employee
+  a0361 refused=True
+2026-09-10 17:10:12 [info     ] query_refused_by_model         query_id=24b0d58a-a7fe-4643-8ef7-eacb586ab8b5 role=hr
+  a0315 refused=True
+2026-09-10 17:10:14 [info     ] query_answered                 citations=[2, 1] latency_ms=2037 query_id=57d46104-554b-4636-aa6a-6bd14cb54da8 role=employee
+  m0513 refused=False
+2026-09-10 17:10:14 [info     ] query_answered                 citations=[13, 4] latency_ms=1946 query_id=bed91c7d-7245-46f5-b110-4e7fba1ce304 role=employee
+  m0518 refused=False
+2026-09-10 17:10:16 [info     ] query_answered                 citations=[4, 19] latency_ms=3197 query_id=68973b28-9f81-49f0-9350-528d6e89cd1a role=employee
+  m0520 refused=False
+2026-09-10 17:10:18 [info     ] query_answered                 citations=[19] latency_ms=1923 query_id=deacb065-5629-418d-8ad5-cf2465d5d23b role=employee
+  m0512 refused=False
+2026-09-10 17:10:20 [info     ] query_refused_by_model         query_id=07a59d07-2c11-446b-9656-0d7c6c56afd2 role=employee
+  m0516 refused=True
+2026-09-10 17:10:22 [info     ] query_answered                 citations=[1, 2] latency_ms=2349 query_id=debc9b16-9c4b-4c8c-9c9a-e5760ad3a74f role=employee
+  b0035 refused=False
+2026-09-10 17:10:22 [info     ] query_answered                 citations=[1, 2] latency_ms=1920 query_id=d3ae1323-d419-41a7-aaf0-345b5206b024 role=employee
+  b0129 refused=False
+2026-09-10 17:10:26 [info     ] query_answered                 citations=[1, 6] latency_ms=3291 query_id=ebe711e5-ece9-4225-83f9-1bf7a0640a40 role=employee
+  b0098 refused=False
+2026-09-10 17:10:28 [info     ] query_answered                 citations=[1, 2] latency_ms=1699 query_id=26efcb3b-e207-4805-953e-cc869cd25222 role=employee
+  b0034 refused=False
+2026-09-10 17:10:28 [info     ] query_answered                 citations=[1, 2, 5, 9] latency_ms=2463 query_id=875e8b54-eb9c-4fb5-a36d-6fd5c042c3d8 role=employee
+  b0130 refused=False
+2026-09-10 17:10:33 [info     ] query_answered                 citations=[1, 4, 5, 6] latency_ms=2503 query_id=bbd69693-9234-4189-8175-aa9ad2ebf2ed role=employee
+  d0263 refused=False
+2026-09-10 17:10:34 [info     ] query_answered                 citations=[1, 2, 3, 12] latency_ms=1972 query_id=17763f54-4efb-4311-97d3-461c95d62944 role=employee
+  d0059 refused=False
+2026-09-10 17:10:35 [info     ] query_answered                 citations=[2, 5, 1] latency_ms=1771 query_id=bf32b188-62d2-4a73-ad48-24f930239728 role=employee
+  d0095 refused=False
+2026-09-10 17:10:39 [info     ] query_answered                 citations=[4] latency_ms=1550 query_id=08af1b24-2259-4faa-a7da-e1f9438b88fc role=employee
+  d0389 refused=False
+2026-09-10 17:10:40 [info     ] query_answered                 citations=[1] latency_ms=1729 query_id=99b0d546-96e4-4e9e-ab50-db4de51fc5de role=employee
+  c0236 refused=False
+2026-09-10 17:10:42 [info     ] query_answered                 citations=[1] latency_ms=1624 query_id=17d12f2d-c4c4-43ac-8b61-bf7ab0659e39 role=employee
+  c0184 refused=False
+2026-09-10 17:10:44 [info     ] query_answered                 citations=[1, 2] latency_ms=3052 query_id=0ec2d719-4ee6-4a4b-875c-133fff2b28a0 role=employee
+  c0218 refused=False
+2026-09-10 17:10:44 [info     ] query_answered                 citations=[1] latency_ms=1399 query_id=5cb7ed96-1d7f-4a39-8282-19206df78a5b role=employee
+  c0177 refused=False
+2026-09-10 17:10:45 [info     ] query_answered                 citations=[3, 2, 8] latency_ms=7300 query_id=03f2c9ff-fe6d-4746-88b1-1046d6e316be role=employee
+  d0032 refused=False
+2026-09-10 17:10:48 [info     ] query_answered                 citations=[1] latency_ms=1924 query_id=7d91f6bd-6249-4541-ae07-e6aba97df2e8 role=employee
+  c0243 refused=False
+2026-09-10 17:10:50 [info     ] query_answered                 citations=[1, 12] latency_ms=3422 query_id=4de8a589-4b39-43b9-aa0e-f7d931b1ba92 role=employee
+  g0633 refused=False
+2026-09-10 17:10:51 [info     ] query_answered                 citations=[1, 6] latency_ms=4213 query_id=00065823-a5a4-4a9f-9f62-9d86beba8910 role=employee
+  g0661 refused=False
+2026-09-10 17:10:53 [info     ] query_answered                 citations=[5] latency_ms=1231 query_id=50c00c34-a0e2-4677-8172-5910beb2050c role=employee
+  g0638 refused=False
+2026-09-10 17:10:53 [info     ] query_answered                 citations=[1, 6, 18] latency_ms=2348 query_id=d87a6e67-1fdd-44c4-8644-2c42dc38df91 role=employee
+  g0678 refused=False
+2026-09-10 17:10:55 [info     ] query_answered                 citations=[1, 14, 2] latency_ms=3116 query_id=12931f06-6450-44de-9f30-a41351c38b19 role=employee
+  g0671 refused=False
+2026-09-10 17:10:56 [info     ] query_answered                 citations=[1, 2, 4, 5] latency_ms=1608 query_id=d540ae2d-7aff-4d2d-9fee-0a0934fd8933 role=employee
+  x0600 refused=False
+2026-09-10 17:10:57 [info     ] query_answered                 citations=[2, 1, 9, 3] latency_ms=2778 query_id=5c6ec303-c509-4a52-8fed-c00305762adf role=employee
+  x0571 refused=False
+2026-09-10 17:10:59 [info     ] query_answered                 citations=[1, 2, 17] latency_ms=1894 query_id=4de55494-5871-4571-9a03-0c04d8c3e991 role=employee
+  x0533 refused=False
+2026-09-10 17:11:00 [info     ] query_answered                 citations=[2, 1, 4, 3] latency_ms=1789 query_id=9d773617-4416-45ca-97b2-bb2f13598132 role=employee
+  x0548 refused=False
+2026-09-10 17:11:02 [info     ] query_answered                 citations=[2, 1, 3] latency_ms=3774 query_id=dbf4f17f-ca57-4960-848a-fc30391d0987 role=employee
+  x0544 refused=False
+2026-09-10 17:11:04 [info     ] query_refused_by_model         query_id=85bb140d-93cf-4540-b496-f318e655cdc9 role=employee
+  n0791 refused=True
+2026-09-10 17:11:04 [info     ] query_refused_by_model         query_id=ce288973-699b-4c11-8a5c-edc5cb802d34 role=employee
+  n0779 refused=True
+2026-09-10 17:11:05 [info     ] query_refused_by_model         query_id=a971b431-4f53-4748-88cb-84dfe8b3f5d3 role=employee
+  n0810 refused=True
+2026-09-10 17:11:06 [info     ] query_refused_by_model         query_id=4fce8383-d9aa-4624-9dc1-318ee676bfc6 role=employee
+  n0706 refused=True
+2026-09-10 17:11:07 [info     ] query_refused_by_model         query_id=262da372-a39a-4988-9fbe-fcf5f4a0c1f3 role=employee
+  n0755 refused=True
+2026-09-10 17:11:08 [info     ] query_answered                 citations=[1, 3, 2, 9, 4] latency_ms=2309 query_id=029dc95c-43fe-4f96-b9c7-ff2f12c652d0 role=employee
+  p0613 refused=False
+2026-09-10 17:11:09 [info     ] query_answered                 citations=[6, 1, 7, 20] latency_ms=2942 query_id=ee31a101-0b09-4779-9112-ba6c1a8bd0a4 role=employee
+  p0603 refused=False
+2026-09-10 17:11:11 [info     ] query_answered                 citations=[1, 2, 7] latency_ms=1989 query_id=8419f1cc-2bf9-485c-bcab-2890093bcb39 role=employee
+  p0621 refused=False
+2026-09-10 17:11:11 [info     ] query_answered                 citations=[2, 7, 16, 4, 11, 10] latency_ms=4801 query_id=8bfe9265-a5df-452e-a3bd-7cfb4beddd18 role=employee
+  p0625 refused=False
+2026-09-10 17:11:13 [info     ] query_refused_by_model         query_id=9a7f1c49-a651-4207-937d-26535b8d6b17 role=employee
+  p0609 refused=True
+2026-09-10 17:11:16 [info     ] query_answered                 citations=[10, 5, 2, 6, 7] latency_ms=3705 query_id=6b372f97-9492-41f9-bdde-e0cdd47296ac role=employee
+  s0088 refused=False
+2026-09-10 17:11:18 [info     ] query_answered                 citations=[5, 17, 1, 4, 18, 7, 9, 20] latency_ms=4786 query_id=cc3d0692-e892-46b5-963d-8a075ea5a8ea role=employee
+  s0003 refused=False
+2026-09-10 17:11:22 [info     ] query_answered                 citations=[10, 7, 4, 3] latency_ms=2237 query_id=ebdcffee-31e3-450f-aafe-ecc07cedecf2 role=employee
+  s0040 refused=False
+2026-09-10 17:11:23 [info     ] query_answered                 citations=[3, 12, 1, 5, 4, 7] latency_ms=3300 query_id=db0e5d4a-0373-466b-884a-d742c127cc97 role=employee
+  s0075 refused=False
+2026-09-10 17:11:24 [info     ] query_answered                 citations=[1, 6, 7, 2, 4, 5, 3, 13] latency_ms=11381 query_id=579f0ba7-8428-42e9-83f3-dd6779d711fa role=employee
+  s0018 refused=False
+2026-09-10 17:11:30 [info     ] query_answered                 citations=[2, 4, 3] latency_ms=3049 query_id=e2326078-fccb-4785-81f6-8332d4e2c6d6 role=employee
+  t0048 refused=False
+2026-09-10 17:11:30 [info     ] query_answered                 citations=[8, 1, 3, 20] latency_ms=3626 query_id=be7ad394-a802-49e8-a8ed-7ed8e9ca73c4 role=employee
+  t0044 refused=False
+2026-09-10 17:11:31 [info     ] query_answered                 citations=[4] latency_ms=1753 query_id=dc124a5a-8f61-4636-9cf3-9dbf1601ae72 role=employee
+  t0293 refused=False
+2026-09-10 17:11:34 [info     ] query_answered                 citations=[6, 1, 3] latency_ms=1627 query_id=7f750ccc-5103-4ada-8793-60c5be6d5918 role=employee
+  t0304 refused=False
+2026-09-10 17:11:34 [info     ] query_answered                 citations=[3] latency_ms=2064 query_id=4ef26c60-9099-4cec-9c3f-a789c148de99 role=employee
+  v0256 refused=False
+2026-09-10 17:11:35 [info     ] query_answered                 citations=[17, 14, 4] latency_ms=3815 query_id=b8ab8f98-0dda-47cc-b8d6-9103e183180b role=employee
+  t0298 refused=False
+2026-09-10 17:11:38 [info     ] query_answered                 citations=[2] latency_ms=1748 query_id=63474857-9bc1-4f92-b6ff-1f8e8ba3ebd6 role=employee
+  v0282 refused=False
+2026-09-10 17:11:38 [info     ] query_answered                 citations=[1, 4, 2, 3] latency_ms=2138 query_id=f40ad58e-aa7a-4623-9c57-745b02ab61a8 role=employee
+  v0068 refused=False
+2026-09-10 17:11:39 [info     ] query_answered                 citations=[10, 7, 4, 9, 3] latency_ms=2163 query_id=bd7358bb-2f88-467f-bfae-2ea48946ec73 role=employee
+  v0039 refused=False
+2026-09-10 17:11:41 [info     ] query_answered                 citations=[3] latency_ms=2271 query_id=63e83d50-2539-4b30-a9bd-b13419ad2850 role=employee
+  v0270 refused=False
+2026-09-10 17:11:42 [info     ] query_answered                 citations=[2, 1] latency_ms=1881 query_id=4a7d61f6-1c78-4db8-a034-fc0b56d4bb02 role=employee
+  h0138 refused=False
+2026-09-10 17:11:43 [info     ] query_answered                 citations=[1, 5, 3] latency_ms=2789 query_id=02da3f59-3da8-4177-b73b-5a67b36e3529 role=employee
+  h0045 refused=False
+2026-09-10 17:11:46 [info     ] query_answered                 citations=[3, 2, 7] latency_ms=2269 query_id=8a1554f2-5bd6-4a20-9acd-3357e87bc66f role=employee
+  h0007 refused=False
+2026-09-10 17:11:47 [info     ] query_answered                 citations=[4, 5, 2, 11, 3] latency_ms=3067 query_id=6e206b68-769b-4337-a9b4-801ea6cb9247 role=employee
+  h0091 refused=False
+2026-09-10 17:11:48 [info     ] query_answered                 citations=[14, 9] latency_ms=4300 query_id=027176f5-16d9-422e-80dd-2364f637e810 role=employee
+  h0090 refused=False
+  a001 [access] score=0.330 ·
+  a002 [access] score=0.606 ·
+  a003 [access] score=0.380 ·
+  a004 [access] score=0.642 ·
+  a005 [access] score=0.314 ·
+  a006 [access] score=0.692 ·
+  a007 [access] score=0.550 ·
+  a008 [access] score=0.414 ·
+  a009 [access] score=0.577 ·
+  a010 [access] score=0.622 ·
+  a011 [access] score=0.551 ·
+  a012 [access] score=0.551 ·
+  a013 [access] score=0.689 ·
+  a014 [access] score=0.336 ·
+  a015 [access] score=0.615 ·
+  a016 [access] score=0.350 ·
+  a017 [access] score=0.336 ·
+  a018 [access] score=0.728 ·
+  a019 [access] score=0.607 ·
+  a020 [access] score=0.333 ·
+  a021 [access] score=0.252 ·
+  a022 [access] score=0.365 ·
+  a023 [access] score=0.334 ·
+  a024 [access] score=0.336 ·
+  a025 [access] score=0.336 ·
+  a026 [access] score=0.621 ·
+  a027 [access] score=0.590 ·
+  a028 [access] score=0.437 ·
+  a029 [access] score=0.437 ·
+  a030 [access] score=0.522 ·
+  a031 [access] score=0.558 ·
+  a032 [access] score=0.631 ·
+2026-09-10 17:12:00 [info     ] query_answered                 citations=[1] latency_ms=1042 query_id=5e99c6d5-7fb8-4ba7-b300-a6957af53828 role=finance
+  a002 refused=False
+2026-09-10 17:12:00 [info     ] query_refused_by_model         query_id=03d65048-8637-4e8f-8627-2d0071bc54aa role=employee
+  a001 refused=True
+2026-09-10 17:12:00 [info     ] query_refused_by_model         query_id=2f98c398-b1e9-4dc3-9f73-b0d0a4e5455f role=hr
+  a003 refused=True
+2026-09-10 17:12:02 [info     ] query_answered                 citations=[1] latency_ms=1512 query_id=e2a77578-e98d-4aec-8681-31397f440eb8 role=leadership
+  a004 refused=False
+2026-09-10 17:12:02 [info     ] query_refused_by_model         query_id=b791ecfa-a1ab-47ea-aa4b-366ed9a281b4 role=employee
+  a005 refused=True
+2026-09-10 17:12:03 [info     ] query_answered                 citations=[1] latency_ms=1186 query_id=e7067d8c-de1e-47cc-a577-4c986bc1a736 role=manager
+  a006 refused=False
+2026-09-10 17:12:04 [info     ] query_answered                 citations=[1] latency_ms=1337 query_id=ed26f8b1-ea39-43cb-be6c-df9106a04d2e role=finance
+  a007 refused=False
+2026-09-10 17:12:06 [info     ] query_refused_by_model         query_id=ef4a6ff5-7cb8-48ae-a995-a09193549365 role=employee
+  a008 refused=True
+2026-09-10 17:12:06 [info     ] query_answered                 citations=[1] latency_ms=1100 query_id=3db4c04f-235e-4009-aa70-1669068bf45e role=manager
+  a009 refused=False
+2026-09-10 17:12:07 [info     ] query_answered                 citations=[1, 2] latency_ms=1633 query_id=685a82b6-3f0e-4b75-80fd-fe4cf01cc0a5 role=hr
+  a010 refused=False
+2026-09-10 17:12:08 [info     ] query_refused_by_model         query_id=5e63bd1c-c48f-4cfd-a789-3b9209154d00 role=employee
+  a011 refused=True
+2026-09-10 17:12:09 [info     ] query_answered                 citations=[1] latency_ms=1602 query_id=4218b476-833c-4e68-b634-07c05d5e26d0 role=leadership
+  a013 refused=False
+2026-09-10 17:12:09 [info     ] query_refused_by_model         query_id=af5b2334-c00a-45a1-ae56-f643e1b86d65 role=hr
+  a012 refused=True
+2026-09-10 17:12:10 [info     ] query_refused_by_model         query_id=0b0261d1-e822-4af6-a274-b57818761df0 role=employee
+  a014 refused=True
+2026-09-10 17:12:11 [info     ] query_refused_by_model         query_id=6ff57180-8d81-4e63-9cc5-ebec868bfe36 role=manager
+  a016 refused=True
+2026-09-10 17:12:12 [info     ] query_answered                 citations=[1] latency_ms=2372 query_id=801aef08-3eaa-4a01-b3a6-a923561cd5a8 role=finance
+  a015 refused=False
+2026-09-10 17:12:12 [info     ] query_refused_by_model         query_id=5a9fd1e4-4b32-4ea6-85dc-bce7b257a739 role=employee
+  a017 refused=True
+2026-09-10 17:12:13 [info     ] query_answered                 citations=[1] latency_ms=1149 query_id=e9645d9d-c57f-40b7-8d1b-ee7eaf5f4bb4 role=hr
+  a018 refused=False
+2026-09-10 17:12:14 [info     ] query_answered                 citations=[1] latency_ms=1582 query_id=5a94c872-33ea-4e14-9857-8ba8774216a0 role=hr
+  a019 refused=False
+2026-09-10 17:12:15 [info     ] query_refused_at_gate          query_id=e7cbe3a5-d8fd-48e0-8bcc-4c7c0683e1e8 role=employee top_score=0.2521927699943074
+  a021 refused=True
+2026-09-10 17:12:16 [info     ] query_refused_by_model         query_id=e8819c01-c91c-4248-a078-9c71cebd7ff3 role=finance
+  a020 refused=True
+2026-09-10 17:12:16 [info     ] query_refused_by_model         query_id=97010632-61c2-4f5b-9a1a-fd306aa54b1b role=hr
+  a022 refused=True
+2026-09-10 17:12:17 [info     ] query_refused_by_model         query_id=1145c98f-1bca-472c-8436-78e399824db8 role=employee
+  a023 refused=True
+2026-09-10 17:12:18 [info     ] query_refused_by_model         query_id=0ff24d76-2642-4407-9315-ec636b2cc330 role=manager
+  a024 refused=True
+2026-09-10 17:12:18 [info     ] query_refused_by_model         query_id=95bea012-deba-4346-b3db-e01c93673aed role=finance
+  a025 refused=True
+2026-09-10 17:12:18 [info     ] query_answered                 citations=[1] latency_ms=1231 query_id=d73f1a10-c422-4ebd-a9b4-5108b5c100bd role=leadership
+  a026 refused=False
+2026-09-10 17:12:19 [info     ] query_answered                 citations=[2] latency_ms=1630 query_id=939e7e79-5bd9-41b2-8756-3ce052717ebb role=leadership
+  a028 refused=False
+2026-09-10 17:12:20 [info     ] query_answered                 citations=[1] latency_ms=1754 query_id=c7912ca9-56f6-4a28-a82b-868d02aa7ede role=leadership
+  a027 refused=False
+2026-09-10 17:12:21 [info     ] query_refused_by_model         query_id=8481c722-f333-48e3-ad50-fc0255340a0d role=hr
+  a029 refused=True
+2026-09-10 17:12:23 [info     ] query_answered                 citations=[2, 1] latency_ms=1518 query_id=44eb09c0-a4ef-4c5f-97cc-bac16258beca role=finance
+  a031 refused=False
+2026-09-10 17:12:25 [info     ] query_answered                 citations=[1, 2] latency_ms=3393 query_id=7a077157-d6e2-46b2-8a31-a437abfa9a4b role=employee
+  a030 refused=False
+2026-09-10 17:12:25 [info     ] query_answered                 citations=[2, 3, 1, 4] latency_ms=3378 query_id=94083b2b-7a5f-4264-af27-8bbbc748e7b8 role=employee
+  a032 refused=False

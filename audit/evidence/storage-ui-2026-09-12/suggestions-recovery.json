@@ -1,0 +1,1278 @@
+{
+  "status": "pass_restored_and_publicly_verified",
+  "before": {
+    "timestamp_utc": "2026-09-12T12:48:31.171905+00:00",
+    "collections": [
+      {
+        "id": "f9788817-3e07-47d6-9062-c928ee371b4e",
+        "slug": "contracts-cuad",
+        "question_count": null,
+        "data_version": 1,
+        "suggestion_revision": 0,
+        "statuses": {
+          "ready": 509
+        },
+        "sample_excerpt_count": 6,
+        "prompt_utf8_bytes": 13107,
+        "llm_call_reserve_bound_usd": "0.00915450",
+        "llm_one_task_execution_bound_usd": "0.01830900",
+        "llm_all_task_attempts_bound_usd": "0.07323600"
+      },
+      {
+        "id": "2b1d297d-2db8-459d-bda5-4574211ec097",
+        "slug": "financial-filings",
+        "question_count": null,
+        "data_version": 1,
+        "suggestion_revision": 0,
+        "statuses": {
+          "ready": 334
+        },
+        "sample_excerpt_count": 7,
+        "prompt_utf8_bytes": 14296,
+        "llm_call_reserve_bound_usd": "0.00951120",
+        "llm_one_task_execution_bound_usd": "0.01902240",
+        "llm_all_task_attempts_bound_usd": "0.07608960"
+      },
+      {
+        "id": "6642371b-cd77-4a98-8c07-3d4c4ba37a26",
+        "slug": "gitlab-handbook",
+        "question_count": null,
+        "data_version": 1,
+        "suggestion_revision": 0,
+        "statuses": {
+          "ready": 3639
+        },
+        "sample_excerpt_count": 8,
+        "prompt_utf8_bytes": 13221,
+        "llm_call_reserve_bound_usd": "0.00918870",
+        "llm_one_task_execution_bound_usd": "0.01837740",
+        "llm_all_task_attempts_bound_usd": "0.07350960"
+      },
+      {
+        "id": "59f88f3e-f33d-4327-b29a-38c2c18ed6b3",
+        "slug": "govreport",
+        "question_count": null,
+        "data_version": 1,
+        "suggestion_revision": 0,
+        "statuses": {
+          "ready": 4979
+        },
+        "sample_excerpt_count": 7,
+        "prompt_utf8_bytes": 18825,
+        "llm_call_reserve_bound_usd": "0.01086990",
+        "llm_one_task_execution_bound_usd": "0.02173980",
+        "llm_all_task_attempts_bound_usd": "0.08695920"
+      },
+      {
+        "id": "9a0296e2-66ae-4334-a639-cc9bfbf1842e",
+        "slug": "kranich",
+        "question_count": null,
+        "data_version": 1,
+        "suggestion_revision": 0,
+        "statuses": {
+          "ready": 298
+        },
+        "sample_excerpt_count": 8,
+        "prompt_utf8_bytes": 15819,
+        "llm_call_reserve_bound_usd": "0.00996810",
+        "llm_one_task_execution_bound_usd": "0.01993620",
+        "llm_all_task_attempts_bound_usd": "0.07974480"
+      },
+      {
+        "id": "9e03c140-e0c3-49a5-8308-5edb5383798f",
+        "slug": "policies-en",
+        "question_count": null,
+        "data_version": 1,
+        "suggestion_revision": 0,
+        "statuses": {
+          "ready": 19
+        },
+        "sample_excerpt_count": 12,
+        "prompt_utf8_bytes": 15243,
+        "llm_call_reserve_bound_usd": "0.00979530",
+        "llm_one_task_execution_bound_usd": "0.01959060",
+        "llm_all_task_attempts_bound_usd": "0.07836240"
+      }
+    ],
+    "batch_llm_all_attempts_bound_usd": "0.46790160",
+    "batch_llm_one_execution_bound_usd": "0.11697540",
+    "cost_scope": "LLM only, excludes embedding HTTP retries; repository tariff and UTF-8 bytes +1024 framing reserve bound",
+    "provider_max_tokens": 4096,
+    "task_executions_including_retries": 4,
+    "llm_attempts_per_task_execution": 2
+  },
+  "public_api_before": {
+    "timestamp_utc": "2026-09-12T12:49:06.284257+00:00",
+    "status_code": 200,
+    "collections": [
+      {
+        "id": "9e03c140-e0c3-49a5-8308-5edb5383798f",
+        "slug": "policies-en",
+        "document_count": 19,
+        "question_count": null,
+        "access_labels": [
+          "managers",
+          "hr",
+          "finance",
+          "leadership"
+        ]
+      },
+      {
+        "id": "6642371b-cd77-4a98-8c07-3d4c4ba37a26",
+        "slug": "gitlab-handbook",
+        "document_count": 3639,
+        "question_count": null,
+        "access_labels": []
+      },
+      {
+        "id": "f9788817-3e07-47d6-9062-c928ee371b4e",
+        "slug": "contracts-cuad",
+        "document_count": 509,
+        "question_count": null,
+        "access_labels": []
+      },
+      {
+        "id": "2b1d297d-2db8-459d-bda5-4574211ec097",
+        "slug": "financial-filings",
+        "document_count": 334,
+        "question_count": null,
+        "access_labels": []
+      },
+      {
+        "id": "59f88f3e-f33d-4327-b29a-38c2c18ed6b3",
+        "slug": "govreport",
+        "document_count": 4979,
+        "question_count": null,
+        "access_labels": []
+      },
+      {
+        "id": "9a0296e2-66ae-4334-a639-cc9bfbf1842e",
+        "slug": "kranich",
+        "document_count": 298,
+        "question_count": null,
+        "access_labels": [
+          "managers",
+          "hr",
+          "finance",
+          "leadership"
+        ]
+      }
+    ]
+  },
+  "aggregate_admission_ceiling_usd": "0.60",
+  "execution_started_utc": "2026-09-12T12:52:09.091949+00:00",
+  "execution_mode": "one existing task.run call per pinned public service collection; all provider HTTP attempts guarded in this process; no queued retries",
+  "execution_events": [
+    {
+      "event": "repair_collection_started",
+      "timestamp_utc": "2026-09-12T12:52:11.817834+00:00",
+      "slug": "contracts-cuad",
+      "revision": 0
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:12.461438+00:00",
+      "slug": "contracts-cuad",
+      "kind": "llm",
+      "reserved_usd": "0.00915450",
+      "batch_reserved_usd": "0.00915450"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:15.700596+00:00",
+      "slug": "contracts-cuad",
+      "kind": "llm",
+      "prompt_tokens": 3107,
+      "completion_tokens": 509,
+      "actual_usd": "0.00154290"
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:15.709939+00:00",
+      "slug": "contracts-cuad",
+      "kind": "embedding",
+      "reserved_usd": "0.00002800",
+      "batch_reserved_usd": "0.00918250"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:17.511925+00:00",
+      "slug": "contracts-cuad",
+      "kind": "embedding",
+      "prompt_tokens": 77,
+      "completion_tokens": 0,
+      "actual_usd": "0.00000154"
+    },
+    {
+      "event": "repair_collection_finished",
+      "timestamp_utc": "2026-09-12T12:52:17.981366+00:00",
+      "id": "f9788817-3e07-47d6-9062-c928ee371b4e",
+      "slug": "contracts-cuad",
+      "question_count": 3,
+      "min_roles": [
+        "employee",
+        "employee",
+        "employee"
+      ],
+      "roles_valid": true,
+      "filename_hint_count": 0,
+      "non_hint_questions_pass_editorial_filter": true,
+      "document_status_counts": {
+        "ready": 509
+      },
+      "document_counts_unchanged": true,
+      "revision_unchanged": true,
+      "data_version_unchanged": true,
+      "failure_type": null
+    },
+    {
+      "event": "repair_collection_started",
+      "timestamp_utc": "2026-09-12T12:52:17.981456+00:00",
+      "slug": "financial-filings",
+      "revision": 0
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:18.412812+00:00",
+      "slug": "financial-filings",
+      "kind": "llm",
+      "reserved_usd": "0.00951120",
+      "batch_reserved_usd": "0.01869370"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:28.533253+00:00",
+      "slug": "financial-filings",
+      "kind": "llm",
+      "prompt_tokens": 3077,
+      "completion_tokens": 1971,
+      "actual_usd": "0.00328830"
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:28.543057+00:00",
+      "slug": "financial-filings",
+      "kind": "embedding",
+      "reserved_usd": "0.00002812",
+      "batch_reserved_usd": "0.01872182"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:30.035581+00:00",
+      "slug": "financial-filings",
+      "kind": "embedding",
+      "prompt_tokens": 68,
+      "completion_tokens": 0,
+      "actual_usd": "0.00000136"
+    },
+    {
+      "event": "repair_collection_finished",
+      "timestamp_utc": "2026-09-12T12:52:30.641726+00:00",
+      "id": "2b1d297d-2db8-459d-bda5-4574211ec097",
+      "slug": "financial-filings",
+      "question_count": 3,
+      "min_roles": [
+        "employee",
+        "employee",
+        "employee"
+      ],
+      "roles_valid": true,
+      "filename_hint_count": 0,
+      "non_hint_questions_pass_editorial_filter": true,
+      "document_status_counts": {
+        "ready": 334
+      },
+      "document_counts_unchanged": true,
+      "revision_unchanged": true,
+      "data_version_unchanged": true,
+      "failure_type": null
+    },
+    {
+      "event": "repair_collection_started",
+      "timestamp_utc": "2026-09-12T12:52:30.641826+00:00",
+      "slug": "gitlab-handbook",
+      "revision": 0
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:30.940018+00:00",
+      "slug": "gitlab-handbook",
+      "kind": "llm",
+      "reserved_usd": "0.00934260",
+      "batch_reserved_usd": "0.02806442"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:33.836254+00:00",
+      "slug": "gitlab-handbook",
+      "kind": "llm",
+      "prompt_tokens": 3269,
+      "completion_tokens": 430,
+      "actual_usd": "0.00149670"
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:33.845478+00:00",
+      "slug": "gitlab-handbook",
+      "kind": "embedding",
+      "reserved_usd": "0.00002696",
+      "batch_reserved_usd": "0.02809138"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:34.217499+00:00",
+      "slug": "gitlab-handbook",
+      "kind": "embedding",
+      "prompt_tokens": 66,
+      "completion_tokens": 0,
+      "actual_usd": "0.00000132"
+    },
+    {
+      "event": "repair_collection_finished",
+      "timestamp_utc": "2026-09-12T12:52:34.768424+00:00",
+      "id": "6642371b-cd77-4a98-8c07-3d4c4ba37a26",
+      "slug": "gitlab-handbook",
+      "question_count": 3,
+      "min_roles": [
+        "employee",
+        "employee",
+        "employee"
+      ],
+      "roles_valid": true,
+      "filename_hint_count": 0,
+      "non_hint_questions_pass_editorial_filter": true,
+      "document_status_counts": {
+        "ready": 3639
+      },
+      "document_counts_unchanged": true,
+      "revision_unchanged": true,
+      "data_version_unchanged": true,
+      "failure_type": null
+    },
+    {
+      "event": "repair_collection_started",
+      "timestamp_utc": "2026-09-12T12:52:34.768521+00:00",
+      "slug": "govreport",
+      "revision": 0
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:35.075062+00:00",
+      "slug": "govreport",
+      "kind": "llm",
+      "reserved_usd": "0.01085100",
+      "batch_reserved_usd": "0.03894238"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:37.209494+00:00",
+      "slug": "govreport",
+      "kind": "llm",
+      "prompt_tokens": 3454,
+      "completion_tokens": 317,
+      "actual_usd": "0.00141660"
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:37.219029+00:00",
+      "slug": "govreport",
+      "kind": "embedding",
+      "reserved_usd": "0.00002862",
+      "batch_reserved_usd": "0.03897100"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:37.394529+00:00",
+      "slug": "govreport",
+      "kind": "embedding",
+      "prompt_tokens": 67,
+      "completion_tokens": 0,
+      "actual_usd": "0.00000134"
+    },
+    {
+      "event": "repair_collection_finished",
+      "timestamp_utc": "2026-09-12T12:52:37.966542+00:00",
+      "id": "59f88f3e-f33d-4327-b29a-38c2c18ed6b3",
+      "slug": "govreport",
+      "question_count": 3,
+      "min_roles": [
+        "employee",
+        "employee",
+        "employee"
+      ],
+      "roles_valid": true,
+      "filename_hint_count": 0,
+      "non_hint_questions_pass_editorial_filter": true,
+      "document_status_counts": {
+        "ready": 4979
+      },
+      "document_counts_unchanged": true,
+      "revision_unchanged": true,
+      "data_version_unchanged": true,
+      "failure_type": null
+    },
+    {
+      "event": "repair_collection_started",
+      "timestamp_utc": "2026-09-12T12:52:37.966671+00:00",
+      "slug": "kranich",
+      "revision": 0
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:37.997208+00:00",
+      "slug": "kranich",
+      "kind": "llm",
+      "reserved_usd": "0.00996810",
+      "batch_reserved_usd": "0.04893910"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:41.117074+00:00",
+      "slug": "kranich",
+      "kind": "llm",
+      "prompt_tokens": 3268,
+      "completion_tokens": 494,
+      "actual_usd": "0.00157320"
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:41.126227+00:00",
+      "slug": "kranich",
+      "kind": "embedding",
+      "reserved_usd": "0.00002836",
+      "batch_reserved_usd": "0.04896746"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:41.325935+00:00",
+      "slug": "kranich",
+      "kind": "embedding",
+      "prompt_tokens": 71,
+      "completion_tokens": 0,
+      "actual_usd": "0.00000142"
+    },
+    {
+      "event": "repair_collection_finished",
+      "timestamp_utc": "2026-09-12T12:52:41.769155+00:00",
+      "id": "9a0296e2-66ae-4334-a639-cc9bfbf1842e",
+      "slug": "kranich",
+      "question_count": 3,
+      "min_roles": [
+        "employee",
+        "employee",
+        "leadership"
+      ],
+      "roles_valid": true,
+      "filename_hint_count": 1,
+      "non_hint_questions_pass_editorial_filter": true,
+      "document_status_counts": {
+        "ready": 298
+      },
+      "document_counts_unchanged": true,
+      "revision_unchanged": true,
+      "data_version_unchanged": true,
+      "failure_type": null
+    },
+    {
+      "event": "repair_collection_started",
+      "timestamp_utc": "2026-09-12T12:52:41.769246+00:00",
+      "slug": "policies-en",
+      "revision": 0
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:41.784337+00:00",
+      "slug": "policies-en",
+      "kind": "llm",
+      "reserved_usd": "0.00979530",
+      "batch_reserved_usd": "0.05876276"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:45.206211+00:00",
+      "slug": "policies-en",
+      "kind": "llm",
+      "prompt_tokens": 3409,
+      "completion_tokens": 491,
+      "actual_usd": "0.00161190"
+    },
+    {
+      "event": "repair_provider_admitted",
+      "timestamp_utc": "2026-09-12T12:52:45.215318+00:00",
+      "slug": "policies-en",
+      "kind": "embedding",
+      "reserved_usd": "0.00002702",
+      "batch_reserved_usd": "0.05878978"
+    },
+    {
+      "event": "repair_provider_usage",
+      "timestamp_utc": "2026-09-12T12:52:45.395154+00:00",
+      "slug": "policies-en",
+      "kind": "embedding",
+      "prompt_tokens": 69,
+      "completion_tokens": 0,
+      "actual_usd": "0.00000138"
+    },
+    {
+      "event": "repair_collection_finished",
+      "timestamp_utc": "2026-09-12T12:52:45.493478+00:00",
+      "id": "9e03c140-e0c3-49a5-8308-5edb5383798f",
+      "slug": "policies-en",
+      "question_count": 3,
+      "min_roles": [
+        "employee",
+        "employee",
+        "leadership"
+      ],
+      "roles_valid": true,
+      "filename_hint_count": 1,
+      "non_hint_questions_pass_editorial_filter": true,
+      "document_status_counts": {
+        "ready": 19
+      },
+      "document_counts_unchanged": true,
+      "revision_unchanged": true,
+      "data_version_unchanged": true,
+      "failure_type": null
+    },
+    {
+      "event": "repair_final",
+      "timestamp_utc": "2026-09-12T12:52:45.493628+00:00",
+      "results": [
+        {
+          "id": "f9788817-3e07-47d6-9062-c928ee371b4e",
+          "slug": "contracts-cuad",
+          "question_count": 3,
+          "min_roles": [
+            "employee",
+            "employee",
+            "employee"
+          ],
+          "roles_valid": true,
+          "filename_hint_count": 0,
+          "non_hint_questions_pass_editorial_filter": true,
+          "document_status_counts": {
+            "ready": 509
+          },
+          "document_counts_unchanged": true,
+          "revision_unchanged": true,
+          "data_version_unchanged": true,
+          "failure_type": null
+        },
+        {
+          "id": "2b1d297d-2db8-459d-bda5-4574211ec097",
+          "slug": "financial-filings",
+          "question_count": 3,
+          "min_roles": [
+            "employee",
+            "employee",
+            "employee"
+          ],
+          "roles_valid": true,
+          "filename_hint_count": 0,
+          "non_hint_questions_pass_editorial_filter": true,
+          "document_status_counts": {
+            "ready": 334
+          },
+          "document_counts_unchanged": true,
+          "revision_unchanged": true,
+          "data_version_unchanged": true,
+          "failure_type": null
+        },
+        {
+          "id": "6642371b-cd77-4a98-8c07-3d4c4ba37a26",
+          "slug": "gitlab-handbook",
+          "question_count": 3,
+          "min_roles": [
+            "employee",
+            "employee",
+            "employee"
+          ],
+          "roles_valid": true,
+          "filename_hint_count": 0,
+          "non_hint_questions_pass_editorial_filter": true,
+          "document_status_counts": {
+            "ready": 3639
+          },
+          "document_counts_unchanged": true,
+          "revision_unchanged": true,
+          "data_version_unchanged": true,
+          "failure_type": null
+        },
+        {
+          "id": "59f88f3e-f33d-4327-b29a-38c2c18ed6b3",
+          "slug": "govreport",
+          "question_count": 3,
+          "min_roles": [
+            "employee",
+            "employee",
+            "employee"
+          ],
+          "roles_valid": true,
+          "filename_hint_count": 0,
+          "non_hint_questions_pass_editorial_filter": true,
+          "document_status_counts": {
+            "ready": 4979
+          },
+          "document_counts_unchanged": true,
+          "revision_unchanged": true,
+          "data_version_unchanged": true,
+          "failure_type": null
+        },
+        {
+          "id": "9a0296e2-66ae-4334-a639-cc9bfbf1842e",
+          "slug": "kranich",
+          "question_count": 3,
+          "min_roles": [
+            "employee",
+            "employee",
+            "leadership"
+          ],
+          "roles_valid": true,
+          "filename_hint_count": 1,
+          "non_hint_questions_pass_editorial_filter": true,
+          "document_status_counts": {
+            "ready": 298
+          },
+          "document_counts_unchanged": true,
+          "revision_unchanged": true,
+          "data_version_unchanged": true,
+          "failure_type": null
+        },
+        {
+          "id": "9e03c140-e0c3-49a5-8308-5edb5383798f",
+          "slug": "policies-en",
+          "question_count": 3,
+          "min_roles": [
+            "employee",
+            "employee",
+            "leadership"
+          ],
+          "roles_valid": true,
+          "filename_hint_count": 1,
+          "non_hint_questions_pass_editorial_filter": true,
+          "document_status_counts": {
+            "ready": 19
+          },
+          "document_counts_unchanged": true,
+          "revision_unchanged": true,
+          "data_version_unchanged": true,
+          "failure_type": null
+        }
+      ],
+      "provider_attempts": [
+        {
+          "slug": "contracts-cuad",
+          "kind": "llm",
+          "model": "deepseek-v4-flash",
+          "input_count": 2,
+          "input_utf8_bytes": 13107,
+          "max_output_tokens": 4096,
+          "reserved_usd": "0.00915450",
+          "actual_usd": "0.00154290",
+          "prompt_tokens": 3107,
+          "completion_tokens": 509
+        },
+        {
+          "slug": "contracts-cuad",
+          "kind": "embedding",
+          "model": "text-embedding-3-small",
+          "input_count": 5,
+          "input_utf8_bytes": 376,
+          "max_output_tokens": 0,
+          "reserved_usd": "0.00002800",
+          "actual_usd": "0.00000154",
+          "prompt_tokens": 77,
+          "completion_tokens": 0
+        },
+        {
+          "slug": "financial-filings",
+          "kind": "llm",
+          "model": "deepseek-v4-flash",
+          "input_count": 2,
+          "input_utf8_bytes": 14296,
+          "max_output_tokens": 4096,
+          "reserved_usd": "0.00951120",
+          "actual_usd": "0.00328830",
+          "prompt_tokens": 3077,
+          "completion_tokens": 1971
+        },
+        {
+          "slug": "financial-filings",
+          "kind": "embedding",
+          "model": "text-embedding-3-small",
+          "input_count": 5,
+          "input_utf8_bytes": 382,
+          "max_output_tokens": 0,
+          "reserved_usd": "0.00002812",
+          "actual_usd": "0.00000136",
+          "prompt_tokens": 68,
+          "completion_tokens": 0
+        },
+        {
+          "slug": "gitlab-handbook",
+          "kind": "llm",
+          "model": "deepseek-v4-flash",
+          "input_count": 2,
+          "input_utf8_bytes": 13734,
+          "max_output_tokens": 4096,
+          "reserved_usd": "0.00934260",
+          "actual_usd": "0.00149670",
+          "prompt_tokens": 3269,
+          "completion_tokens": 430
+        },
+        {
+          "slug": "gitlab-handbook",
+          "kind": "embedding",
+          "model": "text-embedding-3-small",
+          "input_count": 5,
+          "input_utf8_bytes": 324,
+          "max_output_tokens": 0,
+          "reserved_usd": "0.00002696",
+          "actual_usd": "0.00000132",
+          "prompt_tokens": 66,
+          "completion_tokens": 0
+        },
+        {
+          "slug": "govreport",
+          "kind": "llm",
+          "model": "deepseek-v4-flash",
+          "input_count": 2,
+          "input_utf8_bytes": 18762,
+          "max_output_tokens": 4096,
+          "reserved_usd": "0.01085100",
+          "actual_usd": "0.00141660",
+          "prompt_tokens": 3454,
+          "completion_tokens": 317
+        },
+        {
+          "slug": "govreport",
+          "kind": "embedding",
+          "model": "text-embedding-3-small",
+          "input_count": 5,
+          "input_utf8_bytes": 407,
+          "max_output_tokens": 0,
+          "reserved_usd": "0.00002862",
+          "actual_usd": "0.00000134",
+          "prompt_tokens": 67,
+          "completion_tokens": 0
+        },
+        {
+          "slug": "kranich",
+          "kind": "llm",
+          "model": "deepseek-v4-flash",
+          "input_count": 2,
+          "input_utf8_bytes": 15819,
+          "max_output_tokens": 4096,
+          "reserved_usd": "0.00996810",
+          "actual_usd": "0.00157320",
+          "prompt_tokens": 3268,
+          "completion_tokens": 494
+        },
+        {
+          "slug": "kranich",
+          "kind": "embedding",
+          "model": "text-embedding-3-small",
+          "input_count": 5,
+          "input_utf8_bytes": 394,
+          "max_output_tokens": 0,
+          "reserved_usd": "0.00002836",
+          "actual_usd": "0.00000142",
+          "prompt_tokens": 71,
+          "completion_tokens": 0
+        },
+        {
+          "slug": "policies-en",
+          "kind": "llm",
+          "model": "deepseek-v4-flash",
+          "input_count": 2,
+          "input_utf8_bytes": 15243,
+          "max_output_tokens": 4096,
+          "reserved_usd": "0.00979530",
+          "actual_usd": "0.00161190",
+          "prompt_tokens": 3409,
+          "completion_tokens": 491
+        },
+        {
+          "slug": "policies-en",
+          "kind": "embedding",
+          "model": "text-embedding-3-small",
+          "input_count": 5,
+          "input_utf8_bytes": 327,
+          "max_output_tokens": 0,
+          "reserved_usd": "0.00002702",
+          "actual_usd": "0.00000138",
+          "prompt_tokens": 69,
+          "completion_tokens": 0
+        }
+      ],
+      "aggregate_reserved_usd": "0.05878978",
+      "provider_reported_actual_usd": "0.01093796",
+      "unreported_attempts_reserved_usd": "0",
+      "actual_plus_unreported_upper_bound_usd": "0.01093796",
+      "aggregate_admission_ceiling_usd": "0.60",
+      "task_direct_invocation_count": 6,
+      "queue_publication_attempt_count": 0,
+      "all_restored": true
+    }
+  ],
+  "execution_return_code": 0,
+  "execution_finished_utc": "2026-09-12T12:52:45.967494+00:00",
+  "execution": {
+    "event": "repair_final",
+    "timestamp_utc": "2026-09-12T12:52:45.493628+00:00",
+    "results": [
+      {
+        "id": "f9788817-3e07-47d6-9062-c928ee371b4e",
+        "slug": "contracts-cuad",
+        "question_count": 3,
+        "min_roles": [
+          "employee",
+          "employee",
+          "employee"
+        ],
+        "roles_valid": true,
+        "filename_hint_count": 0,
+        "non_hint_questions_pass_editorial_filter": true,
+        "document_status_counts": {
+          "ready": 509
+        },
+        "document_counts_unchanged": true,
+        "revision_unchanged": true,
+        "data_version_unchanged": true,
+        "failure_type": null
+      },
+      {
+        "id": "2b1d297d-2db8-459d-bda5-4574211ec097",
+        "slug": "financial-filings",
+        "question_count": 3,
+        "min_roles": [
+          "employee",
+          "employee",
+          "employee"
+        ],
+        "roles_valid": true,
+        "filename_hint_count": 0,
+        "non_hint_questions_pass_editorial_filter": true,
+        "document_status_counts": {
+          "ready": 334
+        },
+        "document_counts_unchanged": true,
+        "revision_unchanged": true,
+        "data_version_unchanged": true,
+        "failure_type": null
+      },
+      {
+        "id": "6642371b-cd77-4a98-8c07-3d4c4ba37a26",
+        "slug": "gitlab-handbook",
+        "question_count": 3,
+        "min_roles": [
+          "employee",
+          "employee",
+          "employee"
+        ],
+        "roles_valid": true,
+        "filename_hint_count": 0,
+        "non_hint_questions_pass_editorial_filter": true,
+        "document_status_counts": {
+          "ready": 3639
+        },
+        "document_counts_unchanged": true,
+        "revision_unchanged": true,
+        "data_version_unchanged": true,
+        "failure_type": null
+      },
+      {
+        "id": "59f88f3e-f33d-4327-b29a-38c2c18ed6b3",
+        "slug": "govreport",
+        "question_count": 3,
+        "min_roles": [
+          "employee",
+          "employee",
+          "employee"
+        ],
+        "roles_valid": true,
+        "filename_hint_count": 0,
+        "non_hint_questions_pass_editorial_filter": true,
+        "document_status_counts": {
+          "ready": 4979
+        },
+        "document_counts_unchanged": true,
+        "revision_unchanged": true,
+        "data_version_unchanged": true,
+        "failure_type": null
+      },
+      {
+        "id": "9a0296e2-66ae-4334-a639-cc9bfbf1842e",
+        "slug": "kranich",
+        "question_count": 3,
+        "min_roles": [
+          "employee",
+          "employee",
+          "leadership"
+        ],
+        "roles_valid": true,
+        "filename_hint_count": 1,
+        "non_hint_questions_pass_editorial_filter": true,
+        "document_status_counts": {
+          "ready": 298
+        },
+        "document_counts_unchanged": true,
+        "revision_unchanged": true,
+        "data_version_unchanged": true,
+        "failure_type": null
+      },
+      {
+        "id": "9e03c140-e0c3-49a5-8308-5edb5383798f",
+        "slug": "policies-en",
+        "question_count": 3,
+        "min_roles": [
+          "employee",
+          "employee",
+          "leadership"
+        ],
+        "roles_valid": true,
+        "filename_hint_count": 1,
+        "non_hint_questions_pass_editorial_filter": true,
+        "document_status_counts": {
+          "ready": 19
+        },
+        "document_counts_unchanged": true,
+        "revision_unchanged": true,
+        "data_version_unchanged": true,
+        "failure_type": null
+      }
+    ],
+    "provider_attempts": [
+      {
+        "slug": "contracts-cuad",
+        "kind": "llm",
+        "model": "deepseek-v4-flash",
+        "input_count": 2,
+        "input_utf8_bytes": 13107,
+        "max_output_tokens": 4096,
+        "reserved_usd": "0.00915450",
+        "actual_usd": "0.00154290",
+        "prompt_tokens": 3107,
+        "completion_tokens": 509
+      },
+      {
+        "slug": "contracts-cuad",
+        "kind": "embedding",
+        "model": "text-embedding-3-small",
+        "input_count": 5,
+        "input_utf8_bytes": 376,
+        "max_output_tokens": 0,
+        "reserved_usd": "0.00002800",
+        "actual_usd": "0.00000154",
+        "prompt_tokens": 77,
+        "completion_tokens": 0
+      },
+      {
+        "slug": "financial-filings",
+        "kind": "llm",
+        "model": "deepseek-v4-flash",
+        "input_count": 2,
+        "input_utf8_bytes": 14296,
+        "max_output_tokens": 4096,
+        "reserved_usd": "0.00951120",
+        "actual_usd": "0.00328830",
+        "prompt_tokens": 3077,
+        "completion_tokens": 1971
+      },
+      {
+        "slug": "financial-filings",
+        "kind": "embedding",
+        "model": "text-embedding-3-small",
+        "input_count": 5,
+        "input_utf8_bytes": 382,
+        "max_output_tokens": 0,
+        "reserved_usd": "0.00002812",
+        "actual_usd": "0.00000136",
+        "prompt_tokens": 68,
+        "completion_tokens": 0
+      },
+      {
+        "slug": "gitlab-handbook",
+        "kind": "llm",
+        "model": "deepseek-v4-flash",
+        "input_count": 2,
+        "input_utf8_bytes": 13734,
+        "max_output_tokens": 4096,
+        "reserved_usd": "0.00934260",
+        "actual_usd": "0.00149670",
+        "prompt_tokens": 3269,
+        "completion_tokens": 430
+      },
+      {
+        "slug": "gitlab-handbook",
+        "kind": "embedding",
+        "model": "text-embedding-3-small",
+        "input_count": 5,
+        "input_utf8_bytes": 324,
+        "max_output_tokens": 0,
+        "reserved_usd": "0.00002696",
+        "actual_usd": "0.00000132",
+        "prompt_tokens": 66,
+        "completion_tokens": 0
+      },
+      {
+        "slug": "govreport",
+        "kind": "llm",
+        "model": "deepseek-v4-flash",
+        "input_count": 2,
+        "input_utf8_bytes": 18762,
+        "max_output_tokens": 4096,
+        "reserved_usd": "0.01085100",
+        "actual_usd": "0.00141660",
+        "prompt_tokens": 3454,
+        "completion_tokens": 317
+      },
+      {
+        "slug": "govreport",
+        "kind": "embedding",
+        "model": "text-embedding-3-small",
+        "input_count": 5,
+        "input_utf8_bytes": 407,
+        "max_output_tokens": 0,
+        "reserved_usd": "0.00002862",
+        "actual_usd": "0.00000134",
+        "prompt_tokens": 67,
+        "completion_tokens": 0
+      },
+      {
+        "slug": "kranich",
+        "kind": "llm",
+        "model": "deepseek-v4-flash",
+        "input_count": 2,
+        "input_utf8_bytes": 15819,
+        "max_output_tokens": 4096,
+        "reserved_usd": "0.00996810",
+        "actual_usd": "0.00157320",
+        "prompt_tokens": 3268,
+        "completion_tokens": 494
+      },
+      {
+        "slug": "kranich",
+        "kind": "embedding",
+        "model": "text-embedding-3-small",
+        "input_count": 5,
+        "input_utf8_bytes": 394,
+        "max_output_tokens": 0,
+        "reserved_usd": "0.00002836",
+        "actual_usd": "0.00000142",
+        "prompt_tokens": 71,
+        "completion_tokens": 0
+      },
+      {
+        "slug": "policies-en",
+        "kind": "llm",
+        "model": "deepseek-v4-flash",
+        "input_count": 2,
+        "input_utf8_bytes": 15243,
+        "max_output_tokens": 4096,
+        "reserved_usd": "0.00979530",
+        "actual_usd": "0.00161190",
+        "prompt_tokens": 3409,
+        "completion_tokens": 491
+      },
+      {
+        "slug": "policies-en",
+        "kind": "embedding",
+        "model": "text-embedding-3-small",
+        "input_count": 5,
+        "input_utf8_bytes": 327,
+        "max_output_tokens": 0,
+        "reserved_usd": "0.00002702",
+        "actual_usd": "0.00000138",
+        "prompt_tokens": 69,
+        "completion_tokens": 0
+      }
+    ],
+    "aggregate_reserved_usd": "0.05878978",
+    "provider_reported_actual_usd": "0.01093796",
+    "unreported_attempts_reserved_usd": "0",
+    "actual_plus_unreported_upper_bound_usd": "0.01093796",
+    "aggregate_admission_ceiling_usd": "0.60",
+    "task_direct_invocation_count": 6,
+    "queue_publication_attempt_count": 0,
+    "all_restored": true
+  },
+  "public_api_after": {
+    "timestamp_utc": "2026-09-12T12:53:17.457616+00:00",
+    "status_code": 200,
+    "collections": [
+      {
+        "id": "9e03c140-e0c3-49a5-8308-5edb5383798f",
+        "slug": "policies-en",
+        "document_count": 19,
+        "question_count": 3,
+        "suggested_questions": [
+          {
+            "question": "What inputs feed into a performance review cycle?",
+            "min_role": "employee"
+          },
+          {
+            "question": "Where must the handover be written when an employee leaves Kranich?",
+            "min_role": "employee"
+          },
+          {
+            "question": "What guidance does EXEC-001.pdf provide?",
+            "min_role": "leadership"
+          }
+        ],
+        "access_labels": [
+          "managers",
+          "hr",
+          "finance",
+          "leadership"
+        ],
+        "document_count_unchanged": true,
+        "access_labels_unchanged": true,
+        "public_read_only": true
+      },
+      {
+        "id": "6642371b-cd77-4a98-8c07-3d4c4ba37a26",
+        "slug": "gitlab-handbook",
+        "document_count": 3639,
+        "question_count": 3,
+        "suggested_questions": [
+          {
+            "question": "How can someone propose a change to the GitLab Handbook?",
+            "min_role": "employee"
+          },
+          {
+            "question": "How should the expertise field be formatted on a team page entry?",
+            "min_role": "employee"
+          },
+          {
+            "question": "Why is the handbook not being turned into a digital or printed book?",
+            "min_role": "employee"
+          }
+        ],
+        "access_labels": [],
+        "document_count_unchanged": true,
+        "access_labels_unchanged": true,
+        "public_read_only": true
+      },
+      {
+        "id": "f9788817-3e07-47d6-9062-c928ee371b4e",
+        "slug": "contracts-cuad",
+        "document_count": 509,
+        "question_count": 3,
+        "suggested_questions": [
+          {
+            "question": "What happens if neither party gives renewal notice before the term expires?",
+            "min_role": "employee"
+          },
+          {
+            "question": "What may the mark owner do if the other party's use dilutes the marks?",
+            "min_role": "employee"
+          },
+          {
+            "question": "What may either party do if no statement of work is agreed within the set period?",
+            "min_role": "employee"
+          }
+        ],
+        "access_labels": [],
+        "document_count_unchanged": true,
+        "access_labels_unchanged": true,
+        "public_read_only": true
+      },
+      {
+        "id": "2b1d297d-2db8-459d-bda5-4574211ec097",
+        "slug": "financial-filings",
+        "document_count": 334,
+        "question_count": 3,
+        "suggested_questions": [
+          {
+            "question": "What may the Committee do with Dividend Equivalents during the Restricted Period?",
+            "min_role": "employee"
+          },
+          {
+            "question": "What is a significant element in determining the Company's pension expense?",
+            "min_role": "employee"
+          },
+          {
+            "question": "What happens to unexercised awards when a participant's participation ceases?",
+            "min_role": "employee"
+          }
+        ],
+        "access_labels": [],
+        "document_count_unchanged": true,
+        "access_labels_unchanged": true,
+        "public_read_only": true
+      },
+      {
+        "id": "59f88f3e-f33d-4327-b29a-38c2c18ed6b3",
+        "slug": "govreport",
+        "document_count": 4979,
+        "question_count": 3,
+        "suggested_questions": [
+          {
+            "question": "What determines whether a civilian employee is designated emergency-essential?",
+            "min_role": "employee"
+          },
+          {
+            "question": "What must DOD federal civilians show to obtain workers' compensation benefits?",
+            "min_role": "employee"
+          },
+          {
+            "question": "What are the four levels of medical care provided during a military contingency?",
+            "min_role": "employee"
+          }
+        ],
+        "access_labels": [],
+        "document_count_unchanged": true,
+        "access_labels_unchanged": true,
+        "public_read_only": true
+      },
+      {
+        "id": "9a0296e2-66ae-4334-a639-cc9bfbf1842e",
+        "slug": "kranich",
+        "document_count": 298,
+        "question_count": 3,
+        "suggested_questions": [
+          {
+            "question": "Do employees need to submit a leave request in Fern for the office closure days?",
+            "min_role": "employee"
+          },
+          {
+            "question": "What should employees do if they cannot access the security training module?",
+            "min_role": "employee"
+          },
+          {
+            "question": "What guidance does EXEC-BOARD-01.pdf provide?",
+            "min_role": "leadership"
+          }
+        ],
+        "access_labels": [
+          "managers",
+          "hr",
+          "finance",
+          "leadership"
+        ],
+        "document_count_unchanged": true,
+        "access_labels_unchanged": true,
+        "public_read_only": true
+      }
+    ],
+    "all_six_have_three_questions": true,
+    "total_documents": 9778,
+    "document_counts_and_access_labels_unchanged": true
+  },
+  "cost_note": "Actual means provider-reported token counts valued using deployed peak/cache-miss repository tariff, not a provider invoice. Every HTTP attempt reserved a UTF-8 bytes+1024 framing bound first; no failed or unreported attempts.",
+  "mutation_scope": "Only existing task writes to collections.suggested_questions on six pinned public service collections. No documents, schema, source code, environment, release, personal collection, or queue publications changed by this repair.",
+  "root_cause": {
+    "migration": "alembic/versions/0008_collection_data_version.py:23",
+    "cause": "Migration discarded unsafe legacy suggested_questions but did not regenerate questions for already-settled collections. No ingestion terminal event remained to trigger current safe task.",
+    "legacy_sanitizer_preserved": true
+  },
+  "initial_cost_guard": {
+    "initial_target_usd": "0.15",
+    "reason": "Full existing Celery retry bound exceeds requested 0.15 USD before embedding costs",
+    "queued_before_authorized_direct_alternative": false
+  },
+  "direct_task_invocation_count": 6,
+  "queue_publication_count": 0
+}

@@ -1,0 +1,14 @@
+{
+  "date": "2026-09-10T11:24:40.178093+00:00",
+  "head": "891c7d8499dbf285d4e52e03d5eaa2499545b581",
+  "branch": "codex/production-readiness-audit",
+  "framework_ids": 71,
+  "covered_framework_ids": 71,
+  "app_ids": 5,
+  "subcriteria": 9,
+  "errors": [],
+  "protected_files_unchanged": true,
+  "tracked_changes": "",
+  "staged_changes": "",
+  "report_sha256": "ac69134a00c5a4083ad351a6a1f742a69800beb86816d10e4f1b8b07777d3692"
+}

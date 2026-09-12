@@ -1,0 +1,24 @@
+[
+  {
+    "width": 375,
+    "status": "PASS",
+    "password_minimum": 8,
+    "confirmation_mismatch_blocks_request": true,
+    "google_button_available": true,
+    "horizontal_overflow": false,
+    "page_errors": 0,
+    "api_errors": 0
+  },
+  {
+    "width": 1280,
+    "status": "PASS",
+    "password_minimum": 8,
+    "confirmation_mismatch_blocks_request": true,
+    "google_button_available": true,
+    "horizontal_overflow": false,
+    "page_errors": 0,
+    "api_errors": 0,
+    "google_provider_screen": "Google sign-in email entry displayed for the configured client",
+    "completed_google_user_authorization": false
+  }
+]

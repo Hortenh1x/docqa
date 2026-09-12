@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "public_collections": 6,
+  "documents": 9778,
+  "registration_available": true,
+  "google_available": true,
+  "google_start": "real production endpoint, supplied client, exact redirect, state/nonce/PKCE, openid/email only",
+  "cancelled_google_callback": "303 fixed safe account error, guest session preserved",
+  "password_mismatch_and_weak_rejected": true,
+  "guest_mutation_status": 401,
+  "spoofed_forwarded_ip_does_not_reset_budget": true,
+  "final_budget": {
+    "enabled": true,
+    "limit_usd": "0.50",
+    "spent_usd": "0.00655588",
+    "reserved_usd": "0",
+    "remaining_usd": "0.49344412",
+    "reset_at": "2026-09-13T00:00:00+00:00",
+    "limited_by": "ip"
+  },
+  "source_download_sha256": "82ca4198dc1d111397eaf174aaf8f0c40f4794f016bac694b83430445db90369",
+  "emails_sent": 0,
+  "paid_query_calls": 0,
+  "completed_google_user_authorization": false
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "url": "https://docqa.net",
+    "status": 520,
+    "headers": {
+      "Date": "Thu, 10 Sep 2026 13:36:08 GMT",
+      "Content-Type": "text/plain; charset=UTF-8",
+      "Content-Length": "16",
+      "Connection": "close",
+      "Cache-Control": "private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+      "Expires": "Thu, 01 Jan 1970 00:00:01 GMT",
+      "Referrer-Policy": "same-origin",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Server": "cloudflare",
+      "CF-RAY": "a38ed1a2da16e7ce-SYD",
+      "alt-svc": "h3=\":443\"; ma=86400"
+    },
+    "elapsed_s": 11.678
+  },
+  {
+    "url": "https://api.docqa.net/healthz",
+    "status": 200,
+    "headers": {
+      "Date": "Thu, 10 Sep 2026 13:36:08 GMT",
+      "Content-Type": "application/json",
+      "Content-Length": "15",
+      "Connection": "close",
+      "alt-svc": "h3=\":443\"; ma=86400",
+      "Server": "cloudflare",
+      "via": "1.1 Caddy",
+      "x-request-id": "7568e96db0c84cf6b7fef21527a5ac98",
+      "cf-cache-status": "DYNAMIC",
+      "Report-To": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=mUrTJyPvzuWRqc8GoNev6YRz5ikI7n0SU0L1oUsnH2OGt1UDzrYjfu4Emw74oKNxSaqEB3wcg4a%2FK%2Bzj9Tbw0un%2BiWdrLdcU6N4ei8NUMx%2BVlQU7gg37FvzwzFo4E0%2FP\"}]}",
+      "Nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+      "CF-RAY": "a38ed1e79ea9ecba-WAW"
+    },
+    "elapsed_s": 0.259
+  },
+  {
+    "url": "https://api.docqa.net/readyz",
+    "status": 200,
+    "headers": {
+      "Date": "Thu, 10 Sep 2026 13:36:09 GMT",
+      "Content-Type": "application/json",
+      "Content-Length": "55",
+      "Connection": "close",
+      "alt-svc": "h3=\":443\"; ma=86400",
+      "Server": "cloudflare",
+      "via": "1.1 Caddy",
+      "x-request-id": "ec3716088ccf4de19a3e4ee16b015cf7",
+      "cf-cache-status": "DYNAMIC",
+      "Report-To": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=Yb39z1O%2FOjCUVn8kLBf7kykKvYanSuO2n1p%2FTipeMYPM4lzaMxvQT5qCwtKh3Ke3GeTGT0p%2BL2Gyg5kdBm0p5HikrgLBaHdO4ciWhjW7n1A45VgEQUZ9O0LwHqWN%2FBt0\"}]}",
+      "Nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+      "CF-RAY": "a38ed1e8babdeda8-MXP"
+    },
+    "elapsed_s": 0.153
+  }
+]

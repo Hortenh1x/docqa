@@ -13,14 +13,20 @@ from typing import Any
 
 import structlog
 from celery import Task
-from celery.exceptions import MaxRetriesExceededError
 
+from app.billing.errors import BudgetExceededError, BudgetUnavailableError
+from app.billing.jobs import attributed, collection_billing
 from app.config import get_settings
 from app.db.models import Collection
 from app.db.sync import sync_session
 from app.embeddings.base import EmbeddingError
 from app.generation.llm import GenerationError
-from app.generation.suggestions import draft_candidates, rank_questions, sample_excerpts
+from app.generation.suggestions import (
+    draft_candidates,
+    locked_document_hint,
+    rank_questions,
+    sample_excerpts,
+)
 from app.workers.celery_app import celery_app
 
 log = structlog.get_logger("docqa.suggestions")
@@ -39,7 +45,7 @@ def _run_async[T](coro: Coroutine[Any, Any, T]) -> T:
 
 
 @celery_app.task(name="generation.suggest_questions", bind=True, max_retries=3)  # type: ignore[untyped-decorator]
-def suggest_questions(self: Task, collection_id: str) -> None:
+def suggest_questions(self: Task, collection_id: str, expected_revision: int | None = None) -> None:
     settings = get_settings()
     if not settings.suggested_questions_enabled:
         return
@@ -47,32 +53,52 @@ def suggest_questions(self: Task, collection_id: str) -> None:
     log_ctx = log.bind(collection_id=collection_id)
 
     with sync_session() as session:
-        if session.get(Collection, coll_id) is None:
+        snapshot = session.get(Collection, coll_id)
+        if snapshot is None:
             return  # deleted while the task sat in the queue
+        if expected_revision is not None and snapshot.suggestion_revision != expected_revision:
+            return  # this queued trigger was superseded before execution
+        data_version = snapshot.data_version
         excerpts = sample_excerpts(session, coll_id)
+        locked_hint = locked_document_hint(session, coll_id, settings)
 
     if not excerpts:
         with sync_session() as session:
-            collection = session.get(Collection, coll_id)
-            if collection is not None and collection.suggested_questions is not None:
-                collection.suggested_questions = None
+            collection = session.get(Collection, coll_id, with_for_update=True)
+            if (
+                collection is not None
+                and collection.data_version == data_version
+                and (
+                    expected_revision is None or collection.suggestion_revision == expected_revision
+                )
+            ):
+                collection.suggested_questions = [dict(locked_hint)] if locked_hint else None
         log_ctx.info("suggestions_cleared", reason="no_ready_chunks")
         return
 
     # provider calls happen outside any DB session
     try:
-        questions, embeddings = _run_async(draft_candidates(settings, excerpts))
+        payer, operator = collection_billing(
+            coll_id, data_version=data_version, expected_revision=expected_revision
+        )
+        questions, embeddings = _run_async(
+            attributed(draft_candidates(settings, excerpts), payer, operator)
+        )
+    except (BudgetExceededError, BudgetUnavailableError) as exc:
+        log_ctx.warning("suggestions_budget_blocked", code=exc.code)
+        return
     except (EmbeddingError, GenerationError) as exc:
         log_ctx.warning(
-            "suggestions_provider_unavailable", error=str(exc), attempt=self.request.retries
+            "suggestions_provider_unavailable",
+            error_type=type(exc).__name__,
+            attempt=self.request.retries,
         )
-        try:
-            raise self.retry(exc=exc, countdown=RETRY_BASE_SECONDS * 2**self.request.retries)
-        except MaxRetriesExceededError:
+        if self.request.retries >= self.max_retries:
             log_ctx.warning("suggestions_gave_up")
             return
+        raise self.retry(exc=exc, countdown=RETRY_BASE_SECONDS * 2**self.request.retries) from exc
     except Exception:
-        log_ctx.exception("suggestions_unexpected_error")
+        log_ctx.error("suggestions_unexpected_error")
         return
 
     if not questions:
@@ -84,12 +110,20 @@ def suggest_questions(self: Task, collection_id: str) -> None:
         top = rank_questions(
             session, coll_id, questions, embeddings, settings.suggested_questions_count, settings
         )
-        collection = session.get(Collection, coll_id)
-        if collection is None:
+        collection = session.get(Collection, coll_id, with_for_update=True)
+        if (
+            collection is None
+            or collection.data_version != data_version
+            or (
+                expected_revision is not None
+                and collection.suggestion_revision != expected_revision
+            )
+        ):
             return
+        if locked_hint and not any(q["min_role"] != settings.access_default_role for q in top):
+            top = top[: max(0, settings.suggested_questions_count - 1)] + [locked_hint]
         collection.suggested_questions = [dict(q) for q in top]
     log_ctx.info(
         "suggestions_stored",
         count=len(top),
-        questions=[f"{q['question']} [{q['min_role']}]" for q in top],
     )

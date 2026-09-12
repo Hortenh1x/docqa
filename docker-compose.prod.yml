@@ -1,83 +1,185 @@
-# Production-shaped stack: api + worker + db + redis.
-#   docker compose -f docker-compose.prod.yml up -d --build
-# Secrets/provider config come from the host environment (or an .env file next to this
-# compose file). Database and Redis ports are intentionally NOT published.
+# Production stack. Credentials are mandatory; keep this file's .env private.
+# See deploy/runbook.md before using these settings with an existing database volume.
+
+x-logging: &logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "5"
 
 x-app-env: &app-env
-  DATABASE_URL: postgresql+asyncpg://docqa:${POSTGRES_PASSWORD:-docqa}@db:5432/docqa
-  DATABASE_URL_SYNC: postgresql+psycopg://docqa:${POSTGRES_PASSWORD:-docqa}@db:5432/docqa
+  DATABASE_URL: postgresql+asyncpg://docqa_app:${POSTGRES_APP_PASSWORD:?Set a distinct URL-safe POSTGRES_APP_PASSWORD}@db:5432/docqa
+  DATABASE_URL_SYNC: postgresql+psycopg://docqa_app:${POSTGRES_APP_PASSWORD:?Set POSTGRES_APP_PASSWORD}@db:5432/docqa
   REDIS_URL: redis://redis:6379/0
+  STORAGE_DIR: /app/data/files
+  STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+  S3_BUCKET: ${S3_BUCKET:-}
+  S3_REGION: ${S3_REGION:-eu-central-1}
+  S3_ENDPOINT_URL: ${S3_ENDPOINT_URL:-}
+  S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-}
+  S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-}
+  ACCOUNTS_ENABLED: ${ACCOUNTS_ENABLED:-true}
+  PUBLIC_TENANT_ID: ${PUBLIC_TENANT_ID:?Set the explicitly reviewed public tenant UUID}
+  AUTH_ALLOWED_ORIGINS: ${AUTH_ALLOWED_ORIGINS:-http://localhost:3002}
+  AUTH_PUBLIC_URL: ${AUTH_PUBLIC_URL:-http://localhost:3002}
+  AUTH_SESSION_TTL_S: ${AUTH_SESSION_TTL_S:-604800}
+  AUTH_VERIFY_TTL_S: ${AUTH_VERIFY_TTL_S:-86400}
+  AUTH_RESET_TTL_S: ${AUTH_RESET_TTL_S:-1800}
+  AUTH_ATTEMPT_WINDOW_S: ${AUTH_ATTEMPT_WINDOW_S:-900}
+  AUTH_ATTEMPT_ACCOUNT_LIMIT: ${AUTH_ATTEMPT_ACCOUNT_LIMIT:-10}
+  AUTH_ATTEMPT_IP_LIMIT: ${AUTH_ATTEMPT_IP_LIMIT:-50}
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-https://api.docqa.net/v1/auth/google/callback}
+  SMTP_HOST: ${SMTP_HOST:-}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  SMTP_USERNAME: ${SMTP_USERNAME:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  SMTP_FROM: ${SMTP_FROM:-}
+  SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+  SMTP_TIMEOUT_S: ${SMTP_TIMEOUT_S:-10}
+  BUDGET_ENABLED: ${BUDGET_ENABLED:-true}
+  BUDGET_DAILY_USD: ${BUDGET_DAILY_USD:-0.50}
+  BUDGET_IP_SECRET: ${BUDGET_IP_SECRET:?Set a stable random secret of at least 32 characters}
+  SERVICE_OPERATOR_CONTACT: ${SERVICE_OPERATOR_CONTACT:-}
   EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-stub}
-  OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+  EMBEDDING_DIM: ${EMBEDDING_DIM:-1024}
+  EMBED_BATCH_SIZE: ${EMBED_BATCH_SIZE:-64}
   OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+  OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+  OLLAMA_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL:-bge-m3}
+  CHUNK_TARGET_TOKENS: ${CHUNK_TARGET_TOKENS:-450}
+  CHUNK_OVERLAP_TOKENS: ${CHUNK_OVERLAP_TOKENS:-60}
+  CHUNK_MAX_TOKENS: ${CHUNK_MAX_TOKENS:-512}
+  TOP_K_VECTOR: ${TOP_K_VECTOR:-100}
+  TOP_K_FTS: ${TOP_K_FTS:-100}
+  RRF_K: ${RRF_K:-60}
+  RRF_TOP_N: ${RRF_TOP_N:-40}
+  RERANK_TOP_N: ${RERANK_TOP_N:-40}
+  HNSW_EF_SEARCH: ${HNSW_EF_SEARCH:-200}
+  RERANK_PROVIDER: ${RERANK_PROVIDER:-none}
+  COHERE_API_KEY: ${COHERE_API_KEY:-}
+  COHERE_RERANK_MODEL: ${COHERE_RERANK_MODEL:-rerank-v3.5}
+  RERANK_TIMEOUT_S: ${RERANK_TIMEOUT_S:-4}
+  REFUSAL_THRESHOLD: ${REFUSAL_THRESHOLD:-0.50}
   LLM_PROVIDER: ${LLM_PROVIDER:-stub}
   LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
   LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
   LLM_API_KEY: ${LLM_API_KEY:-}
-  LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-1024}
-  RERANK_PROVIDER: ${RERANK_PROVIDER:-none}
-  COHERE_API_KEY: ${COHERE_API_KEY:-}
-  REFUSAL_THRESHOLD: ${REFUSAL_THRESHOLD:-0.50}
+  LLM_TEMPERATURE: ${LLM_TEMPERATURE:-0.1}
+  LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-4096}
+  LLM_TIMEOUT_S: ${LLM_TIMEOUT_S:-180}
+  CONTEXT_TOKEN_BUDGET: ${CONTEXT_TOKEN_BUDGET:-18000}
+  CONTEXT_CHUNK_MAX_TOKENS: ${CONTEXT_CHUNK_MAX_TOKENS:-700}
+  SUGGESTED_QUESTIONS_ENABLED: ${SUGGESTED_QUESTIONS_ENABLED:-true}
+  SUGGESTED_QUESTIONS_COUNT: ${SUGGESTED_QUESTIONS_COUNT:-3}
+  RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
   RATE_LIMIT_QUERY_PER_MINUTE: ${RATE_LIMIT_QUERY_PER_MINUTE:-30}
+  RATE_LIMIT_UPLOAD_PER_MINUTE: ${RATE_LIMIT_UPLOAD_PER_MINUTE:-10}
+  RATE_LIMIT_DEFAULT_PER_MINUTE: ${RATE_LIMIT_DEFAULT_PER_MINUTE:-120}
   RATE_LIMIT_QUERY_PER_DAY: ${RATE_LIMIT_QUERY_PER_DAY:-0}
   RATE_LIMIT_TRUST_FORWARDED_FOR: ${RATE_LIMIT_TRUST_FORWARDED_FOR:-false}
-  # access levels: the demo reveals how many restricted passages a role could not see
+  IDEMPOTENCY_TTL_S: ${IDEMPOTENCY_TTL_S:-86400}
+  ACCESS_ROLES: '${ACCESS_ROLES:-{"employee":["all"],"manager":["all","managers"],"hr":["all","managers","hr"],"finance":["all","managers","finance"],"leadership":["all","managers","hr","finance","leadership"]}}'
   ACCESS_REVEAL_HIDDEN: ${ACCESS_REVEAL_HIDDEN:-false}
   ACCESS_DEFAULT_ROLE: ${ACCESS_DEFAULT_ROLE:-employee}
+  DEMO_MODE: ${DEMO_MODE:-false}
+  DEMO_MAX_FILES_PER_COLLECTION: ${DEMO_MAX_FILES_PER_COLLECTION:-5}
+  DEMO_MAX_UPLOAD_MB: ${DEMO_MAX_UPLOAD_MB:-5}
+  MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-25}
+  MAX_PAGES: ${MAX_PAGES:-300}
+  CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3002}
   LOG_LEVEL: ${LOG_LEVEL:-INFO}
 
+x-app: &app
+  build: .
+  image: ${DOCQA_IMAGE:-docqa:local}
+  environment: *app-env
+  logging: *logging
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+x-runtime-depends: &runtime-depends
+  migrate:
+    condition: service_completed_successfully
+  redis:
+    condition: service_healthy
+
 services:
-  api:
-    build: .
-    restart: unless-stopped
-    environment: *app-env
-    # makes host.docker.internal resolve on Linux too (no-op where Docker adds it)
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    # migrations on start are fine for a single instance; run a dedicated migrate job
-    # before rolling multiple replicas
-    command: sh -c "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log"
-    ports:
-      - "8000:8000"
+  migrate:
+    <<: *app
+    restart: "no"
+    environment:
+      <<: *app-env
+      DATABASE_URL: postgresql+asyncpg://docqa:${POSTGRES_PASSWORD:?Set a URL-safe POSTGRES_PASSWORD}@db:5432/docqa
+      DATABASE_URL_SYNC: postgresql+psycopg://docqa:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/docqa
+    command: ["sh", "-ec", "alembic upgrade head && python /app/deploy/scripts/grant_runtime.py"]
     volumes:
-      - files:/app/data
+      - ./deploy:/app/deploy:ro
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
+
+  api:
+    <<: *app
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --no-access-log
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - files:/app/data
+    depends_on: *runtime-depends
+    stop_grace_period: 660s
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/readyz', timeout=4)"]
       interval: 15s
       timeout: 5s
       retries: 5
+      start_period: 20s
 
   worker:
-    build: .
+    <<: *app
     restart: unless-stopped
-    environment: *app-env
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    command: celery -A app.workers.celery_app worker -Q ingestion -c 2 --loglevel INFO
+    command: celery -A app.workers.celery_app worker -Q ingestion -c 2 --hostname=ingestion@%h --loglevel INFO
     volumes:
       - files:/app/data
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+    depends_on: *runtime-depends
+    stop_grace_period: 660s
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.workers.celery_app inspect ping --destination ingestion@$$HOSTNAME --timeout 5 | grep -q pong"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  beat:
+    <<: *app
+    restart: unless-stopped
+    command: celery -A app.workers.celery_app beat --schedule=/tmp/celerybeat-schedule --pidfile=/tmp/celerybeat.pid --loglevel INFO
+    depends_on: *runtime-depends
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os; os.kill(int(open('/tmp/celerybeat.pid').read()), 0)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
   db:
     image: pgvector/pgvector:pg18
     restart: unless-stopped
+    logging: *logging
     environment:
       POSTGRES_USER: docqa
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-docqa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Set POSTGRES_APP_PASSWORD}
       POSTGRES_DB: docqa
     volumes:
       - pgdata:/var/lib/postgresql
+      - ./deploy/db/init-runtime.sh:/docker-entrypoint-initdb.d/10-docqa-runtime.sh:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U docqa -d docqa"]
+      # The initialization server is socket-only; TCP waits for the final server.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U docqa -d docqa"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -85,7 +187,7 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    # eviction would silently drop Celery messages — never allow it for a broker
+    logging: *logging
     command: redis-server --maxmemory-policy noeviction
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]

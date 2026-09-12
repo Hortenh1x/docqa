@@ -33,6 +33,7 @@ plans/
 # agent scratch: local worktrees and knowledge-graph output
 .claude/worktrees/
 graphify-out/
+.release/
 
 # corpus v2 build artifacts and rejected generations
 corpus/large/build/

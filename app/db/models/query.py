@@ -10,7 +10,11 @@ from app.db.models.base import Base
 
 class Query(Base):
     __tablename__ = "queries"
-    __table_args__ = (Index("ix_queries_tenant_id_created_at", "tenant_id", "created_at"),)
+    __table_args__ = (
+        Index("ix_queries_tenant_id_created_at", "tenant_id", "created_at"),
+        Index("ix_queries_user_created", "user_id", "created_at"),
+        Index("ix_queries_ip_created", "ip_digest", "created_at"),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(
         primary_key=True, server_default=text("gen_random_uuid()")
@@ -31,6 +35,8 @@ class Query(Base):
     cost_usd: Mapped[Decimal | None] = mapped_column(Numeric(10, 6))
     model: Mapped[str | None]
     role: Mapped[str | None]  # the caller's asserted role (access levels); null = legacy rows
+    user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"))
+    ip_digest: Mapped[str | None]
     created_at: Mapped[datetime] = mapped_column(server_default=text("now()"))
 
 

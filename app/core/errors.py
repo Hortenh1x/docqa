@@ -74,6 +74,12 @@ class PayloadTooLargeError(DomainError):
     title = "Payload too large"
 
 
+class StorageQuotaExceededError(DomainError):
+    status = 413
+    code = "storage_quota_exceeded"
+    title = "Account storage limit exceeded"
+
+
 class UnsupportedFileTypeError(DomainError):
     status = 415
     code = "unsupported_file_type"
@@ -140,6 +146,12 @@ class DocumentRestrictedError(DomainError):
     status = 403
     code = "document_restricted"
     title = "Document restricted for this role"
+
+
+class DocumentNotReadyError(DomainError):
+    status = 409
+    code = "document_not_ready"
+    title = "Document classification is not complete"
 
 
 class IdempotencyKeyReusedError(DomainError):
@@ -213,13 +225,14 @@ def install_error_handlers(app: FastAPI) -> None:
     async def integrity_error_handler(request: Request, exc: IntegrityError) -> JSONResponse:
         # safety net: recognized constraint violations are converted to specific
         # DomainErrors in the services; anything that reaches here is a generic conflict
-        log.warning("unhandled_integrity_error", error=str(exc.orig))
+        log.warning("unhandled_integrity_error", error_type=type(exc.orig).__name__)
         return problem_response(
             409, "conflict", "Conflict", "The request conflicts with existing data."
         )
 
     @app.exception_handler(Exception)
     async def internal_error_handler(request: Request, exc: Exception) -> JSONResponse:
-        # full traceback stays in the logs (with request_id); the client gets no details
-        log.exception("unhandled_error")
+        # Exceptions/SQL/provider payloads can contain private document or credential
+        # values. Keep correlation + type; reproduce with synthetic data for diagnosis.
+        log.error("unhandled_error", error_type=type(exc).__name__)
         return problem_response(500, "internal", "Internal error", "An internal error occurred.")

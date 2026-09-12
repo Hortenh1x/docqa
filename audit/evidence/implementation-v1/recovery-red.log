@@ -1,0 +1,169 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_________________ test_broker_outage_preserves_accepted_upload _________________
+
+client = <httpx.AsyncClient object at 0x7f1cf42e34d0>
+tenant = {'id': UUID('7f9c17b6-d3f4-4504-a141-ca5390d661a2'), 'key': 'dqa_live_7GQfHzaFQkSP2fjioHX0wx5IFs3Dn3bS', 'prefix': '7GQfHzaF', 'headers': {'Authorization': 'Bearer dqa_live_7GQfHzaFQkSP2fjioHX0wx5IFs3Dn3bS'}}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1cf43e8740>
+
+    async def test_broker_outage_preserves_accepted_upload(client, tenant, monkeypatch):
+        from app.ingestion.tasks import ingest_document
+    
+        cid = await collection(client, tenant)
+        with monkeypatch.context() as patch:
+            def unavailable(*args, **kwargs):
+                raise ConnectionError("synthetic broker outage")
+            patch.setattr(ingest_document, "delay", unavailable)
+            accepted = await upload(client, tenant, cid, key="durable")
+        assert accepted.status_code == 202
+        doc_id = accepted.json()["id"]
+>       from app.ingestion.tasks import recover_ingestion
+E       ImportError: cannot import name 'recover_ingestion' from 'app.ingestion.tasks' (/home/horten/VS Code Projects/docqa/app/ingestion/tasks.py)
+
+tests/integration/test_ingestion_recovery.py:21: ImportError
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, core tables: tenants, api_keys, collections, documents
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, chunks with hnsw and gin indexes
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, queries and query_citations
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, collections read_only flag
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, collections suggested_questions
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, access labels on chunks, role on queries
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 20.8, "event": "request", "tenant_id": "7f9c17b6-d3f4-4504-a141-ca5390d661a2", "request_id": "2abdc7c60cba409ca6f1b5afaf980a19", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:15:33.750502Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "tenant_id": "7f9c17b6-d3f4-4504-a141-ca5390d661a2", "request_id": "2abdc7c60cba409ca6f1b5afaf980a19", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:15:33.750928Z"}
+{"document_id": "3796d89b-5c59-473d-95ba-a117d2d9c6cd", "event": "ingestion_publish_deferred", "tenant_id": "7f9c17b6-d3f4-4504-a141-ca5390d661a2", "request_id": "de862d0f67964a9fa375deb7f6a2a912", "level": "warning", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:15:33.769708Z"}
+{"document_id": "3796d89b-5c59-473d-95ba-a117d2d9c6cd", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "tenant_id": "7f9c17b6-d3f4-4504-a141-ca5390d661a2", "request_id": "de862d0f67964a9fa375deb7f6a2a912", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:15:33.769855Z"}
+{"method": "POST", "path": "/v1/collections/d2c604dd-4558-4f6a-9d0d-76efb507083d/documents", "status": 202, "latency_ms": 18.1, "event": "request", "tenant_id": "7f9c17b6-d3f4-4504-a141-ca5390d661a2", "request_id": "de862d0f67964a9fa375deb7f6a2a912", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:15:33.770599Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/d2c604dd-4558-4f6a-9d0d-76efb507083d/documents \"HTTP/1.1 202 Accepted\"", "tenant_id": "7f9c17b6-d3f4-4504-a141-ca5390d661a2", "request_id": "de862d0f67964a9fa375deb7f6a2a912", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:15:33.770842Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 20.8, 'event': 'request', 'tenant_id': '7f9c17b6-d3f4-4504-a141-ca5390d661a2', 'request_id': '2abdc7c60cba409ca6f1b5afaf980a19', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:15:33.750502Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+WARNING  docqa.ingestion:service.py:175 {'document_id': '3796d89b-5c59-473d-95ba-a117d2d9c6cd', 'event': 'ingestion_publish_deferred', 'tenant_id': '7f9c17b6-d3f4-4504-a141-ca5390d661a2', 'request_id': 'de862d0f67964a9fa375deb7f6a2a912', 'level': 'warning', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:15:33.769708Z'}
+INFO     docqa.ingestion:service.py:176 {'document_id': '3796d89b-5c59-473d-95ba-a117d2d9c6cd', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'tenant_id': '7f9c17b6-d3f4-4504-a141-ca5390d661a2', 'request_id': 'de862d0f67964a9fa375deb7f6a2a912', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:15:33.769855Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/d2c604dd-4558-4f6a-9d0d-76efb507083d/documents', 'status': 202, 'latency_ms': 18.1, 'event': 'request', 'tenant_id': '7f9c17b6-d3f4-4504-a141-ca5390d661a2', 'request_id': 'de862d0f67964a9fa375deb7f6a2a912', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:15:33.770599Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/d2c604dd-4558-4f6a-9d0d-76efb507083d/documents "HTTP/1.1 202 Accepted"
+________________ test_transient_embeddings_retry_reaches_ready _________________
+
+client = <httpx.AsyncClient object at 0x7f1cf437ab40>
+tenant = {'id': UUID('e8d4542e-1c88-4503-b89a-1abae78630d2'), 'key': 'dqa_live_IW1zTgBOawSKK8ccEoAh7OwvrEPQCuaV', 'prefix': 'IW1zTgBO', 'headers': {'Authorization': 'Bearer dqa_live_IW1zTgBOawSKK8ccEoAh7OwvrEPQCuaV'}}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1cf437afc0>
+
+    async def test_transient_embeddings_retry_reaches_ready(client, tenant, monkeypatch):
+        from app.embeddings.base import EmbeddingError
+        from app.ingestion import tasks
+    
+        cid = await collection(client, tenant)
+        with monkeypatch.context() as patch:
+            patch.setattr(tasks.ingest_document, "delay", lambda *_: None)
+            doc_id = (await upload(client, tenant, cid)).json()["id"]
+        provider = tasks.get_embedding_provider(tasks.get_settings())
+        real_embed = provider.embed
+        calls = 0
+        async def flaky(texts):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise EmbeddingError("synthetic transient")
+            return await real_embed(texts)
+        monkeypatch.setattr(provider, "embed", flaky)
+        monkeypatch.setattr(tasks, "get_embedding_provider", lambda _: provider)
+        tasks.ingest_document.apply(args=[doc_id], throw=False)
+        async with get_sessionmaker()() as db:
+            doc = await db.get(Document, uuid.UUID(doc_id))
+>           assert doc.status == "ready"
+E           AssertionError: assert 'processing' == 'ready'
+E             
+E             - ready
+E             + processing
+
+tests/integration/test_ingestion_recovery.py:51: AssertionError
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 13.0, "event": "request", "tenant_id": "e8d4542e-1c88-4503-b89a-1abae78630d2", "request_id": "858e41961edd4b12af519b1e70eadb7a", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:15:33.855746Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "tenant_id": "e8d4542e-1c88-4503-b89a-1abae78630d2", "request_id": "858e41961edd4b12af519b1e70eadb7a", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:15:33.855993Z"}
+{"document_id": "bdca67fb-bd6b-4983-aeef-6821a332a9a1", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "tenant_id": "e8d4542e-1c88-4503-b89a-1abae78630d2", "request_id": "d1fb5224477c43f7b901279793174249", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:15:33.872456Z"}
+{"method": "POST", "path": "/v1/collections/0cf166c6-179c-4050-b8c0-070b0a2ababe/documents", "status": 202, "latency_ms": 16.6, "event": "request", "tenant_id": "e8d4542e-1c88-4503-b89a-1abae78630d2", "request_id": "d1fb5224477c43f7b901279793174249", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:15:33.873061Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/0cf166c6-179c-4050-b8c0-070b0a2ababe/documents \"HTTP/1.1 202 Accepted\"", "tenant_id": "e8d4542e-1c88-4503-b89a-1abae78630d2", "request_id": "d1fb5224477c43f7b901279793174249", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:15:33.873279Z"}
+{"document_id": "bdca67fb-bd6b-4983-aeef-6821a332a9a1", "error": "synthetic transient", "attempt": 0, "event": "ingest_embeddings_unavailable", "tenant_id": "e8d4542e-1c88-4503-b89a-1abae78630d2", "request_id": "d1fb5224477c43f7b901279793174249", "level": "warning", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:15:34.179584Z"}
+{"event": "Task ingestion.ingest_document[4fb6040a-c253-488a-a4dd-339d47e0ea35] retry: Retry in 10s: EmbeddingError('synthetic transient')", "tenant_id": "e8d4542e-1c88-4503-b89a-1abae78630d2", "request_id": "d1fb5224477c43f7b901279793174249", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:15:34.187552Z"}
+{"document_id": "bdca67fb-bd6b-4983-aeef-6821a332a9a1", "status": "processing", "event": "ingest_skipped", "tenant_id": "e8d4542e-1c88-4503-b89a-1abae78630d2", "request_id": "d1fb5224477c43f7b901279793174249", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:15:34.189316Z"}
+{"event": "Task ingestion.ingest_document[4fb6040a-c253-488a-a4dd-339d47e0ea35] succeeded in 0.006802573014283553s: None", "tenant_id": "e8d4542e-1c88-4503-b89a-1abae78630d2", "request_id": "d1fb5224477c43f7b901279793174249", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:15:34.194594Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 13.0, 'event': 'request', 'tenant_id': 'e8d4542e-1c88-4503-b89a-1abae78630d2', 'request_id': '858e41961edd4b12af519b1e70eadb7a', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:15:33.855746Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:service.py:176 {'document_id': 'bdca67fb-bd6b-4983-aeef-6821a332a9a1', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'tenant_id': 'e8d4542e-1c88-4503-b89a-1abae78630d2', 'request_id': 'd1fb5224477c43f7b901279793174249', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:15:33.872456Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/0cf166c6-179c-4050-b8c0-070b0a2ababe/documents', 'status': 202, 'latency_ms': 16.6, 'event': 'request', 'tenant_id': 'e8d4542e-1c88-4503-b89a-1abae78630d2', 'request_id': 'd1fb5224477c43f7b901279793174249', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:15:33.873061Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/0cf166c6-179c-4050-b8c0-070b0a2ababe/documents "HTTP/1.1 202 Accepted"
+WARNING  docqa.ingestion:tasks.py:180 {'document_id': 'bdca67fb-bd6b-4983-aeef-6821a332a9a1', 'error': 'synthetic transient', 'attempt': 0, 'event': 'ingest_embeddings_unavailable', 'tenant_id': 'e8d4542e-1c88-4503-b89a-1abae78630d2', 'request_id': 'd1fb5224477c43f7b901279793174249', 'level': 'warning', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:15:34.179584Z'}
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[4fb6040a-c253-488a-a4dd-339d47e0ea35] retry: Retry in 10s: EmbeddingError('synthetic transient')
+INFO     docqa.ingestion:tasks.py:161 {'document_id': 'bdca67fb-bd6b-4983-aeef-6821a332a9a1', 'status': 'processing', 'event': 'ingest_skipped', 'tenant_id': 'e8d4542e-1c88-4503-b89a-1abae78630d2', 'request_id': 'd1fb5224477c43f7b901279793174249', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:15:34.189316Z'}
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[4fb6040a-c253-488a-a4dd-339d47e0ea35] succeeded in 0.006802573014283553s: None
+_______ test_exhausted_retry_is_terminal_and_duplicate_delivery_is_noop ________
+
+client = <httpx.AsyncClient object at 0x7f1ceacd3350>
+tenant = {'id': UUID('5a402fee-eabd-4f44-b5f2-540a7da2afe8'), 'key': 'dqa_live_zi3QcImnT3P7bmAV0d8RbUoWVQivy38U', 'prefix': 'zi3QcImn', 'headers': {'Authorization': 'Bearer dqa_live_zi3QcImnT3P7bmAV0d8RbUoWVQivy38U'}}
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f1cee1f1550>
+
+    async def test_exhausted_retry_is_terminal_and_duplicate_delivery_is_noop(client, tenant, monkeypatch):
+        from app.embeddings.base import EmbeddingError
+        from app.ingestion import tasks
+    
+        cid = await collection(client, tenant)
+        with monkeypatch.context() as patch:
+            patch.setattr(tasks.ingest_document, "delay", lambda *_: None)
+            doc_id = (await upload(client, tenant, cid)).json()["id"]
+        provider = tasks.get_embedding_provider(tasks.get_settings())
+        calls = 0
+        async def unavailable(texts):
+            nonlocal calls
+            calls += 1
+            raise EmbeddingError("synthetic persistent failure")
+        monkeypatch.setattr(provider, "embed", unavailable)
+        monkeypatch.setattr(tasks, "get_embedding_provider", lambda _: provider)
+        tasks.ingest_document.apply(args=[doc_id], throw=False)
+        tasks.ingest_document.apply(args=[doc_id], throw=False)
+        async with get_sessionmaker()() as db:
+            doc = await db.get(Document, uuid.UUID(doc_id))
+>           assert doc.status == "failed"
+E           AssertionError: assert 'processing' == 'failed'
+E             
+E             - failed
+E             + processing
+
+tests/integration/test_ingestion_recovery.py:76: AssertionError
+----------------------------- Captured stderr call -----------------------------
+{"method": "POST", "path": "/v1/collections", "status": 201, "latency_ms": 10.3, "event": "request", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "b2bb57c0aae04fea92b1a2b852c66418", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:15:34.228115Z"}
+{"event": "HTTP Request: POST http://test/v1/collections \"HTTP/1.1 201 Created\"", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "b2bb57c0aae04fea92b1a2b852c66418", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:15:34.228366Z"}
+{"document_id": "52ae53fb-bb4a-498a-a7dc-595e9c3aaba2", "mime": "text/markdown", "size_bytes": 50, "event": "document_enqueued", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "7ab42454f30745949bc1dc130c68ff59", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:15:34.242607Z"}
+{"method": "POST", "path": "/v1/collections/c2a5efaf-bcda-4dcf-9884-4b6e0b19251f/documents", "status": 202, "latency_ms": 14.5, "event": "request", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "7ab42454f30745949bc1dc130c68ff59", "level": "info", "logger": "docqa.request", "timestamp": "2026-09-10T13:15:34.243290Z"}
+{"event": "HTTP Request: POST http://test/v1/collections/c2a5efaf-bcda-4dcf-9884-4b6e0b19251f/documents \"HTTP/1.1 202 Accepted\"", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "7ab42454f30745949bc1dc130c68ff59", "level": "info", "logger": "httpx", "timestamp": "2026-09-10T13:15:34.243665Z"}
+{"document_id": "52ae53fb-bb4a-498a-a7dc-595e9c3aaba2", "error": "synthetic persistent failure", "attempt": 0, "event": "ingest_embeddings_unavailable", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "7ab42454f30745949bc1dc130c68ff59", "level": "warning", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:15:34.249744Z"}
+{"event": "Task ingestion.ingest_document[e7ffa390-721a-4456-b0ba-6a466719afe0] retry: Retry in 10s: EmbeddingError('synthetic persistent failure')", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "7ab42454f30745949bc1dc130c68ff59", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:15:34.251128Z"}
+{"document_id": "52ae53fb-bb4a-498a-a7dc-595e9c3aaba2", "status": "processing", "event": "ingest_skipped", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "7ab42454f30745949bc1dc130c68ff59", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:15:34.252128Z"}
+{"event": "Task ingestion.ingest_document[e7ffa390-721a-4456-b0ba-6a466719afe0] succeeded in 0.0012085229973308742s: None", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "7ab42454f30745949bc1dc130c68ff59", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:15:34.252497Z"}
+{"document_id": "52ae53fb-bb4a-498a-a7dc-595e9c3aaba2", "status": "processing", "event": "ingest_skipped", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "7ab42454f30745949bc1dc130c68ff59", "level": "info", "logger": "docqa.ingestion", "timestamp": "2026-09-10T13:15:34.253401Z"}
+{"event": "Task ingestion.ingest_document[5d6445dd-5b3a-4318-94a2-57c0e00da1c5] succeeded in 0.0010304249881301075s: None", "tenant_id": "5a402fee-eabd-4f44-b5f2-540a7da2afe8", "request_id": "7ab42454f30745949bc1dc130c68ff59", "level": "info", "logger": "celery.app.trace", "timestamp": "2026-09-10T13:15:34.253666Z"}
+------------------------------ Captured log call -------------------------------
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections', 'status': 201, 'latency_ms': 10.3, 'event': 'request', 'tenant_id': '5a402fee-eabd-4f44-b5f2-540a7da2afe8', 'request_id': 'b2bb57c0aae04fea92b1a2b852c66418', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:15:34.228115Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections "HTTP/1.1 201 Created"
+INFO     docqa.ingestion:service.py:176 {'document_id': '52ae53fb-bb4a-498a-a7dc-595e9c3aaba2', 'mime': 'text/markdown', 'size_bytes': 50, 'event': 'document_enqueued', 'tenant_id': '5a402fee-eabd-4f44-b5f2-540a7da2afe8', 'request_id': '7ab42454f30745949bc1dc130c68ff59', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:15:34.242607Z'}
+INFO     docqa.request:logging.py:94 {'method': 'POST', 'path': '/v1/collections/c2a5efaf-bcda-4dcf-9884-4b6e0b19251f/documents', 'status': 202, 'latency_ms': 14.5, 'event': 'request', 'tenant_id': '5a402fee-eabd-4f44-b5f2-540a7da2afe8', 'request_id': '7ab42454f30745949bc1dc130c68ff59', 'level': 'info', 'logger': 'docqa.request', 'timestamp': '2026-09-10T13:15:34.243290Z'}
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/v1/collections/c2a5efaf-bcda-4dcf-9884-4b6e0b19251f/documents "HTTP/1.1 202 Accepted"
+WARNING  docqa.ingestion:tasks.py:180 {'document_id': '52ae53fb-bb4a-498a-a7dc-595e9c3aaba2', 'error': 'synthetic persistent failure', 'attempt': 0, 'event': 'ingest_embeddings_unavailable', 'tenant_id': '5a402fee-eabd-4f44-b5f2-540a7da2afe8', 'request_id': '7ab42454f30745949bc1dc130c68ff59', 'level': 'warning', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:15:34.249744Z'}
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[e7ffa390-721a-4456-b0ba-6a466719afe0] retry: Retry in 10s: EmbeddingError('synthetic persistent failure')
+INFO     docqa.ingestion:tasks.py:161 {'document_id': '52ae53fb-bb4a-498a-a7dc-595e9c3aaba2', 'status': 'processing', 'event': 'ingest_skipped', 'tenant_id': '5a402fee-eabd-4f44-b5f2-540a7da2afe8', 'request_id': '7ab42454f30745949bc1dc130c68ff59', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:15:34.252128Z'}
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[e7ffa390-721a-4456-b0ba-6a466719afe0] succeeded in 0.0012085229973308742s: None
+INFO     docqa.ingestion:tasks.py:161 {'document_id': '52ae53fb-bb4a-498a-a7dc-595e9c3aaba2', 'status': 'processing', 'event': 'ingest_skipped', 'tenant_id': '5a402fee-eabd-4f44-b5f2-540a7da2afe8', 'request_id': '7ab42454f30745949bc1dc130c68ff59', 'level': 'info', 'logger': 'docqa.ingestion', 'timestamp': '2026-09-10T13:15:34.253401Z'}
+INFO     celery.app.trace:trace.py:128 Task ingestion.ingest_document[5d6445dd-5b3a-4318-94a2-57c0e00da1c5] succeeded in 0.0010304249881301075s: None
+=============================== warnings summary ===============================
+tests/integration/test_ingestion_recovery.py::test_broker_outage_preserves_accepted_upload
+  /home/horten/VS Code Projects/docqa/.venv/lib/python3.12/site-packages/testcontainers/redis/__init__.py:46: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready(redis.exceptions.ConnectionError)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_ingestion_recovery.py::test_broker_outage_preserves_accepted_upload
+FAILED tests/integration/test_ingestion_recovery.py::test_transient_embeddings_retry_reaches_ready
+FAILED tests/integration/test_ingestion_recovery.py::test_exhausted_retry_is_terminal_and_duplicate_delivery_is_noop
+3 failed, 1 warning in 8.70s

@@ -1,0 +1,52 @@
+Traceback (most recent call last):
+  File "/home/horten/VS Code Projects/docqa/deploy/tests/rehearse_ops.py", line 156, in <module>
+    main()
+    ~~~~^^
+  File "/home/horten/VS Code Projects/docqa/deploy/tests/rehearse_ops.py", line 97, in main
+    compose.call("up", "--detach", "--no-build", "--wait", "--wait-timeout", "150")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/horten/VS Code Projects/docqa/deploy/scripts/backup.py", line 83, in call
+    return run([*self.command, *args], **kwargs)
+  File "/home/horten/VS Code Projects/docqa/deploy/scripts/backup.py", line 45, in run
+    raise RuntimeError(
+        f"{command[0]} exited {result.returncode}: {result.stderr.decode()[-2000:]}"
+    )
+RuntimeError: docker exited 1: ops-7844becb28_files Created 
+ Volume docqa-ops-7844becb28_pgdata Created 
+ Volume docqa-ops-7844becb28_pgdata Created 
+ Network docqa-ops-7844becb28_default Created 
+ Network docqa-ops-7844becb28_default Created 
+ Container docqa-ops-7844becb28-redis-1 Creating 
+ Container docqa-ops-7844becb28-db-1 Creating 
+ Container docqa-ops-7844becb28-db-1 Created 
+ Container docqa-ops-7844becb28-migrate-1 Creating 
+ Container docqa-ops-7844becb28-redis-1 Created 
+ Container docqa-ops-7844becb28-migrate-1 Created 
+ Container docqa-ops-7844becb28-worker-1 Creating 
+ Container docqa-ops-7844becb28-api-1 Creating 
+ Container docqa-ops-7844becb28-beat-1 Creating 
+ Container docqa-ops-7844becb28-api-1 Created 
+ Container docqa-ops-7844becb28-worker-1 Created 
+ Container docqa-ops-7844becb28-beat-1 Created 
+ Container docqa-ops-7844becb28-db-1 Starting 
+ Container docqa-ops-7844becb28-redis-1 Starting 
+ Container docqa-ops-7844becb28-db-1 Started 
+ Container docqa-ops-7844becb28-db-1 Waiting 
+ Container docqa-ops-7844becb28-redis-1 Started 
+ Container docqa-ops-7844becb28-db-1 Healthy 
+ Container docqa-ops-7844becb28-migrate-1 Starting 
+ Container docqa-ops-7844becb28-migrate-1 Started 
+ Container docqa-ops-7844becb28-migrate-1 Waiting 
+ Container docqa-ops-7844becb28-redis-1 Waiting 
+ Container docqa-ops-7844becb28-migrate-1 Waiting 
+ Container docqa-ops-7844becb28-redis-1 Waiting 
+ Container docqa-ops-7844becb28-redis-1 Waiting 
+ Container docqa-ops-7844becb28-migrate-1 Waiting 
+ Container docqa-ops-7844becb28-redis-1 Healthy 
+ Container docqa-ops-7844becb28-redis-1 Healthy 
+ Container docqa-ops-7844becb28-redis-1 Healthy 
+ Container docqa-ops-7844becb28-migrate-1 Error service "migrate" didn't complete successfully: exit 1
+ Container docqa-ops-7844becb28-migrate-1 Error service "migrate" didn't complete successfully: exit 1
+ Container docqa-ops-7844becb28-migrate-1 Error service "migrate" didn't complete successfully: exit 1
+service "migrate" didn't complete successfully: exit 1
+

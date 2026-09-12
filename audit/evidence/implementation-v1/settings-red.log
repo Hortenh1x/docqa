@@ -1,0 +1,224 @@
+FFFFFFFFFFF....                                                          [100%]
+=================================== FAILURES ===================================
+___________ test_invalid_configuration_fails_before_serving[values0] ___________
+
+values = {'embedding_provider': 'openai', 'openai_api_key': ''}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+___________ test_invalid_configuration_fails_before_serving[values1] ___________
+
+values = {'rerank_provider': 'cohere', 'cohere_api_key': ''}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+___________ test_invalid_configuration_fails_before_serving[values2] ___________
+
+values = {'llm_provider': 'openai_compat', 'llm_api_key': '', 'llm_base_url': 'https://provider.example/v1'}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+___________ test_invalid_configuration_fails_before_serving[values3] ___________
+
+values = {'llm_provider': 'openai_compat', 'llm_api_key': '', 'llm_base_url': 'https://localhost.attacker.example/v1'}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+___________ test_invalid_configuration_fails_before_serving[values4] ___________
+
+values = {'max_upload_mb': 0}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+___________ test_invalid_configuration_fails_before_serving[values5] ___________
+
+values = {'rate_limit_query_per_minute': 0}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+___________ test_invalid_configuration_fails_before_serving[values6] ___________
+
+values = {'idempotency_ttl_s': -1}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+___________ test_invalid_configuration_fails_before_serving[values7] ___________
+
+values = {'demo_max_files_per_collection': 0}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+___________ test_invalid_configuration_fails_before_serving[values8] ___________
+
+values = {'llm_max_tokens': -1}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+___________ test_invalid_configuration_fails_before_serving[values9] ___________
+
+values = {'chunk_overlap_tokens': 500}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+__________ test_invalid_configuration_fails_before_serving[values10] ___________
+
+values = {'chunk_target_tokens': 900}
+
+    @pytest.mark.parametrize("values", [
+        {"embedding_provider": "openai", "openai_api_key": ""},
+        {"rerank_provider": "cohere", "cohere_api_key": ""},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://provider.example/v1"},
+        {"llm_provider": "openai_compat", "llm_api_key": "", "llm_base_url": "https://localhost.attacker.example/v1"},
+        {"max_upload_mb": 0}, {"rate_limit_query_per_minute": 0}, {"idempotency_ttl_s": -1},
+        {"demo_max_files_per_collection": 0}, {"llm_max_tokens": -1},
+        {"chunk_overlap_tokens": 500}, {"chunk_target_tokens": 900},
+    ])
+    def test_invalid_configuration_fails_before_serving(values):
+>       with pytest.raises(ValidationError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValidationError
+
+tests/unit/test_settings.py:21: Failed
+=========================== short test summary info ============================
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values0]
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values1]
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values2]
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values3]
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values4]
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values5]
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values6]
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values7]
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values8]
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values9]
+FAILED tests/unit/test_settings.py::test_invalid_configuration_fails_before_serving[values10]
+11 failed, 4 passed in 0.17s

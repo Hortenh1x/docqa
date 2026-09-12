@@ -6,7 +6,8 @@
 #   DOCQA_DOMAIN=docqa.example.com        # API
 #   DOCQA_APP_DOMAIN=app.docqa.example.com
 #   NEXT_PUBLIC_DEMO_API_KEY=dqa_live_…   # printed by scripts/seed_demo.py
-#   POSTGRES_PASSWORD=…                   # anything but the default
+#   POSTGRES_PASSWORD=…                   # admin, URL-safe, required
+#   POSTGRES_APP_PASSWORD=…               # separate runtime credential, required
 #   DEMO_MODE=true
 
 services:
@@ -16,6 +17,8 @@ services:
     environment:
       DEMO_MODE: ${DEMO_MODE:-true}
       CORS_ORIGINS: https://${DOCQA_APP_DOMAIN}
+      AUTH_ALLOWED_ORIGINS: https://${DOCQA_APP_DOMAIN}
+      AUTH_PUBLIC_URL: https://${DOCQA_APP_DOMAIN}
 
   ui:
     build:
@@ -24,11 +27,24 @@ services:
         NEXT_PUBLIC_API_BASE_URL: https://${DOCQA_DOMAIN}
         NEXT_PUBLIC_DEMO_API_KEY: ${NEXT_PUBLIC_DEMO_API_KEY:-}
         NEXT_PUBLIC_DEMO_MODE: ${DEMO_MODE:-true}
+        NEXT_PUBLIC_ACCOUNTS_ENABLED: ${ACCOUNTS_ENABLED:-true}
     restart: unless-stopped
+    logging:
+      driver: local
+      options: {max-size: "10m", max-file: "5"}
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
+    logging:
+      driver: local
+      options: {max-size: "10m", max-file: "5"}
     ports:
       # override host ports (CADDY_HTTP_PORT/CADDY_HTTPS_PORT) when 80/443
       # are taken by another stack on the same host; TLS via ACME needs 80/443

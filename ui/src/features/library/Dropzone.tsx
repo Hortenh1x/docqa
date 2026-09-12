@@ -2,13 +2,20 @@
 
 import { useRef, useState } from "react";
 
+// Match the backend defaults; the API still enforces the configured limit.
+const MAX_UPLOAD_MB = process.env.NEXT_PUBLIC_DEMO_MODE === "true" ? 5 : 25;
+
 export function Dropzone({
   onFile,
   busy,
+  disabled = false,
   progress,
+  maxUploadMb = MAX_UPLOAD_MB,
 }: {
   onFile: (file: File) => void;
   busy: boolean;
+  disabled?: boolean;
+  maxUploadMb?: number;
   progress: { name: string; fraction: number } | null;
 }) {
   const [dragOver, setDragOver] = useState(false);
@@ -25,7 +32,7 @@ export function Dropzone({
         e.preventDefault();
         setDragOver(false);
         const file = e.dataTransfer.files?.[0];
-        if (file) onFile(file);
+        if (file && !busy && !disabled) onFile(file);
       }}
       className={`rounded-[10px] border-[1.5px] border-dashed px-6 py-8 text-center transition-colors ${
         dragOver ? "border-stamp bg-stamp/5" : "border-hairline bg-sheet"
@@ -53,10 +60,10 @@ export function Dropzone({
         </div>
       ) : (
         <>
-          <p className="text-sm text-ink-soft">Drop PDF, DOCX or MD · up to 25 MB</p>
+          <p className="text-sm text-ink-soft">Drop PDF, DOCX, MD or TXT · up to {maxUploadMb} MB</p>
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || disabled}
             onClick={() => inputRef.current?.click()}
             className="mt-3 rounded-[6px] border border-hairline bg-paper px-3.5 py-1.5 text-sm disabled:opacity-40"
           >
@@ -67,11 +74,12 @@ export function Dropzone({
       <input
         ref={inputRef}
         type="file"
+        disabled={busy || disabled}
         accept=".pdf,.docx,.md,.txt"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) onFile(file);
+          if (file && !busy && !disabled) onFile(file);
           e.target.value = "";
         }}
       />
