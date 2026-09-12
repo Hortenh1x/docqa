@@ -1,0 +1,8 @@
+FAIL a committed delete with an error response still refreshes the full storage allowance
+locator.waitFor: Timeout 7000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('region', { name: 'Document storage' }).getByText('0 B of 50.0 MB used') to be visible[22m
+
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:592:119)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:602:142
+{"suite":"accounts","failed":1,"total":1}

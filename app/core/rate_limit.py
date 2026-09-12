@@ -27,6 +27,7 @@ import structlog
 from fastapi import Request, Response
 
 from app.api.deps import CurrentTenant
+from app.billing.context import bind_request_actor
 from app.config import get_settings
 from app.core.errors import DailyQuotaExceededError, RateLimitedError
 from app.core.redis import get_redis
@@ -139,6 +140,7 @@ def rate_limit(limit_class: LimitClass) -> Callable[..., Awaitable[None]]:
     """Dependency factory: attach per-class limits point-wise to routes."""
 
     async def guard(request: Request, response: Response, tenant: CurrentTenant) -> None:
+        bind_request_actor(request)
         settings = get_settings()
         if not settings.rate_limit_enabled:
             return
@@ -158,7 +160,11 @@ def rate_limit(limit_class: LimitClass) -> Callable[..., Awaitable[None]]:
                 },
             )
 
-        if limit_class == "query" and settings.rate_limit_query_per_day > 0:
+        if (
+            limit_class == "query"
+            and settings.rate_limit_query_per_day > 0
+            and not settings.budget_enabled
+        ):
             scope = f"{key_id}:{_client_address(request)}"
             quota = await consume_daily(scope, settings.rate_limit_query_per_day)
             response.headers["X-Quota-Daily-Limit"] = str(quota.limit)

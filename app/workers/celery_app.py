@@ -13,10 +13,17 @@ celery_app.conf.update(
     task_serializer="json",
     accept_content=["json"],
     task_acks_late=True,
+    task_reject_on_worker_lost=True,
+    # Bound paid work and ensure the persisted lease outlives the worker hard limit.
+    task_soft_time_limit=540,
+    task_time_limit=600,
     worker_prefetch_multiplier=1,
     task_default_queue="ingestion",
     broker_connection_retry_on_startup=True,
     imports=("app.ingestion.tasks", "app.generation.tasks"),
+    beat_schedule={
+        "recover-ingestion": {"task": "ingestion.recover", "schedule": 60.0},
+    },
 )
 
 

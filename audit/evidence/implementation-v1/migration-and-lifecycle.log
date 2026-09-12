@@ -1,0 +1,103 @@
+F...................                                                     [100%]
+=================================== FAILURES ===================================
+____________ test_upgrade_from_0006_preserves_documents_and_queries ____________
+
+app_env = None
+
+    async def test_upgrade_from_0006_preserves_documents_and_queries(app_env):
+        config = Config("alembic.ini")
+>       command.downgrade(config, "0006")
+
+tests/integration/test_migration_upgrade.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+.venv/lib/python3.12/site-packages/alembic/command.py:537: in downgrade
+    script.run_env()
+.venv/lib/python3.12/site-packages/alembic/script/base.py:556: in run_env
+    util.load_python_file(self.dir, "env.py")
+.venv/lib/python3.12/site-packages/alembic/util/pyfiles.py:116: in load_python_file
+    module = load_module_py(module_id, path)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/alembic/util/pyfiles.py:136: in load_module_py
+    spec.loader.exec_module(module)  # type: ignore
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap_external>:999: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+alembic/env.py:64: in <module>
+    run_migrations_online()
+alembic/env.py:58: in run_migrations_online
+    asyncio.run(run_async_migrations())
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+main = <coroutine object run_async_migrations at 0x7fa5b8b91a80>, debug = None
+loop_factory = None
+
+    def run(main, *, debug=None, loop_factory=None):
+        """Execute the coroutine and return the result.
+    
+        This function runs the passed coroutine, taking care of
+        managing the asyncio event loop, finalizing asynchronous
+        generators and closing the default executor.
+    
+        This function cannot be called when another asyncio event loop is
+        running in the same thread.
+    
+        If debug is True, the event loop will be run in debug mode.
+        If loop_factory is passed, it is used for new event loop creation.
+    
+        This function always creates a new event loop and closes it at the end.
+        It should be used as a main entry point for asyncio programs, and should
+        ideally only be called once.
+    
+        The executor is given a timeout duration of 5 minutes to shutdown.
+        If the executor hasn't finished within that duration, a warning is
+        emitted and the executor is closed.
+    
+        Example:
+    
+            async def main():
+                await asyncio.sleep(1)
+                print('hello')
+    
+            asyncio.run(main())
+        """
+        if events._get_running_loop() is not None:
+            # fail fast with short traceback
+>           raise RuntimeError(
+                "asyncio.run() cannot be called from a running event loop")
+E           RuntimeError: asyncio.run() cannot be called from a running event loop
+
+../../.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/asyncio/runners.py:191: RuntimeError
+---------------------------- Captured stderr setup -----------------------------
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 0001, core tables: tenants, api_keys, collections, documents
+INFO  [alembic.runtime.migration] Running upgrade 0001 -> 0002, chunks with hnsw and gin indexes
+INFO  [alembic.runtime.migration] Running upgrade 0002 -> 0003, queries and query_citations
+INFO  [alembic.runtime.migration] Running upgrade 0003 -> 0004, collections read_only flag
+INFO  [alembic.runtime.migration] Running upgrade 0004 -> 0005, collections suggested_questions
+INFO  [alembic.runtime.migration] Running upgrade 0005 -> 0006, access labels on chunks, role on queries
+INFO  [alembic.runtime.migration] Running upgrade 0006 -> 0007, Durable ingestion attempts and leases.
+INFO  [alembic.runtime.migration] Running upgrade 0007 -> 0008, Fence results against collection cleanup.
+=============================== warnings summary ===============================
+tests/integration/test_migration_upgrade.py::test_upgrade_from_0006_preserves_documents_and_queries
+  /home/horten/VS Code Projects/docqa/.venv/lib/python3.12/site-packages/testcontainers/redis/__init__.py:46: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready(redis.exceptions.ConnectionError)
+
+tests/integration/test_readiness_regressions.py::test_upload_and_removal_never_destroy_a_surviving_file[False-True]
+  /home/horten/VS Code Projects/docqa/.venv/lib/python3.12/site-packages/_pytest/unraisableexception.py:67: PytestUnraisableExceptionWarning: Exception ignored in: <coroutine object run_async_migrations at 0x7fa5b8b91a80>
+  
+  Traceback (most recent call last):
+    File "/home/horten/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu/lib/python3.12/warnings.py", line 555, in _warn_unawaited_coroutine
+      warn(msg, category=RuntimeWarning, stacklevel=2, source=coro)
+  RuntimeWarning: coroutine 'run_async_migrations' was never awaited
+  
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+    warnings.warn(pytest.PytestUnraisableExceptionWarning(msg))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_migration_upgrade.py::test_upgrade_from_0006_preserves_documents_and_queries
+1 failed, 19 passed, 2 warnings in 14.13s

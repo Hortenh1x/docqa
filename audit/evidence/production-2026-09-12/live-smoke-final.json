@@ -1,0 +1,20 @@
+{
+  "status": "PASS",
+  "public_collections": 6,
+  "documents": 9778,
+  "registration_available": true,
+  "guest_mutation_status": 401,
+  "paid_query_calls": 0,
+  "prior_json_sse_evidence": "live-smoke.json",
+  "spoofed_forwarded_ip_does_not_reset_budget": true,
+  "final_budget": {
+    "enabled": true,
+    "limit_usd": "0.50",
+    "spent_usd": "0.00655588",
+    "reserved_usd": "0",
+    "remaining_usd": "0.49344412",
+    "reset_at": "2026-09-13T00:00:00+00:00",
+    "limited_by": "ip"
+  },
+  "source_download_sha256": "49fae7e91eefd7e1027b9f0bdb53c9b1aa959b3d9882d91e82a30ff0b1c3b571"
+}

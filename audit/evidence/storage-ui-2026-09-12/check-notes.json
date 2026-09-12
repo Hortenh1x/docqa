@@ -1,0 +1,17 @@
+{
+  "initial_full_suite": {
+    "passed": 457,
+    "failed": 3,
+    "causes": [
+      "New quota duplicate lookup exhausted a durability-test scalar stub; fixed without changing fsync assertions.",
+      "Two privacy log captures reused a cached structlog processor list from earlier app factories; fresh real test logger fixes capture while retaining privacy assertions."
+    ]
+  },
+  "second_full_suite": {
+    "passed": 459,
+    "failed": 1,
+    "cause": "Hard-time-limit fixture soft timeout1s fired during initial work before marker reached; logs show SoftTimeLimitExceeded and ingest_unexpected_error, not tested hard-kill point. This run overlapped multiple Next.js production builds.",
+    "focused_recheck": "2 worker recovery cases pass after builds finished; full suite repeated without concurrent local build/browser load."
+  },
+  "ui_initial_probe": "Stale keyless build prevented account-test harness bootstrap; not valid regression RED. Final correct account build30/30; committed-delete reconciliation has genuine RED then GREEN."
+}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRole } from "@/app/providers";
+import { useCollections, useRole } from "@/app/providers";
 import { LockIcon } from "@/components/LockIcon";
 import { roleName, unlocks } from "@/lib/access";
 import type { SuggestedQuestion } from "@/lib/api/types";
@@ -23,6 +23,7 @@ export function QuestionChips({
   compact?: boolean;
 }) {
   const { roles, role } = useRole();
+  const { selected } = useCollections();
   const shown = (questions ?? []).filter(
     (q) => !exclude || q.question.trim().toLowerCase() !== exclude.trim().toLowerCase(),
   );
@@ -30,7 +31,7 @@ export function QuestionChips({
   return (
     <div className={`flex flex-wrap gap-2 ${compact ? "" : "max-w-xl justify-center"}`}>
       {shown.map(({ question, min_role }) => {
-        const locked = !unlocks(roles, role, min_role);
+        const locked = !selected?.owned && !unlocks(roles, role, min_role);
         return (
           <button
             key={question}

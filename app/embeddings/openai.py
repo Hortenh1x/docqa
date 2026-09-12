@@ -12,6 +12,7 @@ from tenacity import (
     wait_exponential,
 )
 
+from app.billing.providers import after_call, before_call
 from app.embeddings.base import EmbeddingError, check_dim
 
 _TIMEOUT = httpx.Timeout(30.0, connect=10.0)
@@ -58,12 +59,17 @@ class OpenAIEmbeddings:
         reraise=True,
     )
     async def _embed_batch(self, client: httpx.AsyncClient, batch: list[str]) -> list[list[float]]:
+        ticket = await before_call(self.model, batch, embedding=True)
         response = await client.post(
             f"{self.base_url}/embeddings",
             headers={"Authorization": f"Bearer {self.api_key}"},
             json={"model": self.model, "input": batch, "dimensions": self.dim},
         )
         response.raise_for_status()
-        data = response.json()["data"]
+        payload = response.json()
+        await after_call(
+            ticket, self.model, (payload.get("usage") or {}).get("total_tokens"), embedding=True
+        )
+        data = payload["data"]
         data.sort(key=lambda item: item["index"])
         return [item["embedding"] for item in data]

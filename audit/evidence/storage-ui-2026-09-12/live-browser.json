@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-09-12T13:12:37.399Z",
+  "checks": [
+    {
+      "slug": "policies-en",
+      "questions": 3,
+      "explanation": true,
+      "document_count": 19
+    },
+    {
+      "slug": "gitlab-handbook",
+      "questions": 3,
+      "explanation": true,
+      "document_count": 3639
+    },
+    {
+      "slug": "contracts-cuad",
+      "questions": 3,
+      "explanation": true,
+      "document_count": 509
+    },
+    {
+      "slug": "financial-filings",
+      "questions": 3,
+      "explanation": true,
+      "document_count": 334
+    },
+    {
+      "slug": "govreport",
+      "questions": 3,
+      "explanation": true,
+      "document_count": 4979
+    },
+    {
+      "slug": "kranich",
+      "questions": 3,
+      "explanation": true,
+      "document_count": 298
+    }
+  ],
+  "errors": [],
+  "guest_storage": {
+    "status": 401,
+    "cache": "private, no-store"
+  },
+  "google": {
+    "below_sign_in": true,
+    "icon_loaded": true,
+    "mobile_no_overflow": true
+  },
+  "source_sha256": "c25bc091c55a2fc5a86febade489f71c7e50d45a948ae37570dd13d3446df466",
+  "status": "PASS"
+}

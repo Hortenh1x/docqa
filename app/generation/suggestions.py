@@ -12,13 +12,10 @@ Design points:
   gets German questions.
 - The LLM call is retried once on an empty/garbled completion (DeepSeek sporadically
   burns the whole budget on hidden reasoning — see CLAUDE.md).
-- Access levels: the sample includes one restricted excerpt per label present, every
-  candidate is scored under every role, and ``min_role`` is the least-privileged role
-  whose retrieval passes the refusal gate — the UI shows a lock on questions the
-  current role cannot answer. When the collection has restricted content, at least one
-  kept question is a locked one (the demo path). Questions never quote values: a
-  candidate containing a digit or a currency sign is dropped, so a question drafted
-  from a restricted excerpt cannot leak the figure it asks about.
+- Access levels: public suggestions are drafted only from public chunks. A locked
+  starter is built from the already-public filename, never from private excerpts.
+  Ranking remains role-aware; a prompt instruction or numeric filter is not treated
+  as a confidentiality boundary.
 """
 
 import json
@@ -105,13 +102,13 @@ def parse_questions(raw: str) -> list[str]:
 
 
 def drop_leaky(questions: Sequence[str]) -> list[str]:
-    """No digits, no currency: a question must never carry the value it asks about."""
+    """Editorial filter for public candidates; not an access-control mechanism."""
     return [q for q in questions if not _LEAKY_RE.search(q)]
 
 
 def sample_excerpts(session: Session, collection_id: uuid.UUID) -> list[str]:
     """First chunk of each ready document (heading-dense, language-representative), plus
-    one chunk per restricted label so the LLM can draft a locked question."""
+    public excerpts only. Private bytes must never enter a public suggestion prompt."""
     counter = TokenCounter()
     excerpts: list[str] = []
     total = 0
@@ -133,33 +130,49 @@ def sample_excerpts(session: Session, collection_id: uuid.UUID) -> list[str]:
             Document.status == DocumentStatus.READY,
         )
     )
-    # restricted excerpts first: they are the point of the access demo and must not be
-    # squeezed out by the token cap
-    labels = session.execute(
-        select(Chunk.access_label)
-        .join(Document, Chunk.document_id == Document.id)
-        .where(
-            Document.collection_id == collection_id,
-            Document.status == DocumentStatus.READY,
-            Chunk.access_label != LABEL_ALL,
-        )
-        .distinct()
-    ).scalars()
-    for label in sorted(labels):
-        row = session.execute(
-            ready.where(Chunk.access_label == label).order_by(Chunk.token_count.desc()).limit(1)
-        ).first()
-        if row is not None:
-            chunk, filename = row
-            add(f"### {filename} (Access: {label})\n{chunk.content}", force=True)
-
     rows = session.execute(
-        ready.where(Chunk.chunk_index == 0).order_by(Document.filename).limit(SAMPLE_MAX_DOCS)
+        ready.where(Chunk.access_label == LABEL_ALL)
+        .order_by(Document.filename)
+        .limit(SAMPLE_MAX_DOCS)
     ).all()
     for chunk, filename in rows:
         if not add(f"### {filename}\n{chunk.content}"):
             break
     return excerpts
+
+
+def locked_document_hint(
+    session: Session, collection_id: uuid.UUID, settings: Settings
+) -> SuggestedQuestion | None:
+    """A locked starter uses only metadata already visible in Library.
+
+    Never ask the LLM to paraphrase a secret for a public-facing question: avoiding
+    digits is not a confidentiality boundary (names and arbitrary strings also leak).
+    """
+    rows = session.execute(
+        select(Document.id, Document.filename, Chunk.access_label)
+        .join(Chunk, Chunk.document_id == Document.id)
+        .where(
+            Document.collection_id == collection_id,
+            Document.status == DocumentStatus.READY,
+            Chunk.access_label != LABEL_ALL,
+        )
+        .order_by(Document.filename, Document.id)
+    ).all()
+    labels_by_doc: dict[uuid.UUID, set[str]] = {}
+    for doc_id, _, label in rows:
+        labels_by_doc.setdefault(doc_id, set()).add(label)
+    for doc_id, filename, _ in rows:
+        labels = labels_by_doc[doc_id]
+        if labels.issubset(settings.access_roles[settings.access_default_role]):
+            continue
+        for role, allowed in sorted(settings.access_roles.items(), key=lambda item: len(item[1])):
+            if labels.issubset(allowed):
+                # Filenames are untrusted display data; whitespace normalization and
+                # the existing question length limit keep this a usable starter.
+                title = " ".join(filename.split())[:150]
+                return {"question": f"What guidance does {title} provide?", "min_role": role}
+    return None
 
 
 async def draft_candidates(

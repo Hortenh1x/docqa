@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "date": "2026-09-12",
+  "invocation": "python -m deploy.scripts.check_durability",
+  "topology": "Oracle Frankfurt primary AD1, standby AD2; TLS verify-full; private versioned Oracle object storage",
+  "verified_originals": 9778,
+  "verified_checks": [
+    "synchronous_commit=on",
+    "synchronous_standby_names=FIRST 1 (docqa_standby)",
+    "fsync and full_page_writes enabled",
+    "standby streaming/sync",
+    "bucket versioning",
+    "remote SHA256 of every committed original"
+  ],
+  "local_originals_retained": true
+}

@@ -16,21 +16,31 @@ Design points, deliberate:
 
 import time
 import uuid
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import Any
 
 import anyio
 import structlog
+from sqlalchemy import select
 
 from app.access import Principal, resolve_principal
+from app.billing.context import current_account_id, current_billing_actor
+from app.billing.errors import BudgetExceededError, BudgetUnavailableError
 from app.config import Settings
+from app.core.errors import NotFoundError
 from app.db.base import get_sessionmaker
-from app.db.models import Query, QueryCitation
+from app.db.models import Collection, Query, QueryCitation
 from app.embeddings.base import EmbeddingError
 from app.generation.citations import finalize_answer
-from app.generation.llm import GenerationError, StreamUsage, TextDelta, get_llm_provider
+from app.generation.llm import (
+    GenerationError,
+    LLMProvider,
+    StreamUsage,
+    TextDelta,
+    get_llm_provider,
+)
 from app.generation.prompts import (
     SYSTEM_PROMPT,
     ContextBlock,
@@ -83,6 +93,8 @@ class DoneEvent:
 class ErrorEvent:
     code: str
     message: str
+    headers: dict[str, str] | None = None
+    extra: dict[str, Any] | None = None
 
 
 QueryEvent = MetaEvent | SourcesEvent | DeltaEvent | DoneEvent | ErrorEvent
@@ -132,11 +144,21 @@ async def _record_query(
     model: str | None,
     blocks: list[ContextBlock],
     role: str | None = None,
+    data_version: int | None = None,
 ) -> None:
     """Best-effort, shielded from cancellation: stats must survive client disconnects."""
     try:
         with anyio.CancelScope(shield=True):
             async with get_sessionmaker()() as session:
+                if data_version is not None:
+                    current = await session.scalar(
+                        select(Collection.data_version)
+                        .where(Collection.id == collection_id, Collection.tenant_id == tenant_id)
+                        .with_for_update()
+                    )
+                    if current != data_version:
+                        log.info("query_discarded_after_cleanup", query_id=str(query_id))
+                        return
                 session.add(
                     Query(
                         id=query_id,
@@ -152,6 +174,10 @@ async def _record_query(
                         cost_usd=cost,
                         model=model,
                         role=role,
+                        user_id=current_account_id.get(),
+                        ip_digest=(
+                            payer.ip_digest if (payer := current_billing_actor.get()) else None
+                        ),
                     )
                 )
                 session.add_all(
@@ -162,7 +188,7 @@ async def _record_query(
                 )
                 await session.commit()
     except Exception:
-        log.exception("query_record_failed", query_id=str(query_id))
+        log.error("query_record_failed", query_id=str(query_id))
 
 
 async def run_query(
@@ -171,7 +197,19 @@ async def run_query(
     question: str,
     settings: Settings,
     principal: Principal | None = None,
-) -> AsyncIterator[QueryEvent]:
+    data_version: int | None = None,
+    *,
+    context_observer: Callable[[list[ContextBlock]], None] | None = None,
+) -> AsyncGenerator[QueryEvent, None]:
+    if data_version is None:
+        async with get_sessionmaker()() as session:
+            data_version = await session.scalar(
+                select(Collection.data_version).where(
+                    Collection.id == collection_id, Collection.tenant_id == tenant_id
+                )
+            )
+        if data_version is None:
+            raise NotFoundError("Collection not found.")
     query_id = uuid.uuid4()
     started = time.perf_counter()
     principal = principal or resolve_principal(settings, None)
@@ -180,57 +218,9 @@ async def run_query(
     def latency_ms() -> int:
         return round((time.perf_counter() - started) * 1000)
 
-    try:
-        retrieval = await retrieve(collection_id, question, settings, principal)
-    except EmbeddingError as exc:
-        log_ctx.warning("query_embedding_unavailable", error=str(exc))
-        yield ErrorEvent(code="provider_unavailable", message="Embedding provider unavailable.")
-        return
-
-    yield MetaEvent(query_id=query_id, access=access_payload(principal, retrieval.hidden))
-
-    # retrieval gate: an off-corpus question is refused before the LLM — it costs nothing
-    if not retrieval.chunks or (
-        retrieval.top_score is not None and retrieval.top_score < settings.refusal_threshold
-    ):
-        log_ctx.info("query_refused_at_gate", top_score=retrieval.top_score)
-        # record BEFORE the final yield: a JSON-mode collector stops consuming at `done`,
-        # so code after this yield would never run
-        await _record_query(
-            query_id=query_id,
-            tenant_id=tenant_id,
-            collection_id=collection_id,
-            question=question,
-            answer=None,
-            refused=True,
-            confidence=retrieval.top_score,
-            latency_ms=latency_ms(),
-            prompt_tokens=None,
-            completion_tokens=None,
-            cost=None,
-            model=None,
-            blocks=[],
-            role=principal.role,
-        )
-        yield DoneEvent(
-            answer=None,
-            refused=True,
-            reason=REFUSAL_REASON,
-            confidence=retrieval.top_score,
-            prompt_tokens=None,
-            completion_tokens=None,
-            cost=None,
-            latency_ms=latency_ms(),
-            model=None,
-        )
-        return
-
-    blocks = build_context_blocks(
-        retrieval.chunks, settings.context_token_budget, settings.context_chunk_max_tokens
-    )
-    yield SourcesEvent(sources=[_source_payload(b) for b in blocks])
-
-    llm = get_llm_provider(settings)
+    llm: LLMProvider | None = None
+    confidence: float | None = None
+    blocks: list[ContextBlock] = []
     sentinel = SentinelBuffer()
     parts: list[str] = []
     usage: StreamUsage | None = None
@@ -247,10 +237,11 @@ async def run_query(
             query_id=query_id,
             tenant_id=tenant_id,
             collection_id=collection_id,
+            data_version=data_version,
             question=question,
             answer=answer,
             refused=refused,
-            confidence=retrieval.top_score,
+            confidence=confidence,
             latency_ms=latency_ms(),
             prompt_tokens=usage.prompt_tokens if usage else None,
             completion_tokens=usage.completion_tokens if usage else None,
@@ -261,6 +252,63 @@ async def run_query(
         )
 
     try:
+        try:
+            retrieval = await retrieve(collection_id, question, settings, principal)
+        except EmbeddingError as exc:
+            log_ctx.warning("query_embedding_unavailable", error_type=type(exc).__name__)
+            yield ErrorEvent(code="provider_unavailable", message="Embedding provider unavailable.")
+            return
+
+        confidence = retrieval.top_score
+        yield MetaEvent(query_id=query_id, access=access_payload(principal, retrieval.hidden))
+
+        # retrieval gate: an off-corpus question is refused before the LLM — it costs nothing
+        if not retrieval.chunks or (
+            retrieval.top_score is not None and retrieval.top_score < settings.refusal_threshold
+        ):
+            log_ctx.info("query_refused_at_gate", top_score=retrieval.top_score)
+            # record BEFORE the final yield: a JSON-mode collector stops consuming at `done`,
+            # so code after this yield would never run
+            recorded = True
+            await _record_query(
+                query_id=query_id,
+                tenant_id=tenant_id,
+                collection_id=collection_id,
+                data_version=data_version,
+                question=question,
+                answer=None,
+                refused=True,
+                confidence=retrieval.top_score,
+                latency_ms=latency_ms(),
+                prompt_tokens=None,
+                completion_tokens=None,
+                cost=None,
+                model=None,
+                blocks=[],
+                role=principal.role,
+            )
+            yield DoneEvent(
+                answer=None,
+                refused=True,
+                reason=REFUSAL_REASON,
+                confidence=retrieval.top_score,
+                prompt_tokens=None,
+                completion_tokens=None,
+                cost=None,
+                latency_ms=latency_ms(),
+                model=None,
+            )
+            return
+
+        blocks = build_context_blocks(
+            retrieval.chunks, settings.context_token_budget, settings.context_chunk_max_tokens
+        )
+        # In-process eval only. HTTP callers never receive full context through this hook.
+        if context_observer is not None:
+            context_observer(blocks)
+        yield SourcesEvent(sources=[_source_payload(b) for b in blocks])
+
+        llm = get_llm_provider(settings)
         try:
             async for event in llm.stream(SYSTEM_PROMPT, build_user_prompt(blocks, question)):
                 if isinstance(event, TextDelta):
@@ -275,7 +323,7 @@ async def run_query(
                 parts.append(tail)
                 yield DeltaEvent(text=tail)
         except GenerationError as exc:
-            log_ctx.warning("query_generation_failed", error=str(exc))
+            log_ctx.warning("query_generation_failed", error_type=type(exc).__name__)
             yield ErrorEvent(code="provider_unavailable", message="LLM provider unavailable.")
             return
 
@@ -344,15 +392,18 @@ async def run_query(
             latency_ms=latency_ms(),
             model=model,
         )
+    except (BudgetExceededError, BudgetUnavailableError) as exc:
+        log_ctx.warning("query_budget_blocked", code=exc.code)
+        yield ErrorEvent(code=exc.code, message=exc.detail, headers=exc.headers, extra=exc.extra)
     finally:
         # client disconnected mid-stream (or an unexpected error): keep the stats anyway
         await record_once(
             answer="".join(parts) or None,
             refused=False,
             cost=cost_usd(
-                llm.model_name,
+                llm.model_name if llm else None,
                 usage.prompt_tokens if usage else None,
                 usage.completion_tokens if usage else None,
             ),
-            model=llm.model_name,
+            model=llm.model_name if llm else None,
         )

@@ -1,0 +1,14 @@
+[
+  {
+    "width": 375,
+    "status": "PASS",
+    "page_errors": 0,
+    "api_errors": 0
+  },
+  {
+    "width": 1280,
+    "status": "PASS",
+    "page_errors": 0,
+    "api_errors": 0
+  }
+]

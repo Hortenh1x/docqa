@@ -1,0 +1,14 @@
+{
+  "checked_at": "2026-09-12T12:29:42.136245+00:00",
+  "status": "PASS",
+  "readiness": {
+    "status": "ok",
+    "checks": {
+      "postgres": "ok",
+      "redis": "ok"
+    }
+  },
+  "google_available": true,
+  "registration_available": true,
+  "source_sha256": "82ca4198dc1d111397eaf174aaf8f0c40f4794f016bac694b83430445db90369"
+}

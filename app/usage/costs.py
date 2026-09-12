@@ -6,17 +6,18 @@ code. Prices are USD per 1M tokens (input, output).
 
 from decimal import Decimal
 
-# Every entry is the **peak-hour, cache-miss** rate: a deliberate upper bound. DeepSeek
-# halves both prices outside 01:00–04:00 and 06:00–10:00 UTC on weekdays, and a cache hit
-# costs ~1/30 of a miss — we track neither, so a recorded cost is never an understatement.
-# DeepSeek prices per api-docs.deepseek.com/quick_start/pricing, checked 2026-09-09.
+# Peak-hour, cache-miss rates: a conservative tariff estimate, not a provider invoice.
+# DeepSeek Flash aliases now route to V4.1; checked 2026-09-10 at
+# https://api-docs.deepseek.com/quick_start/pricing/. Cache/off-peak discounts may lower
+# the actual charge. Pro's listed rate remains an upper bound after its announced reroute.
 PRICES_PER_1M: dict[str, tuple[Decimal, Decimal]] = {
     "stub": (Decimal("0"), Decimal("0")),
     "gpt-4o-mini": (Decimal("0.15"), Decimal("0.60")),
     "gpt-4.1-mini": (Decimal("0.40"), Decimal("1.60")),
     "gpt-4.1": (Decimal("2.00"), Decimal("8.00")),
-    "deepseek-v4-flash": (Decimal("0.44"), Decimal("1.32")),
-    "deepseek-v4-flash-vision-exp": (Decimal("0.44"), Decimal("1.32")),
+    "deepseek-flash": (Decimal("0.30"), Decimal("1.20")),
+    "deepseek-v4-flash": (Decimal("0.30"), Decimal("1.20")),
+    "deepseek-v4-flash-vision-exp": (Decimal("0.30"), Decimal("1.20")),
     "deepseek-v4-pro": (Decimal("1.32"), Decimal("3.96")),
     # legacy aliases, deprecated 2026-07-24; they bill as v4-flash until removal
     "deepseek-chat": (Decimal("0.44"), Decimal("1.32")),

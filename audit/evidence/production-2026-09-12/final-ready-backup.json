@@ -1,0 +1,61 @@
+{
+  "raw_backup": {
+    "started_at": "20260912T112123Z",
+    "release": "/opt/docqa-releases/prod-20260912-ready",
+    "status": "ok",
+    "bundle": "/home/ubuntu/backups/docqa-complete/20260912T112123Z",
+    "completed_at": "2026-09-12T11:25:58.267521+00:00",
+    "documents": 9778,
+    "migration": "0011"
+  },
+  "counts": null,
+  "file_sha256": {
+    "database.dump": "ef46c8957b727b767249ee94e7126f82bc027554a0cf031ec85c29eb7a84ee85",
+    "files.tar.gz": "54e06ce6ffc5fbf8f0edc072609448afa7fab6cbbfb891e001cf6265fb45270b"
+  },
+  "offhost_backup": {
+    "started_at": "2026-09-12T11:27:01.811209+00:00",
+    "status": "ok",
+    "bundle": "20260912T112123Z",
+    "documents": 9778,
+    "migration": "0011",
+    "manifest_sha256": "bef6d7c0f6d225ad215b87f2e480a19bbf2f4a1257f277f62b77b572cacacbf1",
+    "source_manifest_sha256": "a852f8c9a932d33515e8cf937ce6e934fe3cf4b85ec7353c7306b89cd97ab219",
+    "source_release": "d6806bda8d1bd905a267a04cc6504dbb10b5667d1145c40c18c020e776bb18d6",
+    "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/29a96a1a38b8a14af71c47cf616ba0acb4ef8da19c97f4ebe83d3b495b809f36",
+    "action": "snapshot_created",
+    "snapshot_id": "a2ecc632c10dd91c7ec6d1516067e825e23ad7f12fc43513b0edef4ab76088c1",
+    "total_bytes_processed": 2146827364,
+    "data_added": 621269526,
+    "data_added_packed": null,
+    "completed_at": "2026-09-12T11:29:33.271851+00:00"
+  },
+  "restore": {
+    "started_at": "2026-09-12T11:30:30.836313+00:00",
+    "repository": "docqa-backups/restic",
+    "snapshot_id": "a2ecc632c10dd91c7ec6d1516067e825e23ad7f12fc43513b0edef4ab76088c1",
+    "bundle": "20260912T112123Z",
+    "restic_version": "restic 0.16.4 compiled with go1.22.2 on linux/arm64",
+    "migration": "0011",
+    "documents": 9778,
+    "repository_metadata_check": "PASS",
+    "database_dump_sha256": "ef46c8957b727b767249ee94e7126f82bc027554a0cf031ec85c29eb7a84ee85",
+    "database_dump_identical": true,
+    "original_archive_identical": true,
+    "original_files_hashed": 9783,
+    "every_original_sha256_identical": true,
+    "runtime_env_identical": true,
+    "current_release_identical": true,
+    "source_manifest_identical": true,
+    "source_archive_identical": true,
+    "snapshot_metrics": {
+      "total_bytes_processed": 2146827364,
+      "data_added": 621269526,
+      "data_added_packed": null
+    },
+    "temporary_restore_removed": true,
+    "completed_at": "2026-09-12T11:31:10.156492+00:00",
+    "duration_seconds": 39.320208,
+    "status": "PASS"
+  }
+}

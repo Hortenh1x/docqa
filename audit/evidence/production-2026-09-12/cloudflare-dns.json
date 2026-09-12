@@ -1,0 +1,98 @@
+{
+  "checked_at_utc": "2026-09-12T11:03:53.599306+00:00",
+  "status": "PASS",
+  "zone": "docqa.net",
+  "method": "Authorized existing Cloudflare browser GUI session; no API credentials or browser session data extracted",
+  "changes": [
+    {
+      "type": "CNAME",
+      "name": "docqa20260912._domainkey.docqa.net",
+      "value": "docqa20260912.docqa.net.dkim.fra1.oracleemaildelivery.com",
+      "proxied": false,
+      "ttl": "auto"
+    },
+    {
+      "type": "TXT",
+      "name": "docqa.net",
+      "value": "v=spf1 include:eu.rp.oracleemaildelivery.com ~all",
+      "proxied": false,
+      "ttl": "auto"
+    }
+  ],
+  "existing_records_preserved": [
+    {
+      "type": "A",
+      "name": "docqa.net",
+      "value": "132.145.252.110",
+      "proxied": true,
+      "ttl": "auto"
+    },
+    {
+      "type": "A",
+      "name": "api.docqa.net",
+      "value": "132.145.252.110",
+      "proxied": true,
+      "ttl": "auto"
+    }
+  ],
+  "dashboard_record_count_before": 2,
+  "dashboard_record_count_after": 4,
+  "public_dns_checks": [
+    {
+      "resolver": "https://dns.google/resolve",
+      "query_name": "docqa20260912._domainkey.docqa.net",
+      "query_type": "CNAME",
+      "status": "PASS",
+      "answers": [
+        {
+          "name": "docqa20260912._domainkey.docqa.net.",
+          "type": 5,
+          "TTL": 300,
+          "data": "docqa20260912.docqa.net.dkim.fra1.oracleemaildelivery.com."
+        }
+      ]
+    },
+    {
+      "resolver": "https://dns.google/resolve",
+      "query_name": "docqa.net",
+      "query_type": "TXT",
+      "status": "PASS",
+      "answers": [
+        {
+          "name": "docqa.net.",
+          "type": 16,
+          "TTL": 300,
+          "data": "v=spf1 include:eu.rp.oracleemaildelivery.com ~all"
+        }
+      ]
+    },
+    {
+      "resolver": "https://cloudflare-dns.com/dns-query",
+      "query_name": "docqa20260912._domainkey.docqa.net",
+      "query_type": "CNAME",
+      "status": "PASS",
+      "answers": [
+        {
+          "name": "docqa20260912._domainkey.docqa.net",
+          "type": 5,
+          "TTL": 300,
+          "data": "docqa20260912.docqa.net.dkim.fra1.oracleemaildelivery.com."
+        }
+      ]
+    },
+    {
+      "resolver": "https://cloudflare-dns.com/dns-query",
+      "query_name": "docqa.net",
+      "query_type": "TXT",
+      "status": "PASS",
+      "answers": [
+        {
+          "name": "docqa.net",
+          "type": 16,
+          "TTL": 300,
+          "data": "\"v=spf1 include:eu.rp.oracleemaildelivery.com ~all\""
+        }
+      ]
+    }
+  ]
+}

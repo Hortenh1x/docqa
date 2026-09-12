@@ -72,3 +72,18 @@ async def test_malformed_stream_becomes_generation_error():
     llm = make_llm(lambda request: sse_response("{not json"))
     with pytest.raises(GenerationError, match="malformed"):
         await collect(llm)
+
+
+async def test_heartbeat_stream_has_a_total_deadline():
+    import asyncio
+
+    class Heartbeats(httpx.AsyncByteStream):
+        async def __aiter__(self):
+            for _ in range(100):
+                await asyncio.sleep(0.01)
+                yield b": heartbeat\n\n"
+
+    llm = make_llm(lambda _: httpx.Response(200, stream=Heartbeats()))
+    llm.total_timeout_s = 0.03
+    with pytest.raises(GenerationError, match="deadline"):
+        await collect(llm)

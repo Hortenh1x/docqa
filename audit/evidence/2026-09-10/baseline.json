@@ -1,0 +1,13 @@
+{
+  "date": "2026-09-10T11:03:22.507656+00:00",
+  "head": "891c7d8499dbf285d4e52e03d5eaa2499545b581",
+  "branch": "codex/production-readiness-audit",
+  "status": "?? AGENTS.md\n?? application-assessment-template.md\n?? production-readiness-framework.md\n",
+  "sha256": {
+    "AGENTS.md": "5bc4818aa950ebe84890e9b5d26031912be250656d8ebe0cf32d35e64a358a81",
+    "production-readiness-framework.md": "f9a29ec7eaa22b9da03b4035f014bf74e2acf0158b46141a5e9e057a7b399287",
+    "application-assessment-template.md": "1e7801988c16bc2651c46729f502df3159cf7edd582e2f356c444cead0a6ae76",
+    "uv.lock": "7520f6ae3eecb4fbe39722245944c083f1787c64a79c78a873ab9f7101d7ee0a",
+    "ui/package-lock.json": "027ddef8acea09c522bcd4f7aa282a442e71fe81540d30f44295e03595d8065b"
+  }
+}

@@ -117,7 +117,9 @@ async def test_restricted_content_yields_a_locked_suggestion_and_labels(client, 
     assert len(questions) == 3
     locked = [q for q in questions if q["min_role"] != "employee"]
     assert len(locked) == 1 and locked[0]["min_role"] == "finance"
-    assert locked[0]["question"] == FIN_NOTE.decode().strip()
+    assert FIN_NOTE.decode().strip() not in str(questions)
+    assert "CFO approves" not in str(questions)
+    assert "FIN-note.md" in locked[0]["question"]
 
     status = (
         await client.get(
@@ -158,4 +160,5 @@ async def test_suggestions_never_carry_figures(client, tenant):
     assert row["access_labels"] == ["finance"]
     for q in row["suggested_questions"]:
         assert "1500" not in q["question"]
-        assert q["min_role"] == "employee"  # the only locked candidate was dropped
+        # A locked starter may use the already-public filename, never private bytes.
+        assert "per transaction" not in q["question"]

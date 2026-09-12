@@ -6,11 +6,14 @@ counts in the final chunk on providers that support it; absent usage degrades to
 cost, never to a failure.
 """
 
+import asyncio
 import json
 from collections.abc import AsyncIterator
 
 import httpx
 
+from app.billing.providers import after_call, before_call
+from app.config import is_local_llm_url
 from app.generation.llm.base import GenerationError, LLMEvent, StreamUsage, TextDelta
 
 _TIMEOUT = httpx.Timeout(180.0, connect=10.0)
@@ -25,6 +28,7 @@ class OpenAICompatLLM:
         temperature: float,
         max_tokens: int,
         transport: httpx.AsyncBaseTransport | None = None,  # tests inject a MockTransport
+        total_timeout_s: float = 180.0,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
@@ -32,12 +36,16 @@ class OpenAICompatLLM:
         self.temperature = temperature
         self.max_tokens = max_tokens
         self._transport = transport
+        self.total_timeout_s = total_timeout_s
 
     @property
     def model_name(self) -> str:
         return self.model
 
     async def stream(self, system: str, user: str) -> AsyncIterator[LLMEvent]:
+        ticket = None
+        if not is_local_llm_url(self.base_url):
+            ticket = await before_call(self.model, [system, user], self.max_tokens)
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
@@ -54,6 +62,7 @@ class OpenAICompatLLM:
         }
         try:
             async with (
+                asyncio.timeout(self.total_timeout_s),
                 httpx.AsyncClient(timeout=_TIMEOUT, transport=self._transport) as client,
                 client.stream(
                     "POST", f"{self.base_url}/chat/completions", json=payload, headers=headers
@@ -76,10 +85,18 @@ class OpenAICompatLLM:
                             yield TextDelta(delta)
                     usage = event.get("usage")
                     if usage:
+                        await after_call(
+                            ticket,
+                            self.model,
+                            usage.get("prompt_tokens"),
+                            usage.get("completion_tokens"),
+                        )
                         yield StreamUsage(
                             prompt_tokens=usage.get("prompt_tokens"),
                             completion_tokens=usage.get("completion_tokens"),
                         )
+        except TimeoutError as exc:
+            raise GenerationError("LLM total deadline exceeded.") from exc
         except httpx.HTTPError as exc:
             raise GenerationError(f"LLM request failed: {exc}") from exc
         except (json.JSONDecodeError, KeyError) as exc:

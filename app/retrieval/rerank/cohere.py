@@ -9,6 +9,9 @@ from dataclasses import replace
 import httpx
 import structlog
 
+from app.billing.context import operator_billing
+from app.billing.errors import BudgetUnavailableError
+from app.config import get_settings
 from app.retrieval.base import RetrievedChunk
 
 log = structlog.get_logger("docqa.rerank")
@@ -36,6 +39,10 @@ class CohereRerank:
     ) -> list[RetrievedChunk]:
         if not chunks:
             return []
+        if get_settings().budget_enabled and not operator_billing.get():
+            # This adapter lacks a per-search billing tariff. Never let an unpriced
+            # optional reranker silently bypass the visitor's monetary quota.
+            raise BudgetUnavailableError("Cohere reranking has no configured quota tariff.")
         try:
             async with httpx.AsyncClient(
                 timeout=self.timeout_s, transport=self._transport

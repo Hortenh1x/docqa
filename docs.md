@@ -7,7 +7,7 @@ The [README](README.md) covers the quick start; this file holds everything else:
 **Ask questions, get grounded answers:**
 
 - **Hybrid retrieval** — pgvector HNSW (cosine) + Postgres FTS fused with Reciprocal Rank Fusion; optional reranking (Cohere `rerank-v3.5`, local `bge-reranker-v2-m3`, or none)
-- **Cheap honest refusals** — an off-corpus question is refused *before* the LLM is called (retrieval gate, $0); a model-side `NO_ANSWER` is intercepted mid-stream and converted to a refusal (generation gate)
+- **Cheap honest refusals** — an off-corpus question is refused *before* the answering LLM is called (the retrieval gate avoids generation cost; embeddings/reranking may still incur cost); a model-side `NO_ANSWER` is intercepted mid-stream and converted to a refusal (generation gate)
 - **Citations that resolve** — every `[n]` maps to a document, page range, section breadcrumbs and snippet; out-of-range citations are stripped before the answer is final
 - **SSE streaming** — `meta → sources → delta… → done`; sources arrive *before* the first token, so you see where the answer will come from earlier than the answer. Plain JSON mode for API clients
 - **Any OpenAI-compatible LLM** — one provider class covers OpenAI, DeepSeek, Ollama and vLLM via `base_url`; Anthropic planned
@@ -21,24 +21,26 @@ The [README](README.md) covers the quick start; this file holds everything else:
 - **Background ingestion** — Celery worker: parse → section-aware chunking (~450 tokens, 60 overlap, tables kept atomic) → embeddings → bulk insert; status `pending → processing → ready | failed`
 - **Parsers** — PDF (PyMuPDF, font-size heading heuristics → section breadcrumbs), DOCX (headings + tables → Markdown), MD (a YAML front matter becomes one metadata line plus an `Access:` marker, never raw YAML in a chunk), TXT. `python -m app.cli reprocess --collection-id … [--suffix .md]` re-chunks stored files in place after a parser change — no re-upload, so neither the demo cap nor the rate limiter is involved
 - **Embedding providers** — OpenAI (`text-embedding-3-small@1024`), Ollama (`bge-m3`), and a deterministic stub: tests and offline mode need zero API keys
-- **Suggested questions** — once a collection's ingestion settles, the answering LLM drafts starter questions from a corpus sample (count+2 candidates, ranked by their own retrieval score so the least grounded fall off; corpus-language aware — the German set gets German questions); each question carries the least-privileged role that can answer it (`min_role`), and a collection with restricted content always gets at least one locked question; stored on the collection, refreshed after uploads/deletes, cleared on wipe
+- **Suggested questions:** the model drafts from public excerpts only; candidates are ranked against public retrieval. A locked starter may refer to an already-visible filename whose restricted labels are covered by an available role, never paraphrase private text. If no suitable role/file is available, no locked hint is manufactured. Suggestions refresh after ingestion/deletion and are cleared on wipe; stale tasks cannot restore pre-cleanup suggestions.
 - **Ingestion progress & cost** — `GET /v1/collections/{id}/ingest-status`: document counts by status, tokens embedded so far priced at the collection's embedding model (e.g. the whole 21-doc demo corpus ≈ $0.0004 on `text-embedding-3-small`), and an ETA for in-flight documents derived from recently measured throughput
 
 **Run it like a service:**
 
-- **Per-key rate limiting** — Redis token bucket (atomic Lua), per endpoint class (query 30/min, upload 10/min, default 120/min); 429 with `Retry-After` and `X-RateLimit-*`; fails open when Redis is down (availability beats quota enforcement)
-- **Demo cost cap** — optional daily query quota per (api key, client address), so a public demo where every visitor shares one key still bounds spend per visitor: at `deepseek-v4-flash` peak-hour prices a worst-case query is ~$0.010, so `RATE_LIMIT_QUERY_PER_DAY=50` keeps one visitor under **$0.50/day**; 429 `daily_quota_exceeded` with `Retry-After` to UTC midnight and `X-Quota-Daily-*` headers
+- **Per-key rate limiting** — Redis token bucket (atomic Lua), per endpoint class (query 30/min, upload 10/min, default 120/min); 429 with `Retry-After` and `X-RateLimit-*`; fails open when Redis is down (current outage policy; not a hard spending control)
+- **Daily AI allowance** — durable $0.50 per account and guest IP, resetting at UTC midnight. Guest spending remains after login. Embeddings, answers, suggestions and retries reserve their cost before calling providers; unavailable accounting fails closed. There is no global monetary cap. See [billing](docs/billing.md).
 - **Idempotency** — `Idempotency-Key` on uploads and non-streaming queries: concurrent duplicate → 409 `request_in_flight`, repeat → stored response replayed with `X-Idempotency-Replay: true`
 - **Strict tenant isolation** — every query carries the tenant scope in its WHERE clause; a foreign resource is indistinguishable from a missing one (404, never 403); covered by an IDOR test matrix and a concurrent-dedup race test
-- **Docker** — multi-stage uv image, non-root; `docker-compose.prod.yml` runs api + worker + Postgres + Redis with healthchecks, DB/Redis ports unpublished, `noeviction` Redis (a broker must never drop messages)
-- **CI** — GitHub Actions: ruff, strict mypy, full test suite (testcontainers) with an 80% coverage gate on core modules (currently ~89%); Dependabot for deps and actions
-- **Ops hygiene** — fail-fast config, structured JSON logs with `request_id`, RFC 9457 problem+json errors everywhere, additive Alembic migrations, `/v1/usage` aggregates, 77 tests
+- **Docker** — multi-stage uv image, non-root; `docker-compose.prod.yml` runs a migration job, api + worker + beat + Postgres + Redis with healthchecks, DB/Redis ports unpublished, `noeviction` Redis (a broker must never drop messages)
+- **CI** — GitHub Actions: ruff, strict mypy, full test suite (testcontainers) with an 80% selected-module coverage gate; keyless/demo UI typecheck, build and browser tests; Dependabot for deps and actions
+- **Ops hygiene** — fail-fast config, structured JSON logs with `request_id`, RFC 9457 problem+json errors everywhere, additive Alembic migrations, `/v1/usage` aggregates. The 2026-09-10 local implementation run passed 252 backend tests (90.06% selected-module coverage) plus 6 deployment tests; see the assessment for current evidence and scope
 
 **Use it from a browser:**
 
 - **Next.js UI** ([ui/](ui/)) — an "archivist's desk" interface: each collection's own suggested questions as starter chips (LLM-generated after ingestion; no static fallback — an empty collection shows no chips; a lock marks questions the current role cannot answer), a "Viewing as" role switch in the top bar, sources rendered *before* the answer streams (restricted passages wear their group's tag), inline citation stamps that open a source panel (file, pages, section, access, highlighted snippet), refusals as a first-class amber state — including "not available at your access level" with a one-click "View as Finance" — a library screen with upload, live ingestion statuses, per-document access tags and a progress line (ETA + embedded tokens + running cost + restricted passages). `cd ui && npm install && npm run dev` against a running API.
 
 ## Measured, not promised
+
+The eval tables below, including corpus v2 and public-corpus sections, are **historical measurements** for the model, corpus, prompt and retrieval settings recorded in their linked result files. They were not rerun for the unreleased readiness changes. Current defaults and the deployed provider configuration must be fixed and evaluated together before using these numbers as release acceptance or a cost guarantee.
 
 The repo ships a synthetic corpus (21 corporate policy documents, EN+DE) with deliberately engineered traps — a version conflict, cross-document answers, an exception buried mid-section, near-duplicate policies, five guaranteed knowledge gaps — plus two golden sets:
 
@@ -115,10 +117,27 @@ flowchart LR
 ## Production-shaped stack
 
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build   # api + worker + db + redis
+docker compose -f docker-compose.prod.yml up -d --build --wait
 ```
 
-Single multi-stage image (non-root), migrations on start, healthchecked dependencies, database and Redis not exposed to the host. The public-demo overlay (UI + Caddy TLS, demo quotas, nightly sandbox wipe) is documented in [deploy/runbook.md](deploy/runbook.md).
+Set distinct `POSTGRES_PASSWORD` and `POSTGRES_APP_PASSWORD` first. One non-root application image runs the API, worker and a single beat scheduler. A separate admin migration job precedes runtime services; `docqa_app` has CRUD rights without schema ownership or role management. PostgreSQL and Redis have no published ports. The public-demo overlays, existing-volume migration, backup/restore and monitoring procedures are documented in [deploy/runbook.md](deploy/runbook.md).
+
+### Readiness changes (unreleased, 2026-09-10)
+
+- Apply additive migrations through **0011** before starting this version: ingestion leases, collection versions, accounts/sessions, explicit publication, durable spending and suggestion job identity. Migration 0008 clears legacy suggested questions because they may paraphrase restricted excerpts. Existing documents, chunks and queries are preserved; existing collections are never automatically published or assigned to a new account.
+- Production uses [email/password accounts](docs/accounts.md) with verification, recovery, server sessions and Origin/CSRF checks. Guests can query explicitly published read-only collections; verified users upload to their private tenant. An owner can read all labels in their own files. Browser role simulation only applies to the public corpus.
+- [Daily billing](docs/billing.md) retains guest usage on login, reserves paid calls before dispatch and carries ownership/IP into background jobs. Public browser API keys are rejected by account-mode UI builds. Private answers, passwords and session tokens are not persisted in browser storage; identity changes clear and cancel the entire private UI state across tabs.
+- An accepted upload remains recoverable when broker publication fails. Beat republishes due pending and expired processing work every minute. Workers allow four persisted attempts, with 540/600-second soft/hard task limits and a 660-second processing lease. Terminal `failed` documents require explicit `python -m app.cli reprocess --collection-id <uuid>`; duplicate delivery does not restart them. This improves recovery, but does not promise exactly-once provider billing after a process dies.
+- `DELETE /v1/documents/{id}` returns **403** for read-only collections. Public collection creation is forbidden in demo mode; operators provision collections with demo mode temporarily disabled. Parallel uploads respect the demo collection cap, and deletion/cleanup preserve originals still referenced by another collection.
+- Owners can download their originals in any processing state and explicitly retry failed processing using `POST /v1/documents/{id}/reprocess`. Failed AI calls never remove originals. Public-demo original-file requests retain readiness and role checks; foreign private resources always return 404.
+- Upload idempotency now binds operation, collection version, detected MIME and content. Query replay also binds the effective access policy. Reusing a key after a policy/data change or using a legacy unbound cache entry returns 422; use a fresh key. A renamed identical file with the same detected MIME remains a valid replay.
+- `wipe-collection` refuses personal tenants and published collections. For an operator-owned disposable collection it removes documents/chunks/questions/citations and caches, and fences in-flight work. Personal data has no nightly wipe or automatic TTL. Explicit deletion preserves originals still referenced elsewhere. Backups require their own documented retention policy.
+- Public suggested questions use public excerpts only. A locked suggestion can reference an already-visible filename without sending restricted text to the suggestion model. Personal suggestion jobs retain the actual triggering payer and revision. API responses use `private, no-store`; unexpected error logs retain correlation IDs and exception types rather than document/SQL/provider payloads.
+- Local writes now flush file and directory metadata. The optional versioned S3 provider verifies originals independently of its local cache. Accounts and spending are included in consistent backup/restore, and a synchronous PostgreSQL standby deployment path is supplied. Follow [durability requirements](deploy/durability.md) before accepting private production data.
+- Missing provider credentials, invalid limits and incompatible vector dimensions fail at startup. Hosted OpenAI-compatible LLM endpoints require a key; supported local endpoints may remain keyless. `TOP_K_FTS=0` still supports vector-only evaluation.
+- The default answer context now accepts 40 chunks within 18,000 tokens. A targeted synthetic regression found the required historical and latest-deployment facts at ranks 30 and 33, outside the previous 20-chunk window. Historical/partial answers now explicitly preserve requested scope and withheld values. The larger context consumes more of the same daily allowance; it does not make every corpus question reliable. The eval judge uses captured original context with `--direct`, never a second retrieval presented as the original input.
+
+Verification, including bounded real-provider synthetic-corpus runs, is recorded in [application-assessment.md](application-assessment.md). The account and privacy changes are deployed at docqa.net with SMTP, independent versioned originals, a synchronous standby and verified encrypted backups. The assessment records current release evidence and the remaining user acceptance, hosting and operator decisions.
 
 ## Configuration
 
@@ -136,6 +155,7 @@ Copy `.env.example` and adjust. Highlights:
 | `LLM_PROVIDER` | `stub` | `openai_compat` \| `stub` |
 | `LLM_BASE_URL` / `LLM_MODEL` | OpenAI | any OpenAI-compatible endpoint (DeepSeek, Ollama `/v1`, vLLM) |
 | `LLM_MAX_TOKENS` | `1024` | completion budget; raise to ~4096 if the model spends hidden reasoning tokens (see Known limits) |
+| `LLM_TIMEOUT_S` | `180` | total OpenAI-compatible generation stream deadline, including heartbeat-only streams |
 | `RERANK_PROVIDER` | `none` | `cohere` \| `local` \| `none` \| `stub` |
 | `REFUSAL_THRESHOLD` | `0.50` | retrieval-gate score below this → refuse without an LLM call; the scale is provider-specific (best vector cosine when `rerank=none`) — measured: `0.28` for `text-embedding-3-small@1024`, `~0.48` for `bge-m3`; retune with `eval/run_eval.py` after switching embeddings or reranker |
 | `SUGGESTED_QUESTIONS_ENABLED` | `true` | LLM-drafted starter questions per collection, refreshed when ingestion settles |
@@ -144,7 +164,7 @@ Copy `.env.example` and adjust. Highlights:
 | `ACCESS_DEFAULT_ROLE` | `employee` | role assumed when a query names none — least privilege by design |
 | `ACCESS_REVEAL_HIDDEN` | `false` | demo mode: report how many relevant passages the role could not see and which labels unlock them (this confirms restricted content exists — keep it off where that matters) |
 | `RATE_LIMIT_ENABLED` | `true` | per-key token buckets (query 30/min, upload 10/min, default 120/min) |
-| `RATE_LIMIT_QUERY_PER_DAY` | `0` (off) | daily query quota per key+address; `50` ≈ ≤ $0.50/day per visitor on `deepseek-v4-flash` |
+| `RATE_LIMIT_QUERY_PER_DAY` | `0` (off) | daily query quota per key+address; not a global monetary cap, and Redis failure currently fails open |
 | `MAX_UPLOAD_MB` | `25` | upload size cap → 413 |
 | `MAX_PAGES` | `300` | PDF page cap → 422 |
 
@@ -152,7 +172,7 @@ Copy `.env.example` and adjust. Highlights:
 
 - **pgvector in the main DB, not a dedicated vector store** — transactional with metadata, one instance to run; HNSW is plenty at this scale (see Known limits).
 - **RRF instead of weighted score fusion** — cosine similarity and `ts_rank` live on incomparable scales; RRF works on ranks alone, needs no normalization or weight tuning, and a chunk found by both searches naturally rises to the top.
-- **Refusals are engineered, not hoped for** — two gates: retrieval (top rerank score below threshold → refuse for $0, no LLM call) and generation (the model's `NO_ANSWER` is buffered and intercepted before a single token reaches the client).
+- **Refusals are engineered, not hoped for** — two gates: retrieval (top rerank score below threshold → refuse without a generation call) and generation (the model's `NO_ANSWER` is buffered and intercepted before a single token reaches the client).
 - **Sources stream before the answer** — the user sees *where* the answer will come from before the answer itself; trust is the product.
 - **Fixed 1024-dim embeddings** — native for `bge-m3`, supported by OpenAI via matryoshka `dimensions=1024`; one column covers all providers, `collections.embedding_model` prevents mixing.
 - **Dedup via unique constraint, not SELECT-then-INSERT** — the DB wins the race; concurrent identical uploads yield exactly one document and a 409.
@@ -177,9 +197,9 @@ Real corporate documents mix audiences: the expense policy everyone reads has a 
 
 **The 403-versus-404 trade-off, made explicit.** Everywhere else DocQA answers a foreign resource with 404, because a 403 confirms it exists. For access-filtered retrieval the honest default is the same: an employee asking about salary bands gets "not in the documents". A demo that behaves that way looks broken, so `ACCESS_REVEAL_HIDDEN=true` adds one extra vector query over the *complement* of the role's labels and reports only a count and the labels involved — never content. A hidden passage counts when it scores at least as well as the best passage the role can see (minus a small margin) and above the refusal threshold, so the hint names the group that actually holds the answer rather than every restricted section loosely related to the question. The UI turns that into "3 passages are restricted to Leadership — view as Leadership". Production deployments that must not confirm existence leave the flag off; the response then carries `hidden_passages: null`.
 
-**Things that had to be made role-aware too.** `Idempotency-Key` results are fingerprinted with (collection, role, question): the same key under another role is refused (422 `idempotency_key_reused`) instead of replaying an answer produced with different access. Suggested questions are scored under every role and stored with a `min_role`; a question drafted from a restricted excerpt must not carry the figure it asks about, so candidates containing digits or currency signs are dropped. The eval harness runs with `--role leadership` for the classic categories and, for the `access` category, checks that a hidden document never surfaces under a restricted role.
+- **Query replay is access-aware:** its fingerprint includes operation, collection data version, role, effective labels, hidden-access policy and question. Upload replay binds operation, collection version, detected MIME and bytes. Old or mismatched keys return 422 instead of reusing an answer or upload from another context.
 
-**The original file follows the same labels.** `GET /v1/documents/{id}/file?role=…` refuses a file that holds any section the role may not read (403 `document_restricted`, naming the label) — a PDF cannot be served in part. The Library still lists every document with its labels (the inventory is not secret, and the listing is what tells a manager which documents exist), but the reader is locked for restricted ones. Uploads and deletion are not role-scoped.
+**The original file follows the same labels.** Pending, processing and failed documents return 409 until classification succeeds.  `GET /v1/documents/{id}/file?role=…` refuses a file that holds any section the role may not read (403 `document_restricted`, naming the label) — a PDF cannot be served in part. The Library still lists every document with its labels (the inventory is not secret, and the listing is what tells a manager which documents exist), but the reader is locked for restricted ones. Uploads and deletion are not role-scoped.
 
 ## Corpus v2: a 300-document company, generated facts-first
 
@@ -287,3 +307,27 @@ not enabled here.
 
 - **Live demo** — VPS deploy behind Caddy (runbook ready)
 - **Nice-to-haves** — provider-level thinking toggle for DeepSeek, Anthropic streaming provider, Prometheus metrics, Sentry
+
+### Personal document storage
+
+Browser accounts can keep any number of original documents within **50 MB
+(52,428,800 bytes) per account**, summed across all their collections. Pending,
+processing and failed documents count too. Deleting a document frees its logical
+space; no existing document is removed automatically when the allowance is full.
+Copies in different collections count separately. Backups and derived embeddings
+are outside this original-file allowance. Existing per-file and processing limits
+still apply. `GET /v1/storage` requires an account session and returns `used_bytes`,
+`limit_bytes`, `remaining_bytes` and `document_count`. Further uploads above the
+limit return413 `storage_quota_exceeded`.
+
+### Restoring invalidated starter questions
+
+Migration0008 intentionally clears old suggested questions for access isolation.
+For previously ingested collections, regenerating them requires an explicit call
+to the existing `generation.suggest_questions` worker task; migration does not
+make paid provider calls. Before a repair, select only intended active collections
+with missing questions, ready documents and no ingestion in flight. Pass their
+current `suggestions_revision`, retain the current sanitizer and access filters,
+and budget the provider calls. Do not restore pre-migration question text or
+reprocess/reseed the original documents solely to recreate suggestions. Verify
+three questions per repaired set and unchanged document counts afterward.

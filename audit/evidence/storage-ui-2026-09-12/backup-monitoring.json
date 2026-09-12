@@ -1,0 +1,251 @@
+{
+  "started_at": "2026-09-12T13:05:29.015069+00:00",
+  "status": "PASS",
+  "release": "/opt/docqa-releases/prod-20260912-storage-ui",
+  "schema": "0012",
+  "sql_import_performed": false,
+  "test_email_sent": false,
+  "stages": {
+    "activation": {
+      "status": "ok",
+      "result": {
+        "status": "PASS",
+        "completed_at": "2026-09-12T13:05:48.681382+00:00",
+        "release": "/opt/docqa-releases/prod-20260912-storage-ui",
+        "previous_release": "/opt/docqa-releases/prod-20260912-google",
+        "prior_verified_bundle": "/home/ubuntu/backups/docqa-complete/20260912T121233Z",
+        "migration": "0012",
+        "schema_changed": false,
+        "preserved_table_counts": {
+          "tenants": 2,
+          "api_keys": 1,
+          "collections": 8,
+          "documents": 9778,
+          "chunks": 295856,
+          "queries": 1369,
+          "query_citations": 20636,
+          "users": 1,
+          "account_sessions": 21,
+          "account_tokens": 0,
+          "auth_attempts": 14,
+          "google_identities": 1,
+          "google_auth_states": 1,
+          "spend_reservations": 6,
+          "spend_allocations": 10
+        },
+        "google_configured": true,
+        "registration_available": true,
+        "other_env_values_preserved": true,
+        "synchronous_standby": true,
+        "persistent_migrate_exit_code": 0,
+        "persistent_migrate_matches_api": true,
+        "database_and_redis_unchanged": true,
+        "shared_other_containers_unchanged": true
+      }
+    },
+    "raw_backup": {
+      "status": "ok",
+      "result": {
+        "started_at": "20260912T130549Z",
+        "release": "/opt/docqa-releases/prod-20260912-storage-ui",
+        "status": "ok",
+        "bundle": "/home/ubuntu/backups/docqa-complete/20260912T130549Z",
+        "completed_at": "2026-09-12T13:10:32.777220+00:00",
+        "documents": 9778,
+        "migration": "0012"
+      }
+    },
+    "offhost_backup": {
+      "status": "ok",
+      "result": {
+        "started_at": "2026-09-12T13:10:38.799536+00:00",
+        "status": "ok",
+        "bundle": "20260912T130549Z",
+        "documents": 9778,
+        "migration": "0012",
+        "manifest_sha256": "4e0c4d817cb6d8bf51bfa660056579886727897b9d349e67a132c911767e01e6",
+        "source_manifest_sha256": "1b61a582de3251a4d9ecc02438cbec85cc4f017fd7ee139db2384cd37a93f13f",
+        "source_release": "f08f7962b072c6e35b4c02027477419b7de7145bc28d017a1fe4264faaf50850",
+        "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/624feecc8b3370af4350e5f82631a0f338ef40884d6e96af6c07e6407bcc8904",
+        "action": "snapshot_created",
+        "snapshot_id": "6c37bf348bbdc80e3083662813e35f43534b65bb44a92d8250b9f7626cf106d0",
+        "total_bytes_processed": 2146901548,
+        "data_added": 6442890,
+        "data_added_packed": null,
+        "completed_at": "2026-09-12T13:10:47.398894+00:00"
+      }
+    },
+    "byte_restore": {
+      "status": "ok",
+      "result": {
+        "started_at": "2026-09-12T13:10:47.885139+00:00",
+        "repository": "docqa-backups/restic",
+        "snapshot_id": "6c37bf348bbdc80e3083662813e35f43534b65bb44a92d8250b9f7626cf106d0",
+        "bundle": "20260912T130549Z",
+        "restic_version": "restic 0.16.4 compiled with go1.22.2 on linux/arm64",
+        "migration": "0012",
+        "documents": 9778,
+        "repository_metadata_check": "PASS",
+        "database_dump_sha256": "e82717a7991728254c519c2e7cd96d9b9138bd94ab62419c4a97e081a041fc69",
+        "database_dump_identical": true,
+        "original_archive_identical": true,
+        "original_files_hashed": 9783,
+        "every_original_sha256_identical": true,
+        "runtime_env_identical": true,
+        "current_release_identical": true,
+        "source_manifest_identical": true,
+        "source_archive_identical": true,
+        "snapshot_metrics": {
+          "total_bytes_processed": 2146901548,
+          "data_added": 6442890,
+          "data_added_packed": null
+        },
+        "temporary_restore_removed": true,
+        "completed_at": "2026-09-12T13:11:24.117115+00:00",
+        "duration_seconds": 36.232006,
+        "status": "PASS"
+      }
+    }
+  },
+  "monitoring": {
+    "main": {
+      "role": "main",
+      "enabled": true,
+      "checked_at": "2026-09-12T13:11:24.921125+00:00",
+      "check_exit": 0,
+      "check": {
+        "checked_at": "2026-09-12T13:11:24.997748+00:00",
+        "role": "main",
+        "dry_run": true,
+        "status": "ok",
+        "observations": {
+          "containers": {
+            "api": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "worker": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "beat": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "db": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "redis": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "ui": {
+              "status": "running",
+              "health": "healthy"
+            }
+          },
+          "readiness": {
+            "ok": true,
+            "http_status": 200
+          },
+          "database": {
+            "standbys": [
+              {
+                "application_name": "docqa_standby",
+                "state": "streaming",
+                "sync_state": "sync"
+              }
+            ],
+            "slots": [
+              {
+                "slot_name": "docqa_standby",
+                "active": true,
+                "retained_bytes": 0
+              }
+            ]
+          },
+          "disk_free_bytes": 185273413632,
+          "raw_backup": {
+            "started_at": "20260912T130549Z",
+            "release": "/opt/docqa-releases/prod-20260912-storage-ui",
+            "status": "ok",
+            "bundle": "/home/ubuntu/backups/docqa-complete/20260912T130549Z",
+            "completed_at": "2026-09-12T13:10:32.777220+00:00",
+            "documents": 9778,
+            "migration": "0012"
+          },
+          "offhost_backup": {
+            "started_at": "2026-09-12T13:10:38.799536+00:00",
+            "status": "ok",
+            "bundle": "20260912T130549Z",
+            "documents": 9778,
+            "migration": "0012",
+            "manifest_sha256": "4e0c4d817cb6d8bf51bfa660056579886727897b9d349e67a132c911767e01e6",
+            "source_manifest_sha256": "1b61a582de3251a4d9ecc02438cbec85cc4f017fd7ee139db2384cd37a93f13f",
+            "source_release": "f08f7962b072c6e35b4c02027477419b7de7145bc28d017a1fe4264faaf50850",
+            "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/624feecc8b3370af4350e5f82631a0f338ef40884d6e96af6c07e6407bcc8904",
+            "action": "snapshot_created",
+            "snapshot_id": "6c37bf348bbdc80e3083662813e35f43534b65bb44a92d8250b9f7626cf106d0",
+            "total_bytes_processed": 2146901548,
+            "data_added": 6442890,
+            "data_added_packed": null,
+            "completed_at": "2026-09-12T13:10:47.398894+00:00"
+          },
+          "cert_pg": "2028-09-11T10:49:34+00:00",
+          "cert_public_api": "2026-11-24T15:08:25+00:00",
+          "cert_public_ui": "2026-11-24T15:08:25+00:00"
+        },
+        "issues": {},
+        "suppressed_issue_ids": [],
+        "would_alert": [],
+        "would_recover": [],
+        "mail_sent": false
+      },
+      "cron_service": "active",
+      "cron_entry_present": true
+    },
+    "standby": {
+      "role": "standby",
+      "enabled": true,
+      "checked_at": "2026-09-12T13:11:26.567459+00:00",
+      "check_exit": 0,
+      "check": {
+        "checked_at": "2026-09-12T13:11:26.634458+00:00",
+        "role": "standby",
+        "dry_run": true,
+        "status": "ok",
+        "observations": {
+          "containers": {
+            "standby": {
+              "status": "running",
+              "health": "healthy"
+            }
+          },
+          "readiness": {
+            "ok": true,
+            "http_status": 200
+          },
+          "database": {
+            "in_recovery": true,
+            "receivers": [
+              {
+                "status": "streaming"
+              }
+            ]
+          },
+          "disk_free_bytes": 41609306112,
+          "cert_pg_ca": "2036-09-09T10:49:34+00:00"
+        },
+        "issues": {},
+        "suppressed_issue_ids": [],
+        "would_alert": [],
+        "would_recover": [],
+        "mail_sent": false
+      },
+      "cron_service": "active",
+      "cron_entry_present": true
+    }
+  },
+  "completed_at": "2026-09-12T13:11:26.988407+00:00"
+}

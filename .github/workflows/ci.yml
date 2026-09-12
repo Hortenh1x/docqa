@@ -18,17 +18,87 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy app
+      - run: uv run pytest deploy/tests
       - name: tests with coverage gate (core modules)
         run: >
           uv run pytest
           --cov=app/core --cov=app/ingestion --cov=app/retrieval --cov=app/generation
+          --cov=app/accounts --cov=app/billing --cov=app/storage
           --cov-fail-under=80
           --cov-report=term
 
+  ui:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - mode: keyless
+            demo: "false"
+            accounts: "false"
+          - mode: demo
+            demo: "true"
+            accounts: "false"
+          - mode: accounts
+            demo: "true"
+            accounts: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - run: npm --prefix ui ci
+      - run: npm --prefix ui run typecheck
+      - name: Build UI with synthetic configuration
+        run: npm --prefix ui run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:18123
+          NEXT_PUBLIC_DEMO_MODE: ${{ matrix.demo }}
+          NEXT_PUBLIC_ACCOUNTS_ENABLED: ${{ matrix.accounts }}
+          NEXT_PUBLIC_DEMO_API_KEY: ${{ matrix.mode == 'demo' && 'synthetic-demo-ci-key' || '' }}
+      - run: npm --prefix ui exec -- playwright install --with-deps chromium
+      - name: Browser regressions against standalone server
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a ui/.next/static ui/.next/standalone/.next/static
+          cp -a ui/public ui/.next/standalone/public
+          HOSTNAME=127.0.0.1 PORT=18124 node ui/.next/standalone/server.js >ui-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:18124 >/dev/null; then break; fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:18124 >/dev/null
+          if [[ "$DOCQA_ACCOUNTS" == "true" ]]; then
+            npm --prefix ui run test:accounts
+          else
+            npm --prefix ui run test:browser
+          fi
+          if [[ "$DOCQA_DEMO" == "false" ]]; then
+            DOCQA_PLAYWRIGHT="$PWD/ui/node_modules/playwright" node audit/ui-accessibility.cjs
+          fi
+        env:
+          DOCQA_UI_URL: http://127.0.0.1:18124
+          DOCQA_DEMO: ${{ matrix.demo }}
+          DOCQA_ACCOUNTS: ${{ matrix.accounts }}
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: ui-failure-${{ matrix.mode }}
+          path: |
+            ui-server.log
+            audit/evidence/implementation-v1/ui-accessibility-*
+
   image:
-    needs: checks
+    needs: [checks, ui]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t docqa:${{ github.sha }} .
+      - name: Prepare matching application and public source release
+        run: python3 scripts/build_source.py --output .release/ci
+      - run: docker build -t docqa:${{ github.sha }} .release/ci
+      - run: docker build -t docqa-ui:${{ github.sha }} .release/ci/ui

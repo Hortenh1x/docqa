@@ -1,0 +1,33 @@
+- banner:
+  - link "DocQA":
+    - /url: /
+  - navigation "Screens":
+    - link "Ask":
+      - /url: /
+    - link "Library":
+      - /url: /library
+    - link "Usage":
+      - /url: /usage
+  - text: Collection
+  - combobox "Collection":
+    - option "Tenant A · 1 doc" [selected]
+  - text: Viewing as Access role
+  - combobox "Access role":
+    - option "Employee · Anna, backend engineer" [selected]
+    - option "Finance · Tomasz, CFO"
+  - button "set API key"
+- main:
+  - text: "Answer ready: Tenant A private answer [1] Test live response"
+  - list "Sources":
+    - 'listitem "Source 1: tenant-A.md, pages 1–1"': 1 tenant-A.md p. 1 · Policy
+  - paragraph:
+    - text: Tenant A private answer
+    - 'button "Source 1: tenant-A.md, pages 1–1"': "1"
+  - paragraph: ● grounded · confidence 0.90 · 19 tokens · $0 · 1ms · as Employee
+  - textbox "Your question":
+    - /placeholder: Ask the documents…  (press / to focus)
+  - button "Ask" [disabled]
+- contentinfo:
+  - link "About":
+    - /url: /about
+- alert

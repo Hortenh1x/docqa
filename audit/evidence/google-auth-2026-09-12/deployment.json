@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "completed_at": "2026-09-12T12:07:10.822303+00:00",
+  "release": "/opt/docqa-releases/prod-20260912-google",
+  "previous_release": "/opt/docqa-releases/prod-20260912-ready",
+  "pre_migration_bundle": "/home/ubuntu/backups/docqa-complete/20260912T115954Z",
+  "migration": "0012",
+  "preserved_table_counts": {
+    "tenants": 1,
+    "api_keys": 1,
+    "collections": 7,
+    "documents": 9778,
+    "chunks": 295856,
+    "queries": 1369,
+    "query_citations": 20636,
+    "users": 0,
+    "account_sessions": 10,
+    "account_tokens": 0,
+    "auth_attempts": 6,
+    "spend_reservations": 6,
+    "spend_allocations": 6
+  },
+  "google_configured": true,
+  "registration_available": true,
+  "synchronous_standby": true,
+  "commits": 0
+}

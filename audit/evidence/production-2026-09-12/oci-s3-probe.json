@@ -1,0 +1,11 @@
+{
+  "store": "PASS",
+  "independent_hash": "PASS",
+  "cache_loss_recovery": "PASS",
+  "delete_marker": "PASS",
+  "runtime_version_delete_denied": "PASS",
+  "provider_checksum_rejection": "PASS",
+  "status": "PASS",
+  "synthetic_prefix": "55b9f2c8-8857-403a-bb1f-52a4b2cf51a2",
+  "version": "a38b66ef-6e7e-44d5-8181-bdb29200ecfe"
+}

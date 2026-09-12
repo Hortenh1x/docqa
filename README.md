@@ -80,3 +80,12 @@ uv run python -m eval.run_eval --collection <policies-en id>   # reproduce the n
 ```
 
 Everything else — measured results, architecture, configuration, design decisions, known limits — lives in **[docs.md](docs.md)**.
+
+## License and source releases
+
+DocQA's original application code is licensed under **GNU AGPL v3 only**
+([LICENSE](LICENSE), [NOTICE](NOTICE)). Third-party components retain their own licenses.
+The public **About** page links to the corresponding source archive packaged with
+each release; the GitHub history can lag behind a deployed working-tree release.
+See [source release instructions](docs/source-releases.md) to prepare a reviewed,
+secret-free build tree and its matching public download before deployment.

@@ -1,0 +1,131 @@
+FAIL API key survives submit, resets tenant state/cache, stays out of storage and is lost on reload
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'change key', exact: true }) to be visible[22m
+
+    at useKey (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:135:71)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:158:7
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13
+FAIL changing API key aborts a pending file request and discards its result
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'change key', exact: true }) to be visible[22m
+
+    at useKey (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:135:71)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:198:9
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13
+FAIL changing API key aborts a pending query request and discards its result
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'change key', exact: true }) to be visible[22m
+
+    at useKey (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:135:71)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:198:9
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13
+FAIL changing API key aborts a pending upload request and discards its result
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'change key', exact: true }) to be visible[22m
+
+    at useKey (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:135:71)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:198:9
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13
+FAIL reader returns focus for Escape, close and backdrop at 390px
+AssertionError [ERR_ASSERTION]: Focus returns to the opener
+
+false !== true
+
+    at checkFocus (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:145:10)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:261:9
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13
+PASS source drawer returns focus to citation and rail at 390px
+FAIL reader returns focus for Escape, close and backdrop at 1280px
+AssertionError [ERR_ASSERTION]: Focus returns to the opener
+
+false !== true
+
+    at checkFocus (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:145:10)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:261:9
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13
+PASS source drawer returns focus to citation and rail at 1280px
+FAIL role change hides old reader text while pending and after a restricted response
+AssertionError [ERR_ASSERTION]: No previous-role file text while pending
+
+1 !== 0
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:306:12
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13
+FAIL delete cancellation sends nothing; failure is visible and Retry succeeds
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert((await alert.innerText()).includes('Storage is temporarily unavailable'))
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:326:5
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13
+FAIL upload hint matches 25 MB limit and server size error is visible
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByText('Drop PDF, DOCX, MD or TXT · up to 25 MB', { exact: true }) to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:340:104
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13
+{
+  "demo": false,
+  "passed": 2,
+  "total": 11,
+  "results": [
+    {
+      "name": "API key survives submit, resets tenant state/cache, stays out of storage and is lost on reload",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'change key', exact: true }) to be visible\u001b[22m\n\n    at useKey (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:135:71)\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:158:7\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13"
+    },
+    {
+      "name": "changing API key aborts a pending file request and discards its result",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'change key', exact: true }) to be visible\u001b[22m\n\n    at useKey (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:135:71)\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:198:9\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13"
+    },
+    {
+      "name": "changing API key aborts a pending query request and discards its result",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'change key', exact: true }) to be visible\u001b[22m\n\n    at useKey (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:135:71)\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:198:9\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13"
+    },
+    {
+      "name": "changing API key aborts a pending upload request and discards its result",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'change key', exact: true }) to be visible\u001b[22m\n\n    at useKey (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:135:71)\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:198:9\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13"
+    },
+    {
+      "name": "reader returns focus for Escape, close and backdrop at 390px",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: Focus returns to the opener\n\nfalse !== true\n\n    at checkFocus (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:145:10)\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:261:9\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13"
+    },
+    {
+      "name": "source drawer returns focus to citation and rail at 390px",
+      "pass": true
+    },
+    {
+      "name": "reader returns focus for Escape, close and backdrop at 1280px",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: Focus returns to the opener\n\nfalse !== true\n\n    at checkFocus (/home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:145:10)\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:261:9\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13"
+    },
+    {
+      "name": "source drawer returns focus to citation and rail at 1280px",
+      "pass": true
+    },
+    {
+      "name": "role change hides old reader text while pending and after a restricted response",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: No previous-role file text while pending\n\n1 !== 0\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:306:12\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13"
+    },
+    {
+      "name": "delete cancellation sends nothing; failure is visible and Retry succeeds",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert((await alert.innerText()).includes('Storage is temporarily unavailable'))\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:326:5\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13"
+    },
+    {
+      "name": "upload hint matches 25 MB limit and server size error is visible",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('Drop PDF, DOCX, MD or TXT · up to 25 MB', { exact: true }) to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:340:104\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:354:13"
+    }
+  ]
+}

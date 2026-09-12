@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "release": "/opt/docqa-releases/prod-20260912-storage-ui",
+  "source_release": "f08f7962b072c6e35b4c02027477419b7de7145bc28d017a1fe4264faaf50850",
+  "source_archive_sha256": "c25bc091c55a2fc5a86febade489f71c7e50d45a948ae37570dd13d3446df466",
+  "source_files_verified": 302,
+  "image_source_files_verified": [
+    "app/storage/usage.py",
+    "app/api/v1/storage.py",
+    "app/ingestion/service.py"
+  ],
+  "images": [
+    {
+      "id": "sha256:3aa222f2ec53ffed3de965e1ec702ce7df8895e586b3923a06a12268d9778cf6",
+      "tags": [
+        "docqa:prod-20260912-storage-ui"
+      ],
+      "architecture": "arm64"
+    },
+    {
+      "id": "sha256:7ad0fe63745b113f6d0b512f2138d0d82d5fabc96ea9e18079cf50d030af3ad5",
+      "tags": [
+        "docqa-ui:latest",
+        "docqa-ui:prod-20260912-storage-ui"
+      ],
+      "architecture": "arm64"
+    }
+  ],
+  "runtime_release": "/opt/docqa-releases/prod-20260912-google",
+  "monitor_enabled": true
+}

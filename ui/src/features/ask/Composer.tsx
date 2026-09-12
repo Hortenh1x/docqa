@@ -74,7 +74,7 @@ export function Composer({
         }}
         placeholder={wide ? "Ask the documents…  (press / to focus)" : "Ask the documents…"}
         aria-label="Your question"
-        className="max-h-[140px] min-h-[28px] flex-1 resize-none bg-transparent px-2 py-1 outline-none placeholder:text-ink-soft/70"
+        className="max-h-[140px] min-h-[28px] min-w-0 flex-1 resize-none bg-transparent px-2 py-1 outline-none placeholder:text-ink-soft"
       />
       <button
         type="submit"

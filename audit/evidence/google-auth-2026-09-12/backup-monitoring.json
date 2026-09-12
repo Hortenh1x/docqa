@@ -1,0 +1,344 @@
+{
+  "started_at": "2026-09-12T12:12:31.735221+00:00",
+  "resumed_at": "2026-09-12T12:27:37.311988+00:00",
+  "status": "PASS",
+  "release": "/opt/docqa-releases/prod-20260912-google",
+  "schema": "0012",
+  "sql_import_performed": false,
+  "test_email_sent": false,
+  "raw_backup_repeated": false,
+  "incident": {
+    "preserved_original_failure_evidence": "/home/horten/VS Code Projects/docqa/audit/evidence/google-auth-2026-09-12/initial-resume-failure.json",
+    "cause": "Compose start restarted the stale persistent migration container, which failed: Can't locate revision identified by '0012'",
+    "data_export_completed_before_resume_failure": true,
+    "persistent_migrate_alignment": {
+      "started_at": "2026-09-12T12:24:18.665253+00:00",
+      "completed_at": "2026-09-12T12:24:25.155557+00:00",
+      "persistent_migrate_recreated_only": true,
+      "migrate_exit_code": 0,
+      "previous_migrate_image": "sha256:49587d1258126c32cea7e9ef1c9d3fd22142b085547bb6e678934690bed209c0",
+      "current_migrate_image": "sha256:8efd407a6ebdcdba4aa80da75ad313b4903297f0c5425d8cd9fcbbff05cfab50",
+      "migrate_image_matches_api": true,
+      "compose_start_writers_test": "PASS",
+      "writers_ids_unchanged": true,
+      "schema": "0012",
+      "status": "PASS"
+    },
+    "bundle_recovery": {
+      "recovered_status": {
+        "started_at": "20260912T121233Z",
+        "release": "/opt/docqa-releases/prod-20260912-google",
+        "status": "ok",
+        "bundle": "/home/ubuntu/backups/docqa-complete/20260912T121233Z",
+        "completed_at": "2026-09-12T12:17:07.633778+00:00",
+        "documents": 9778,
+        "migration": "0012",
+        "recovered_after_resume_failure": true,
+        "recovered_at": "2026-09-12T12:26:25.600473+00:00",
+        "recovery": "Existing verified bundle finalized after writers were resumed and persistent migrate aligned; no repeated dump or S3 scan"
+      },
+      "manifest": {
+        "format": 1,
+        "started_at": "2026-09-12T12:12:33.835291+00:00",
+        "project": "docqa",
+        "postgres_image": "pgvector/pgvector:pg18",
+        "quiesced_services": [
+          "beat",
+          "api",
+          "worker"
+        ],
+        "images": {
+          "api": "sha256:8efd407a6ebdcdba4aa80da75ad313b4903297f0c5425d8cd9fcbbff05cfab50",
+          "worker": "sha256:8efd407a6ebdcdba4aa80da75ad313b4903297f0c5425d8cd9fcbbff05cfab50",
+          "beat": "sha256:8efd407a6ebdcdba4aa80da75ad313b4903297f0c5425d8cd9fcbbff05cfab50",
+          "db": "sha256:2ba9ca5f2e7daa0f0e7723cba1ee9167bab54efd3640516a44ac1a928dd67e7a"
+        },
+        "migration": "0012",
+        "table_counts": {
+          "tenants": 1,
+          "api_keys": 1,
+          "collections": 7,
+          "documents": 9778,
+          "chunks": 295856,
+          "queries": 1369,
+          "query_citations": 20636,
+          "users": 0,
+          "account_sessions": 17,
+          "account_tokens": 0,
+          "auth_attempts": 11,
+          "google_identities": 0,
+          "google_auth_states": 4,
+          "spend_reservations": 6,
+          "spend_allocations": 6
+        },
+        "document_references": 9778,
+        "files": {
+          "database.dump": "6009fcdcc22272fd3995c689a63104604bdb1abe31d030dc28f45ac2858829bd",
+          "files.tar.gz": "54e06ce6ffc5fbf8f0edc072609448afa7fab6cbbfb891e001cf6265fb45270b"
+        },
+        "completed_at": "2026-09-12T12:17:07.633778+00:00"
+      },
+      "local_checksums_reverified": true,
+      "raw_dump_repeated": false,
+      "s3_scan_repeated": false
+    },
+    "failure_alerts_preserved": true
+  },
+  "stages": {
+    "raw_backup": {
+      "status": "recovered",
+      "result": {
+        "started_at": "20260912T121233Z",
+        "release": "/opt/docqa-releases/prod-20260912-google",
+        "status": "ok",
+        "bundle": "/home/ubuntu/backups/docqa-complete/20260912T121233Z",
+        "completed_at": "2026-09-12T12:17:07.633778+00:00",
+        "documents": 9778,
+        "migration": "0012",
+        "recovered_after_resume_failure": true,
+        "recovered_at": "2026-09-12T12:26:25.600473+00:00",
+        "recovery": "Existing verified bundle finalized after writers were resumed and persistent migrate aligned; no repeated dump or S3 scan"
+      }
+    },
+    "offhost_backup": {
+      "status": "ok",
+      "result": {
+        "started_at": "2026-09-12T12:27:37.780660+00:00",
+        "status": "ok",
+        "bundle": "20260912T121233Z",
+        "documents": 9778,
+        "migration": "0012",
+        "manifest_sha256": "458202603bf6713c7921f915c68cdf4bfb4dd723c76da718362aa241136bd642",
+        "source_manifest_sha256": "86e7840adb95f18180d5d8143a3dd4316afe6d12aacedfac80204093e0c14648",
+        "source_release": "65e7a2335fb811742006e46562e140a9f4a6ac8adaee67a46564da8b4bc72f29",
+        "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/d5b9bfa9b0e514bb1a6b5b99c3cff8ae48e9e0937bbbe74bb7f623249f49d0fc",
+        "action": "snapshot_created",
+        "snapshot_id": "a7ba2b6b8f7de3f3cfa65db88106c2e0352a836c47c1c6c67077d560706baeef",
+        "total_bytes_processed": 2146858745,
+        "data_added": 6400093,
+        "data_added_packed": null,
+        "completed_at": "2026-09-12T12:27:46.460372+00:00"
+      }
+    },
+    "byte_restore": {
+      "status": "ok",
+      "result": {
+        "started_at": "2026-09-12T12:27:46.927782+00:00",
+        "repository": "docqa-backups/restic",
+        "snapshot_id": "a7ba2b6b8f7de3f3cfa65db88106c2e0352a836c47c1c6c67077d560706baeef",
+        "bundle": "20260912T121233Z",
+        "restic_version": "restic 0.16.4 compiled with go1.22.2 on linux/arm64",
+        "migration": "0012",
+        "documents": 9778,
+        "repository_metadata_check": "PASS",
+        "database_dump_sha256": "6009fcdcc22272fd3995c689a63104604bdb1abe31d030dc28f45ac2858829bd",
+        "database_dump_identical": true,
+        "original_archive_identical": true,
+        "original_files_hashed": 9783,
+        "every_original_sha256_identical": true,
+        "runtime_env_identical": true,
+        "current_release_identical": true,
+        "source_manifest_identical": true,
+        "source_archive_identical": true,
+        "snapshot_metrics": {
+          "total_bytes_processed": 2146858745,
+          "data_added": 6400093,
+          "data_added_packed": null
+        },
+        "temporary_restore_removed": true,
+        "completed_at": "2026-09-12T12:28:39.349364+00:00",
+        "duration_seconds": 52.421611,
+        "status": "PASS"
+      }
+    }
+  },
+  "manifest": {
+    "format": 1,
+    "started_at": "2026-09-12T12:12:33.835291+00:00",
+    "project": "docqa",
+    "postgres_image": "pgvector/pgvector:pg18",
+    "quiesced_services": [
+      "beat",
+      "api",
+      "worker"
+    ],
+    "images": {
+      "api": "sha256:8efd407a6ebdcdba4aa80da75ad313b4903297f0c5425d8cd9fcbbff05cfab50",
+      "worker": "sha256:8efd407a6ebdcdba4aa80da75ad313b4903297f0c5425d8cd9fcbbff05cfab50",
+      "beat": "sha256:8efd407a6ebdcdba4aa80da75ad313b4903297f0c5425d8cd9fcbbff05cfab50",
+      "db": "sha256:2ba9ca5f2e7daa0f0e7723cba1ee9167bab54efd3640516a44ac1a928dd67e7a"
+    },
+    "migration": "0012",
+    "table_counts": {
+      "tenants": 1,
+      "api_keys": 1,
+      "collections": 7,
+      "documents": 9778,
+      "chunks": 295856,
+      "queries": 1369,
+      "query_citations": 20636,
+      "users": 0,
+      "account_sessions": 17,
+      "account_tokens": 0,
+      "auth_attempts": 11,
+      "google_identities": 0,
+      "google_auth_states": 4,
+      "spend_reservations": 6,
+      "spend_allocations": 6
+    },
+    "document_references": 9778,
+    "files": {
+      "database.dump": "6009fcdcc22272fd3995c689a63104604bdb1abe31d030dc28f45ac2858829bd",
+      "files.tar.gz": "54e06ce6ffc5fbf8f0edc072609448afa7fab6cbbfb891e001cf6265fb45270b"
+    },
+    "completed_at": "2026-09-12T12:17:07.633778+00:00"
+  },
+  "monitoring": {
+    "main": {
+      "role": "main",
+      "previous_enabled": true,
+      "enabled": true,
+      "restored_at": "2026-09-12T12:28:40.380242+00:00",
+      "active_check_exit": 0,
+      "active_check": {
+        "checked_at": "2026-09-12T12:28:40.462532+00:00",
+        "role": "main",
+        "dry_run": false,
+        "status": "ok",
+        "observations": {
+          "containers": {
+            "api": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "worker": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "beat": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "db": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "redis": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "ui": {
+              "status": "running",
+              "health": "healthy"
+            }
+          },
+          "readiness": {
+            "ok": true,
+            "http_status": 200
+          },
+          "database": {
+            "standbys": [
+              {
+                "application_name": "docqa_standby",
+                "state": "streaming",
+                "sync_state": "sync"
+              }
+            ],
+            "slots": [
+              {
+                "slot_name": "docqa_standby",
+                "active": true,
+                "retained_bytes": 0
+              }
+            ]
+          },
+          "disk_free_bytes": 188493901824,
+          "raw_backup": {
+            "started_at": "20260912T121233Z",
+            "release": "/opt/docqa-releases/prod-20260912-google",
+            "status": "ok",
+            "bundle": "/home/ubuntu/backups/docqa-complete/20260912T121233Z",
+            "completed_at": "2026-09-12T12:17:07.633778+00:00",
+            "documents": 9778,
+            "migration": "0012",
+            "recovered_after_resume_failure": true,
+            "recovered_at": "2026-09-12T12:26:25.600473+00:00",
+            "recovery": "Existing verified bundle finalized after writers were resumed and persistent migrate aligned; no repeated dump or S3 scan"
+          },
+          "offhost_backup": {
+            "started_at": "2026-09-12T12:27:37.780660+00:00",
+            "status": "ok",
+            "bundle": "20260912T121233Z",
+            "documents": 9778,
+            "migration": "0012",
+            "manifest_sha256": "458202603bf6713c7921f915c68cdf4bfb4dd723c76da718362aa241136bd642",
+            "source_manifest_sha256": "86e7840adb95f18180d5d8143a3dd4316afe6d12aacedfac80204093e0c14648",
+            "source_release": "65e7a2335fb811742006e46562e140a9f4a6ac8adaee67a46564da8b4bc72f29",
+            "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/d5b9bfa9b0e514bb1a6b5b99c3cff8ae48e9e0937bbbe74bb7f623249f49d0fc",
+            "action": "snapshot_created",
+            "snapshot_id": "a7ba2b6b8f7de3f3cfa65db88106c2e0352a836c47c1c6c67077d560706baeef",
+            "total_bytes_processed": 2146858745,
+            "data_added": 6400093,
+            "data_added_packed": null,
+            "completed_at": "2026-09-12T12:27:46.460372+00:00"
+          },
+          "cert_pg": "2028-09-11T10:49:34+00:00",
+          "cert_public_api": "2026-11-24T15:08:25+00:00",
+          "cert_public_ui": "2026-11-24T15:08:25+00:00"
+        },
+        "issues": {},
+        "suppressed_issue_ids": [],
+        "would_alert": [],
+        "would_recover": [
+          "backup.raw_backup"
+        ],
+        "mail_sent": true
+      },
+      "cron_service": "active",
+      "cron_entry_present": true
+    },
+    "standby": {
+      "role": "standby",
+      "previous_enabled": true,
+      "enabled": true,
+      "restored_at": "2026-09-12T12:28:42.337950+00:00",
+      "active_check_exit": 0,
+      "active_check": {
+        "checked_at": "2026-09-12T12:28:42.404628+00:00",
+        "role": "standby",
+        "dry_run": false,
+        "status": "ok",
+        "observations": {
+          "containers": {
+            "standby": {
+              "status": "running",
+              "health": "healthy"
+            }
+          },
+          "readiness": {
+            "ok": true,
+            "http_status": 200
+          },
+          "database": {
+            "in_recovery": true,
+            "receivers": [
+              {
+                "status": "streaming"
+              }
+            ]
+          },
+          "disk_free_bytes": 41609687040,
+          "cert_pg_ca": "2036-09-09T10:49:34+00:00"
+        },
+        "issues": {},
+        "suppressed_issue_ids": [],
+        "would_alert": [],
+        "would_recover": [],
+        "mail_sent": false
+      },
+      "cron_service": "active",
+      "cron_entry_present": true
+    }
+  },
+  "completed_at": "2026-09-12T12:28:42.718028+00:00"
+}

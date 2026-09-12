@@ -1,0 +1,60 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  876.5MB
+Step 1/18 : FROM python:3.12-slim AS builder
+ ---> c3d81d25b315
+Step 2/18 : COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+ ---> Using cache
+ ---> 2505d5e46ab0
+Step 3/18 : WORKDIR /app
+ ---> Using cache
+ ---> d4a8f14b510e
+Step 4/18 : ENV UV_LINK_MODE=copy UV_COMPILE_BYTECODE=1
+ ---> Using cache
+ ---> f5603fd776f8
+Step 5/18 : COPY pyproject.toml uv.lock ./
+ ---> Using cache
+ ---> aac385184649
+Step 6/18 : RUN uv sync --frozen --no-dev
+ ---> Using cache
+ ---> 2b60d0b27c7e
+Step 7/18 : COPY app ./app
+ ---> 25771aed7c30
+Step 8/18 : COPY alembic ./alembic
+ ---> b83a02b932ea
+Step 9/18 : COPY alembic.ini ./
+ ---> c229d3bb63c5
+Step 10/18 : FROM python:3.12-slim
+ ---> c3d81d25b315
+Step 11/18 : RUN useradd -m appuser
+ ---> Using cache
+ ---> c795f676616a
+Step 12/18 : WORKDIR /app
+ ---> Using cache
+ ---> 0990e0ea1c6f
+Step 13/18 : COPY --from=builder /app /app
+ ---> d5df893205cc
+Step 14/18 : RUN mkdir -p /app/data && chown -R appuser:appuser /app/data
+ ---> Running in 8da42e0ed825
+ ---> Removed intermediate container 8da42e0ed825
+ ---> 89f827fdda48
+Step 15/18 : USER appuser
+ ---> Running in 0fd3de1700c7
+ ---> Removed intermediate container 0fd3de1700c7
+ ---> 20dd4139ae06
+Step 16/18 : ENV PATH="/app/.venv/bin:$PATH"
+ ---> Running in bbea7e04008c
+ ---> Removed intermediate container bbea7e04008c
+ ---> c873dbb1a092
+Step 17/18 : EXPOSE 8000
+ ---> Running in 6d2129fc295e
+ ---> Removed intermediate container 6d2129fc295e
+ ---> 3ffebd76d3c2
+Step 18/18 : CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]
+ ---> Running in 9ed657dcbeaf
+ ---> Removed intermediate container 9ed657dcbeaf
+ ---> 513795d40c88
+Successfully built 513795d40c88
+Successfully tagged docqa-readiness-api:local

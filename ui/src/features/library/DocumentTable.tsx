@@ -1,11 +1,11 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useRole } from "@/app/providers";
 import { LockIcon } from "@/components/LockIcon";
 import { canRead, joinNames, labelName } from "@/lib/access";
-import { deleteDocument } from "@/lib/api/client";
+import { ACCOUNTS_ENABLED, ApiError, deleteDocument, reprocessDocument, errorMessage } from "@/lib/api/client";
 import type { DocumentOut } from "@/lib/api/types";
 import { formatBytes, formatDate } from "@/lib/format";
 import { DocumentViewer } from "./DocumentViewer";
@@ -15,24 +15,60 @@ export function DocumentTable({
   documents,
   collectionId,
   readOnly,
+  owner = false,
 }: {
   documents: DocumentOut[];
   collectionId: string;
   readOnly: boolean;
+  owner?: boolean;
 }) {
   const queryClient = useQueryClient();
   const { roles, role } = useRole();
   const [reading, setReading] = useState<DocumentOut | null>(null);
+  const closeReader = useCallback(() => setReading(null), []);
   const remove = useMutation({
     mutationFn: deleteDocument,
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["documents", collectionId] }),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["documents", collectionId] });
+      void queryClient.invalidateQueries({ queryKey: ["ingest-status", collectionId] });
+      void queryClient.invalidateQueries({ queryKey: ["storage"] });
+    },
   });
+  const retry = useMutation({
+    mutationFn: reprocessDocument,
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["budget"] });
+      void queryClient.invalidateQueries({ queryKey: ["documents", collectionId] });
+      void queryClient.invalidateQueries({ queryKey: ["ingest-status", collectionId] });
+    },
+  });
+  const failedDocument = remove.isError
+    ? documents.find((doc) => doc.id === remove.variables)
+    : null;
 
   if (!documents.length) return null;
 
   return (
     <div className="overflow-x-auto rounded-[10px] border border-hairline bg-sheet shadow-card">
+      {failedDocument && (
+        <div role="alert" className="flex flex-wrap items-center gap-2 border-b border-hairline px-4 py-3 text-sm text-error">
+          <p>
+            Couldn&apos;t delete {failedDocument.filename}.{" "}
+            {remove.error instanceof ApiError
+              ? remove.error.message
+              : "Check your connection and try again."}
+          </p>
+          <button
+            type="button"
+            onClick={() => remove.mutate(failedDocument.id)}
+            aria-label={`Retry delete ${failedDocument.filename}`}
+            className="rounded-[6px] border border-hairline px-2 py-1 text-xs hover:bg-error/10"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+      {retry.isError && <p role="alert" className="px-4 py-3 text-sm text-error">{errorMessage(retry.error)}</p>}
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-hairline text-left text-xs text-ink-soft">
@@ -49,7 +85,7 @@ export function DocumentTable({
           {documents.map((doc) => (
             <tr key={doc.id} className="border-b border-hairline last:border-0">
               <td className="max-w-64 px-4 py-2.5">
-                {canRead(roles, role, doc.access_labels) ? (
+                {owner || canRead(roles, role, doc.access_labels) ? (
                   <button
                     type="button"
                     onClick={() => setReading(doc)}
@@ -67,6 +103,7 @@ export function DocumentTable({
                     {doc.filename}
                   </span>
                 )}
+                {owner && doc.status === "failed" && doc.error && <p className="mt-1 max-w-64 break-words text-xs leading-5 text-error">{doc.error}</p>}
               </td>
               <td className="font-data px-3 py-2.5 text-xs text-ink-soft">
                 {doc.page_count ?? "—"}
@@ -78,7 +115,7 @@ export function DocumentTable({
                 <StatusBadge status={doc.status} error={doc.error} />
               </td>
               <td className="px-3 py-2.5">
-                {doc.access_labels.length ? (
+                {owner ? <span className="text-xs text-ink-soft">Only you</span> : doc.access_labels.length ? (
                   <span className="flex flex-wrap gap-1">
                     {doc.access_labels.map((label) => (
                       <span
@@ -99,6 +136,11 @@ export function DocumentTable({
               </td>
               {!readOnly && (
                 <td className="px-3 py-2.5 text-right">
+                  {ACCOUNTS_ENABLED && owner && doc.status === "failed" && <button
+                    type="button" onClick={() => retry.mutate(doc.id)} disabled={retry.isPending}
+                    aria-label={`Retry processing ${doc.filename}`}
+                    className="rounded-[6px] px-2 py-1 text-xs text-stamp hover:bg-stamp/10 disabled:opacity-40"
+                  >Retry processing</button>}
                   <button
                     type="button"
                     onClick={() => {
@@ -107,7 +149,8 @@ export function DocumentTable({
                       }
                     }}
                     aria-label={`Delete ${doc.filename}`}
-                    className="rounded-[6px] px-2 py-1 text-xs text-ink-soft hover:bg-error/10 hover:text-error"
+                    disabled={remove.isPending}
+                    className="rounded-[6px] px-2 py-1 text-xs text-ink-soft hover:bg-error/10 hover:text-error disabled:opacity-40"
                   >
                     Delete
                   </button>
@@ -117,7 +160,7 @@ export function DocumentTable({
           ))}
         </tbody>
       </table>
-      {reading && <DocumentViewer doc={reading} onClose={() => setReading(null)} />}
+      {reading && <DocumentViewer doc={reading} onClose={closeReader} owner={owner} />}
     </div>
   );
 }

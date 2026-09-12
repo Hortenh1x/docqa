@@ -1,0 +1,99 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.13, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/horten/VS Code Projects/docqa
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.14.2, asyncio-1.4.0, cov-7.1.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=session, asyncio_default_test_loop_scope=session
+collected 252 items
+
+tests/integration/test_access_e2e.py ...............                     [  5%]
+tests/integration/test_auth.py ......                                    [  8%]
+tests/integration/test_cleanup.py .....                                  [ 10%]
+tests/integration/test_concurrency.py .                                  [ 10%]
+tests/integration/test_demo_mode.py ..                                   [ 11%]
+tests/integration/test_idempotency.py ....                               [ 13%]
+tests/integration/test_ingestion_e2e.py ........                         [ 16%]
+tests/integration/test_ingestion_recovery.py ....                        [ 17%]
+tests/integration/test_input_boundaries.py ...........                   [ 22%]
+tests/integration/test_migration_upgrade.py .                            [ 22%]
+tests/integration/test_query_e2e.py .....                                [ 24%]
+tests/integration/test_rate_limit.py .....                               [ 26%]
+tests/integration/test_readiness_regressions.py ...................      [ 34%]
+tests/integration/test_runtime_privileges.py .                           [ 34%]
+tests/integration/test_stream_disconnect.py ..                           [ 35%]
+tests/integration/test_suggested_questions.py ......                     [ 37%]
+tests/integration/test_usage.py ..                                       [ 38%]
+tests/integration/test_worker_recovery.py ..                             [ 39%]
+tests/unit/test_access.py .................................              [ 52%]
+tests/unit/test_chunking.py ...............                              [ 58%]
+tests/unit/test_corpus_v2_spec.py .....                                  [ 60%]
+tests/unit/test_corpus_v2_validate.py ............                       [ 65%]
+tests/unit/test_costs.py ......                                          [ 67%]
+tests/unit/test_embeddings.py ....                                       [ 69%]
+tests/unit/test_fusion.py ....                                           [ 70%]
+tests/unit/test_generation.py ................                           [ 76%]
+tests/unit/test_llm_openai_compat.py .....                               [ 78%]
+tests/unit/test_parsers.py .........                                     [ 82%]
+tests/unit/test_rerank.py ....                                           [ 84%]
+tests/unit/test_security.py ....                                         [ 85%]
+tests/unit/test_settings.py ....................                         [ 93%]
+tests/unit/test_suggestions.py ................                          [100%]
+
+=============================== warnings summary ===============================
+tests/integration/test_access_e2e.py::test_restricted_chunk_is_stored_with_its_label
+  /home/horten/VS Code Projects/docqa/.venv/lib/python3.12/site-packages/testcontainers/redis/__init__.py:46: DeprecationWarning: The @wait_container_is_ready decorator is deprecated and will be removed in a future version. Use structured wait strategies instead: container.waiting_for(HttpWaitStrategy(8080).for_status_code(200)) or container.waiting_for(LogMessageWaitStrategy('ready'))
+    @wait_container_is_ready(redis.exceptions.ConnectionError)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.13-final-0 _______________
+
+Name                                  Stmts   Miss  Cover
+---------------------------------------------------------
+app/core/__init__.py                      0      0   100%
+app/core/errors.py                      124      6    95%
+app/core/idempotency.py                  64      9    86%
+app/core/logging.py                      46      4    91%
+app/core/rate_limit.py                   80      6    92%
+app/core/redis.py                        11      0   100%
+app/core/response_headers.py             14      2    86%
+app/core/security.py                     23      1    96%
+app/generation/__init__.py                0      0   100%
+app/generation/citations.py              41      0   100%
+app/generation/llm/__init__.py            2      0   100%
+app/generation/llm/base.py               22      1    95%
+app/generation/llm/openai_compat.py      49      1    98%
+app/generation/llm/stub.py               39      5    87%
+app/generation/prompts.py                38      0   100%
+app/generation/sentinel.py               28      0   100%
+app/generation/service.py               148     19    87%
+app/generation/suggestions.py           143      6    96%
+app/generation/tasks.py                  67     13    81%
+app/ingestion/__init__.py                 0      0   100%
+app/ingestion/access.py                  30      0   100%
+app/ingestion/chunking.py               214     12    94%
+app/ingestion/mime.py                     6      0   100%
+app/ingestion/parsers/__init__.py         2      0   100%
+app/ingestion/parsers/base.py            23      0   100%
+app/ingestion/parsers/docx.py            43      4    91%
+app/ingestion/parsers/markdown.py        66      3    95%
+app/ingestion/parsers/pdf.py            106      6    94%
+app/ingestion/service.py                108     25    77%
+app/ingestion/tasks.py                  160     28    82%
+app/retrieval/__init__.py                 2      0   100%
+app/retrieval/base.py                    20      0   100%
+app/retrieval/fulltext.py                13      0   100%
+app/retrieval/fusion.py                  12      0   100%
+app/retrieval/rerank/__init__.py          2      0   100%
+app/retrieval/rerank/base.py             19      8    58%
+app/retrieval/rerank/cohere.py           25      1    96%
+app/retrieval/rerank/local.py            25     25     0%
+app/retrieval/rerank/none.py              8      1    88%
+app/retrieval/rerank/stub.py             14      1    93%
+app/retrieval/service.py                 37      2    95%
+app/retrieval/vector.py                  28      0   100%
+---------------------------------------------------------
+TOTAL                                  1902    189    90%
+Required test coverage of 80% reached. Total coverage: 90.06%
+======================= 252 passed, 1 warning in 36.91s ========================

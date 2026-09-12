@@ -5,15 +5,16 @@ import re
 import uuid
 from datetime import datetime
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
 from app.access.labels import restricted_labels_by_collection, sort_labels
-from app.api.deps import CurrentCollection, CurrentTenant, DbSession
+from app.accounts.actor import Actor, collection_scope
+from app.api.deps import CurrentCollection, CurrentTenant, DbSession, require_write_access
 from app.config import get_settings
-from app.core.errors import DuplicateCollectionError
+from app.core.errors import DemoReadOnlyError, DuplicateCollectionError
 from app.core.rate_limit import rate_limit
 from app.db.models import Chunk, Collection, Document, DocumentStatus
 from app.usage.costs import embedding_cost_usd, embedding_price_per_1m
@@ -47,6 +48,9 @@ class CollectionOut(BaseModel):
     slug: str
     embedding_model: str
     read_only: bool
+    is_public: bool
+    owned: bool = False
+    writable: bool = False
     # 3 LLM-drafted starter questions; null until the first ingestion settles
     suggested_questions: list[SuggestedQuestionOut] | None
     # restricted content labels present in the collection (empty = nothing restricted)
@@ -83,8 +87,13 @@ def _slugify(name: str) -> str:
 
 @router.post("", status_code=201, response_model=CollectionOut)
 async def create_collection(
-    payload: CollectionCreate, tenant: CurrentTenant, db: DbSession
-) -> Collection:
+    payload: CollectionCreate, tenant: CurrentTenant, db: DbSession, request: Request
+) -> CollectionOut:
+    require_write_access(request)
+    if get_settings().demo_mode and request.state.actor.kind != "account":
+        raise DemoReadOnlyError(
+            "Demo collections are provisioned by the operator. Use the sandbox."
+        )
     slug = payload.slug or _slugify(payload.name)
     collection = Collection(
         tenant_id=tenant.id,
@@ -102,13 +111,18 @@ async def create_collection(
             f"A collection with slug '{slug}' already exists.", slug=slug
         ) from None
     await db.refresh(collection)
-    return collection
+    return CollectionOut.model_validate(collection).model_copy(
+        update={"owned": True, "writable": True}
+    )
 
 
 @router.get("", response_model=list[CollectionOut])
-async def list_collections(tenant: CurrentTenant, db: DbSession) -> list[CollectionOut]:
+async def list_collections(
+    tenant: CurrentTenant, db: DbSession, request: Request
+) -> list[CollectionOut]:
+    actor: Actor = request.state.actor
     result = await db.execute(
-        select(Collection).where(Collection.tenant_id == tenant.id).order_by(Collection.created_at)
+        select(Collection).where(collection_scope(actor)).order_by(Collection.created_at)
     )
     collections = list(result.scalars().all())
     ids = [c.id for c in collections]
@@ -125,7 +139,16 @@ async def list_collections(tenant: CurrentTenant, db: DbSession) -> list[Collect
         counts = {collection_id: int(n) for collection_id, n in rows}
     return [
         CollectionOut.model_validate(c).model_copy(
-            update={"access_labels": labels.get(c.id, []), "document_count": counts.get(c.id, 0)}
+            update={
+                "access_labels": labels.get(c.id, []),
+                "document_count": counts.get(c.id, 0),
+                "owned": actor.kind != "guest" and c.tenant_id == tenant.id,
+                "writable": actor.kind != "guest"
+                and c.tenant_id == tenant.id
+                and not c.read_only
+                and not c.is_public
+                and (actor.kind != "account" or request.state.user.email_verified),
+            }
         )
         for c in collections
     ]

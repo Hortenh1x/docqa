@@ -1,0 +1,345 @@
+{
+  "date": "2026-09-12",
+  "status": "PASS",
+  "script_sha256": "cef8d5af0d0bcb24fb1dd676d891f206c0d2ec9747935d05825c6437f69cf7a9",
+  "tests": {
+    "passed": 18,
+    "basic_utc_backup_timestamp": "PASS",
+    "health_failure_fixtures": "PASS",
+    "six_hour_dedup_and_recovery_once": "PASS",
+    "maintenance_availability_only": "PASS",
+    "dry_run_has_no_mail_or_notification_state_writes": "PASS",
+    "sending_disabled_by_default": "PASS",
+    "smtp_starttls_and_exact_recipient_fake_test": "PASS"
+  },
+  "live_dry_runs": {
+    "main": {
+      "checked_at": "2026-09-12T11:16:54.284285+00:00",
+      "role": "main",
+      "dry_run": true,
+      "status": "ok",
+      "observations": {
+        "containers": {
+          "api": {
+            "status": "running",
+            "health": "healthy"
+          },
+          "worker": {
+            "status": "running",
+            "health": "healthy"
+          },
+          "beat": {
+            "status": "running",
+            "health": "healthy"
+          },
+          "db": {
+            "status": "running",
+            "health": "healthy"
+          },
+          "redis": {
+            "status": "running",
+            "health": "healthy"
+          },
+          "ui": {
+            "status": "running",
+            "health": "healthy"
+          }
+        },
+        "readiness": {
+          "ok": true,
+          "http_status": 200
+        },
+        "database": {
+          "standbys": [
+            {
+              "application_name": "docqa_standby",
+              "state": "streaming",
+              "sync_state": "sync"
+            }
+          ],
+          "slots": [
+            {
+              "slot_name": "docqa_standby",
+              "active": true,
+              "retained_bytes": 0
+            }
+          ]
+        },
+        "disk_free_bytes": 196859064320,
+        "raw_backup": {
+          "started_at": "20260912T102731Z",
+          "release": "/opt/docqa-releases/prod-20260912-final",
+          "status": "ok",
+          "bundle": "/home/ubuntu/backups/docqa-complete/20260912T102731Z",
+          "completed_at": "2026-09-12T10:32:13.174050+00:00",
+          "documents": 9778,
+          "migration": "0011"
+        },
+        "offhost_backup": {
+          "started_at": "2026-09-12T11:01:21.967708+00:00",
+          "status": "ok",
+          "bundle": "20260912T102731Z",
+          "documents": 9778,
+          "migration": "0011",
+          "manifest_sha256": "e286f191f8d2dc46dd9ea335ccb3e3bd2ac1dcf52be148ad9f8db72e1f8a7c25",
+          "source_manifest_sha256": "1daf3edebbb1c653f3462fcca7cdd22c9a44a6467d5b77e240735dc6f8cc906f",
+          "source_release": "707f9278329f7d358afbcad9070f32b6dfa566e5c4b68842b21b5f631a4ac5dc",
+          "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/a924839a485851c8cdc7be2b95485db52e4b82844d409af96c4d4f569887bb32",
+          "action": "already_backed_up",
+          "snapshot_id": "9d14b17a68dd6188d044403c14c357d2803ecd46ca33631fc86b46d75a29d102",
+          "completed_at": "2026-09-12T11:01:25.277667+00:00"
+        },
+        "cert_pg": "2028-09-11T10:49:34+00:00",
+        "cert_public_api": "2026-11-24T15:08:25+00:00",
+        "cert_public_ui": "2026-11-24T15:08:25+00:00"
+      },
+      "issues": {},
+      "suppressed_issue_ids": [],
+      "would_alert": [],
+      "would_recover": [],
+      "mail_sent": false
+    },
+    "standby": {
+      "checked_at": "2026-09-12T11:16:54.988029+00:00",
+      "role": "standby",
+      "dry_run": true,
+      "status": "ok",
+      "observations": {
+        "containers": {
+          "standby": {
+            "status": "running",
+            "health": "healthy"
+          }
+        },
+        "readiness": {
+          "ok": true,
+          "http_status": 200
+        },
+        "database": {
+          "in_recovery": true,
+          "receivers": [
+            {
+              "status": "streaming"
+            }
+          ]
+        },
+        "disk_free_bytes": 41636892672,
+        "cert_pg_ca": "2036-09-09T10:49:34+00:00"
+      },
+      "issues": {},
+      "suppressed_issue_ids": [],
+      "would_alert": [],
+      "would_recover": [],
+      "mail_sent": false
+    }
+  },
+  "test_email": {
+    "sent_at": "2026-09-12T11:17:40.192833+00:00",
+    "role": "standby",
+    "recipient": "dmytro.bolibok@gmail.com",
+    "smtp_accepted": true,
+    "inbox_delivery": "confirmed_by_user",
+    "subject": "[DocQA] Monitoring test - no incident",
+    "count": 1,
+    "inbox_folder": "Gmail inbox, not spam",
+    "delivery_confirmation_recorded_at": "2026-09-12T11:21:25.195290+00:00"
+  },
+  "cron": {
+    "installed": true,
+    "planned_schedule": "*/5 * * * *",
+    "review_approved": true,
+    "command_syntax_both_hosts": "PASS",
+    "executables_accessible_both_hosts": true,
+    "schedule": "*/5 * * * *",
+    "process_timeout_seconds": 120,
+    "kill_grace_seconds": 5,
+    "enabled_after_final_backup": true,
+    "service_active_both_hosts": true
+  },
+  "controls": {
+    "smtp_starttls_port": 587,
+    "recipient": "dmytro.bolibok@gmail.com",
+    "mail_attachments": false,
+    "ssh_private_key_copied_to_vps": false,
+    "database_or_application_writes": false,
+    "backup_content_hashing_or_s3_listing": false,
+    "minimum_issue_repeat_hours": 6,
+    "recovery_once": true,
+    "backup_freshness_hours": 36,
+    "running_backup_grace_hours": 2,
+    "disk_reserve_gib": 10,
+    "retained_slot_wal_threshold_gib": 1,
+    "certificate_expiry_warning_days": 30,
+    "maintenance_utc": "03:00-03:20",
+    "health_log_max_bytes": 5242880,
+    "health_log_old_files": 2
+  },
+  "drill_done_reported": true,
+  "completed_at": "2026-09-12T11:32:36.210684+00:00",
+  "activation": {
+    "main": {
+      "role": "main",
+      "enabled_at": "2026-09-12T11:31:20.268437+00:00",
+      "cron_installed": true,
+      "cron": "*/5 * * * * /usr/bin/timeout --signal=TERM --kill-after=5s 120s /usr/bin/python3 /home/ubuntu/.local/share/docqa-ops/health_monitor.py --send >> /home/ubuntu/.config/docqa-monitor/cron-errors.log 2>&1",
+      "existing_cron_entries_preserved": true,
+      "active_run": {
+        "checked_at": "2026-09-12T11:31:20.820101+00:00",
+        "role": "main",
+        "dry_run": false,
+        "status": "ok",
+        "observations": {
+          "containers": {
+            "api": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "worker": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "beat": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "db": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "redis": {
+              "status": "running",
+              "health": "healthy"
+            },
+            "ui": {
+              "status": "running",
+              "health": "healthy"
+            }
+          },
+          "readiness": {
+            "ok": true,
+            "http_status": 200
+          },
+          "database": {
+            "standbys": [
+              {
+                "application_name": "docqa_standby",
+                "state": "streaming",
+                "sync_state": "sync"
+              }
+            ],
+            "slots": [
+              {
+                "slot_name": "docqa_standby",
+                "active": true,
+                "retained_bytes": 0
+              }
+            ]
+          },
+          "disk_free_bytes": 194407317504,
+          "raw_backup": {
+            "started_at": "20260912T112123Z",
+            "release": "/opt/docqa-releases/prod-20260912-ready",
+            "status": "ok",
+            "bundle": "/home/ubuntu/backups/docqa-complete/20260912T112123Z",
+            "completed_at": "2026-09-12T11:25:58.267521+00:00",
+            "documents": 9778,
+            "migration": "0011"
+          },
+          "offhost_backup": {
+            "started_at": "2026-09-12T11:27:01.811209+00:00",
+            "status": "ok",
+            "bundle": "20260912T112123Z",
+            "documents": 9778,
+            "migration": "0011",
+            "manifest_sha256": "bef6d7c0f6d225ad215b87f2e480a19bbf2f4a1257f277f62b77b572cacacbf1",
+            "source_manifest_sha256": "a852f8c9a932d33515e8cf937ce6e934fe3cf4b85ec7353c7306b89cd97ab219",
+            "source_release": "d6806bda8d1bd905a267a04cc6504dbb10b5667d1145c40c18c020e776bb18d6",
+            "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/29a96a1a38b8a14af71c47cf616ba0acb4ef8da19c97f4ebe83d3b495b809f36",
+            "action": "snapshot_created",
+            "snapshot_id": "a2ecc632c10dd91c7ec6d1516067e825e23ad7f12fc43513b0edef4ab76088c1",
+            "total_bytes_processed": 2146827364,
+            "data_added": 621269526,
+            "data_added_packed": null,
+            "completed_at": "2026-09-12T11:29:33.271851+00:00"
+          },
+          "cert_pg": "2028-09-11T10:49:34+00:00",
+          "cert_public_api": "2026-11-24T15:08:25+00:00",
+          "cert_public_ui": "2026-11-24T15:08:25+00:00"
+        },
+        "issues": {},
+        "suppressed_issue_ids": [],
+        "would_alert": [],
+        "would_recover": [],
+        "mail_sent": false
+      },
+      "additional_email_sent": false
+    },
+    "standby": {
+      "role": "standby",
+      "enabled_at": "2026-09-12T11:31:22.483433+00:00",
+      "cron_installed": true,
+      "cron": "*/5 * * * * /usr/bin/timeout --signal=TERM --kill-after=5s 120s /usr/bin/python3 /home/ubuntu/.local/share/docqa-ops/health_monitor.py --send >> /home/ubuntu/.config/docqa-monitor/cron-errors.log 2>&1",
+      "existing_cron_entries_preserved": true,
+      "active_run": {
+        "checked_at": "2026-09-12T11:31:22.816206+00:00",
+        "role": "standby",
+        "dry_run": false,
+        "status": "ok",
+        "observations": {
+          "containers": {
+            "standby": {
+              "status": "running",
+              "health": "healthy"
+            }
+          },
+          "readiness": {
+            "ok": true,
+            "http_status": 200
+          },
+          "database": {
+            "in_recovery": true,
+            "receivers": [
+              {
+                "status": "streaming"
+              }
+            ]
+          },
+          "disk_free_bytes": 41610256384,
+          "cert_pg_ca": "2036-09-09T10:49:34+00:00"
+        },
+        "issues": {},
+        "suppressed_issue_ids": [],
+        "would_alert": [],
+        "would_recover": [],
+        "mail_sent": false
+      },
+      "additional_email_sent": false
+    }
+  },
+  "final_verification": {
+    "main": {
+      "enabled": true,
+      "cron_service": "active",
+      "script_sha256": "cef8d5af0d0bcb24fb1dd676d891f206c0d2ec9747935d05825c6437f69cf7a9",
+      "notification_state": {
+        "issues": {}
+      },
+      "health_status": "ok",
+      "latest_mail_sent": false,
+      "notification_state_mode": "0o600"
+    },
+    "standby": {
+      "enabled": true,
+      "cron_service": "active",
+      "script_sha256": "cef8d5af0d0bcb24fb1dd676d891f206c0d2ec9747935d05825c6437f69cf7a9",
+      "notification_state": {
+        "issues": {}
+      },
+      "health_status": "ok",
+      "latest_mail_sent": false,
+      "notification_state_mode": "0o600"
+    }
+  },
+  "test_email_count": 1,
+  "additional_operational_emails_during_enable": 0
+}

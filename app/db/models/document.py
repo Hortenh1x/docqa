@@ -22,6 +22,7 @@ class Document(Base):
         UniqueConstraint("collection_id", "sha256"),
         CheckConstraint("status IN ('pending', 'processing', 'ready', 'failed')", name="status"),
         Index("ix_documents_collection_id_status", "collection_id", "status"),
+        Index("ix_documents_recovery", "status", "next_attempt_at", "lease_expires_at"),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -39,3 +40,12 @@ class Document(Base):
     page_count: Mapped[int | None]
     created_at: Mapped[datetime] = mapped_column(server_default=text("now()"))
     processed_at: Mapped[datetime | None]
+    ingestion_attempts: Mapped[int] = mapped_column(server_default=text("0"))
+    processing_token: Mapped[uuid.UUID | None]
+    lease_expires_at: Mapped[datetime | None]
+    next_attempt_at: Mapped[datetime | None]
+    last_enqueued_at: Mapped[datetime | None]
+    billing_user_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="RESTRICT")
+    )
+    billing_ip_digest: Mapped[str | None]

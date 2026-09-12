@@ -1,0 +1,87 @@
+PASS demo build authenticates with its baked-in key and hides key entry
+PASS demo reload discards previous UTC day saved answers
+PASS demo reload discards legacy undated saved answers
+PASS open Ask expires at UTC midnight on timer
+PASS open Ask expires at UTC midnight on visibility
+PASS open Ask expires at UTC midnight on interaction
+PASS reader returns focus for Escape, close and backdrop at 390px
+PASS source drawer returns focus to citation and rail at 390px
+PASS reader returns focus for Escape, close and backdrop at 1280px
+PASS source drawer returns focus to citation and rail at 1280px
+PASS role change hides old reader text while pending and after a restricted response
+PASS reader explains pending document response without exposing the file
+PASS reader explains processing document response without exposing the file
+PASS reader explains failed document response without exposing the file
+PASS delete cancellation sends nothing; failure is visible and Retry succeeds
+PASS upload hint matches 5 MB limit and server size error is visible
+{
+  "demo": true,
+  "passed": 16,
+  "total": 16,
+  "results": [
+    {
+      "name": "demo build authenticates with its baked-in key and hides key entry",
+      "pass": true
+    },
+    {
+      "name": "demo reload discards previous UTC day saved answers",
+      "pass": true
+    },
+    {
+      "name": "demo reload discards legacy undated saved answers",
+      "pass": true
+    },
+    {
+      "name": "open Ask expires at UTC midnight on timer",
+      "pass": true
+    },
+    {
+      "name": "open Ask expires at UTC midnight on visibility",
+      "pass": true
+    },
+    {
+      "name": "open Ask expires at UTC midnight on interaction",
+      "pass": true
+    },
+    {
+      "name": "reader returns focus for Escape, close and backdrop at 390px",
+      "pass": true
+    },
+    {
+      "name": "source drawer returns focus to citation and rail at 390px",
+      "pass": true
+    },
+    {
+      "name": "reader returns focus for Escape, close and backdrop at 1280px",
+      "pass": true
+    },
+    {
+      "name": "source drawer returns focus to citation and rail at 1280px",
+      "pass": true
+    },
+    {
+      "name": "role change hides old reader text while pending and after a restricted response",
+      "pass": true
+    },
+    {
+      "name": "reader explains pending document response without exposing the file",
+      "pass": true
+    },
+    {
+      "name": "reader explains processing document response without exposing the file",
+      "pass": true
+    },
+    {
+      "name": "reader explains failed document response without exposing the file",
+      "pass": true
+    },
+    {
+      "name": "delete cancellation sends nothing; failure is visible and Retry succeeds",
+      "pass": true
+    },
+    {
+      "name": "upload hint matches 5 MB limit and server size error is visible",
+      "pass": true
+    }
+  ]
+}

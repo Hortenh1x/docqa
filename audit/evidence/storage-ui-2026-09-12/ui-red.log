@@ -1,0 +1,41 @@
+HARNESS NOTE: this initial attempt used a stale keyless standalone build and is NOT regression RED evidence. Valid account-build final verification is ui-accounts.log; delete-reconcile-red.log is the confirmed pre-fix regression.
+
+FAIL storage allowance spans the private library and refreshes after upload and deletion
+locator.click: Timeout 7000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('link', { name: 'Sign in', exact: true }).first()[22m
+
+    at login (/home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:89:74)
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:510:11)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:589:142
+FAIL full storage prevents upload but keeps deletion available
+locator.click: Timeout 7000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('link', { name: 'Sign in', exact: true }).first()[22m
+
+    at login (/home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:89:74)
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:529:11)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:589:142
+FAIL storage read failure offers retry without claiming zero usage
+locator.click: Timeout 7000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('link', { name: 'Sign in', exact: true }).first()[22m
+
+    at login (/home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:89:74)
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:542:11)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:589:142
+FAIL every public set shows an accurate access explanation and three starter questions
+locator.selectOption: Timeout 7000ms exceeded.
+Call log:
+[2m  - waiting for getByLabel('Collection', { exact: true })[22m
+
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:557:62)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:589:142
+FAIL Google button follows Sign in and displays the multicolor mark on mobile
+locator.waitFor: Timeout 7000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: 'Continue with Google', exact: true }) to be visible[22m
+
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:573:18)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:589:142
+{"suite":"accounts","failed":5,"total":5}

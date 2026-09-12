@@ -38,7 +38,7 @@ from app.db.models import Collection
 from app.embeddings.base import EmbeddingError
 from app.generation.llm import TextDelta
 from app.generation.llm.openai_compat import OpenAICompatLLM
-from app.generation.prompts import build_context_blocks
+from app.generation.prompts import ContextBlock, block_header
 from app.generation.service import DoneEvent, ErrorEvent, SourcesEvent, run_query
 from app.retrieval.service import retrieve
 
@@ -86,9 +86,11 @@ class QuestionResult:
     answered_refused: bool | None = None
     answer_text: str | None = None
     citation_docs: list[str] = field(default_factory=list)
+    context_blocks: list[dict[str, Any]] | None = None
     # judge layer
     judge_faithful: bool | None = None
     judge_correct: bool | None = None
+    judge_skip_reason: str | None = None
 
 
 def _doc_of(filename: str) -> str:
@@ -174,6 +176,7 @@ async def run_retrieval_layer(
 def _record_answer(result: QuestionResult, body: dict[str, Any]) -> None:
     result.answered_refused = body["refused"]
     result.answer_text = body.get("answer")
+    result.context_blocks = body.get("context_blocks")
     if result.hidden_values:
         answer = result.answer_text or ""
         result.value_leak = any(value in answer for value in result.hidden_values)
@@ -200,15 +203,35 @@ async def _answer_direct(
     answer: str | None = None
     refused = False
     sources: list[dict[str, Any]] = []
+    blocks: list[ContextBlock] = []
     principal = resolve_principal(settings, role)
-    async for event in run_query(tenant_id, collection_id, question, settings, principal):
+    async for event in run_query(
+        tenant_id, collection_id, question, settings, principal, context_observer=blocks.extend
+    ):
         if isinstance(event, SourcesEvent):
             sources = event.sources
         elif isinstance(event, DoneEvent):
             answer, refused = event.answer, event.refused
         elif isinstance(event, ErrorEvent):
             raise RuntimeError(f"{event.code}: {event.message}")
-    return {"answer": answer, "refused": refused, "sources": sources}
+    return {
+        "answer": answer,
+        "refused": refused,
+        "sources": sources,
+        "context_blocks": [
+            {
+                "n": b.n,
+                "header": block_header(b),
+                "text": b.text,
+                "chunk_id": b.chunk.chunk_id,
+                "document_id": str(b.chunk.document_id),
+                "filename": b.chunk.filename,
+                "access_label": b.chunk.access_label,
+                "score": b.chunk.score,
+            }
+            for b in blocks
+        ],
+    }
 
 
 async def run_answer_layer(
@@ -332,18 +355,13 @@ async def run_judge_layer(
         )
         if not judgeable:
             return
+        if result.context_blocks is None:
+            result.judge_skip_reason = "original_context_unavailable"
+            print(f"  {result.qid} JUDGE skipped: use --direct to capture original context")
+            return
         async with semaphore:
             try:
-                # rebuild exactly the context the answering LLM saw (same retrieval, same budget)
-                target = _target_collection(collection_id, collection_de_id, result.expected_docs)
-                principal = resolve_principal(settings, result.role or role)
-                retrieval = await retrieve(target, result.question, settings, principal)
-                blocks = build_context_blocks(
-                    retrieval.chunks,
-                    settings.context_token_budget,
-                    settings.context_chunk_max_tokens,
-                )
-                excerpts = [b.chunk.content for b in blocks]
+                excerpts = [f"{b.get('header', '')}\n{b['text']}" for b in result.context_blocks]
                 parts: list[str] = []
                 async for event in llm.stream(JUDGE_SYSTEM, _judge_prompt(result, excerpts)):
                     if isinstance(event, TextDelta):

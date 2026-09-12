@@ -20,9 +20,9 @@ from sqlalchemy import delete, select
 
 from app.core.security import display_key, generate_api_key
 from app.db.base import dispose_engine, get_sessionmaker
-from app.db.models import ApiKey, Collection, Document, DocumentStatus, Tenant
-from app.ingestion.mime import EXT_BY_MIME
-from app.storage import get_storage
+from app.db.models import ApiKey, Collection, Document, DocumentStatus, Query, Tenant
+from app.ingestion.service import delete_document_file_if_unreferenced
+from app.storage.lifecycle import lock_tenant_files
 
 
 async def create_tenant(name: str) -> None:
@@ -38,6 +38,9 @@ async def create_key(tenant_id: uuid.UUID, name: str) -> None:
         tenant = await session.get(Tenant, tenant_id)
         if tenant is None:
             print(f"error: tenant {tenant_id} not found", file=sys.stderr)
+            raise SystemExit(1)
+        if tenant.kind != "service":
+            print("error: personal accounts cannot receive service API keys", file=sys.stderr)
             raise SystemExit(1)
         plaintext, prefix, key_hash = generate_api_key()
         session.add(ApiKey(tenant_id=tenant_id, prefix=prefix, key_hash=key_hash, name=name))
@@ -69,10 +72,45 @@ async def mark_readonly(collection_id: uuid.UUID, writable: bool = False) -> Non
         if collection is None:
             print(f"error: collection {collection_id} not found", file=sys.stderr)
             raise SystemExit(1)
+        await lock_tenant_files(session, collection.tenant_id)
+        await session.refresh(collection, with_for_update=True)
+        if writable and collection.is_public:
+            print("error: unpublish the collection before making it writable", file=sys.stderr)
+            raise SystemExit(1)
         collection.read_only = not writable
         await session.commit()
         state = "writable" if writable else "read-only"
         print(f"collection {collection.slug!r} is now {state}")
+
+
+async def publish_collection(collection_id: uuid.UUID, private: bool = False) -> None:
+    """Explicitly expose reviewed demo data; personal data can never be published."""
+    from app.config import get_settings
+
+    async with get_sessionmaker()() as session:
+        row = (
+            await session.execute(
+                select(Collection, Tenant)
+                .join(Tenant, Collection.tenant_id == Tenant.id)
+                .where(Collection.id == collection_id)
+            )
+        ).one_or_none()
+        if row is None:
+            print("error: collection not found", file=sys.stderr)
+            raise SystemExit(1)
+        collection, tenant = row
+        if tenant.kind != "service" or (
+            not private and (tenant.id != get_settings().public_tenant_id or not tenant.is_active)
+        ):
+            print("error: only the configured public service tenant can publish", file=sys.stderr)
+            raise SystemExit(1)
+        await lock_tenant_files(session, collection.tenant_id)
+        await session.refresh(collection, with_for_update=True)
+        collection.is_public = not private
+        collection.read_only = True
+        collection.data_version += 1
+        await session.commit()
+        print(f"collection {collection.slug!r} is now {'private' if private else 'public'}")
 
 
 async def wipe_collection(collection_id: uuid.UUID) -> None:
@@ -82,18 +120,35 @@ async def wipe_collection(collection_id: uuid.UUID) -> None:
         if collection is None:
             print(f"error: collection {collection_id} not found", file=sys.stderr)
             raise SystemExit(1)
+        await lock_tenant_files(session, collection.tenant_id)
+        await session.refresh(collection, with_for_update=True)
+        tenant = await session.get(Tenant, collection.tenant_id)
+        if tenant is None or tenant.kind != "service" or collection.is_public:
+            print(
+                "error: sandbox wipe is forbidden for personal or public collections",
+                file=sys.stderr,
+            )
+            raise SystemExit(1)
         documents = (
             (await session.execute(select(Document).where(Document.collection_id == collection_id)))
             .scalars()
             .all()
         )
-        for document in documents:
-            get_storage().delete(
-                str(collection.tenant_id), document.sha256, EXT_BY_MIME.get(document.mime_type, "")
-            )
         await session.execute(delete(Document).where(Document.collection_id == collection_id))
+        await session.execute(delete(Query).where(Query.collection_id == collection_id))
+        collection.data_version += 1
         collection.suggested_questions = None  # stale once the documents are gone
         await session.commit()
+        for document in documents:
+            await delete_document_file_if_unreferenced(
+                session, collection.tenant_id, document.sha256, document.mime_type
+            )
+        await session.commit()
+        # Also remove answers from Redis. A failed purge is a failed command, so
+        # scheduled jobs can alert/retry; never silently claim complete cleanup.
+        from app.core.idempotency import purge_tenant_cache
+
+        await purge_tenant_cache(collection.tenant_id)
         print(f"wiped {len(documents)} documents from {collection.slug!r}")
 
 
@@ -105,9 +160,12 @@ async def reprocess_documents(collection_id: uuid.UUID, suffix: str | None) -> N
     from app.ingestion.tasks import ingest_document
 
     async with get_sessionmaker()() as session:
-        if await session.get(Collection, collection_id) is None:
+        collection = await session.get(Collection, collection_id)
+        if collection is None:
             print(f"error: collection {collection_id} not found", file=sys.stderr)
             raise SystemExit(1)
+        await lock_tenant_files(session, collection.tenant_id)
+        await session.refresh(collection, with_for_update=True)
         documents = (
             (await session.execute(select(Document).where(Document.collection_id == collection_id)))
             .scalars()
@@ -116,9 +174,17 @@ async def reprocess_documents(collection_id: uuid.UUID, suffix: str | None) -> N
         targets = [
             d for d in documents if suffix is None or d.filename.lower().endswith(suffix.lower())
         ]
+        if targets:
+            collection.data_version += 1
+            collection.suggested_questions = None
         for document in targets:
             document.status = DocumentStatus.PENDING
             document.error = None
+            document.ingestion_attempts = 0
+            document.processing_token = None
+            document.lease_expires_at = None
+            document.next_attempt_at = None
+            document.last_enqueued_at = None
         await session.commit()
         ids = [str(d.id) for d in targets]
     # enqueue only after the commit — the worker must see 'pending'
@@ -159,6 +225,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--collection-id", required=True, type=uuid.UUID)
     p.add_argument("--writable", action="store_true", help="undo: make writable again")
 
+    p = sub.add_parser("publish-collection", help="publish an explicitly reviewed public demo")
+    p.add_argument("--collection-id", required=True, type=uuid.UUID)
+    p.add_argument("--private", action="store_true", help="remove public access, keep read-only")
+
     p = sub.add_parser("reprocess", help="re-chunk a collection's stored documents in place")
     p.add_argument("--collection-id", type=uuid.UUID, required=True)
     p.add_argument("--suffix", default=None, help="only filenames ending with this, e.g. .md")
@@ -183,6 +253,8 @@ def main(argv: list[str] | None = None) -> None:
                 await list_tenants()
             elif args.command == "mark-readonly":
                 await mark_readonly(args.collection_id, writable=args.writable)
+            elif args.command == "publish-collection":
+                await publish_collection(args.collection_id, private=args.private)
             elif args.command == "wipe-collection":
                 await wipe_collection(args.collection_id)
             elif args.command == "reprocess":

@@ -1,0 +1,339 @@
+- category: access
+  expected_hidden_labels:
+  - finance
+  expected_refusal: true
+  hidden_sources:
+  - doc: FIN-001
+    section: '8'
+  id: a001
+  notes: F25 under employee
+  question: What is the single-transaction limit on the corporate card?
+  role: employee
+- category: access
+  expected_answer: €1,500; anything above needs CFO approval before the purchase
+  expected_sources:
+  - doc: FIN-001
+    section: '8'
+  id: a002
+  notes: F25 unlocked
+  question: What is the single-transaction limit on the corporate card?
+  role: finance
+- category: access
+  expected_hidden_labels:
+  - finance
+  expected_refusal: true
+  hidden_sources:
+  - doc: FIN-001
+    section: '8'
+  id: a003
+  notes: 'F25: HR is a sibling of Finance, not above it'
+  question: Above which card amount does the CFO have to approve a purchase?
+  role: hr
+- category: access
+  expected_answer: €1,500 per transaction
+  expected_sources:
+  - doc: FIN-001
+    section: '8'
+  id: a004
+  notes: F25 leadership sees everything
+  question: Above which card amount does the CFO have to approve a purchase?
+  role: leadership
+- category: access
+  expected_hidden_labels:
+  - managers
+  expected_refusal: true
+  hidden_sources:
+  - doc: HR-003
+    section: '9'
+  id: a005
+  notes: F26 under employee
+  question: What share of a team can be rated 'exceeds expectations' in calibration?
+  role: employee
+- category: access
+  expected_answer: At most 20% of a team's ratings
+  expected_sources:
+  - doc: HR-003
+    section: '9'
+  id: a006
+  notes: F26 unlocked by manager
+  question: What share of a team can be rated 'exceeds expectations' in calibration?
+  role: manager
+- category: access
+  expected_answer: Yes — no more than 20% may be rated 'exceeds expectations'
+  expected_sources:
+  - doc: HR-003
+    section: '9'
+  id: a007
+  notes: 'F26: finance includes the managers label'
+  question: Is there a cap on how many people on a team get the top performance rating?
+  role: finance
+- category: access
+  expected_hidden_labels:
+  - managers
+  expected_refusal: true
+  hidden_sources:
+  - doc: HR-002
+    section: '9'
+  id: a008
+  notes: F27 under employee
+  question: How quickly is system access revoked when someone is let go for cause?
+  role: employee
+- category: access
+  expected_answer: Within 1 hour of the manager's notification to IT
+  expected_sources:
+  - doc: HR-002
+    section: '9'
+  id: a009
+  notes: F27 unlocked
+  question: How quickly is system access revoked when someone is let go for cause?
+  role: manager
+- category: access
+  expected_answer: Within 1 hour of being notified by the manager
+  expected_sources:
+  - doc: HR-002
+    section: '9'
+  id: a010
+  notes: 'F27: hr includes managers'
+  question: When does IT cut access for a departure for cause?
+  role: hr
+- category: access
+  expected_hidden_labels:
+  - leadership
+  expected_refusal: true
+  hidden_sources:
+  - doc: SEC-001
+    section: '9'
+  id: a011
+  notes: F28 under employee
+  question: Within what time does leadership decide whether customers are told about
+    a data incident?
+  role: employee
+- category: access
+  expected_hidden_labels:
+  - leadership
+  expected_refusal: true
+  hidden_sources:
+  - doc: SEC-001
+    section: '9'
+  id: a012
+  notes: 'F28: leadership-only stays hidden from HR'
+  question: Within what time does leadership decide whether customers are told about
+    a data incident?
+  role: hr
+- category: access
+  expected_answer: Within 48 hours of the incident being confirmed
+  expected_sources:
+  - doc: SEC-001
+    section: '9'
+  id: a013
+  notes: F28 unlocked
+  question: Within what time does leadership decide whether customers are told about
+    a data incident?
+  role: leadership
+- category: access
+  expected_hidden_labels:
+  - finance
+  expected_refusal: true
+  hidden_sources:
+  - doc: POL-006
+    section: '9'
+  id: a014
+  notes: F29 under employee
+  question: Below which net book value is old equipment written off without approval?
+  role: employee
+- category: access
+  expected_answer: Below €400 net book value; above that Finance decides
+  expected_sources:
+  - doc: POL-006
+    section: '9'
+  id: a015
+  notes: F29 unlocked
+  question: Below which net book value is old equipment written off without approval?
+  role: finance
+- category: access
+  expected_hidden_labels:
+  - finance
+  expected_refusal: true
+  hidden_sources:
+  - doc: POL-006
+    section: '9'
+  id: a016
+  notes: 'F29: managers label does not include finance'
+  question: Who decides about writing off a laptop that still has book value?
+  role: manager
+- category: access
+  expected_hidden_labels:
+  - hr
+  expected_refusal: true
+  hidden_sources:
+  - doc: HR-004
+    section: '9'
+  id: a017
+  notes: F30 under employee
+  question: How much can an employee get as a hardship advance?
+  role: employee
+- category: access
+  expected_answer: Up to €2,000
+  expected_sources:
+  - doc: HR-004
+    section: '9'
+  id: a018
+  notes: F30 unlocked
+  question: How much can an employee get as a hardship advance?
+  role: hr
+- category: access
+  expected_answer: Within 12 months, through payroll
+  expected_sources:
+  - doc: HR-004
+    section: '9'
+  id: a019
+  notes: F30 second number
+  question: Over what period is a hardship advance paid back?
+  role: hr
+- category: access
+  expected_hidden_labels:
+  - hr
+  expected_refusal: true
+  hidden_sources:
+  - doc: HR-004
+    section: '9'
+  id: a020
+  notes: 'F30: finance does not include hr'
+  question: Over what period is a hardship advance paid back?
+  role: finance
+- category: access
+  expected_hidden_labels:
+  - hr
+  expected_refusal: true
+  hidden_sources:
+  - doc: HR-004-DE
+    section: '9'
+  id: a021
+  notes: F30 German mirror under employee (DE collection)
+  question: Wie hoch kann ein Vorschuss in einer Notlage sein?
+  role: employee
+- category: access
+  expected_answer: Bis zu 2.000 €
+  expected_sources:
+  - doc: HR-004-DE
+    section: '9'
+  id: a022
+  notes: F30 German mirror unlocked
+  question: Wie hoch kann ein Vorschuss in einer Notlage sein?
+  role: hr
+- category: access
+  expected_hidden_labels:
+  - leadership
+  expected_refusal: true
+  hidden_sources:
+  - doc: EXEC-001
+    section: '2'
+  id: a023
+  notes: F31 under employee — the demo's opening question
+  question: What is the salary band for a Senior Engineer in Berlin?
+  role: employee
+- category: access
+  expected_hidden_labels:
+  - leadership
+  expected_refusal: true
+  hidden_sources:
+  - doc: EXEC-001
+    section: '2'
+  id: a024
+  notes: F31 under manager
+  question: What is the salary band for a Senior Engineer in Berlin?
+  role: manager
+- category: access
+  expected_hidden_labels:
+  - leadership
+  expected_refusal: true
+  hidden_sources:
+  - doc: EXEC-001
+    section: '2'
+  id: a025
+  notes: F31 under finance — compensation bands are leadership-only, not finance
+  question: What is the salary band for a Senior Engineer in Berlin?
+  role: finance
+- category: access
+  expected_answer: €78,000–€96,000 annual base salary
+  expected_sources:
+  - doc: EXEC-001
+    section: '2'
+  id: a026
+  notes: F31 unlocked (table)
+  question: What is the salary band for a Senior Engineer in Berlin?
+  role: leadership
+- category: access
+  expected_answer: €92,000–€115,000 annual base salary
+  expected_sources:
+  - doc: EXEC-001
+    section: '2'
+  id: a027
+  notes: F31 second row, paraphrase
+  question: What do we pay an Engineering Manager in Berlin?
+  role: leadership
+- category: access
+  expected_answer: 3.5% of total payroll
+  expected_sources:
+  - doc: EXEC-001
+    section: '3'
+  id: a028
+  notes: F32 unlocked
+  question: How much of payroll is set aside for the annual salary review?
+  role: leadership
+- category: access
+  expected_hidden_labels:
+  - leadership
+  expected_refusal: true
+  hidden_sources:
+  - doc: EXEC-001
+    section: '3'
+  id: a029
+  notes: 'F32: HR does not see leadership content'
+  question: How much of payroll is set aside for the annual salary review?
+  role: hr
+- category: access
+  expected_answer: €2,800 for an engineering role (the write-off threshold is not
+    available at this access level)
+  expected_hidden_labels:
+  - finance
+  expected_sources:
+  - doc: POL-006
+    section: '3'
+  hidden_sources:
+  - doc: POL-006
+    section: '9'
+  id: a030
+  notes: 'T11 partial: open F11 answered, restricted F29 hidden — judge checks faithfulness'
+  question: What is the equipment budget for an engineering role, and below which
+    book value is old equipment written off?
+  role: employee
+- category: access
+  expected_answer: €2,800 budget; equipment below €400 net book value is written off
+    without approval
+  expected_sources:
+  - doc: POL-006
+    section: '3'
+  - doc: POL-006
+    section: '9'
+  id: a031
+  notes: T11 both halves for finance
+  question: What is the equipment budget for an engineering role, and below which
+    book value is old equipment written off?
+  role: finance
+- category: access
+  expected_answer: Report within 24 hours to security@kranich.example (the disclosure
+    timeline is not available at this access level)
+  expected_hidden_labels:
+  - leadership
+  expected_sources:
+  - doc: SEC-001
+    section: '3'
+  hidden_sources:
+  - doc: SEC-001
+    section: '9'
+  id: a032
+  notes: 'T11 partial: F20 open, F28 hidden'
+  question: When do I need to report a suspected security incident, and how fast does
+    leadership decide on customer disclosure?
+  role: employee

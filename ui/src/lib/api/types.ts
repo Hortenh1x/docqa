@@ -33,6 +33,9 @@ export interface Collection {
   slug: string;
   embedding_model: string;
   read_only: boolean;
+  is_public?: boolean;
+  owned?: boolean;
+  writable?: boolean;
   /** 3 LLM-drafted starter questions; null until the first ingestion settles. */
   suggested_questions: SuggestedQuestion[] | null;
   /** restricted content labels present in the collection (empty = nothing restricted) */
@@ -126,4 +129,30 @@ export interface Problem {
   code?: string;
   request_id?: string;
   [extra: string]: unknown;
+}
+
+export interface AccountSession {
+  user: { id: string; email: string; email_verified: boolean; tenant_id: string } | null;
+  csrf_token: string | null;
+  registration_available: boolean; google_available?: boolean;
+}
+export type Budget = { enabled: false } | {
+  enabled: true; limit_usd: string; spent_usd: string; reserved_usd: string;
+  remaining_usd: string; reset_at: string; limited_by: "ip" | "account";
+};
+export interface SiteInfo {
+  accounts_enabled: boolean;
+  upload_max_mb: number;
+  operator_contact: string | null;
+  providers: { name: string; receives: string }[];
+  purpose: string;
+  document_privacy: string;
+}
+
+/** Original-file capacity across every collection owned by the current account. */
+export interface StorageUsage {
+  used_bytes: number;
+  limit_bytes: number;
+  remaining_bytes: number;
+  document_count: number;
 }

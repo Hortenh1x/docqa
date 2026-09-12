@@ -1,0 +1,31 @@
+{
+  "images": [
+    {
+      "tag": "docqa-readiness-api:local",
+      "id": "sha256:615dfa8d3bcf7928d8405f9e06679143974097ea8dc78fbc6d6f423fcb8913f3",
+      "created": "2026-09-10T16:09:40.922021607+02:00",
+      "user": "appuser",
+      "architecture": "amd64",
+      "os": "linux"
+    },
+    {
+      "tag": "docqa-readiness-ui:local",
+      "id": "sha256:b8079306e8ba7387935773368ce1602e5c1034c7ba6be4a95b8e65a92775c090",
+      "created": "2026-09-10T16:19:52.528358654+02:00",
+      "user": "appuser",
+      "architecture": "amd64",
+      "os": "linux"
+    },
+    {
+      "tag": "docqa-readiness-ui-demo:local",
+      "id": "sha256:bc85a095ad596ab6e5e2ef9325d942be16c8e2b51616a9cd745c3aafacbabde5",
+      "created": "2026-09-10T16:20:40.364261501+02:00",
+      "user": "appuser",
+      "architecture": "amd64",
+      "os": "linux"
+    }
+  ],
+  "backend_source_match": true,
+  "backend_python_files": 92,
+  "backend_private_env_present": false
+}

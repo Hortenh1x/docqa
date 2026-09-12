@@ -1,0 +1,19 @@
+FAIL delete cancellation sends nothing; failure is visible and Retry succeeds
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('main').getByRole('alert') to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:325:17
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:355:13
+{
+  "demo": false,
+  "passed": 0,
+  "total": 1,
+  "results": [
+    {
+      "name": "delete cancellation sends nothing; failure is visible and Retry succeeds",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('main').getByRole('alert') to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:325:17\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:355:13"
+    }
+  ]
+}

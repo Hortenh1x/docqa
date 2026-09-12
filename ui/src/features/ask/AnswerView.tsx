@@ -28,7 +28,7 @@ export function AnswerView({
         streaming ? "caret" : ""
       }`}
     >
-      <p className="whitespace-pre-wrap text-[15px] leading-7">
+      <p className="whitespace-pre-wrap text-[15px] leading-7 [overflow-wrap:anywhere]">
         {parts.map((part, index) => {
           const match = /^\[(\d+)\]$/.exec(part);
           if (!match) return <Fragment key={index}>{part}</Fragment>;
@@ -47,10 +47,11 @@ export function AnswerView({
               >
                 {n}
               </button>
-              {/* hover mini-card; click still opens the full drawer */}
+              {/* The preview fits beside the desktop reading column. Narrow layouts
+                  use the full source drawer, opened by the same citation button. */}
               <span
                 role="presentation"
-                className="pointer-events-none invisible absolute bottom-full left-1/2 z-10 mb-1.5 w-64 -translate-x-1/2 rounded-[10px] border border-hairline bg-sheet p-2.5 text-left shadow-card opacity-0 transition-opacity group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+                className="pointer-events-none invisible absolute bottom-full left-1/2 z-10 mb-1.5 hidden w-64 -translate-x-1/2 rounded-[10px] border border-hairline bg-sheet p-2.5 text-left shadow-card opacity-0 transition-opacity group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 min-[1100px]:block"
               >
                 <span className="font-data block truncate text-xs text-ink">
                   {source.filename}

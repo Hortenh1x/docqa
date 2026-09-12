@@ -1,0 +1,100 @@
+{
+  "mode": "production UI with synthetic API; not live-provider E2E",
+  "checks": [
+    {
+      "id": "key-lost-on-submit",
+      "expected": "new key authenticates subsequent requests",
+      "actual": "reload resets module memory and button returns to set API key",
+      "newKeyUsedInApiRequest": false
+    },
+    {
+      "id": "reflow",
+      "width": 320,
+      "route": "/",
+      "viewport": 320,
+      "scroll": 320
+    },
+    {
+      "id": "reflow",
+      "width": 320,
+      "route": "/library",
+      "viewport": 320,
+      "scroll": 320
+    },
+    {
+      "id": "reflow",
+      "width": 390,
+      "route": "/",
+      "viewport": 390,
+      "scroll": 390
+    },
+    {
+      "id": "reflow",
+      "width": 390,
+      "route": "/library",
+      "viewport": 390,
+      "scroll": 390
+    },
+    {
+      "id": "reflow",
+      "width": 768,
+      "route": "/",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "id": "reflow",
+      "width": 768,
+      "route": "/library",
+      "viewport": 768,
+      "scroll": 768
+    },
+    {
+      "id": "reflow",
+      "width": 1280,
+      "route": "/",
+      "viewport": 1280,
+      "scroll": 1280
+    },
+    {
+      "id": "reflow",
+      "width": 1280,
+      "route": "/library",
+      "viewport": 1280,
+      "scroll": 1280
+    },
+    {
+      "id": "text-xss",
+      "scriptExecuted": false,
+      "literalMarkupShown": "# Synthetic file\n<img src=x onerror=\"window.auditXss=true\">\n<script>window.auditXss=true</script>"
+    },
+    {
+      "id": "reader-focus-return",
+      "expected": "audit.md trigger",
+      "actual": {
+        "tag": "BODY",
+        "text": "(body)"
+      }
+    },
+    {
+      "id": "unknown-route",
+      "status": 404,
+      "text": "Public demo — sandbox data is wiped nightly. Policies collections are read-only.\nDocQA\nAsk\nLibrary\nUsage\nCollection\nAccess role\nEmployee · Anna, backend engineer\nFinance · Tomasz, CFO\nset API key\n404\nThis page could not be found."
+    },
+    {
+      "id": "metadata",
+      "title": "DocQA — ask the documents",
+      "ogImage": "http://localhost:3000/opengraph-image?a0ddc65a26d63e68"
+    },
+    {
+      "id": "storage",
+      "keys": {
+        "local": [],
+        "session": [
+          "docqa.collection"
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

@@ -5,13 +5,16 @@
   "scripts": {
     "dev": "next dev -p 3002",
     "dev:preview": "next dev -p 3012",
-    "build": "next build",
+    "build": "node scripts/verify-source.mjs --optional && next build",
     "start": "next start -p 3002",
-    "lint": "next lint"
+    "typecheck": "tsc --noEmit --incremental false",
+    "test:browser": "node tests/browser-regressions.cjs",
+    "lint": "next lint",
+    "test:accounts": "node tests/account-regressions.cjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.0",
-    "next": "^15.5.0",
+    "next": "15.5.25",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -20,7 +23,13 @@
     "@types/node": "^24.0.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "playwright": "1.61.1",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0"
+  },
+  "overrides": {
+    "next": {
+      "sharp": "0.35.4"
+    }
   }
 }

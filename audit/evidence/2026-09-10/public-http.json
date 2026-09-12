@@ -1,0 +1,21 @@
+{
+  "time": "2026-09-10T11:07:02.487403+00:00",
+  "results": [
+    {
+      "url": "https://docqa.net/",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://api.docqa.net/healthz",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "https://api.docqa.net/readyz",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "url": "http://docqa.net/",
+      "error": "HTTP Error 403: Forbidden"
+    }
+  ]
+}

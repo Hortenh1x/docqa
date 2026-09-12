@@ -1,0 +1,67 @@
+FAIL demo reload discards previous UTC day saved answers
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:270:75
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:428:13
+FAIL demo reload discards legacy undated saved answers
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:270:75
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:428:13
+FAIL open Ask expires at UTC midnight on timer
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:291:73
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:428:13
+FAIL open Ask expires at UTC midnight on visibility
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:291:73
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:428:13
+FAIL open Ask expires at UTC midnight on interaction
+locator.waitFor: Timeout 4000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible[22m
+
+    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:291:73
+    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:428:13
+{
+  "demo": true,
+  "passed": 0,
+  "total": 5,
+  "results": [
+    {
+      "name": "demo reload discards previous UTC day saved answers",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:270:75\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:428:13"
+    },
+    {
+      "name": "demo reload discards legacy undated saved answers",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:270:75\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:428:13"
+    },
+    {
+      "name": "open Ask expires at UTC midnight on timer",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:291:73\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:428:13"
+    },
+    {
+      "name": "open Ask expires at UTC midnight on visibility",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:291:73\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:428:13"
+    },
+    {
+      "name": "open Ask expires at UTC midnight on interaction",
+      "pass": false,
+      "error": "locator.waitFor: Timeout 4000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('heading', { name: 'Ask the documents.' }) to be visible\u001b[22m\n\n    at /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:291:73\n    at async /home/horten/VS Code Projects/docqa/ui/tests/browser-regressions.cjs:428:13"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+# Apply AFTER an independent standby is seeded and streaming; see durability.md.
+# Commits wait when docqa_standby is unavailable. Never disable this to hide an outage.
+services:
+  db:
+    command:
+      - postgres
+      - -c
+      - wal_level=replica
+      - -c
+      - synchronous_commit=on
+      - -c
+      - "synchronous_standby_names=${PG_SYNCHRONOUS_STANDBY_NAMES-FIRST 1 (docqa_standby)}"
+      - -c
+      - max_wal_senders=10
+      - -c
+      - max_replication_slots=10
+      - -c
+      - full_page_writes=on
+      - -c
+      - fsync=on
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/run/pg-tls/server.crt
+      - -c
+      - ssl_key_file=/run/pg-tls/server.key
+    ports:
+      - "${PG_PRIVATE_BIND:?Set the primary private/VPN address}:5432:5432"
+    volumes:
+      - ${PG_TLS_DIR:?Set directory with PostgreSQL TLS certificate/key}:/run/pg-tls:ro

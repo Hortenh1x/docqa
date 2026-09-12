@@ -1,0 +1,173 @@
+{
+  "date": "2026-09-12",
+  "status": "PASS",
+  "scope": "Encrypted recurring off-host backup and real file recovery; no PostgreSQL promotion or live DB restore",
+  "repository": {
+    "provider": "Oracle Object Storage S3 compatibility",
+    "bucket": "docqa-backups",
+    "prefix": "restic",
+    "region": "eu-frankfurt-1",
+    "client_side_encryption": "restic",
+    "current_objects": 129,
+    "current_object_bytes": 2146612880,
+    "inventory_complete": true,
+    "inventory_excludes_historical_versions": true,
+    "snapshots_created": 2
+  },
+  "initial_snapshot": {
+    "started_at": "2026-09-12T10:51:27.031904+00:00",
+    "status": "ok",
+    "bundle": "20260912T102731Z",
+    "documents": 9778,
+    "migration": "0011",
+    "manifest_sha256": "e286f191f8d2dc46dd9ea335ccb3e3bd2ac1dcf52be148ad9f8db72e1f8a7c25",
+    "source_manifest_sha256": "31a8a895403fb5a513dafd37b01976584a682ff14d659d88f6867094ca9ec186",
+    "action": "snapshot_created",
+    "snapshot_id": "0db79673e378f2e7257bceedbe5b2f8fb17cddef1b3c4dde16b299d10b93ba96",
+    "total_bytes_processed": 2146208207,
+    "data_added": 2146307410,
+    "data_added_packed": null,
+    "completed_at": "2026-09-12T11:00:02.233997+00:00"
+  },
+  "verified_restore": {
+    "started_at": "2026-09-12T11:00:23.992583+00:00",
+    "repository": "docqa-backups/restic",
+    "snapshot_id": "9d14b17a68dd6188d044403c14c357d2803ecd46ca33631fc86b46d75a29d102",
+    "bundle": "20260912T102731Z",
+    "restic_version": "restic 0.16.4 compiled with go1.22.2 on linux/arm64",
+    "migration": "0011",
+    "documents": 9778,
+    "repository_metadata_check": "PASS",
+    "database_dump_sha256": "1c3c3741f6d5287ce1f6a077eae5bfd3dec37fd21d8527974d299ba7b06d469a",
+    "database_dump_identical": true,
+    "original_archive_identical": true,
+    "original_files_hashed": 9783,
+    "every_original_sha256_identical": true,
+    "runtime_env_identical": true,
+    "current_release_identical": true,
+    "source_manifest_identical": true,
+    "source_archive_identical": true,
+    "snapshot_metrics": {
+      "total_bytes_processed": 2146820448,
+      "data_added": 660021,
+      "data_added_packed": null
+    },
+    "temporary_restore_removed": true,
+    "completed_at": "2026-09-12T11:00:56.304451+00:00",
+    "duration_seconds": 32.311894,
+    "status": "PASS"
+  },
+  "deduplication": {
+    "repeat_total_bytes_processed": 2146820448,
+    "repeat_data_added": 660021,
+    "same_archives_reuploaded": false,
+    "repeat_identical_state_action": "already_backed_up",
+    "repeat_identical_state_snapshot": "9d14b17a68dd6188d044403c14c357d2803ecd46ca33631fc86b46d75a29d102"
+  },
+  "schedule": {
+    "installed": true,
+    "cron": "20 3 * * *",
+    "timezone": "UTC",
+    "command": "/usr/bin/python3 /home/ubuntu/.local/share/docqa-ops/offhost_backup.py",
+    "reviewed_before_install": true,
+    "existing_cron_entries_preserved": true,
+    "existing_local_backup_wrapper_modified": false
+  },
+  "controls": {
+    "successful_complete_raw_bundle_required": true,
+    "freshness_hours": 36,
+    "database_and_original_archive_sha256_before_upload": true,
+    "configuration_captured_before_upload": true,
+    "captured_release_pointer_and_env_match_source": true,
+    "exact_source_archive_included": true,
+    "concurrent_run_lock": true,
+    "upload_limit_KiB_s": 4096,
+    "cpu_parallelism": 2,
+    "s3_connections": 2,
+    "local_free_space_reserve_GiB": 10,
+    "command_timeout_seconds": 3600,
+    "forget_prune_or_expiry_configured": false,
+    "existing_local_backups_deleted": false,
+    "preflight_negative_checks_passed": 9,
+    "coherent_config_positive_check_passed": true
+  },
+  "key_custody": {
+    "workstation_password_path": "/home/horten/.config/docqa-ops/keys/restic.password",
+    "workstation_password_mode": "600",
+    "server_config_directory_mode": "700",
+    "server_credential_and_password_modes": "600",
+    "workstation_and_server_passwords_identical": true,
+    "password_or_credentials_written_to_repository": false
+  },
+  "private_scripts_sha256": {
+    "offhost_backup.py": "506ca6dcc73e888fd6e29f24b29f19d0596ed3104af7e095ab512b258490fe4a",
+    "verify_offhost_backup.py": "5c429f741bd96bf2eecc44b2147aaa0fbc75bad645568fd6237c3604ca238593"
+  },
+  "limitations": [
+    "The latest verified complete0011 snapshot is 20260912T112123Z; any later writes are on the synchronous replica and enter the next scheduled historical backup.",
+    "This check restored and authenticated every backed-up byte; it did not import the SQL dump into another PostgreSQL server.",
+    "Backup failures are monitored by the separate enabled main/standby health monitor.",
+    "Finite storage quotas can stop new backups; historical data is preserved and no automatic retention deletion was enabled."
+  ],
+  "latest_checkpoint": {
+    "raw_backup": {
+      "started_at": "20260912T112123Z",
+      "release": "/opt/docqa-releases/prod-20260912-ready",
+      "status": "ok",
+      "bundle": "/home/ubuntu/backups/docqa-complete/20260912T112123Z",
+      "completed_at": "2026-09-12T11:25:58.267521+00:00",
+      "documents": 9778,
+      "migration": "0011"
+    },
+    "counts": null,
+    "file_sha256": {
+      "database.dump": "ef46c8957b727b767249ee94e7126f82bc027554a0cf031ec85c29eb7a84ee85",
+      "files.tar.gz": "54e06ce6ffc5fbf8f0edc072609448afa7fab6cbbfb891e001cf6265fb45270b"
+    },
+    "offhost_backup": {
+      "started_at": "2026-09-12T11:27:01.811209+00:00",
+      "status": "ok",
+      "bundle": "20260912T112123Z",
+      "documents": 9778,
+      "migration": "0011",
+      "manifest_sha256": "bef6d7c0f6d225ad215b87f2e480a19bbf2f4a1257f277f62b77b572cacacbf1",
+      "source_manifest_sha256": "a852f8c9a932d33515e8cf937ce6e934fe3cf4b85ec7353c7306b89cd97ab219",
+      "source_release": "d6806bda8d1bd905a267a04cc6504dbb10b5667d1145c40c18c020e776bb18d6",
+      "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/29a96a1a38b8a14af71c47cf616ba0acb4ef8da19c97f4ebe83d3b495b809f36",
+      "action": "snapshot_created",
+      "snapshot_id": "a2ecc632c10dd91c7ec6d1516067e825e23ad7f12fc43513b0edef4ab76088c1",
+      "total_bytes_processed": 2146827364,
+      "data_added": 621269526,
+      "data_added_packed": null,
+      "completed_at": "2026-09-12T11:29:33.271851+00:00"
+    },
+    "restore": {
+      "started_at": "2026-09-12T11:30:30.836313+00:00",
+      "repository": "docqa-backups/restic",
+      "snapshot_id": "a2ecc632c10dd91c7ec6d1516067e825e23ad7f12fc43513b0edef4ab76088c1",
+      "bundle": "20260912T112123Z",
+      "restic_version": "restic 0.16.4 compiled with go1.22.2 on linux/arm64",
+      "migration": "0011",
+      "documents": 9778,
+      "repository_metadata_check": "PASS",
+      "database_dump_sha256": "ef46c8957b727b767249ee94e7126f82bc027554a0cf031ec85c29eb7a84ee85",
+      "database_dump_identical": true,
+      "original_archive_identical": true,
+      "original_files_hashed": 9783,
+      "every_original_sha256_identical": true,
+      "runtime_env_identical": true,
+      "current_release_identical": true,
+      "source_manifest_identical": true,
+      "source_archive_identical": true,
+      "snapshot_metrics": {
+        "total_bytes_processed": 2146827364,
+        "data_added": 621269526,
+        "data_added_packed": null
+      },
+      "temporary_restore_removed": true,
+      "completed_at": "2026-09-12T11:31:10.156492+00:00",
+      "duration_seconds": 39.320208,
+      "status": "PASS"
+    }
+  }
+}

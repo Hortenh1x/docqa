@@ -1,0 +1,33 @@
+{
+  "date": "2026-09-10T14:28:11.264607+00:00",
+  "head": "891c7d8499dbf285d4e52e03d5eaa2499545b581",
+  "branch": "codex/production-readiness-audit",
+  "framework_ids": 71,
+  "covered_framework_ids": 71,
+  "app_ids": 5,
+  "subcriteria": 9,
+  "errors": [],
+  "protected_files_unchanged": true,
+  "staged_changes": "",
+  "verified_source_files": 200,
+  "final_checks": {
+    "pytest_passed": 252,
+    "selected_module_coverage_percent": 90.06,
+    "deploy_tests_passed": 6,
+    "ui_keyless_passed": 18,
+    "ui_demo_passed": 16,
+    "ruff": "PASS",
+    "format": "PASS",
+    "mypy": "PASS",
+    "backend_image_source_match": true,
+    "ui_accessibility": {
+      "checks": 42,
+      "contrastPairs": 16,
+      "keyboardRoutes": 3,
+      "failures": 0,
+      "executionErrors": 0
+    },
+    "architecture": "linux/amd64; production platform not deployed"
+  },
+  "report_sha256": "307b47f403f41ec1d76f6bd2339f73098fb251cb15c12b95a1c33c688a7fb115"
+}

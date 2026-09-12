@@ -1,7 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getUsage } from "@/lib/api/client";
+import { DailyBudget } from "@/features/account/DailyBudget";
+import { useAccount } from "@/features/account/context";
+import { ACCOUNTS_ENABLED, getUsage } from "@/lib/api/client";
 import { formatCost, formatDate, formatTokens } from "@/lib/format";
 
 function BigNumber({ label, value }: { label: string; value: string }) {
@@ -14,6 +16,7 @@ function BigNumber({ label, value }: { label: string; value: string }) {
 }
 
 export default function UsagePage() {
+  const { session } = useAccount();
   const usage = useQuery({ queryKey: ["usage", 30], queryFn: () => getUsage(30) });
 
   if (usage.isLoading) {
@@ -31,9 +34,13 @@ export default function UsagePage() {
     <div className="flex flex-col gap-6 py-8">
       <div>
         <h1 className="font-display text-2xl tracking-tight">Usage</h1>
-        <p className="font-data mt-1 text-xs text-ink-soft">last {data.days} days</p>
+        {!ACCOUNTS_ENABLED && <p className="font-data mt-1 text-xs text-ink-soft">last {data.days} days</p>}
+        {ACCOUNTS_ENABLED && <p className="mt-2 text-sm text-ink-soft">{session?.user ? "Your account queries, including public collections." : "Guest queries from your current IP address."}</p>}
       </div>
 
+      <DailyBudget />
+
+      {ACCOUNTS_ENABLED && <h2 className="font-display text-xl">Queries · last {data.days} days</h2>}
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <BigNumber label={`queries (${data.refused} refused)`} value={String(data.queries)} />
         <BigNumber label="tokens" value={formatTokens(totalTokens)} />

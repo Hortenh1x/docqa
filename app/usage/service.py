@@ -4,14 +4,31 @@ import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import Date, case, cast, func, select
+from sqlalchemy import Date, and_, case, cast, false, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.models import Query
 
 
-async def usage_summary(db: AsyncSession, tenant_id: uuid.UUID, days: int) -> dict[str, Any]:
+async def usage_summary(
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    days: int,
+    *,
+    visitor: bool = False,
+    user_id: uuid.UUID | None = None,
+    ip_digest: str | None = None,
+) -> dict[str, Any]:
     since = datetime.now(UTC) - timedelta(days=days)
+    scope = Query.tenant_id == tenant_id
+    if visitor:
+        scope = (
+            Query.user_id == user_id
+            if user_id
+            else and_(Query.ip_digest == ip_digest, Query.user_id.is_(None))
+            if ip_digest
+            else false()
+        )
     row = (
         await db.execute(
             select(
@@ -21,7 +38,7 @@ async def usage_summary(db: AsyncSession, tenant_id: uuid.UUID, days: int) -> di
                 func.coalesce(func.sum(Query.completion_tokens), 0).label("completion_tokens"),
                 func.coalesce(func.sum(Query.cost_usd), 0).label("cost_usd"),
                 func.avg(Query.latency_ms).label("avg_latency_ms"),
-            ).where(Query.tenant_id == tenant_id, Query.created_at >= since)
+            ).where(scope, Query.created_at >= since)
         )
     ).one()
 
@@ -34,7 +51,7 @@ async def usage_summary(db: AsyncSession, tenant_id: uuid.UUID, days: int) -> di
                 func.count(Query.id).label("queries"),
                 func.coalesce(func.sum(Query.cost_usd), 0).label("cost_usd"),
             )
-            .where(Query.tenant_id == tenant_id, Query.created_at >= since)
+            .where(scope, Query.created_at >= since)
             .group_by(day)
             .order_by(day)
         )

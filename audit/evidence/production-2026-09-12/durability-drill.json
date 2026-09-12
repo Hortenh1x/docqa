@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-09-12T11:17:40.362722+00:00",
+  "status": "pass",
+  "sync_names": "FIRST 1 (docqa_standby)",
+  "documents_before": 9778,
+  "first_commit_acknowledged_and_replayed": true,
+  "acknowledged_row_survived_standby_restart_while_primary_offline": true,
+  "missing_standby_blocks_commit_acknowledgment": true,
+  "wait_event": "SyncRep",
+  "pending_commit_acknowledged_after_standby_returned": true,
+  "documents_after": 9778,
+  "owned_probe_rows_cleaned": true,
+  "writers_restarted_healthy": true,
+  "completed_at": "2026-09-12T11:18:22.219859+00:00",
+  "limits": "No production promotion or failover was performed. This proves acknowledged WAL persistence on an independent restarted standby and refusal to acknowledge a commit while that standby is offline."
+}

@@ -1,0 +1,58 @@
+{
+  "date": "2026-09-10T14:16:19.901072+00:00",
+  "method": "ordinary read-only urllib GET, default TLS verification, no auth or origin bypass",
+  "results": [
+    {
+      "url": "https://docqa.net/",
+      "final_url": "https://docqa.net/",
+      "status": 403,
+      "headers": {
+        "Date": "Thu, 10 Sep 2026 14:16:19 GMT",
+        "Content-Type": "text/plain; charset=UTF-8",
+        "Referrer-Policy": "same-origin",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Server": "cloudflare"
+      },
+      "elapsed_s": 0.156
+    },
+    {
+      "url": "http://docqa.net/",
+      "final_url": "http://docqa.net/",
+      "status": 403,
+      "headers": {
+        "Date": "Thu, 10 Sep 2026 14:16:19 GMT",
+        "Content-Type": "text/plain; charset=UTF-8",
+        "Referrer-Policy": "same-origin",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Server": "cloudflare"
+      },
+      "elapsed_s": 0.137
+    },
+    {
+      "url": "https://api.docqa.net/healthz",
+      "final_url": "https://api.docqa.net/healthz",
+      "status": 403,
+      "headers": {
+        "Date": "Thu, 10 Sep 2026 14:16:19 GMT",
+        "Content-Type": "text/plain; charset=UTF-8",
+        "Referrer-Policy": "same-origin",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Server": "cloudflare"
+      },
+      "elapsed_s": 0.197
+    },
+    {
+      "url": "https://api.docqa.net/readyz",
+      "final_url": "https://api.docqa.net/readyz",
+      "status": 403,
+      "headers": {
+        "Date": "Thu, 10 Sep 2026 14:16:19 GMT",
+        "Content-Type": "text/plain; charset=UTF-8",
+        "Referrer-Policy": "same-origin",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Server": "cloudflare"
+      },
+      "elapsed_s": 0.146
+    }
+  ]
+}
