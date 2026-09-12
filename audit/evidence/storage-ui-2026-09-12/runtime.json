@@ -1,0 +1,62 @@
+{
+  "status": "PASS",
+  "checked_at": "2026-09-12T13:11:37.217656+00:00",
+  "release": "/opt/docqa-releases/prod-20260912-storage-ui",
+  "schema": "0012",
+  "documents": 9778,
+  "chunks": 295856,
+  "containers": {
+    "migrate": {
+      "image": "sha256:3aa222f2ec53ffed3de965e1ec702ce7df8895e586b3923a06a12268d9778cf6",
+      "state": "exited",
+      "exit_code": 0,
+      "health": null
+    },
+    "api": {
+      "image": "sha256:3aa222f2ec53ffed3de965e1ec702ce7df8895e586b3923a06a12268d9778cf6",
+      "state": "running",
+      "exit_code": 0,
+      "health": "healthy"
+    },
+    "worker": {
+      "image": "sha256:3aa222f2ec53ffed3de965e1ec702ce7df8895e586b3923a06a12268d9778cf6",
+      "state": "running",
+      "exit_code": 0,
+      "health": "healthy"
+    },
+    "beat": {
+      "image": "sha256:3aa222f2ec53ffed3de965e1ec702ce7df8895e586b3923a06a12268d9778cf6",
+      "state": "running",
+      "exit_code": 0,
+      "health": "healthy"
+    },
+    "ui": {
+      "image": "sha256:7ad0fe63745b113f6d0b512f2138d0d82d5fabc96ea9e18079cf50d030af3ad5",
+      "state": "running",
+      "exit_code": 0,
+      "health": "healthy"
+    },
+    "db": {
+      "image": "sha256:2ba9ca5f2e7daa0f0e7723cba1ee9167bab54efd3640516a44ac1a928dd67e7a",
+      "state": "running",
+      "exit_code": 0,
+      "health": "healthy"
+    },
+    "redis": {
+      "image": "sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf",
+      "state": "running",
+      "exit_code": 0,
+      "health": "healthy"
+    }
+  },
+  "synchronous_standby": true,
+  "other_env_values_preserved": true,
+  "storage_endpoint_listed_in_openapi": true,
+  "anonymous_storage": {
+    "status": 401,
+    "cache_control": "private, no-store"
+  },
+  "source_release": "f08f7962b072c6e35b4c02027477419b7de7145bc28d017a1fe4264faaf50850",
+  "source_archive_sha256": "c25bc091c55a2fc5a86febade489f71c7e50d45a948ae37570dd13d3446df466",
+  "all_source_files_verified": 302
+}

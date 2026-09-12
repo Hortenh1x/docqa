@@ -1,12 +1,14 @@
 # DocQA: эксплуатация после выпуска 2026-09-12
 
-Сайт https://docqa.net, API https://api.docqa.net. Новая версия опубликована напрямую
-по SSH, без staging/commit/push. Ветка `codex/production-readiness-audit` остаётся
-незакоммиченной. Исходники точно этой сборки доступны через About → Source.
+Сайт https://docqa.net, API https://api.docqa.net. Рабочий выпуск —
+`/opt/docqa-releases/prod-20260912-storage-ui`, schema0012. Код опубликован в
+[ветке codex/production-readiness-audit](https://github.com/Hortenh1x/docqa/tree/codex/production-readiness-audit),
+первый коммит реализации `463607a`. Исходники точно этой сборки доступны через
+About → Source; SHA-256 архива `c25bc091c55a2fc5a86febade489f71c7e50d45a948ae37570dd13d3446df466`.
 
-Последнее обновление V5:50MB оригиналов на личный аккаунт, без лимита количества
-файлов; удаление освобождает место, pending/failed тоже считаются. У всех6 публичных
-наборов восстановлены3 безопасных вопроса. Пояснение о роли показывается у каждого
+Последнее обновление V5: 50 MB оригиналов на личный аккаунт, без лимита количества
+файлов; удаление освобождает место, pending/failed тоже считаются. У всех 6 публичных
+наборов восстановлены 3 безопасных вопроса. Пояснение о роли показывается у каждого
 набора, Google-кнопка находится под Sign in и использует официальный цветной знак.
 Проверки: `evidence/storage-ui-2026-09-12/verification.json`.
 
@@ -30,7 +32,7 @@
 - Monitoring включён и проверяет обе машины каждые5min, сообщения идут на
   dmytro.bolibok@gmail.com. Повтор проблемы — не чаще6h, recovery — один раз.
   Проверяются готовность, контейнеры, sync/slot/WAL, диск, свежесть backups и сертификаты.
-  Итоговый checkpoint — `evidence/google-auth-2026-09-12/backup-monitoring.json`: обе машины healthy, cron активен.
+  Итоговый checkpoint — `evidence/storage-ui-2026-09-12/backup-monitoring.json`: обе машины healthy, cron активен.
 
 Пароль: минимум8 символов, минимум одна буква и одна цифра; регистрация, подтверждение и сброс требуют совпадающий повтор. Google Client ID/Secret уже установлены из предоставленного JSON в локальный и серверный private env. Callback: `https://api.docqa.net/v1/auth/google/callback`. Кнопка и реальная страница Google проверены; завершение входа своим Google-аккаунтом проверяет владелец. Если email уже зарегистрирован, сначала войти паролем, затем **Connect Google** — автоматического объединения нет.
 
@@ -83,12 +85,14 @@ docker compose --env-file /home/ubuntu/.config/docqa/runtime.env -p docqa \
 - `~/.config/docqa-ops/work/RESTIC-RECOVERY.md`;
 - разовые encrypted bundles: `~/.config/docqa-ops/backups/`.
 
-Последняя проверенная копия: bundle `20260912T121233Z`, schema0012, restic snapshot
-`a7ba2b6b8f7de3f3cfa65db88106c2e0352a836c47c1c6c67077d560706baeef`. Восстановление
-байтов из OCI заняло52.42s: dump, оригиналы, runtime.env (включая Google) и source
-совпали. SQL import этого нового dump повторно не выполнялся; прежние SQL restore
-и локальный migration test учитываются отдельно. Ошибка возобновления после backup
-исправлена обновлением постоянного migrate container; исходный сбой не скрыт.
+Последняя проверенная копия: bundle `20260912T130549Z`, schema0012, restic snapshot
+`6c37bf348bbdc80e3083662813e35f43534b65bb44a92d8250b9f7626cf106d0`. Восстановление
+байтов из OCI заняло 36.23s: dump, все 9783 файла архива оригиналов, runtime.env,
+указатель выпуска и source совпали. SQL import этого нового dump повторно не
+выполнялся; прежние SQL restore и локальный migration test учитываются отдельно.
+В этот раз backup автоматически возобновил сервисы; постоянный migrate container
+соответствует текущему API и завершился с exit0. Оба monitors enabled/healthy.
+
 
 Это приватные файлы, не Git. Их нужно сохранять независимо от основного VPS.
 Восстановление проверяется в новых isolated volumes до переключения трафика.

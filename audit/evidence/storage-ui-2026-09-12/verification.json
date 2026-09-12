@@ -1,5 +1,5 @@
 {
-  "status": "LOCAL_PASS_PRODUCTION_CHECKPOINT_PENDING",
+  "status": "PASS_DEPLOYED_SCOPE_OWNER_ACCEPTANCE_SEPARATE",
   "scope": [
     "50MB original-file quota per account across collections; unlimited count",
     "Access note on every selected set with accurate public/owner wording",
@@ -50,10 +50,30 @@
     "release": "prod-20260912-storage-ui",
     "inventory_sha256": "f08f7962b072c6e35b4c02027477419b7de7145bc28d017a1fe4264faaf50850",
     "archive_sha256": "c25bc091c55a2fc5a86febade489f71c7e50d45a948ae37570dd13d3446df466",
-    "files": 302
+    "files": 302,
+    "implementation_commit": "463607a",
+    "post_deployment_ci_only_change": "Account browser launcher now uses the Playwright-installed browser by default, matching the other browser suites. Explicit local browser overrides remain supported. Deployed application/build inputs are unchanged; release archive preserves the exact deployed snapshot."
   },
   "limitations": [
     "Browser accounts use synthetic fixtures for local acceptance; live Google consent and owner personal-file acceptance remain user checks.",
     "Initial harness/fixture failures and timing-sensitive worker-test attempt retained in check-notes.json; final full run is clean."
-  ]
+  ],
+  "production": {
+    "deployment": "deployment.json",
+    "runtime": "runtime.json",
+    "live_browser": "live-browser.json",
+    "backup_monitoring": "backup-monitoring.json",
+    "schema": "0012",
+    "documents_preserved": 9778,
+    "public_sets_verified": 6,
+    "questions_per_set": 3,
+    "both_monitors_enabled": true,
+    "backup_bundle": "20260912T130549Z",
+    "byte_restore_seconds": 36.232006
+  },
+  "publication": {
+    "branch": "codex/production-readiness-audit",
+    "implementation_commit_pushed": "463607a",
+    "final_evidence_commit": "included with this report"
+  }
 }

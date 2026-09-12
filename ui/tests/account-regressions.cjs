@@ -597,7 +597,7 @@ test('a committed delete with an error response still refreshes the full storage
 
 module.exports = { fixture, login, ask };
 if (require.main === module) (async () => {
-  const browser = await chromium.launch({ executablePath: process.env.DOCQA_CHROMIUM || '/usr/bin/chromium', headless: true });
+  const browser = await chromium.launch({ executablePath: process.env.DOCQA_CHROMIUM || process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH, headless: true });
   let failed = 0;
   try { for (const t of tests.filter(t => !process.env.DOCQA_TEST_FILTER || new RegExp(process.env.DOCQA_TEST_FILTER).test(t.name))) { try { await t.run(browser); console.log(`PASS ${t.name}`); } catch (e) { failed++; console.error(`FAIL ${t.name}\n${e.stack}`); } } }
   finally { await browser.close(); }
