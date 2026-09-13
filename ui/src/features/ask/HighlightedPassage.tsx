@@ -17,9 +17,20 @@ export function HighlightedPassage({
   /** receives the first mark — the reader scrolls it into view */
   markRef?: (element: HTMLElement | null) => void;
 }) {
+  // one mark per line: a span that crosses a paragraph break must not paint the break
   const spans = [...quotes]
     .map((q) => ({ start: Math.max(0, q.start), end: Math.min(content.length, q.end) }))
     .filter((q) => q.end > q.start)
+    .flatMap((q) => {
+      const pieces: { start: number; end: number }[] = [];
+      const re = /[^\n]+/g;
+      re.lastIndex = 0;
+      const slice = content.slice(q.start, q.end);
+      for (let m = re.exec(slice); m; m = re.exec(slice)) {
+        pieces.push({ start: q.start + m.index, end: q.start + m.index + m[0].length });
+      }
+      return pieces;
+    })
     .sort((a, b) => a.start - b.start);
   const parts: React.ReactNode[] = [];
   let cursor = 0;
