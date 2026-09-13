@@ -139,7 +139,7 @@ function LegacyProviders({ children }: { children: React.ReactNode }) {
       <QueryClientProvider key={session.id} client={session.client}>
         <CollectionProvider>
           <RoleProvider>
-            <AskProvider restoreSaved={session.id === 0}>{children}</AskProvider>
+            <AskProvider>{children}</AskProvider>
           </RoleProvider>
         </CollectionProvider>
       </QueryClientProvider>
@@ -187,15 +187,18 @@ function AccountProviders({ children }: { children: React.ReactNode }) {
     const accountRoute = window.location.pathname === "/account" ||
       window.location.pathname.startsWith("/account/");
     // Hide an account form while checking, keeping its one-use proof only in memory.
-    // All other routes clear immediately. A changed or invalid session also clears it.
+    // Other routes revalidate silently: an unchanged identity keeps the conversation,
+    // the readers and any running stream; a changed or invalid session clears them.
+    // The initial check (nothing rendered yet) still goes through clear().
     let preserve = preserveAccountForm && accountRoute && current.current.ready;
+    let silent = preserveAccountForm && !accountRoute && current.current.ready;
     const focused = preserve && document.activeElement instanceof HTMLElement
       ? document.activeElement : null;
     if (preserve) {
       abortRequests();
       void current.current.client.cancelQueries();
       setRevalidating(true);
-    } else clear();
+    } else if (!silent) clear();
     setFailure(null);
     try {
       let next: AccountSession;
@@ -203,6 +206,7 @@ function AccountProviders({ children }: { children: React.ReactNode }) {
       catch (error) {
         if (!(error instanceof ApiError) || error.code !== "invalid_session") throw error;
         preserve = false;
+        silent = false;
         clear();
         if (!showingCompletedProof()) setNotice("Your session expired. Sign in again to access your private documents.");
         // The 401 expired the cookie. This separate request explicitly establishes a guest.
@@ -219,7 +223,13 @@ function AccountProviders({ children }: { children: React.ReactNode }) {
         requestAnimationFrame(() => {
           if (revision === refreshId.current && focused?.isConnected) focused.focus();
         });
-      } else acceptSession(next);
+      } else if (silent && sameIdentity) {
+        acceptSession(next, { notify: false, abort: false });
+        setState(value => ({ ...value, session: next }));
+      } else {
+        if (silent) clear();
+        acceptSession(next);
+      }
     } catch (error) {
       if (revision === refreshId.current && !(error instanceof DOMException && error.name === "AbortError")) {
         setFailure("Could not check your session. Your private content is hidden until the connection is restored.");
@@ -309,7 +319,7 @@ function AccountProviders({ children }: { children: React.ReactNode }) {
       )}
       {state.ready && <div hidden={revalidating}>
         <QueryClientProvider key={state.id} client={state.client}>
-          <CollectionProvider><RoleProvider><AskProvider restoreSaved={false}>
+          <CollectionProvider><RoleProvider><AskProvider>
             {notice && <p role="status" className="border-b border-hairline bg-sheet px-4 py-2 text-center text-sm text-ink-soft">{notice}</p>}
             {children}
           </AskProvider></RoleProvider></CollectionProvider>

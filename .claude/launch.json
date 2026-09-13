@@ -7,6 +7,13 @@
       "runtimeArgs": ["--prefix", "ui", "run", "dev:preview"],
       "port": 3012,
       "autoPort": false
+    },
+    {
+      "name": "docqa-api",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "uvicorn", "app.main:app", "--port", "8000", "--no-access-log"],
+      "port": 8000,
+      "autoPort": false
     }
   ]
 }

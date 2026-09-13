@@ -32,7 +32,10 @@ test('mobile source blocks background focus and adapts modality across breakpoin
     const dialog = f.page.getByRole('dialog');
     const composerFocused = () => f.page.getByLabel('Your question').evaluate(el => { el.focus(); return document.activeElement === el; });
     await f.page.keyboard.press('Shift+Tab');
+    assert(await f.page.getByRole('button', { name: 'Open Private salary.md at this passage', exact: true }).evaluate(el => document.activeElement === el));
+    await f.page.keyboard.press('Shift+Tab');
     assert(await f.page.getByRole('button', { name: 'Copy citation', exact: true }).evaluate(el => document.activeElement === el));
+    await f.page.keyboard.press('Tab');
     await f.page.keyboard.press('Tab');
     assert(await f.page.getByRole('button', { name: 'Close', exact: true }).evaluate(el => document.activeElement === el));
     assert.equal(await composerFocused(), false, 'Background must be inert');

@@ -1,7 +1,9 @@
 import type {
   Collection,
   DocumentOut,
+  HistoryPage,
   IngestStatus,
+  PassagePage,
   Problem,
   Role,
   UsageSummary,
@@ -30,9 +32,10 @@ export function onSessionChange(handler: ((session: AccountSession | null) => vo
 }
 export function acceptSession(
   session: AccountSession | null,
-  { notify = true }: { notify?: boolean } = {},
+  { notify = true, abort = true }: { notify?: boolean; abort?: boolean } = {},
 ) {
-  abortRequests();
+  // a silent revalidation that found the same identity keeps streams and fetches alive
+  if (abort) abortRequests();
   browserSession = session;
   if (notify) sessionHandler?.(session);
 }
@@ -169,6 +172,39 @@ export async function fetchDocumentFile(documentId: string, role?: string): Prom
   if (!res.ok) throw await toApiError(res);
   return res.blob();
 }
+
+export const getDocument = (documentId: string) => api<DocumentOut>(`/v1/documents/${documentId}`);
+
+/** A window of a document's passages — the reader's text view. `around` centres the
+ *  window on a chunk index (a citation), otherwise `offset` pages from the start. */
+export function fetchPassages(
+  documentId: string,
+  options: { role?: string; around?: number; offset?: number; limit?: number } = {},
+): Promise<PassagePage> {
+  const params = new URLSearchParams();
+  if (options.role) params.set("role", options.role);
+  if (options.around !== undefined) params.set("around", String(options.around));
+  if (options.offset !== undefined) params.set("offset", String(options.offset));
+  params.set("limit", String(options.limit ?? 60));
+  return api<PassagePage>(`/v1/documents/${documentId}/passages?${params}`);
+}
+
+/** The signed-in account's past exchanges in a collection, newest first. */
+export function listQueries(
+  collectionId: string,
+  options: { limit?: number; before?: string } = {},
+): Promise<HistoryPage> {
+  const params = new URLSearchParams({ limit: String(options.limit ?? 20) });
+  if (options.before) params.set("before", options.before);
+  return api<HistoryPage>(`/v1/collections/${collectionId}/queries?${params}`);
+}
+
+/** Attach the queries this browser asked as a guest to the account that just signed in. */
+export const claimQueries = (queryIds: string[]) =>
+  api<{ claimed: number }>("/v1/queries/claim", {
+    method: "POST",
+    body: JSON.stringify({ query_ids: queryIds }),
+  });
 
 export const getUsage = (days = 30) => api<UsageSummary>(`/v1/usage?days=${days}`);
 

@@ -75,16 +75,56 @@ export interface DocumentOut {
   access_labels: string[];
 }
 
+/** A pinpoint span inside a passage: character offsets into `content` plus the text. */
+export interface QuoteSpan {
+  start: number;
+  end: number;
+  text: string;
+}
+
 export interface Source {
   n: number;
   document_id: string;
   filename: string;
   pages: [number, number] | null;
   section: string | null;
+  /** the first 300 characters of the passage — a preview before the answer arrives */
   snippet: string;
-  score: number;
+  score: number | null;
   /** content label of the chunk ("all" = open) */
   access_label: string;
+  chunk_id?: number;
+  /** position in the document — the reader opens at this passage */
+  chunk_index?: number | null;
+  /** the whole passage; set once the answer cited this block (from `done.citations`) */
+  content?: string | null;
+  /** the exact words that support the claim; empty = the whole passage was used */
+  quotes?: QuoteSpan[] | null;
+}
+
+/** `done.citations`: the cited blocks with their passage text and pinpoint spans. */
+export interface Citation {
+  n: number;
+  chunk_id: number;
+  content: string;
+  quotes: QuoteSpan[];
+}
+
+/** One chunk of a document as GET /v1/documents/{id}/passages serves it. */
+export interface Passage {
+  chunk_id: number;
+  chunk_index: number;
+  section: string | null;
+  pages: [number, number] | null;
+  access_label: string;
+  content: string;
+}
+
+export interface PassagePage {
+  document_id: string;
+  total: number;
+  offset: number;
+  passages: Passage[];
 }
 
 export interface Usage {
@@ -101,6 +141,28 @@ export interface DonePayload {
   usage: Usage;
   latency_ms: number;
   model: string | null;
+  citations?: Citation[];
+}
+
+/** One recorded exchange from GET /v1/collections/{id}/queries (accounts only). */
+export interface HistoryQuery {
+  id: string;
+  question: string;
+  answer: string | null;
+  refused: boolean;
+  reason: string | null;
+  role: string | null;
+  confidence: number | null;
+  usage: Usage;
+  latency_ms: number | null;
+  model: string | null;
+  created_at: string;
+  sources: Source[];
+}
+
+export interface HistoryPage {
+  queries: HistoryQuery[];
+  has_more: boolean;
 }
 
 export interface UsageDay {

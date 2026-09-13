@@ -27,7 +27,7 @@ async function fixture(browser, options = {}) {
     };
     const revoke = URL.revokeObjectURL; URL.revokeObjectURL = function(url) { window.revoked.push(url); revoke(url); };
   });
-  const state = { user: options.user || null, requests: [], responses: [], errors: [], registration: options.registration !== false, remaining: '0.30', reserved: '0.00', invalid: false, failGuestSessionOnce: false, storageBytes: options.storageBytes ?? 100, storageError: false, failed: true, deleted: false, quota: false, sseQuota: false, hold: null, held: [] };
+  const state = { user: options.user || null, requests: [], responses: [], errors: [], registration: options.registration !== false, remaining: '0.30', reserved: '0.00', invalid: false, failGuestSessionOnce: false, storageBytes: options.storageBytes ?? 100, storageError: false, failed: true, deleted: false, quota: false, sseQuota: false, hold: null, held: [], history: [], claimed: [] };
   const session = () => ({ user: state.user, csrf_token: state.user ? 'csrf-user' : 'csrf-guest', registration_available: state.registration, google_available: !!options.google });
   await context.route('**/*', async route => {
     const req = route.request(), url = new URL(req.url());
@@ -61,6 +61,16 @@ async function fixture(browser, options = {}) {
       else if (url.pathname.endsWith('/verify') || url.pathname.endsWith('/reset')) state.user = null;
       return respond({ message: 'If eligible, an email has been sent.' }, url.pathname.endsWith('/register') || url.pathname.endsWith('/resend') || url.pathname.endsWith('/forgot-password') ? 202 : 200);
     }
+    if (url.pathname === '/v1/queries/claim') { state.claimed.push(req.postDataJSON().query_ids); return respond({ claimed: 1 }); }
+    if (url.pathname.endsWith('/queries')) {
+      const before = url.searchParams.get('before');
+      const items = state.history.filter(item => item.collection_id === url.pathname.split('/')[3]);
+      const start = before ? items.findIndex(item => item.id === before) + 1 : 0;
+      const page = items.slice(start, start + 1);
+      return respond({ queries: page.map(({ collection_id, ...item }) => item), has_more: start + 1 < items.length });
+    }
+    if (url.pathname === `/v1/documents/${did}` && req.method() === 'GET') return respond({ id: did, collection_id: own, filename: 'Private salary.md', mime_type: 'text/markdown', size_bytes: 100, sha256: '0'.repeat(64), status: 'ready', error: null, page_count: 1, access_labels: [], created_at: '2026-09-10T00:00:00Z', processed_at: null });
+    if (url.pathname.endsWith('/passages')) return respond({ document_id: did, total: 1, offset: 0, passages: [{ chunk_id: 5, chunk_index: 0, section: 'Salary', pages: [1, 1], access_label: 'finance', content: 'Private salary excerpt in full.' }] });
     if (url.pathname === '/v1/storage') return state.storageError ? respond({ detail: 'Storage temporarily unavailable.' }, 503) : respond({ used_bytes: state.storageBytes, limit_bytes: 52428800, remaining_bytes: Math.max(0, 52428800 - state.storageBytes), document_count: state.deleted ? 0 : 8 });
     if (url.pathname === '/v1/budget') return respond({ enabled: true, limit_usd: '0.50', spent_usd: '0.20', reserved_usd: state.reserved, remaining_usd: state.remaining, limited_by: 'ip', reset_at: resetAtIso });
     if (url.pathname === '/v1/collections') return respond([...(options.publicCollections || [collection(pub)]), ...(state.user ? [{ ...collection(own, true), writable: state.user.email_verified }] : [])]);
@@ -75,7 +85,7 @@ async function fixture(browser, options = {}) {
       if (state.quota) return respond({ code: 'quota_exceeded', detail: 'Daily budget exhausted.', reset_at: resetAtIso }, 429);
       if (state.sseQuota) return route.fulfill({ status: 200, headers, contentType: 'text/event-stream', body: `event: error\ndata: ${JSON.stringify({ code: 'quota_exceeded', message: 'Daily budget exhausted.', reset_at: resetAtIso, retry_after_s: 1000 })}\n\n` });
       const answer = state.user ? 'Private salary answer [1]' : 'Public answer [1]';
-      const frames = [['meta', { query_id: did, access: { role: state.user ? 'owner' : 'employee', hidden_passages: 0, hidden_labels: [] } }], ['sources', { sources: [{ n: 1, document_id: did, filename: 'Private salary.md', pages: [1,1], section: 'Salary', snippet: 'Private salary excerpt', score: 0.9, access_label: 'finance' }] }], ['delta', { text: answer }], ['done', { answer, refused: false, reason: null, confidence: 0.9, usage: { prompt_tokens: 1, completion_tokens: 1, cost_usd: 0 }, latency_ms: 1, model: 'stub' }]];
+      const frames = [['meta', { query_id: did, access: { role: state.user ? 'owner' : 'employee', hidden_passages: 0, hidden_labels: [] } }], ['sources', { sources: [{ n: 1, document_id: did, filename: 'Private salary.md', pages: [1,1], section: 'Salary', snippet: 'Private salary excerpt', score: 0.9, access_label: 'finance', chunk_id: 5, chunk_index: 0 }] }], ['delta', { text: answer }], ['done', { answer, refused: false, reason: null, confidence: 0.9, usage: { prompt_tokens: 1, completion_tokens: 1, cost_usd: 0 }, latency_ms: 1, model: 'stub', citations: [{ n: 1, chunk_id: 5, content: 'Private salary excerpt in full.', quotes: [{ start: 0, end: 22, text: 'Private salary excerpt' }] }] }]];
       return route.fulfill({ status: 200, headers, contentType: 'text/event-stream', body: frames.map(([event,data]) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join('') });
     }
     if (url.pathname === '/v1/usage') return respond({ days: 30, queries: 1, refused: 0, prompt_tokens: 1, completion_tokens: 1, cost_usd: 0.2, avg_latency_ms: 1, daily: [] });
@@ -269,17 +279,80 @@ test('cross-tab logout aborts pending original fetch, upload XHR and query SSE r
     } finally { await f.close(); }
   }
 });
-test('session refresh hides old private answer before a delayed session response', async browser => {
+test('session refresh on tab return keeps the thread for the same identity and clears it for another', async browser => {
   const f = await fixture(browser); try {
     await login(f.page); await f.page.getByRole('link', { name: 'Ask', exact: true }).click();
     await f.page.getByLabel('Collection', { exact: true }).selectOption(own); await ask(f.page);
+    await f.page.getByLabel('Your question').fill('Draft in progress');
     f.state.hold = (_req, url) => url.pathname === '/v1/auth/session';
+    const checks = f.state.requests.filter(r => r.path === '/v1/auth/session').length;
     await f.page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-    await f.page.getByText('Checking your session…', { exact: true }).waitFor();
-    assert.equal(await f.page.getByText('Private salary answer', { exact: false }).count(), 0);
-    f.state.hold = null; f.state.held.forEach(resolve => resolve());
+    await f.page.waitForFunction(n => window.transport.filter(t => t.path.endsWith('/v1/auth/session')).length > n, checks);
+    // the check runs in the background: nothing flashes, nothing is hidden
+    const exchange = f.page.getByRole('article', { name: 'What is the salary?', exact: true });
+    assert.equal(await f.page.getByText('Checking your session…', { exact: true }).count(), 0);
+    assert.equal(await exchange.count(), 1);
+    f.state.hold = null; f.state.held.splice(0).forEach(resolve => resolve());
+    await f.page.waitForTimeout(300);
+    assert.equal(await exchange.count(), 1, 'Same identity keeps the conversation');
+    assert.equal(await f.page.getByLabel('Your question').inputValue(), 'Draft in progress');
+    // another account behind the same cookie: everything private goes at once
+    f.state.user = { id: 'b@example.test', email: 'b@example.test', email_verified: true, tenant_id: own };
+    await f.page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+    await f.page.getByText('b@example.test', { exact: true }).first().waitFor();
     await f.page.getByRole('heading', { name: 'Ask the documents.' }).waitFor();
-    assert.equal(await f.page.getByLabel('Your question').inputValue(), '');
+    assert.equal(await f.page.getByText('Private salary answer', { exact: false }).count(), 0);
+  } finally { await f.close(); }
+});
+
+test('guest questions live in this browser, survive reload and join the account at sign-in', async browser => {
+  const f = await fixture(browser); try {
+    await ask(f.page);
+    await f.page.waitForFunction(() => localStorage.getItem('docqa.ask.v2.guest')?.includes('Public answer'));
+    await f.page.getByLabel('Collection', { exact: true }).selectOption(pub);
+    await f.page.reload();
+    await f.page.getByRole('article', { name: 'What is the salary?', exact: true }).waitFor();
+    await f.page.getByText('kept in this browser', { exact: false }).waitFor();
+    f.state.history = [{ id: did, collection_id: pub, question: 'What is the salary?', answer: 'Public answer [1]', refused: false, reason: null, role: 'employee', confidence: 0.9, usage: { prompt_tokens: 1, completion_tokens: 1, cost_usd: 0 }, latency_ms: 1, model: 'stub', created_at: '2026-09-11T10:00:00Z', sources: [] }];
+    await login(f.page);
+    await f.page.waitForFunction(() => localStorage.getItem('docqa.ask.v2.guest') === null);
+    assert.deepEqual(f.state.claimed, [[did]], 'The guest exchange is claimed by id once');
+    await f.page.getByRole('link', { name: 'Ask', exact: true }).click();
+    await f.page.getByLabel('Collection', { exact: true }).selectOption(pub);
+    await f.page.getByRole('article', { name: 'What is the salary?', exact: true }).getByText('Public answer', { exact: false }).waitFor();
+    await f.page.getByText('kept in your account', { exact: false }).waitFor();
+    assert.equal(await f.page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }).includes('Public answer')), false, 'Accounts keep nothing in browser storage');
+  } finally { await f.close(); }
+});
+
+test('a signed-in thread is read from the account history and pages backwards', async browser => {
+  const f = await fixture(browser); try {
+    const item = (id, question, created_at) => ({ id, collection_id: own, question, answer: `${question} answer [1]`, refused: false, reason: null, role: null, confidence: 0.9, usage: { prompt_tokens: 1, completion_tokens: 1, cost_usd: 0 }, latency_ms: 1, model: 'stub', created_at, sources: [{ n: 1, document_id: did, filename: 'Private salary.md', pages: [1, 1], section: 'Salary', snippet: 'Private salary excerpt', score: 0.9, access_label: 'finance', chunk_id: 5, chunk_index: 0, content: 'Private salary excerpt in full.', quotes: [{ start: 0, end: 22, text: 'Private salary excerpt' }] }] });
+    f.state.history = [item('q-3', 'Third', '2026-09-12T10:00:00Z'), item('q-2', 'Second', '2026-09-11T10:00:00Z'), item('q-1', 'First', '2026-09-10T10:00:00Z')];
+    await login(f.page); await f.page.getByRole('link', { name: 'Ask', exact: true }).click();
+    await f.page.getByLabel('Collection', { exact: true }).selectOption(own);
+    await f.page.getByRole('article', { name: 'Third', exact: true }).waitFor();
+    assert.equal(await f.page.getByRole('article', { name: 'Second', exact: true }).count(), 0);
+    await f.page.getByRole('button', { name: 'Show earlier questions', exact: true }).click();
+    await f.page.getByRole('article', { name: 'Second', exact: true }).waitFor();
+    await f.page.getByRole('button', { name: 'Show earlier questions', exact: true }).click();
+    await f.page.getByRole('article', { name: 'First', exact: true }).waitFor();
+    await f.page.getByText('3 questions · kept in your account', { exact: true }).waitFor();
+    const order = await f.page.locator('article').evaluateAll(nodes => nodes.map(n => n.getAttribute('aria-label')));
+    assert.deepEqual(order, ['First', 'Second', 'Third']);
+    assert.equal(await f.page.getByRole('button', { name: 'Clear history' }).count(), 0, 'Account history is not cleared from the browser');
+    // a restored citation still opens the reader on its quote
+    await f.page.getByRole('button', { name: 'Source 1: Private salary.md, pages 1–1', exact: true }).first().click();
+    const dialog = f.page.getByRole('dialog');
+    assert.equal(await dialog.locator('blockquote mark').innerText(), 'Private salary excerpt');
+    await dialog.getByRole('button', { name: 'Open in document', exact: true }).click();
+    const reader = f.page.getByRole('dialog', { name: 'Read Private salary.md' });
+    await reader.locator('mark').waitFor();
+    assert.equal(await reader.locator('mark').innerText(), 'Private salary excerpt');
+    assert(f.state.requests.some(r => r.path === `/v1/documents/${did}/passages` && !r.search.includes('role=')), 'Owners read passages without a role');
+    await f.page.keyboard.press('Escape');
+    await reader.waitFor({ state: 'detached' });
+    await f.page.getByRole('dialog', { name: 'Source 1: Private salary.md' }).waitFor();
   } finally { await f.close(); }
 });
 test('mutation preflight detects another account and never sends the old upload', async browser => {

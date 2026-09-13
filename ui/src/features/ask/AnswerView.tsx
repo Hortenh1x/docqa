@@ -61,8 +61,11 @@ export function AnswerView({
                   {source.section ? ` · ${source.section}` : ""}
                 </span>
                 <span className="mt-1 block text-xs leading-5 text-ink-soft">
-                  {source.snippet.slice(0, 120)}
-                  {source.snippet.length > 120 ? "…" : ""}
+                  {(() => {
+                    // the exact words once the answer is complete, the passage start before
+                    const preview = source.quotes?.[0]?.text ?? source.snippet;
+                    return preview.length > 140 ? `${preview.slice(0, 140)}…` : preview;
+                  })()}
                 </span>
               </span>
             </span>

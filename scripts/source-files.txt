@@ -270,6 +270,8 @@ ui/src/features/ask/RefusalPanel.tsx
 ui/src/features/ask/SourceDrawer.tsx
 ui/src/features/ask/SourceRail.tsx
 ui/src/features/ask/state.ts
+ui/src/features/ask/CitationReader.tsx
+ui/src/features/ask/HighlightedPassage.tsx
 ui/src/features/library/DocumentTable.tsx
 ui/src/features/library/DocumentViewer.tsx
 ui/src/features/library/Dropzone.tsx

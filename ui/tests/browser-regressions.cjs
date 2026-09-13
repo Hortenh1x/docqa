@@ -10,6 +10,7 @@ const base = process.env.DOCQA_UI_URL || 'http://127.0.0.1:18124';
 assert(['localhost', '127.0.0.1'].includes(new URL(base).hostname), 'Use a local UI only');
 const demo = process.env.DOCQA_DEMO === 'true';
 const cid = '11111111-1111-4111-8111-111111111111';
+const secondCid = '44444444-4444-4444-8444-444444444444';
 const otherCid = '33333333-3333-4333-8333-333333333333';
 const did = '22222222-2222-4222-8222-222222222222';
 const keyA = 'synthetic-tenant-a';
@@ -25,10 +26,18 @@ const document = (tenant) => ({
   status: 'ready', error: null, page_count: null, access_labels: [],
   created_at: '2026-09-10T00:00:00Z', processed_at: '2026-09-10T00:00:01Z',
 });
+const passageText = 'Tenant A private passage. The rest of the chunk is context the answer did not use.';
 const source = {
   n: 1, document_id: did, filename: 'tenant-A.md', pages: [1, 1], section: 'Policy',
-  snippet: 'Tenant A private passage', score: 0.9, access_label: 'all',
+  snippet: 'Tenant A private passage', score: 0.9, access_label: 'all', chunk_id: 7, chunk_index: 1,
 };
+const context = { n: 2, document_id: did, filename: 'tenant-A.md', pages: [1, 1], section: 'Scope',
+  snippet: 'Uncited context passage', score: 0.5, access_label: 'all', chunk_id: 8, chunk_index: 0 };
+const passages = [
+  { chunk_id: 8, chunk_index: 0, section: 'Scope', pages: [1, 1], access_label: 'all', content: 'Uncited context passage' },
+  { chunk_id: 7, chunk_index: 1, section: 'Policy', pages: [1, 1], access_label: 'all', content: passageText },
+  { chunk_id: 9, chunk_index: 2, section: 'Later', pages: [1, 1], access_label: 'all', content: 'A later passage.' },
+];
 const access = {
   role: 'employee', hidden_passages: 0, hidden_labels: [], hidden_documents: 0,
   hidden_outranking: 0, hidden_truncated: false,
@@ -37,9 +46,10 @@ const done = {
   answer: 'Tenant A private answer [1]', refused: false, reason: null, confidence: 0.9,
   usage: { prompt_tokens: 12, completion_tokens: 7, cost_usd: 0 },
   latency_ms: 1, model: 'stub',
+  citations: [{ n: 1, chunk_id: 7, content: passageText, quotes: [{ start: 0, end: 24, text: 'Tenant A private passage' }] }],
 };
 const sse = [
-  ['meta', { query_id: did, access }], ['sources', { sources: [source] }],
+  ['meta', { query_id: did, access }], ['sources', { sources: [source, context] }],
   ['delta', { text: done.answer }], ['done', done],
 ].map(([event, data]) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join('');
 
@@ -83,7 +93,14 @@ async function fixture(browser, options = {}) {
     }
     let body = {};
     let status = 200;
-    if (url.pathname === '/v1/collections') body = [collection(tenant)];
+    if (url.pathname === '/v1/collections') body = tenant === 'A'
+      ? [collection('A'), { ...collection('A'), id: secondCid, name: 'Tenant A archive', slug: 'archive' }]
+      : [collection('B')];
+    else if (url.pathname === `/v1/documents/${did}` && req.method() === 'GET') body = document(tenant);
+    else if (url.pathname.endsWith('/passages')) {
+      const around = url.searchParams.get('around');
+      body = { document_id: did, total: passages.length, offset: 0, passages: around === null ? passages : passages };
+    } else if (url.pathname.endsWith('/queries')) body = { queries: [], has_more: false };
     else if (url.pathname === '/v1/roles') body = [
       { role: 'employee', labels: ['all'], default: true, description: 'Employee' },
       { role: 'finance', labels: ['all', 'finance'], default: false, description: 'Finance' },
@@ -158,11 +175,12 @@ if (!demo) {
     const f = await fixture(browser);
     try {
       await ask(f.page);
-      await f.page.waitForFunction(() => sessionStorage.getItem('docqa.ask')?.includes('Tenant A private answer'));
+      // the key lives in memory only, so nothing tied to it may be persisted
+      const storage = await f.page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }));
+      assert(!storage.includes('Tenant A private answer') && !storage.includes('docqa.ask'), 'Keyless threads stay in memory');
       await f.page.reload();
       await f.page.getByRole('heading', { name: 'Ask the documents.' }).waitFor({ timeout: 4000 });
       assert.equal(await f.page.getByText('Tenant A private answer', { exact: false }).count(), 0);
-      assert.equal(await f.page.evaluate(() => sessionStorage.getItem('docqa.ask')), null);
       assert.equal(await f.page.evaluate(() => document.body.textContent.includes('Tenant A private answer')), false);
     } finally { await f.close(); }
   });
@@ -178,7 +196,6 @@ if (!demo) {
       assert(state.requests.some(r => r.path === '/v1/collections' && r.authorization === `Bearer ${keyA}`));
       assert.equal(navigations, 0, 'Submitting the key must not reload the page');
       await ask(page);
-      await page.waitForFunction(() => sessionStorage.getItem('docqa.ask')?.includes('Tenant A private answer'));
       await page.getByLabel('Access role').selectOption('finance');
       await page.getByRole('link', { name: 'Library', exact: true }).click();
       await page.getByRole('button', { name: 'tenant-A.md', exact: true }).click();
@@ -239,7 +256,7 @@ if (!demo) {
         await page.waitForTimeout(100);
         assert.equal(await page.getByText('Private pending question', { exact: true }).count(), 0);
         assert.equal(await page.getByText('Tenant A private answer', { exact: false }).count(), 0);
-        assert.equal(await page.evaluate(() => sessionStorage.getItem('docqa.ask')), null);
+        assert.equal(await page.evaluate(() => Object.keys({ ...localStorage, ...sessionStorage }).some(k => k.startsWith('docqa.ask'))), false);
       } finally { await f.close(); }
     });
   }
@@ -255,46 +272,90 @@ if (!demo) {
     } finally { await f.close(); }
   });
 
-  for (const legacy of [false, true]) {
-    test(`demo reload discards ${legacy ? 'legacy undated' : 'previous UTC day'} saved answers`, async (browser) => {
-      const f = await fixture(browser, { time: '2026-09-10T23:59:00Z' });
-      try {
-        await ask(f.page);
-        await f.page.waitForFunction(() => sessionStorage.getItem('docqa.ask')?.includes('Tenant A private answer'));
-        if (legacy) {
-          await f.page.evaluate(() => {
-            const saved = JSON.parse(sessionStorage.getItem('docqa.ask'));
-            sessionStorage.setItem('docqa.ask', JSON.stringify(saved.state || saved));
-          });
-        } else await f.page.clock.setSystemTime(new Date('2026-09-11T00:01:00Z'));
-        await f.page.reload();
-        await f.page.getByRole('heading', { name: 'Ask the documents.' }).waitFor({ timeout: 4000 });
-        assert.equal(await f.page.evaluate(() => sessionStorage.getItem('docqa.ask')), null);
-      } finally { await f.close(); }
-    });
-  }
-}
-
-for (const wakeup of ['timer', 'visibility', 'interaction']) {
-  test(`open Ask expires at UTC midnight on ${wakeup}`, async (browser) => {
+  test('demo thread survives the next day, a broken store and a cleared history', async (browser) => {
     const f = await fixture(browser, { time: '2026-09-10T23:59:00Z' });
     try {
       await ask(f.page);
-      await f.page.waitForFunction(() => sessionStorage.getItem('docqa.ask')?.includes('Tenant A private answer'));
-      if (wakeup === 'timer') await f.page.clock.fastForward(61000);
-      else {
-        // A suspended tab can miss timers. The first visibility/interaction event
-        // must discard yesterday's answer before the user continues.
-        await f.page.clock.setSystemTime(new Date('2026-09-11T00:01:00Z'));
-        if (wakeup === 'visibility') await f.page.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
-        else await f.page.getByLabel('Your question').click();
-      }
+      await f.page.waitForFunction(() => localStorage.getItem('docqa.ask.v2.demo')?.includes('Tenant A private answer'));
+      // the thread is history now, not a same-day cache: midnight changes nothing
+      await f.page.clock.setSystemTime(new Date('2026-09-11T00:01:00Z'));
+      await f.page.reload();
+      await f.page.getByRole('button', { name: 'Source 1: tenant-A.md, pages 1–1', exact: true }).waitFor({ timeout: 4000 });
+      await f.page.getByRole('button', { name: 'Clear history', exact: true }).click();
       await f.page.getByRole('heading', { name: 'Ask the documents.' }).waitFor({ timeout: 4000 });
-      assert.equal(await f.page.evaluate(() => sessionStorage.getItem('docqa.ask')), null);
-      assert.equal(await f.page.evaluate(() => document.body.textContent.includes('Tenant A private answer')), false);
+      assert.equal(await f.page.evaluate(() => localStorage.getItem('docqa.ask.v2.demo')), null);
+      // a corrupt store never breaks the page
+      await f.page.evaluate(() => localStorage.setItem('docqa.ask.v2.demo', '{not json'));
+      await f.page.reload();
+      await f.page.getByRole('heading', { name: 'Ask the documents.' }).waitFor({ timeout: 4000 });
     } finally { await f.close(); }
   });
 }
+
+test('the thread survives collection switches and navigation; each collection keeps its own', async (browser) => {
+  const f = await fixture(browser);
+  try {
+    const { page } = f;
+    await ask(page);
+    await page.getByLabel('Collection', { exact: true }).selectOption(secondCid);
+    await page.getByRole('heading', { name: 'Ask the documents.' }).waitFor({ timeout: 4000 });
+    await page.getByLabel('Your question').fill('Archive question');
+    await page.getByRole('button', { name: 'Ask', exact: true }).click();
+    await page.getByText('Archive question', { exact: true }).waitFor();
+    await page.getByLabel('Collection', { exact: true }).selectOption(cid);
+    await page.getByText('Private tenant question', { exact: true }).waitFor({ timeout: 4000 });
+    assert.equal(await page.getByText('Archive question', { exact: true }).count(), 0, 'Threads do not mix');
+    await page.getByRole('link', { name: 'Library', exact: true }).click();
+    await page.getByRole('button', { name: 'tenant-A.md', exact: true }).waitFor();
+    await page.getByRole('link', { name: 'Ask', exact: true }).click();
+    await page.getByText('Tenant A private answer', { exact: false }).first().waitFor({ timeout: 4000 });
+    await page.getByLabel('Your question').fill('Second question here');
+    await page.getByRole('button', { name: 'Ask', exact: true }).click();
+    await page.getByText('Second question here', { exact: true }).waitFor();
+    assert.equal(await page.getByText('Private tenant question', { exact: true }).count(), 1, 'Earlier exchanges stay above');
+    await page.getByText('2 questions', { exact: false }).waitFor();
+    await page.getByRole('button', { name: 'Clear history', exact: true }).click();
+    await page.getByRole('heading', { name: 'Ask the documents.' }).waitFor({ timeout: 4000 });
+    await page.getByLabel('Collection', { exact: true }).selectOption(secondCid);
+    await page.getByText('Archive question', { exact: true }).waitFor({ timeout: 4000 });
+  } finally { await f.close(); }
+});
+
+test('the source panel shows the exact quote and the reader opens on the highlighted passage', async (browser) => {
+  const f = await fixture(browser);
+  try {
+    const { page, state } = f;
+    await ask(page);
+    // the rail folds to the cited passage once the answer is complete
+    await page.getByRole('button', { name: '1 more passage was read but not cited', exact: true }).waitFor();
+    assert.equal(await page.getByRole('listitem', { name: 'Source 2: tenant-A.md, pages 1–1', exact: true }).count(), 0);
+    await page.getByRole('button', { name: '1 more passage was read but not cited', exact: true }).click();
+    await page.getByRole('listitem', { name: 'Source 2: tenant-A.md, pages 1–1', exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Source 1: tenant-A.md, pages 1–1', exact: true }).click();
+    const dialog = page.getByRole('dialog');
+    await dialog.getByText('The words behind the claim', { exact: true }).waitFor();
+    assert.equal(await dialog.locator('blockquote mark').innerText(), 'Tenant A private passage');
+    await dialog.getByText('Show the passage in context', { exact: true }).click();
+    await dialog.getByText('did not use', { exact: false }).waitFor();
+    await dialog.getByRole('button', { name: 'Open in document', exact: true }).click();
+    const reader = page.getByRole('dialog', { name: 'Read tenant-A.md' });
+    await reader.waitFor();
+    assert.equal(await reader.getByRole('button', { name: 'Passages', exact: true }).getAttribute('aria-pressed'), 'true');
+    await reader.locator('mark').waitFor();
+    assert.equal(await reader.locator('mark').innerText(), 'Tenant A private passage');
+    assert.equal(await reader.locator('[aria-current="true"]').innerText().then(t => t.includes('cited')), true);
+    assert(state.requests.some(r => r.path === `/v1/documents/${did}/passages`), 'Passages are fetched for the reader');
+    await reader.getByRole('button', { name: 'Original', exact: true }).click();
+    await reader.locator('pre').waitFor();
+    await page.keyboard.press('Escape');
+    await reader.waitFor({ state: 'detached' });
+    // closing the reader brings the source panel back
+    await page.getByRole('dialog', { name: 'Source 1: tenant-A.md' }).waitFor();
+    assert.equal(await page.locator('dialog blockquote mark').innerText(), 'Tenant A private passage');
+    await page.keyboard.press('Escape');
+    await page.getByRole('dialog').waitFor({ state: 'detached' });
+  } finally { await f.close(); }
+});
 
 for (const width of [390, 1280]) {
   test(`reader returns focus for Escape, close and backdrop at ${width}px`, async (browser) => {
@@ -310,8 +371,11 @@ for (const width of [390, 1280]) {
         const dialog = page.getByRole('dialog');
         await checkFocus(dialog.getByRole('button', { name: 'Close', exact: true }));
         await page.keyboard.press('Tab');
-        await checkFocus(dialog.getByRole('link', { name: 'Download', exact: true }));
+        await checkFocus(dialog.getByRole('button', { name: 'Passages', exact: true }));
         await page.keyboard.press('Shift+Tab');
+        await page.keyboard.press('Shift+Tab');
+        await checkFocus(dialog.getByRole('link', { name: 'Download', exact: true }));
+        await page.keyboard.press('Tab');
         if (dismiss === 'Escape') await page.keyboard.press('Escape');
         else if (dismiss === 'close') await dialog.getByRole('button', { name: 'Close', exact: true }).click();
         else await page.getByRole('button', { name: 'Close reader', exact: true }).click({ position: { x: 5, y: 5 } });
@@ -335,8 +399,11 @@ for (const width of [390, 1280]) {
           await dialog.waitFor();
           await checkFocus(dialog.getByRole('button', { name: 'Close', exact: true }));
           await page.keyboard.press('Shift+Tab');
+          await checkFocus(dialog.getByRole('button', { name: 'Open tenant-A.md at this passage', exact: true }));
+          await page.keyboard.press('Shift+Tab');
           if (width < 1100) await checkFocus(dialog.getByRole('button', { name: 'Copy citation', exact: true }));
           else await checkFocus(page.getByLabel('Your question', { exact: true }));
+          await page.keyboard.press('Tab');
           await page.keyboard.press('Tab');
           if (dismiss === 'Escape') await page.keyboard.press('Escape');
           else if (dismiss === 'close') await dialog.getByRole('button', { name: 'Close', exact: true }).click();

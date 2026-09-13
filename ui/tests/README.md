@@ -40,15 +40,18 @@ The script prints each check and a JSON summary, and exits nonzero on failure.
 
 Repeat with a separate demo build using `NEXT_PUBLIC_DEMO_MODE=true` and
 `NEXT_PUBLIC_DEMO_API_KEY=synthetic-demo-key`; run the tests with `DOCQA_DEMO=true`.
-This checks baked-in demo authentication, same-day answer restoration, expiry of
-previous-day and undated legacy answers, and the 5 MB hint.
+This checks baked-in demo authentication, thread restoration across reloads (and
+across midnight — the thread is history, not a same-day cache), a corrupt store, "Clear
+history", and the 5 MB hint.
 The keyless run checks the 25 MB hint, key lifetime, tenant cache/storage reset, and
 aborted fetch/SSE/upload requests. Both runs check reader/source focus with keyboard,
 close button and backdrop at phone/desktop widths; literal file markup; stale text
 after role changes; pending/processing/failed reader responses; delete confirmation,
 cancellation, visible errors and retry; and server upload-size errors.
-Both runs also move the browser clock across UTC midnight and verify that the saved
-exchange expires on a timer, visibility change, or the next interaction.
+Both runs check that the thread survives collection switches and navigation with one
+thread per collection, that the rail folds to the cited passages, that the source panel
+shows the exact quote in full and that *Open in document* opens the reader on the
+highlighted passage (Passages view) and brings the panel back on close.
 
 These are Chromium browser regressions with mocked API responses, not live-provider
 end-to-end tests or a complete screen-reader/browser compatibility audit.
@@ -88,7 +91,10 @@ private collections, guest-to-account budget continuity, HTTP/SSE quota errors,
 failed-original reading and retry, XHR/file/SSE credentials, cross-tab logout and
 request abortion, stale-state clearing during session refresh, expiry recovery,
 mobile layout, source/form keyboard focus, proof/password retention across unchanged
-session checks, confirmed reset success through revoked-cookie recovery and network
+session checks, silent session revalidation on tab return (an unchanged identity keeps
+the thread and the draft; another identity clears everything), guest threads in browser
+storage claimed at sign-in, account threads read from the history API with backwards
+paging and the reader opening on a restored quote, confirmed reset success through revoked-cookie recovery and network
 retries, fresh proof links after completion, and separate daily settled/pending/remaining
 budget amounts. It observes browser request options
 and CSRF headers; cookie generation, Secure/SameSite enforcement, revocation and

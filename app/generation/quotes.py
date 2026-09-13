@@ -97,6 +97,7 @@ def parse_quotes(section: str) -> list[tuple[int, str]]:
 
 # --- normalisation with an index map back to the source text ---
 
+_EMPHASIS = frozenset("*_`")
 _CHAR_MAP = str.maketrans(
     {
         **dict.fromkeys("“”„«»‟", '"'),
@@ -113,6 +114,8 @@ def _normalise(text: str) -> tuple[str, list[int]]:
     index: list[int] = []
     in_space = False
     for i, raw in enumerate(text):
+        if raw in _EMPHASIS:
+            continue  # markdown bold/italic/code marks: chunks have them, quotes rarely do
         if raw.isspace():
             if in_space:
                 continue
@@ -150,7 +153,12 @@ def _fuzzy_span(norm_text: str, norm_quote: str) -> tuple[int, int] | None:
     blocks = [b for b in matcher.get_matching_blocks() if b.size]
     if not blocks:
         return None
-    return start + blocks[0].a, start + blocks[-1].a + blocks[-1].size
+    # cover the quote's unmatched head and tail too (a "**27 days**" the model wrote as
+    # "27 days" must not shave the number off the highlight)
+    first, last = blocks[0], blocks[-1]
+    head = max(0, first.a - first.b)
+    tail = min(len(window), last.a + last.size + (m - (last.b + last.size)))
+    return start + head, start + tail
 
 
 def _locate(quote: str, text: str) -> tuple[int, int, str] | None:
