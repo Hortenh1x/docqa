@@ -10,7 +10,7 @@ jobs:
     # ubuntu runners ship docker out of the box -> testcontainers work as-is
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
@@ -42,7 +42,7 @@ jobs:
             demo: "true"
             accounts: "true"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -98,7 +98,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Prepare matching application and public source release
         run: python3 scripts/build_source.py --output .release/ci
       - run: docker build -t docqa:${{ github.sha }} .release/ci
