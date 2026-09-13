@@ -106,12 +106,12 @@ export function AskScreen() {
   const roleMoved = !owned && latest !== null && latest.askedAs !== null && latest.askedAs !== role;
 
   return (
-    // ≥1100px the reading column shifts to make room for the source panel;
-    // below that the panel overlays (with a backdrop)
+    // ≥1100px the reading column moves left only by the width the fixed source panel
+    // would otherwise cover (globals.css .reading-column); on a wide screen the panel
+    // sits beside it and nothing moves. Below 1100px the panel overlays with a backdrop.
     <div
-      className={`flex min-h-[calc(100vh-120px)] flex-col transition-[margin] duration-200 motion-reduce:transition-none ${
-        active ? "min-[1100px]:mr-[400px]" : ""
-      }`}
+      data-source-open={active ? "true" : undefined}
+      className="reading-column flex min-h-[calc(100vh-120px)] flex-col transition-[margin] duration-200 motion-reduce:transition-none"
     >
       <div ref={liveRef} aria-live="polite" className="visually-hidden" />
 

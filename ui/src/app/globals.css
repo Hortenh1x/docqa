@@ -103,6 +103,21 @@ body {
   background: rgb(34 32 27 / 0.2);
 }
 
+/* The source panel is fixed to the right edge. The reading column (centred, 760px) moves
+   left only by the width the panel would cover, never past its own free margin, and
+   shrinks only when even that is not enough — on a wide screen nothing moves at all. */
+@media (min-width: 1100px) {
+  .reading-column[data-source-open="true"] {
+    --column: 760px;
+    --panel: 400px;
+    --gap: 24px; /* the scrollbar sits inside 100vw */
+    --panel-overlap: max(0px, calc(var(--column) / 2 + var(--gap) + var(--panel) - 50vw));
+    --free-margin: max(0px, calc(50vw - var(--column) / 2));
+    margin-left: calc(-1 * min(var(--panel-overlap), var(--free-margin)));
+    margin-right: var(--panel-overlap);
+  }
+}
+
 @media (prefers-contrast: more) {
   :root {
     --color-control: #4d493f;

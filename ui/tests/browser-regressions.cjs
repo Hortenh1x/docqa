@@ -331,9 +331,18 @@ test('the source panel shows the exact quote and the reader opens on the highlig
     assert.equal(await page.getByRole('listitem', { name: 'Source 2: tenant-A.md, pages 1–1', exact: true }).count(), 0);
     await page.getByRole('button', { name: '1 more passage was read but not cited', exact: true }).click();
     await page.getByRole('listitem', { name: 'Source 2: tenant-A.md, pages 1–1', exact: true }).waitFor();
+    const column = page.locator('.reading-column');
+    const before = await column.boundingBox();
     await page.getByRole('button', { name: 'Source 1: tenant-A.md, pages 1–1', exact: true }).click();
     const dialog = page.getByRole('dialog');
     await dialog.getByText('The words behind the claim', { exact: true }).waitFor();
+    // the column moves aside for the fixed panel without shrinking, and only as far as needed
+    await page.waitForTimeout(300);
+    const after = await column.boundingBox();
+    const panel = await dialog.boundingBox();
+    assert.equal(Math.round(after.width), Math.round(before.width), 'The reading column keeps its width');
+    assert(after.x + after.width <= panel.x, 'The reading column does not sit under the panel');
+    assert(after.x < before.x && before.x - after.x < 200, 'The column shifts left by roughly the overlap only');
     assert.equal(await dialog.locator('blockquote mark').innerText(), 'Tenant A private passage');
     await dialog.getByText('Show the passage in context', { exact: true }).click();
     await dialog.getByText('did not use', { exact: false }).waitFor();
