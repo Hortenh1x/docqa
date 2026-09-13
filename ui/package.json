@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit --incremental false",
     "test:browser": "node tests/browser-regressions.cjs",
     "lint": "next lint",
-    "test:accounts": "node tests/account-regressions.cjs"
+    "test:accounts": "node tests/account-regressions.cjs",
+    "test:design": "node tests/design-regressions.cjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.0",

@@ -108,7 +108,7 @@ export function TopBar() {
   return (
     // one row from the small breakpoint up; below it the two selects drop to their own
     // full-width row so nothing runs off a phone screen
-    <header className="sticky top-0 z-10 border-b border-hairline bg-paper/95 backdrop-blur-sm">
+    <header className="app-header sticky top-0 z-10 border-b border-hairline bg-paper/95 backdrop-blur-sm">
       <div className="mx-auto flex w-full max-w-[1160px] flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5">
         <Link href="/" className="font-display text-lg tracking-tight">
           DocQA

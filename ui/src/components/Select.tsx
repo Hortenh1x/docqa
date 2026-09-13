@@ -17,7 +17,7 @@ export function Select({
     <span className={`relative block ${className}`}>
       <select
         {...rest}
-        className={`w-full appearance-none truncate rounded-[6px] border border-hairline bg-sheet py-1 pl-2 pr-7 text-sm text-ink ${selectClassName}`}
+        className={`w-full appearance-none truncate rounded-[6px] border border-control bg-sheet py-1 pl-2 pr-7 text-sm text-ink ${selectClassName}`}
       >
         {children}
       </select>

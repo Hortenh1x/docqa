@@ -1,0 +1,17 @@
+
+> docqa-ui@0.1.0 test:design
+> node tests/design-regressions.cjs
+
+PASS desktop source allows keyboard access to the background and restores focus
+PASS mobile source blocks background focus and adapts modality across breakpoints
+FAIL copy citation reports success and resets when the source is reopened
+AssertionError [ERR_ASSERTION]: Clipboard completion must preserve keyboard focus
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:62:5)
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at process.processImmediate (node:internal/timers:452:9)
+    at process.callbackTrampoline (node:internal/async_hooks:130:17)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:136:13
+PASS clipboard denial offers a selectable citation without an unhandled error
+PASS password confirmation validates after blur, clears when corrected, and blocks submission
+PASS mobile document actions are visible without horizontal scrolling
+{"suite":"design","total":6,"failed":1}

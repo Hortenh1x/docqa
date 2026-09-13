@@ -335,11 +335,12 @@ for (const width of [390, 1280]) {
           await dialog.waitFor();
           await checkFocus(dialog.getByRole('button', { name: 'Close', exact: true }));
           await page.keyboard.press('Shift+Tab');
-          await checkFocus(dialog.getByRole('button', { name: 'Copy citation', exact: true }));
+          if (width < 1100) await checkFocus(dialog.getByRole('button', { name: 'Copy citation', exact: true }));
+          else await checkFocus(page.getByLabel('Your question', { exact: true }));
           await page.keyboard.press('Tab');
           if (dismiss === 'Escape') await page.keyboard.press('Escape');
           else if (dismiss === 'close') await dialog.getByRole('button', { name: 'Close', exact: true }).click();
-          else await page.getByRole('button', { name: 'Close source panel', exact: true }).click({ position: { x: 5, y: 5 } });
+          else await page.mouse.click(5, 5); // Native dialog backdrop makes the page inert.
           await dialog.waitFor({ state: 'detached' });
           await checkFocus(trigger);
         }

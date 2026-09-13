@@ -282,6 +282,7 @@ ui/src/lib/format.ts
 ui/tests/README.md
 ui/tests/about-regressions.cjs
 ui/tests/account-regressions.cjs
+ui/tests/design-regressions.cjs
 ui/tests/browser-regressions.cjs
 ui/tests/source-release.test.cjs
 ui/tsconfig.json

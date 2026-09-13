@@ -6,8 +6,8 @@ import { ACCOUNTS_ENABLED, api, errorMessage } from "@/lib/api/client";
 import type { AccountSession } from "@/lib/api/types";
 import { useAccount } from "./context";
 
-const fields = "mt-1 block w-full rounded-[6px] border border-hairline bg-sheet px-3 py-2 text-base";
-const button = "rounded-[6px] bg-stamp px-4 py-2 text-sm text-white disabled:opacity-40";
+const fields = "mt-1 block min-h-11 w-full rounded-[6px] border border-control bg-sheet px-3 py-2 text-base";
+const button = "min-h-11 rounded-[6px] bg-stamp px-4 py-2 text-sm text-white enabled:active:bg-[#173ea6] disabled:opacity-40";
 const links = "text-sm text-stamp underline underline-offset-2";
 const headings: Record<string, string> = { login: "Sign in", register: "Create account", "forgot-password": "Recover your account", resend: "Resend verification email", verify: "Choose your password", reset: "Reset your password" };
 const passwordPolicy = "Use at least 8 characters, including a letter and a number.";
@@ -23,6 +23,7 @@ export function AccountScreen({ action = "login" }: { action?: string }) {
   const [email, setEmail] = useState(session?.user?.email ?? "");
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
+  const [confirmationTouched, setConfirmationTouched] = useState(false);
   const [busy, setBusy] = useState(false);
   const [googleBusy, setGoogleBusy] = useState(false);
   const [googleError, setGoogleError] = useState<string | null>(null);
@@ -80,6 +81,8 @@ export function AccountScreen({ action = "login" }: { action?: string }) {
   if (!headings[action]) return <p className="py-12">Account page not found.</p>;
   const mailAction = ["register", "forgot-password", "resend"].includes(action);
   const completed = message || (proof && proofReady && !hasToken && completedProof === action);
+  const mismatch = createsPassword && confirmationTouched && confirmation.length > 0 && password !== confirmation;
+  const visibleError = mismatch ? "Passwords do not match." : error;
 
   return (
     <section className="mx-auto flex max-w-md flex-col gap-5 py-10">
@@ -99,6 +102,7 @@ export function AccountScreen({ action = "login" }: { action?: string }) {
             setError(passwordPolicy); return;
           }
           if (createsPassword && password !== confirmation) {
+            setConfirmationTouched(true);
             setError("Passwords do not match."); return;
           }
           setBusy(true); setError(null);
@@ -108,27 +112,29 @@ export function AccountScreen({ action = "login" }: { action?: string }) {
             const result = await api<AccountSession & { message: string }>(`/v1/auth/${action}`, { method: "POST", body: JSON.stringify(payload) });
             if (proof && token.current !== submittedToken) return;
             setPassword(""); setConfirmation("");
+            setConfirmationTouched(false);
             if (action === "login") signedIn(result);
             else if (proof) { token.current = null; setHasToken(false); await proofCompleted(action); }
             else setMessage(result.message);
           } catch (err) {
             if (proof && token.current !== submittedToken) return;
             setPassword(""); setConfirmation("");
+            setConfirmationTouched(false);
             if (!(err instanceof DOMException && err.name === "AbortError")) setError(errorMessage(err));
           } finally { setBusy(false); }
         }}>
           {!proof && <label className="text-sm">Email<input className={fields} name="email" type="email" autoComplete="email" required maxLength={254} value={email} onChange={e => setEmail(e.target.value)} /></label>}
-          {needsPassword && <label className="text-sm">{proof ? "New password" : "Password"}<input className={fields} name="password" type="password" autoComplete={action === "login" ? "current-password" : "new-password"} required minLength={action === "login" ? 1 : 8} value={password} onChange={e => setPassword(e.target.value)} aria-describedby={action === "login" ? undefined : "password-policy"} /></label>}
+          {needsPassword && <label className="text-sm">{proof ? "New password" : "Password"}<input className={fields} name="password" type="password" autoComplete={action === "login" ? "current-password" : "new-password"} required minLength={action === "login" ? 1 : 8} value={password} onChange={e => { setPassword(e.target.value); setError(null); }} aria-describedby={action === "login" ? undefined : "password-policy"} /></label>}
           {createsPassword && <p id="password-policy" className="text-xs text-ink-soft">{passwordPolicy}</p>}
-          {createsPassword && <label className="text-sm">Confirm password<input className={fields} name="password_confirmation" type="password" autoComplete="new-password" required value={confirmation} onChange={e => setConfirmation(e.target.value)} aria-invalid={error === "Passwords do not match." || undefined} aria-describedby={error ? "password-error" : undefined} /></label>}
-          {error && <p id="password-error" role="alert" className="text-sm text-error">{error}</p>}
+          {createsPassword && <label className="text-sm">Confirm password<input className={fields} name="password_confirmation" type="password" autoComplete="new-password" required value={confirmation} onChange={e => { setConfirmation(e.target.value); setError(null); if (!e.target.value) setConfirmationTouched(false); }} onBlur={() => { if (confirmation) setConfirmationTouched(true); }} aria-invalid={visibleError === "Passwords do not match." || undefined} aria-describedby={visibleError ? "password-error" : undefined} /></label>}
+          {visibleError && <p id="password-error" role="alert" className="text-sm text-error">{visibleError}</p>}
           <button type="submit" disabled={busy || googleBusy} className={button}>{busy ? "Please wait…" : ({ login: "Sign in", register: "Create account", "forgot-password": "Send recovery email", resend: "Send verification email", verify: "Verify email and set password", reset: "Reset password" }[action])}</button>
         </form>
       )}
       {offersGoogle && (!session?.user || session.user.email_verified) && <button
         type="button"
         disabled={busy || googleBusy}
-        className="flex min-h-10 items-center justify-center gap-2.5 rounded-[6px] border border-[#747775] bg-white px-3 py-2 text-sm font-medium text-[#1f1f1f] hover:bg-neutral-50 disabled:opacity-40"
+        className="flex min-h-11 items-center justify-center gap-2.5 rounded-[6px] border border-[#747775] bg-white px-3 py-2 text-sm font-medium text-[#1f1f1f] hover:bg-neutral-50 enabled:active:bg-neutral-200 disabled:opacity-40"
         onClick={async () => {
           if (busy || googleBusy) return;
           setGoogleBusy(true); setGoogleError(null);

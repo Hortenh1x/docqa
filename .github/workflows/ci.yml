@@ -74,6 +74,7 @@ jobs:
           curl --fail --silent http://127.0.0.1:18124 >/dev/null
           if [[ "$DOCQA_ACCOUNTS" == "true" ]]; then
             npm --prefix ui run test:accounts
+            npm --prefix ui run test:design
           else
             npm --prefix ui run test:browser
           fi

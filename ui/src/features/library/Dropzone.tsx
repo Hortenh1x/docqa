@@ -65,7 +65,7 @@ export function Dropzone({
             type="button"
             disabled={busy || disabled}
             onClick={() => inputRef.current?.click()}
-            className="mt-3 rounded-[6px] border border-hairline bg-paper px-3.5 py-1.5 text-sm disabled:opacity-40"
+            className="mt-3 min-h-11 rounded-[6px] border border-hairline bg-paper px-3.5 py-2 text-sm enabled:active:bg-stamp/10 disabled:opacity-40"
           >
             Choose a file
           </button>

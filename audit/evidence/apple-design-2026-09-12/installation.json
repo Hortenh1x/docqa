@@ -1,0 +1,10 @@
+{
+  "installed_path": "/home/horten/.codex/skills/apple-design/SKILL.md",
+  "source": "https://github.com/emilkowalski/skills/tree/d23d7f88a2e21c9e4b1418c7abe420f5c1052ba7/skills/apple-design",
+  "commit": "d23d7f88a2e21c9e4b1418c7abe420f5c1052ba7",
+  "sha256": "11840b24a11d7f94f39c6aaab074750ae4e4de4ef54ee4b1dd97e16ebd485e61",
+  "only_file": "SKILL.md",
+  "read_in_full": true,
+  "project_head": "9a53e499fcb90d51d4443e06189f2e464da636bc",
+  "branch": "codex/apple-design-audit"
+}

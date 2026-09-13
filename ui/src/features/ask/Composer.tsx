@@ -55,7 +55,7 @@ export function Composer({
         e.preventDefault();
         submit();
       }}
-      className="flex items-end gap-2 rounded-[10px] border border-hairline bg-sheet p-2 shadow-card"
+      className="flex items-end gap-2 rounded-[10px] border border-control bg-sheet p-2 shadow-card"
     >
       <textarea
         ref={ref}

@@ -1,0 +1,282 @@
+{
+  "pages": [
+    {
+      "path": "/",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/library",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/usage",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/account",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/account/register",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/about",
+      "width": 1440,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/",
+      "width": 390,
+      "documentWidth": 390
+    },
+    {
+      "path": "/library",
+      "width": 390,
+      "documentWidth": 390
+    },
+    {
+      "path": "/usage",
+      "width": 390,
+      "documentWidth": 390
+    },
+    {
+      "path": "/account",
+      "width": 390,
+      "documentWidth": 390
+    },
+    {
+      "path": "/account/register",
+      "width": 390,
+      "documentWidth": 390
+    },
+    {
+      "path": "/about",
+      "width": 390,
+      "documentWidth": 390
+    },
+    {
+      "path": "/",
+      "width": 320,
+      "documentWidth": 320
+    },
+    {
+      "path": "/library",
+      "width": 320,
+      "documentWidth": 320
+    },
+    {
+      "path": "/usage",
+      "width": 320,
+      "documentWidth": 320
+    },
+    {
+      "path": "/account",
+      "width": 320,
+      "documentWidth": 320
+    },
+    {
+      "path": "/account/register",
+      "width": 320,
+      "documentWidth": 320
+    },
+    {
+      "path": "/about",
+      "width": 320,
+      "documentWidth": 320
+    }
+  ],
+  "preferences": [
+    {
+      "features": [],
+      "field": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(133, 129, 116)",
+        "outline": "2px",
+        "backdrop": "none",
+        "width": 288,
+        "height": 44
+      },
+      "header": {
+        "background": "oklab(0.970297 0.000209391 0.00698501 / 0.95)",
+        "border": "rgba(34, 32, 27, 0.1)",
+        "outline": "3px",
+        "backdrop": "blur(8px)",
+        "width": 320,
+        "height": 214
+      },
+      "contrast": 3.5761538881381947
+    },
+    {
+      "features": [
+        {
+          "name": "prefers-contrast",
+          "value": "more"
+        }
+      ],
+      "field": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(77, 73, 63)",
+        "outline": "3px",
+        "backdrop": "none",
+        "width": 288,
+        "height": 44
+      },
+      "header": {
+        "background": "rgb(247, 245, 240)",
+        "border": "rgb(133, 129, 116)",
+        "outline": "3px",
+        "backdrop": "none",
+        "width": 320,
+        "height": 214
+      },
+      "contrast": 8.23554179889844
+    },
+    {
+      "features": [
+        {
+          "name": "prefers-reduced-transparency",
+          "value": "reduce"
+        }
+      ],
+      "field": {
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(133, 129, 116)",
+        "outline": "2px",
+        "backdrop": "none",
+        "width": 288,
+        "height": 44
+      },
+      "header": {
+        "background": "rgb(247, 245, 240)",
+        "border": "rgba(34, 32, 27, 0.1)",
+        "outline": "3px",
+        "backdrop": "none",
+        "width": 320,
+        "height": 214
+      },
+      "contrast": 3.5761538881381947
+    }
+  ],
+  "targets": [
+    {
+      "name": "Close source",
+      "width": 63.578125,
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgba(34, 32, 27, 0.1)",
+      "outline": "3px",
+      "backdrop": "none",
+      "height": 44
+    },
+    {
+      "name": "Close source",
+      "width": 63.578125,
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgba(34, 32, 27, 0.1)",
+      "outline": "3px",
+      "backdrop": "none",
+      "height": 44
+    },
+    {
+      "name": "Choose a file",
+      "width": 116.71875,
+      "background": "rgb(247, 245, 240)",
+      "border": "rgba(34, 32, 27, 0.1)",
+      "outline": "3px",
+      "backdrop": "none",
+      "height": 44
+    },
+    {
+      "name": "Delete Private salary.md",
+      "width": 60.375,
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgb(110, 106, 95)",
+      "outline": "3px",
+      "backdrop": "none",
+      "height": 44
+    },
+    {
+      "name": "Choose a file",
+      "width": 116.71875,
+      "background": "rgb(247, 245, 240)",
+      "border": "rgba(34, 32, 27, 0.1)",
+      "outline": "3px",
+      "backdrop": "none",
+      "height": 44
+    },
+    {
+      "name": "Delete Private salary.md",
+      "width": 60.375,
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgb(110, 106, 95)",
+      "outline": "3px",
+      "backdrop": "none",
+      "height": 44
+    },
+    {
+      "name": "Choose a file",
+      "width": 116.71875,
+      "background": "rgb(247, 245, 240)",
+      "border": "rgba(34, 32, 27, 0.1)",
+      "outline": "3px",
+      "backdrop": "none",
+      "height": 44
+    },
+    {
+      "name": "Delete Private salary.md",
+      "width": 60.375,
+      "background": "rgba(0, 0, 0, 0)",
+      "border": "rgb(110, 106, 95)",
+      "outline": "3px",
+      "backdrop": "none",
+      "height": 44
+    }
+  ],
+  "pressed": [
+    {
+      "name": "Sign in",
+      "before": {
+        "background": "rgb(29, 78, 208)",
+        "border": "rgb(255, 255, 255)",
+        "outline": "3px",
+        "backdrop": "none",
+        "width": 288,
+        "height": 44
+      },
+      "during": {
+        "background": "rgb(23, 62, 166)",
+        "border": "rgb(255, 255, 255)",
+        "outline": "3px",
+        "backdrop": "none",
+        "width": 288,
+        "height": 44
+      }
+    },
+    {
+      "name": "Continue with Google",
+      "before": {
+        "background": "oklch(0.985 0 0)",
+        "border": "rgb(116, 119, 117)",
+        "outline": "3px",
+        "backdrop": "none",
+        "width": 288,
+        "height": 44
+      },
+      "during": {
+        "background": "oklch(0.922 0 0)",
+        "border": "rgb(116, 119, 117)",
+        "outline": "3px",
+        "backdrop": "none",
+        "width": 288,
+        "height": 44
+      }
+    }
+  ],
+  "reducedMotionDuration": "0s",
+  "status": "PASS"
+}

@@ -1,0 +1,11 @@
+
+> docqa-ui@0.1.0 test:design
+> node tests/design-regressions.cjs
+
+PASS desktop source allows keyboard access to the background and restores focus
+PASS mobile source blocks background focus and adapts modality across breakpoints
+PASS copy citation reports success and resets when the source is reopened
+PASS clipboard denial offers a selectable citation without an unhandled error
+PASS password confirmation validates after blur, clears when corrected, and blocks submission
+PASS mobile document actions are visible without horizontal scrolling
+{"suite":"design","total":6,"failed":0}

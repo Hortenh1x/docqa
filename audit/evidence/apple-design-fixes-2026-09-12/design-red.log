@@ -1,0 +1,47 @@
+FAIL desktop source allows keyboard access to the background and restores focus
+AssertionError [ERR_ASSERTION]: Expected "actual" to be strictly unequal to:
+
+'true'
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:14:12)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:132:13
+FAIL mobile source blocks background focus and adapts modality across breakpoints
+AssertionError [ERR_ASSERTION]: Background must be inert
+
+true !== false
+
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:33:12)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:132:13
+FAIL copy citation reports success and resets when the source is reopened
+locator.waitFor: Timeout 7000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('status').filter({ hasText: 'Citation copied.' }) to be visible[22m
+
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:58:78)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:132:13
+FAIL clipboard denial offers a selectable citation without an unhandled error
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   'Clipboard denied'
++ ]
+- []
+
+    at Object.close (/home/horten/VS Code Projects/docqa/ui/tests/account-regressions.cjs:86:136)
+    at async Object.run (/home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:76:15)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:132:13
+FAIL password confirmation validates after blur, clears when corrected, and blocks submission
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+null !== 'true'
+
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:88:12)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:132:13
+FAIL mobile document actions are visible without horizontal scrolling
+AssertionError [ERR_ASSERTION]: Delete must be inside the viewport before horizontal scrolling
+    at Object.run (/home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:112:7)
+    at runNextTicks (node:internal/process/task_queues:64:5)
+    at process.processImmediate (node:internal/timers:452:9)
+    at process.callbackTrampoline (node:internal/async_hooks:130:17)
+    at async /home/horten/VS Code Projects/docqa/ui/tests/design-regressions.cjs:132:13
+{"suite":"design","total":6,"failed":6}

@@ -1,10 +1,13 @@
 # DocQA: эксплуатация после выпуска 2026-09-12
 
 Сайт https://docqa.net, API https://api.docqa.net. Рабочий выпуск —
-`/opt/docqa-releases/prod-20260912-storage-ui`, schema0012. Код опубликован в
+`/opt/docqa-releases/prod-20260912-apple-design-v2`, schema0012. Предыдущий код опубликован в
 [ветке codex/production-readiness-audit](https://github.com/Hortenh1x/docqa/tree/codex/production-readiness-audit),
 первый коммит реализации `463607a`. Исходники точно этой сборки доступны через
-About → Source; SHA-256 архива `c25bc091c55a2fc5a86febade489f71c7e50d45a948ae37570dd13d3446df466`.
+About → Source; SHA-256 архива `1d284dac465cc8877aae85f957ba242b4f75c39bf0123244100e7fa693db9636`.
+
+Исправления Apple-design опубликованы 12 сентября в14:28UTC, без нового коммита/push.
+Ветка локальных изменений `codex/apple-design-audit`; [проверки и состав выпуска](apple-design-fixes-2026-09-12.md).
 
 Последнее обновление V5: 50 MB оригиналов на личный аккаунт, без лимита количества
 файлов; удаление освобождает место, pending/failed тоже считаются. У всех 6 публичных
@@ -45,7 +48,7 @@ verify/reset/private-upload acceptance не выводится из этого �
 На основном VPS:
 
 - Указатель актуального release: `/home/ubuntu/.config/docqa/current-release`.
-- Сейчас: `/opt/docqa-releases/prod-20260912-storage-ui`.
+- Сейчас: `/opt/docqa-releases/prod-20260912-apple-design-v2`.
 - Приватные значения: `/home/ubuntu/.config/docqa/runtime.env` (600). Не публиковать.
 - Project `docqa`; overlays **prod → shared-host → synchronous → source**, source последним.
 - Operational scripts/logs/status: `/home/ubuntu/.local/share/docqa-ops/`.

@@ -11,6 +11,7 @@
   --color-pending: #926216;
   --color-error: #b3362b;
   --color-hairline: rgb(34 32 27 / 0.1);
+  --color-control: #858174;
 
   --font-display: var(--font-fraunces), Georgia, serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
@@ -75,6 +76,48 @@ body {
   .caret::after,
   .status-pulse {
     animation: none;
+  }
+  *, *::before, *::after {
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:where(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-stamp);
+  outline-offset: 3px;
+}
+
+:where(input, textarea, select)[aria-invalid="true"] {
+  border-color: var(--color-error);
+  outline-color: var(--color-error);
+}
+
+:where(input, textarea, select):disabled {
+  background-color: var(--color-paper);
+  color: var(--color-ink-soft);
+  cursor: not-allowed;
+}
+
+.source-dialog::backdrop {
+  background: rgb(34 32 27 / 0.2);
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-control: #4d493f;
+    --color-ink-soft: #4d493f;
+    --color-hairline: #858174;
+  }
+  :where(button, a, input, select, textarea):focus-visible {
+    outline-width: 3px;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .app-header {
+    background: var(--color-paper);
+    backdrop-filter: none;
   }
 }
 

@@ -1,0 +1,3317 @@
+{
+  "timestamp": "2026-09-12T13:49:02.354Z",
+  "live": [
+    {
+      "url": "/",
+      "width": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "headerHeight": 84,
+      "mainTop": 84,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 156,
+          "y": 11
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 833.640625,
+          "y": 11
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 882.375,
+          "y": 11
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 952.75,
+          "y": 11
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 256,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 231.78125,
+          "y": 10
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 240,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 577.640625,
+          "y": 10
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 1219.5625,
+          "y": 10
+        },
+        {
+          "name": "What inputs feed into a performance review cycle?",
+          "tag": "BUTTON",
+          "width": 365.46875,
+          "height": 34,
+          "fontSize": "14px",
+          "x": 537.265625,
+          "y": 366
+        },
+        {
+          "name": "Where must the handover be written when an employee leaves Kranic",
+          "tag": "BUTTON",
+          "width": 507.78125,
+          "height": 34,
+          "fontSize": "14px",
+          "x": 466.109375,
+          "y": 408
+        },
+        {
+          "name": "What guidance does EXEC-001.pdf provide? (requires the Leadership role)",
+          "tag": "BUTTON",
+          "width": 411.5625,
+          "height": 34,
+          "fontSize": "14px",
+          "x": 514.21875,
+          "y": 450
+        },
+        {
+          "name": "Your question",
+          "tag": "TEXTAREA",
+          "width": 648.75,
+          "height": 31.25,
+          "fontSize": "15px",
+          "x": 365,
+          "y": 803.75
+        },
+        {
+          "name": "Ask",
+          "tag": "BUTTON",
+          "width": 53.25,
+          "height": 32,
+          "fontSize": "14px",
+          "x": 1021.75,
+          "y": 803
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 356,
+          "y": 1078
+        }
+      ],
+      "headings": [
+        {
+          "text": "Ask the documents.",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "36px",
+          "weight": "600",
+          "leading": "40px",
+          "tracking": "-0.9px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/library",
+      "width": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "headerHeight": 84,
+      "mainTop": 84,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 156,
+          "y": 11
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 833.640625,
+          "y": 11
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 882.375,
+          "y": 11
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 952.75,
+          "y": 11
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 256,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 231.78125,
+          "y": 10
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 240,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 577.640625,
+          "y": 10
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 1219.5625,
+          "y": 10
+        },
+        {
+          "name": "Sign in to upload private documents",
+          "tag": "A",
+          "width": 238.046875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 377,
+          "y": 256
+        },
+        {
+          "name": "POL-007.docx",
+          "tag": "BUTTON",
+          "width": 86.40625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 465
+        },
+        {
+          "name": "POL-010.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 752
+        },
+        {
+          "name": "POL-009.md",
+          "tag": "BUTTON",
+          "width": 72.015625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 793
+        },
+        {
+          "name": "POL-008.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 834
+        },
+        {
+          "name": "POL-005.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 875
+        },
+        {
+          "name": "POL-004.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 916
+        },
+        {
+          "name": "POL-003.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 957
+        },
+        {
+          "name": "POL-002.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 998
+        },
+        {
+          "name": "POL-001-v2.pdf",
+          "tag": "BUTTON",
+          "width": 100.8125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 1039
+        },
+        {
+          "name": "POL-001-v1.pdf",
+          "tag": "BUTTON",
+          "width": 100.8125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 1080
+        },
+        {
+          "name": "OPS-001.md",
+          "tag": "BUTTON",
+          "width": 72.015625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 1121
+        },
+        {
+          "name": "HR-001.pdf",
+          "tag": "BUTTON",
+          "width": 72.015625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 373,
+          "y": 1162
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 356,
+          "y": 1437
+        }
+      ],
+      "headings": [
+        {
+          "text": "Company Policies (EN)",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "24px",
+          "weight": "600",
+          "leading": "32px",
+          "tracking": "-0.6px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/usage",
+      "width": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "headerHeight": 84,
+      "mainTop": 84,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 156,
+          "y": 11
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 833.640625,
+          "y": 11
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 882.375,
+          "y": 11
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 952.75,
+          "y": 11
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 256,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 231.78125,
+          "y": 10
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 240,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 577.640625,
+          "y": 10
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 1219.5625,
+          "y": 10
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 356,
+          "y": 1035.046875
+        }
+      ],
+      "headings": [
+        {
+          "text": "Usage",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "24px",
+          "weight": "600",
+          "leading": "32px",
+          "tracking": "-0.6px",
+          "optical": "auto"
+        },
+        {
+          "text": "Daily budget",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        },
+        {
+          "text": "Queries · last 30 days",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/account",
+      "width": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "headerHeight": 84,
+      "mainTop": 84,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 156,
+          "y": 11
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 833.640625,
+          "y": 11
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 882.375,
+          "y": 11
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 952.75,
+          "y": 11
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 256,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 231.78125,
+          "y": 10
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 240,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 577.640625,
+          "y": 10
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 1219.5625,
+          "y": 10
+        },
+        {
+          "name": "email",
+          "tag": "INPUT",
+          "width": 448,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 496,
+          "y": 264
+        },
+        {
+          "name": "password",
+          "tag": "INPUT",
+          "width": 448,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 496,
+          "y": 346
+        },
+        {
+          "name": "Sign in",
+          "tag": "BUTTON",
+          "width": 448,
+          "height": 36,
+          "fontSize": "14px",
+          "x": 496,
+          "y": 404
+        },
+        {
+          "name": "Continue with Google",
+          "tag": "BUTTON",
+          "width": 448,
+          "height": 40,
+          "fontSize": "14px",
+          "x": 496,
+          "y": 460
+        },
+        {
+          "name": "Create account",
+          "tag": "A",
+          "width": 101.359375,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 496,
+          "y": 520
+        },
+        {
+          "name": "Forgot password?",
+          "tag": "A",
+          "width": 118.359375,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 617.359375,
+          "y": 520
+        },
+        {
+          "name": "Continue to documents",
+          "tag": "A",
+          "width": 154.0625,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 755.71875,
+          "y": 520
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 356,
+          "y": 794
+        }
+      ],
+      "headings": [
+        {
+          "text": "Sign in",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "30px",
+          "weight": "600",
+          "leading": "36px",
+          "tracking": "-0.75px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/account/register",
+      "width": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "headerHeight": 84,
+      "mainTop": 84,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 156,
+          "y": 11
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 833.640625,
+          "y": 11
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 882.375,
+          "y": 11
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 952.75,
+          "y": 11
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 256,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 231.78125,
+          "y": 10
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 240,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 577.640625,
+          "y": 10
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 1219.5625,
+          "y": 10
+        },
+        {
+          "name": "email",
+          "tag": "INPUT",
+          "width": 448,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 496,
+          "y": 264
+        },
+        {
+          "name": "password",
+          "tag": "INPUT",
+          "width": 448,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 496,
+          "y": 346
+        },
+        {
+          "name": "password_confirmation",
+          "tag": "INPUT",
+          "width": 448,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 496,
+          "y": 460
+        },
+        {
+          "name": "Create account",
+          "tag": "BUTTON",
+          "width": 448,
+          "height": 36,
+          "fontSize": "14px",
+          "x": 496,
+          "y": 518
+        },
+        {
+          "name": "Continue with Google",
+          "tag": "BUTTON",
+          "width": 448,
+          "height": 40,
+          "fontSize": "14px",
+          "x": 496,
+          "y": 574
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 44.84375,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 496,
+          "y": 634
+        },
+        {
+          "name": "Continue to documents",
+          "tag": "A",
+          "width": 154.0625,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 560.84375,
+          "y": 634
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 356,
+          "y": 908
+        }
+      ],
+      "headings": [
+        {
+          "text": "Create account",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "30px",
+          "weight": "600",
+          "leading": "36px",
+          "tracking": "-0.75px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/about",
+      "width": 1440,
+      "height": 900,
+      "documentWidth": 1440,
+      "headerHeight": 53,
+      "mainTop": 53,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 356,
+          "y": 12
+        },
+        {
+          "name": "Back to Ask",
+          "tag": "A",
+          "width": 98.15625,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 985.84375,
+          "y": 12
+        },
+        {
+          "name": "dmytro.bolibok@gmail.com",
+          "tag": "A",
+          "width": 180.859375,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 438.6875,
+          "y": 352.5
+        },
+        {
+          "name": "Download the corresponding source for this build",
+          "tag": "A",
+          "width": 327.046875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 356,
+          "y": 555.5
+        },
+        {
+          "name": "Read the GNU AGPL v3 license",
+          "tag": "A",
+          "width": 205.421875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 356,
+          "y": 587.5
+        },
+        {
+          "name": "DocQA repository on GitHub",
+          "tag": "A",
+          "width": 187.6875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 385.421875,
+          "y": 671.5
+        },
+        {
+          "name": "Fraunces",
+          "tag": "A",
+          "width": 61.09375,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 927,
+          "y": 735.5
+        },
+        {
+          "name": "Inter",
+          "tag": "A",
+          "width": 29.921875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 356,
+          "y": 759.5
+        },
+        {
+          "name": "JetBrains Mono",
+          "tag": "A",
+          "width": 103.734375,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 418.515625,
+          "y": 759.5
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 356,
+          "y": 889.5
+        }
+      ],
+      "headings": [
+        {
+          "text": "About DocQA",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "30px",
+          "weight": "600",
+          "leading": "36px",
+          "tracking": "-0.75px",
+          "optical": "auto"
+        },
+        {
+          "text": "Operator & contact",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        },
+        {
+          "text": "License & source code",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "headerHeight": 194,
+      "mainTop": 194,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 10
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 192.46875,
+          "y": 10
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 241.203125,
+          "y": 10
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 311.578125,
+          "y": 10
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 175,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 46
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 175,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 199,
+          "y": 46
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 84
+        },
+        {
+          "name": "What inputs feed into a performance review cycle?",
+          "tag": "BUTTON",
+          "width": 358,
+          "height": 54,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 418
+        },
+        {
+          "name": "Where must the handover be written when an employee leaves Kranic",
+          "tag": "BUTTON",
+          "width": 358,
+          "height": 54,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 480
+        },
+        {
+          "name": "What guidance does EXEC-001.pdf provide? (requires the Leadership role)",
+          "tag": "BUTTON",
+          "width": 358,
+          "height": 54,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 542
+        },
+        {
+          "name": "Your question",
+          "tag": "TEXTAREA",
+          "width": 278.75,
+          "height": 31.25,
+          "fontSize": "15px",
+          "x": 25,
+          "y": 783.75
+        },
+        {
+          "name": "Ask",
+          "tag": "BUTTON",
+          "width": 53.25,
+          "height": 32,
+          "fontSize": "14px",
+          "x": 311.75,
+          "y": 783
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 1172
+        }
+      ],
+      "headings": [
+        {
+          "text": "Ask the documents.",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "36px",
+          "weight": "600",
+          "leading": "40px",
+          "tracking": "-0.9px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/library",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "headerHeight": 194,
+      "mainTop": 194,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 10
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 192.46875,
+          "y": 10
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 241.203125,
+          "y": 10
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 311.578125,
+          "y": 10
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 175,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 46
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 175,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 199,
+          "y": 46
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 84
+        },
+        {
+          "name": "Sign in to upload private documents",
+          "tag": "A",
+          "width": 238.046875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 37,
+          "y": 430
+        },
+        {
+          "name": "POL-007.docx",
+          "tag": "BUTTON",
+          "width": 86.40625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 697
+        },
+        {
+          "name": "POL-010.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1180
+        },
+        {
+          "name": "POL-009.md",
+          "tag": "BUTTON",
+          "width": 72.015625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1249
+        },
+        {
+          "name": "POL-008.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1318
+        },
+        {
+          "name": "POL-005.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1387
+        },
+        {
+          "name": "POL-004.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1456
+        },
+        {
+          "name": "POL-003.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1525
+        },
+        {
+          "name": "POL-002.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1594
+        },
+        {
+          "name": "POL-001-v2.pdf",
+          "tag": "BUTTON",
+          "width": 100.8125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1663
+        },
+        {
+          "name": "POL-001-v1.pdf",
+          "tag": "BUTTON",
+          "width": 100.8125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1732
+        },
+        {
+          "name": "OPS-001.md",
+          "tag": "BUTTON",
+          "width": 72.015625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1801
+        },
+        {
+          "name": "HR-001.pdf",
+          "tag": "BUTTON",
+          "width": 72.015625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1870
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 2199
+        }
+      ],
+      "headings": [
+        {
+          "text": "Company Policies (EN)",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "24px",
+          "weight": "600",
+          "leading": "32px",
+          "tracking": "-0.6px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/usage",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "headerHeight": 194,
+      "mainTop": 194,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 10
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 192.46875,
+          "y": 10
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 241.203125,
+          "y": 10
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 311.578125,
+          "y": 10
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 175,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 46
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 175,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 199,
+          "y": 46
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 84
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 1473.046875
+        }
+      ],
+      "headings": [
+        {
+          "text": "Usage",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "24px",
+          "weight": "600",
+          "leading": "32px",
+          "tracking": "-0.6px",
+          "optical": "auto"
+        },
+        {
+          "text": "Daily budget",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        },
+        {
+          "text": "Queries · last 30 days",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/account",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "headerHeight": 194,
+      "mainTop": 194,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 10
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 192.46875,
+          "y": 10
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 241.203125,
+          "y": 10
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 311.578125,
+          "y": 10
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 175,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 46
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 175,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 199,
+          "y": 46
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 84
+        },
+        {
+          "name": "email",
+          "tag": "INPUT",
+          "width": 358,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 16,
+          "y": 374
+        },
+        {
+          "name": "password",
+          "tag": "INPUT",
+          "width": 358,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 16,
+          "y": 456
+        },
+        {
+          "name": "Sign in",
+          "tag": "BUTTON",
+          "width": 358,
+          "height": 36,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 514
+        },
+        {
+          "name": "Continue with Google",
+          "tag": "BUTTON",
+          "width": 358,
+          "height": 40,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 570
+        },
+        {
+          "name": "Create account",
+          "tag": "A",
+          "width": 101.359375,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 630
+        },
+        {
+          "name": "Forgot password?",
+          "tag": "A",
+          "width": 118.359375,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 137.359375,
+          "y": 630
+        },
+        {
+          "name": "Continue to documents",
+          "tag": "A",
+          "width": 154.0625,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 662
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 976
+        }
+      ],
+      "headings": [
+        {
+          "text": "Sign in",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "30px",
+          "weight": "600",
+          "leading": "36px",
+          "tracking": "-0.75px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/account/register",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "headerHeight": 194,
+      "mainTop": 194,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 10
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 192.46875,
+          "y": 10
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 241.203125,
+          "y": 10
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 311.578125,
+          "y": 10
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 175,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 46
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 175,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 199,
+          "y": 46
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 84
+        },
+        {
+          "name": "email",
+          "tag": "INPUT",
+          "width": 358,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 16,
+          "y": 374
+        },
+        {
+          "name": "password",
+          "tag": "INPUT",
+          "width": 358,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 16,
+          "y": 456
+        },
+        {
+          "name": "password_confirmation",
+          "tag": "INPUT",
+          "width": 358,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 16,
+          "y": 570
+        },
+        {
+          "name": "Create account",
+          "tag": "BUTTON",
+          "width": 358,
+          "height": 36,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 628
+        },
+        {
+          "name": "Continue with Google",
+          "tag": "BUTTON",
+          "width": 358,
+          "height": 40,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 684
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 44.84375,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 744
+        },
+        {
+          "name": "Continue to documents",
+          "tag": "A",
+          "width": 154.0625,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 80.84375,
+          "y": 744
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 1058
+        }
+      ],
+      "headings": [
+        {
+          "text": "Create account",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "30px",
+          "weight": "600",
+          "leading": "36px",
+          "tracking": "-0.75px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/about",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "headerHeight": 53,
+      "mainTop": 53,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 12
+        },
+        {
+          "name": "Back to Ask",
+          "tag": "A",
+          "width": 98.15625,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 275.84375,
+          "y": 12
+        },
+        {
+          "name": "dmytro.bolibok@gmail.com",
+          "tag": "A",
+          "width": 180.859375,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 98.6875,
+          "y": 359.75
+        },
+        {
+          "name": "Download the corresponding source for this build",
+          "tag": "A",
+          "width": 327.046875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 610.75
+        },
+        {
+          "name": "Read the GNU AGPL v3 license",
+          "tag": "A",
+          "width": 205.421875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 642.75
+        },
+        {
+          "name": "DocQA repository on GitHub",
+          "tag": "A",
+          "width": 187.6875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 45.421875,
+          "y": 726.75
+        },
+        {
+          "name": "Fraunces",
+          "tag": "A",
+          "width": 61.09375,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 227.953125,
+          "y": 814.75
+        },
+        {
+          "name": "Inter",
+          "tag": "A",
+          "width": 29.921875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 297.03125,
+          "y": 814.75
+        },
+        {
+          "name": "JetBrains Mono",
+          "tag": "A",
+          "width": 103.734375,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 838.75
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 968.75
+        }
+      ],
+      "headings": [
+        {
+          "text": "About DocQA",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "30px",
+          "weight": "600",
+          "leading": "36px",
+          "tracking": "-0.75px",
+          "optical": "auto"
+        },
+        {
+          "text": "Operator & contact",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        },
+        {
+          "text": "License & source code",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "headerHeight": 214,
+      "mainTop": 214,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 10
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 122.46875,
+          "y": 10
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 171.203125,
+          "y": 10
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 241.578125,
+          "y": 10
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 140,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 46
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 140,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 164,
+          "y": 46
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 84
+        },
+        {
+          "name": "What inputs feed into a performance review cycle?",
+          "tag": "BUTTON",
+          "width": 288,
+          "height": 54,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 448
+        },
+        {
+          "name": "Where must the handover be written when an employee leaves Kranic",
+          "tag": "BUTTON",
+          "width": 288,
+          "height": 54,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 510
+        },
+        {
+          "name": "What guidance does EXEC-001.pdf provide? (requires the Leadership role)",
+          "tag": "BUTTON",
+          "width": 288,
+          "height": 54,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 572
+        },
+        {
+          "name": "Your question",
+          "tag": "TEXTAREA",
+          "width": 208.75,
+          "height": 31.25,
+          "fontSize": "15px",
+          "x": 25,
+          "y": 783.75
+        },
+        {
+          "name": "Ask",
+          "tag": "BUTTON",
+          "width": 53.25,
+          "height": 32,
+          "fontSize": "14px",
+          "x": 241.75,
+          "y": 783
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 1212
+        }
+      ],
+      "headings": [
+        {
+          "text": "Ask the documents.",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "36px",
+          "weight": "600",
+          "leading": "40px",
+          "tracking": "-0.9px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/library",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "headerHeight": 214,
+      "mainTop": 214,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 10
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 122.46875,
+          "y": 10
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 171.203125,
+          "y": 10
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 241.578125,
+          "y": 10
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 140,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 46
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 140,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 164,
+          "y": 46
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 84
+        },
+        {
+          "name": "Sign in to upload private documents",
+          "tag": "A",
+          "width": 238.046875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 37,
+          "y": 450
+        },
+        {
+          "name": "POL-007.docx",
+          "tag": "BUTTON",
+          "width": 86.40625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 733
+        },
+        {
+          "name": "POL-010.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1216
+        },
+        {
+          "name": "POL-009.md",
+          "tag": "BUTTON",
+          "width": 72.015625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1285
+        },
+        {
+          "name": "POL-008.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1354
+        },
+        {
+          "name": "POL-005.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1423
+        },
+        {
+          "name": "POL-004.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1492
+        },
+        {
+          "name": "POL-003.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1561
+        },
+        {
+          "name": "POL-002.pdf",
+          "tag": "BUTTON",
+          "width": 79.203125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1630
+        },
+        {
+          "name": "POL-001-v2.pdf",
+          "tag": "BUTTON",
+          "width": 100.8125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1699
+        },
+        {
+          "name": "POL-001-v1.pdf",
+          "tag": "BUTTON",
+          "width": 100.8125,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1768
+        },
+        {
+          "name": "OPS-001.md",
+          "tag": "BUTTON",
+          "width": 72.015625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1837
+        },
+        {
+          "name": "HR-001.pdf",
+          "tag": "BUTTON",
+          "width": 72.015625,
+          "height": 16,
+          "fontSize": "12px",
+          "x": 33,
+          "y": 1906
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 2255
+        }
+      ],
+      "headings": [
+        {
+          "text": "Company Policies (EN)",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "24px",
+          "weight": "600",
+          "leading": "32px",
+          "tracking": "-0.6px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/usage",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "headerHeight": 214,
+      "mainTop": 214,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 10
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 122.46875,
+          "y": 10
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 171.203125,
+          "y": 10
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 241.578125,
+          "y": 10
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 140,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 46
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 140,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 164,
+          "y": 46
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 84
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 1553.046875
+        }
+      ],
+      "headings": [
+        {
+          "text": "Usage",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "24px",
+          "weight": "600",
+          "leading": "32px",
+          "tracking": "-0.6px",
+          "optical": "auto"
+        },
+        {
+          "text": "Daily budget",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        },
+        {
+          "text": "Queries · last 30 days",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/account",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "headerHeight": 214,
+      "mainTop": 214,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 10
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 122.46875,
+          "y": 10
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 171.203125,
+          "y": 10
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 241.578125,
+          "y": 10
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 140,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 46
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 140,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 164,
+          "y": 46
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 84
+        },
+        {
+          "name": "email",
+          "tag": "INPUT",
+          "width": 288,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 16,
+          "y": 414
+        },
+        {
+          "name": "password",
+          "tag": "INPUT",
+          "width": 288,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 16,
+          "y": 496
+        },
+        {
+          "name": "Sign in",
+          "tag": "BUTTON",
+          "width": 288,
+          "height": 36,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 554
+        },
+        {
+          "name": "Continue with Google",
+          "tag": "BUTTON",
+          "width": 288,
+          "height": 40,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 610
+        },
+        {
+          "name": "Create account",
+          "tag": "A",
+          "width": 101.359375,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 670
+        },
+        {
+          "name": "Forgot password?",
+          "tag": "A",
+          "width": 118.359375,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 137.359375,
+          "y": 670
+        },
+        {
+          "name": "Continue to documents",
+          "tag": "A",
+          "width": 154.0625,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 702
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 1036
+        }
+      ],
+      "headings": [
+        {
+          "text": "Sign in",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "30px",
+          "weight": "600",
+          "leading": "36px",
+          "tracking": "-0.75px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/account/register",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "headerHeight": 214,
+      "mainTop": 214,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 10
+        },
+        {
+          "name": "Ask",
+          "tag": "A",
+          "width": 44.734375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 122.46875,
+          "y": 10
+        },
+        {
+          "name": "Library",
+          "tag": "A",
+          "width": 66.375,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 171.203125,
+          "y": 10
+        },
+        {
+          "name": "Usage",
+          "tag": "A",
+          "width": 62.421875,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 241.578125,
+          "y": 10
+        },
+        {
+          "name": "Collection",
+          "tag": "SELECT",
+          "width": 140,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 46
+        },
+        {
+          "name": "Access role",
+          "tag": "SELECT",
+          "width": 140,
+          "height": 30,
+          "fontSize": "14px",
+          "x": 164,
+          "y": 46
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 64.4375,
+          "height": 30,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 84
+        },
+        {
+          "name": "email",
+          "tag": "INPUT",
+          "width": 288,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 16,
+          "y": 414
+        },
+        {
+          "name": "password",
+          "tag": "INPUT",
+          "width": 288,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 16,
+          "y": 496
+        },
+        {
+          "name": "password_confirmation",
+          "tag": "INPUT",
+          "width": 288,
+          "height": 42,
+          "fontSize": "16px",
+          "x": 16,
+          "y": 626
+        },
+        {
+          "name": "Create account",
+          "tag": "BUTTON",
+          "width": 288,
+          "height": 36,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 684
+        },
+        {
+          "name": "Continue with Google",
+          "tag": "BUTTON",
+          "width": 288,
+          "height": 40,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 740
+        },
+        {
+          "name": "Sign in",
+          "tag": "A",
+          "width": 44.84375,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 800
+        },
+        {
+          "name": "Continue to documents",
+          "tag": "A",
+          "width": 154.0625,
+          "height": 20,
+          "fontSize": "14px",
+          "x": 80.84375,
+          "y": 800
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 1134
+        }
+      ],
+      "headings": [
+        {
+          "text": "Create account",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "30px",
+          "weight": "600",
+          "leading": "36px",
+          "tracking": "-0.75px",
+          "optical": "auto"
+        }
+      ]
+    },
+    {
+      "url": "/about",
+      "width": 320,
+      "height": 844,
+      "documentWidth": 320,
+      "headerHeight": 53,
+      "mainTop": 53,
+      "controls": [
+        {
+          "name": "DocQA",
+          "tag": "A",
+          "width": 59.78125,
+          "height": 28,
+          "fontSize": "18px",
+          "x": 16,
+          "y": 12
+        },
+        {
+          "name": "Back to Ask",
+          "tag": "A",
+          "width": 98.15625,
+          "height": 28,
+          "fontSize": "14px",
+          "x": 205.84375,
+          "y": 12
+        },
+        {
+          "name": "dmytro.bolibok@gmail.com",
+          "tag": "A",
+          "width": 180.859375,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 98.6875,
+          "y": 383
+        },
+        {
+          "name": "Download the corresponding source for this build",
+          "tag": "A",
+          "width": 263.328125,
+          "height": 41,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 658
+        },
+        {
+          "name": "Read the GNU AGPL v3 license",
+          "tag": "A",
+          "width": 205.421875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 714
+        },
+        {
+          "name": "DocQA repository on GitHub",
+          "tag": "A",
+          "width": 187.6875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 45.421875,
+          "y": 798
+        },
+        {
+          "name": "Fraunces",
+          "tag": "A",
+          "width": 61.09375,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 72.171875,
+          "y": 934
+        },
+        {
+          "name": "Inter",
+          "tag": "A",
+          "width": 29.921875,
+          "height": 17,
+          "fontSize": "14px",
+          "x": 141.25,
+          "y": 934
+        },
+        {
+          "name": "JetBrains Mono",
+          "tag": "A",
+          "width": 249.84375,
+          "height": 41,
+          "fontSize": "14px",
+          "x": 16,
+          "y": 934
+        },
+        {
+          "name": "About",
+          "tag": "A",
+          "width": 33.84375,
+          "height": 44,
+          "fontSize": "12px",
+          "x": 16,
+          "y": 1088
+        }
+      ],
+      "headings": [
+        {
+          "text": "About DocQA",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "30px",
+          "weight": "600",
+          "leading": "36px",
+          "tracking": "-0.75px",
+          "optical": "auto"
+        },
+        {
+          "text": "Operator & contact",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        },
+        {
+          "text": "License & source code",
+          "font": "Fraunces, \"Fraunces Fallback\", Georgia, serif",
+          "size": "20px",
+          "weight": "600",
+          "leading": "28px",
+          "tracking": "normal",
+          "optical": "auto"
+        }
+      ]
+    }
+  ],
+  "interactions": {
+    "signInPress": {
+      "before": {
+        "text": "Sign in",
+        "x": 16,
+        "y": 514,
+        "width": 358,
+        "height": 36,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(29, 78, 208)",
+        "border": "rgb(255, 255, 255)",
+        "outline": "rgb(255, 255, 255) none 3px",
+        "shadow": "none",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "during": {
+        "text": "Sign in",
+        "x": 16,
+        "y": 514,
+        "width": 358,
+        "height": 36,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(255, 255, 255)",
+        "background": "rgb(29, 78, 208)",
+        "border": "rgb(255, 255, 255)",
+        "outline": "rgb(255, 255, 255) none 3px",
+        "shadow": "none",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "changed": []
+    },
+    "googlePress": {
+      "before": {
+        "text": "Continue with Google",
+        "x": 16,
+        "y": 570,
+        "width": 358,
+        "height": 40,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "tracking": "normal",
+        "weight": "500",
+        "optical": "auto",
+        "color": "rgb(31, 31, 31)",
+        "background": "oklch(0.985 0 0)",
+        "border": "rgb(116, 119, 117)",
+        "outline": "rgb(31, 31, 31) none 3px",
+        "shadow": "none",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "during": {
+        "text": "Continue with Google",
+        "x": 16,
+        "y": 570,
+        "width": 358,
+        "height": 40,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "tracking": "normal",
+        "weight": "500",
+        "optical": "auto",
+        "color": "rgb(31, 31, 31)",
+        "background": "oklch(0.985 0 0)",
+        "border": "rgb(116, 119, 117)",
+        "outline": "rgb(31, 31, 31) none 3px",
+        "shadow": "none",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "changed": []
+    },
+    "preferences": [
+      {
+        "features": [],
+        "matches": {
+          "contrast": false,
+          "transparency": false
+        },
+        "header": {
+          "text": "DocQAAskLibraryUsageCollectionDemo · Company Policies (EN) · 19 docsDemo · GitLab Handbook · 3639 do",
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 194,
+          "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "23.25px",
+          "tracking": "normal",
+          "weight": "400",
+          "optical": "auto",
+          "color": "rgb(34, 32, 27)",
+          "background": "oklab(0.970297 0.000209391 0.00698501 / 0.95)",
+          "border": "rgba(34, 32, 27, 0.1)",
+          "outline": "rgb(34, 32, 27) none 3px",
+          "shadow": "none",
+          "transform": "none",
+          "opacity": "1",
+          "transition": "all",
+          "backdropFilter": "blur(8px)",
+          "animation": "none"
+        },
+        "field": {
+          "text": "",
+          "x": 16,
+          "y": 374,
+          "width": 358,
+          "height": 42,
+          "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "tracking": "normal",
+          "weight": "400",
+          "optical": "auto",
+          "color": "rgb(34, 32, 27)",
+          "background": "rgb(255, 255, 255)",
+          "border": "rgba(34, 32, 27, 0.1)",
+          "outline": "rgb(34, 32, 27) none 3px",
+          "shadow": "none",
+          "transform": "none",
+          "opacity": "1",
+          "transition": "all",
+          "backdropFilter": "none",
+          "animation": "none"
+        }
+      },
+      {
+        "features": [
+          {
+            "name": "prefers-contrast",
+            "value": "more"
+          }
+        ],
+        "matches": {
+          "contrast": true,
+          "transparency": false
+        },
+        "header": {
+          "text": "DocQAAskLibraryUsageCollectionDemo · Company Policies (EN) · 19 docsDemo · GitLab Handbook · 3639 do",
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 194,
+          "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "23.25px",
+          "tracking": "normal",
+          "weight": "400",
+          "optical": "auto",
+          "color": "rgb(34, 32, 27)",
+          "background": "oklab(0.970297 0.000209391 0.00698501 / 0.95)",
+          "border": "rgba(34, 32, 27, 0.1)",
+          "outline": "rgb(34, 32, 27) none 3px",
+          "shadow": "none",
+          "transform": "none",
+          "opacity": "1",
+          "transition": "all",
+          "backdropFilter": "blur(8px)",
+          "animation": "none"
+        },
+        "field": {
+          "text": "",
+          "x": 16,
+          "y": 374,
+          "width": 358,
+          "height": 42,
+          "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "tracking": "normal",
+          "weight": "400",
+          "optical": "auto",
+          "color": "rgb(34, 32, 27)",
+          "background": "rgb(255, 255, 255)",
+          "border": "rgba(34, 32, 27, 0.1)",
+          "outline": "rgb(34, 32, 27) none 3px",
+          "shadow": "none",
+          "transform": "none",
+          "opacity": "1",
+          "transition": "all",
+          "backdropFilter": "none",
+          "animation": "none"
+        }
+      },
+      {
+        "features": [
+          {
+            "name": "prefers-reduced-transparency",
+            "value": "reduce"
+          }
+        ],
+        "matches": {
+          "contrast": false,
+          "transparency": true
+        },
+        "header": {
+          "text": "DocQAAskLibraryUsageCollectionDemo · Company Policies (EN) · 19 docsDemo · GitLab Handbook · 3639 do",
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 194,
+          "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+          "fontSize": "15px",
+          "lineHeight": "23.25px",
+          "tracking": "normal",
+          "weight": "400",
+          "optical": "auto",
+          "color": "rgb(34, 32, 27)",
+          "background": "oklab(0.970297 0.000209391 0.00698501 / 0.95)",
+          "border": "rgba(34, 32, 27, 0.1)",
+          "outline": "rgb(34, 32, 27) none 3px",
+          "shadow": "none",
+          "transform": "none",
+          "opacity": "1",
+          "transition": "all",
+          "backdropFilter": "blur(8px)",
+          "animation": "none"
+        },
+        "field": {
+          "text": "",
+          "x": 16,
+          "y": 374,
+          "width": 358,
+          "height": 42,
+          "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+          "fontSize": "16px",
+          "lineHeight": "24px",
+          "tracking": "normal",
+          "weight": "400",
+          "optical": "auto",
+          "color": "rgb(34, 32, 27)",
+          "background": "rgb(255, 255, 255)",
+          "border": "rgba(34, 32, 27, 0.1)",
+          "outline": "rgb(34, 32, 27) none 3px",
+          "shadow": "none",
+          "transform": "none",
+          "opacity": "1",
+          "transition": "all",
+          "backdropFilter": "none",
+          "animation": "none"
+        }
+      }
+    ],
+    "passwordMismatch": {
+      "beforeSubmitAlerts": [
+        ""
+      ],
+      "ariaInvalidBefore": null,
+      "afterSubmitAlerts": [
+        "Passwords do not match.",
+        ""
+      ]
+    },
+    "sourceDesktop": {
+      "dialog": {
+        "text": "1Private salary.mdPublic policiesEscPagesp. 1SectionSalaryRelevance0.900AccessFinance onlyPrivate sa",
+        "x": 1040,
+        "y": 0,
+        "width": 400,
+        "height": 900,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "15px",
+        "lineHeight": "23.25px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(34, 32, 27)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgba(34, 32, 27, 0.1)",
+        "outline": "rgb(34, 32, 27) none 3px",
+        "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "ariaModal": "true",
+      "backdropVisible": false,
+      "focusSequence": [
+        {
+          "name": "Copy citation",
+          "insideDialog": true
+        },
+        {
+          "name": "Esc",
+          "insideDialog": true
+        },
+        {
+          "name": "Copy citation",
+          "insideDialog": true
+        },
+        {
+          "name": "Esc",
+          "insideDialog": true
+        }
+      ],
+      "backgroundCanReceivePointerFocus": true
+    },
+    "copySuccess": {
+      "before": "Copy citation",
+      "after": "Copy citation",
+      "statuses": [
+        "$0.30 remaining / $0.50 per day"
+      ],
+      "writes": 1
+    },
+    "sourceMotion-no-preference": {
+      "readingColumn": {
+        "text": "Answer ready: Public answer [1]What is the salary?1Private salary.mdp. 1 · SalaryFinancePublic answe",
+        "x": 356,
+        "y": -150,
+        "width": 334.890625,
+        "height": 780,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "15px",
+        "lineHeight": "23.25px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(34, 32, 27)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(34, 32, 27)",
+        "outline": "rgb(34, 32, 27) none 3px",
+        "shadow": "none",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "margin 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "dialog": {
+        "text": "1Private salary.mdPublic policiesEscPagesp. 1SectionSalaryRelevance0.900AccessFinance onlyPrivate sa",
+        "x": 1040,
+        "y": 0,
+        "width": 400,
+        "height": 900,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "15px",
+        "lineHeight": "23.25px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(34, 32, 27)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgba(34, 32, 27, 0.1)",
+        "outline": "rgb(34, 32, 27) none 3px",
+        "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "animations": [
+        {
+          "property": "margin-right",
+          "playState": "running",
+          "duration": 3.4389550628360652
+        },
+        {
+          "property": "border-bottom-color",
+          "playState": "running",
+          "duration": 4.89822836899309
+        },
+        {
+          "property": "border-left-color",
+          "playState": "running",
+          "duration": 4.89822836899309
+        },
+        {
+          "property": "border-right-color",
+          "playState": "running",
+          "duration": 4.89822836899309
+        },
+        {
+          "property": "border-top-color",
+          "playState": "running",
+          "duration": 4.89822836899309
+        },
+        {
+          "property": "opacity",
+          "playState": "running",
+          "duration": 150
+        }
+      ]
+    },
+    "sourceMotion-reduce": {
+      "readingColumn": {
+        "text": "Answer ready: Public answer [1]What is the salary?1Private salary.mdp. 1 · SalaryFinancePublic answe",
+        "x": 356,
+        "y": -150,
+        "width": 334.953125,
+        "height": 780,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "15px",
+        "lineHeight": "23.25px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(34, 32, 27)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(34, 32, 27)",
+        "outline": "rgb(34, 32, 27) none 3px",
+        "shadow": "none",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "margin 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "dialog": {
+        "text": "1Private salary.mdPublic policiesEscPagesp. 1SectionSalaryRelevance0.900AccessFinance onlyPrivate sa",
+        "x": 1040,
+        "y": 0,
+        "width": 400,
+        "height": 900,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "15px",
+        "lineHeight": "23.25px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(34, 32, 27)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgba(34, 32, 27, 0.1)",
+        "outline": "rgb(34, 32, 27) none 3px",
+        "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "animations": [
+        {
+          "property": "margin-right",
+          "playState": "running",
+          "duration": 3.470771833936824
+        },
+        {
+          "property": "border-bottom-color",
+          "playState": "running",
+          "duration": 4.945189049122379
+        },
+        {
+          "property": "border-left-color",
+          "playState": "running",
+          "duration": 4.945189049122379
+        },
+        {
+          "property": "border-right-color",
+          "playState": "running",
+          "duration": 4.945189049122379
+        },
+        {
+          "property": "border-top-color",
+          "playState": "running",
+          "duration": 4.945189049122379
+        },
+        {
+          "property": "opacity",
+          "playState": "running",
+          "duration": 45.76864947615282
+        }
+      ]
+    },
+    "sourceMobile": {
+      "dialog": {
+        "text": "1Private salary.mdPublic policiesEscPagesp. 1SectionSalaryRelevance0.900AccessFinance onlyPrivate sa",
+        "x": 0,
+        "y": 563,
+        "width": 390,
+        "height": 281,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "15px",
+        "lineHeight": "23.25px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(34, 32, 27)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgba(34, 32, 27, 0.1)",
+        "outline": "rgb(34, 32, 27) none 3px",
+        "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "close": {
+        "text": "Esc",
+        "x": 328.1875,
+        "y": 584,
+        "width": 41.8125,
+        "height": 26,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(110, 106, 95)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgba(34, 32, 27, 0.1)",
+        "outline": "rgb(110, 106, 95) none 3px",
+        "shadow": "none",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "backdropVisible": true
+    },
+    "sourceFocusRestored": true,
+    "copyFailure": {
+      "alerts": [
+        ""
+      ],
+      "errors": [
+        "Synthetic clipboard permission denied"
+      ],
+      "buttonText": "Copy citation"
+    },
+    "ownerLibrary": {
+      "upload": {
+        "text": "Choose a file",
+        "x": 136.640625,
+        "y": 683,
+        "width": 116.71875,
+        "height": 34,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(34, 32, 27)",
+        "background": "rgb(247, 245, 240)",
+        "border": "rgba(34, 32, 27, 0.1)",
+        "outline": "rgb(34, 32, 27) none 3px",
+        "shadow": "none",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "delete": {
+        "text": "Delete",
+        "x": 524.71875,
+        "y": 910,
+        "width": 52.375,
+        "height": 24,
+        "font": "Inter, \"Inter Fallback\", system-ui, sans-serif",
+        "fontSize": "12px",
+        "lineHeight": "16px",
+        "tracking": "normal",
+        "weight": "400",
+        "optical": "auto",
+        "color": "rgb(110, 106, 95)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(110, 106, 95)",
+        "outline": "rgb(110, 106, 95) none 3px",
+        "shadow": "none",
+        "transform": "none",
+        "opacity": "1",
+        "transition": "all",
+        "backdropFilter": "none",
+        "animation": "none"
+      },
+      "horizontalTableScroll": {
+        "table": 572,
+        "container": 356,
+        "scroll": 572
+      },
+      "storage": "1.0 MB of 50.0 MB used · 49.0 MB remaining\n\nAny number of files, within your account’s total storage limit. Deleting a document frees space."
+    }
+  },
+  "errors": [],
+  "attemptedLiveMutations": [],
+  "browser": "152.0.7977.82",
+  "status": "COMPLETED"
+}

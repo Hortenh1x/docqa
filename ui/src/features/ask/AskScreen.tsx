@@ -63,7 +63,7 @@ export function AskScreen() {
     // ≥1100px the reading column shifts to make room for the source panel;
     // below that the panel overlays (with a backdrop)
     <div
-      className={`flex min-h-[calc(100vh-120px)] flex-col transition-[margin] duration-200 ${
+      className={`flex min-h-[calc(100vh-120px)] flex-col transition-[margin] duration-200 motion-reduce:transition-none ${
         active ? "min-[1100px]:mr-[400px]" : ""
       }`}
     >

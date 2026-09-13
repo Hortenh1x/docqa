@@ -1,0 +1,544 @@
+{
+  "timestamp": "2026-09-12T13:55:00.179Z",
+  "motion": [
+    {
+      "preference": "no-preference",
+      "matches": false,
+      "frames": [
+        {
+          "time": -13.482000011920945,
+          "marginRight": 0,
+          "animations": []
+        },
+        {
+          "time": 3.199999988079071,
+          "marginRight": 0,
+          "animations": []
+        },
+        {
+          "time": 19.799999988079094,
+          "marginRight": 0,
+          "animations": []
+        },
+        {
+          "time": 36.499999988079026,
+          "marginRight": 0,
+          "animations": []
+        },
+        {
+          "time": 53.09999998807905,
+          "marginRight": 0,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 69.89999998807912,
+          "marginRight": 6.97989,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 86.49999998807903,
+          "marginRight": 34.0738,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 103.19999998807907,
+          "marginRight": 94.8553,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 119.7999999880791,
+          "marginRight": 182.792,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 136.49999998807903,
+          "marginRight": 258.546,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 153.09999998807905,
+          "marginRight": 310.088,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 169.7999999880791,
+          "marginRight": 344.905,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 186.49999998807903,
+          "marginRight": 368.325,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 203.19999998807907,
+          "marginRight": 383.781,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 219.7999999880791,
+          "marginRight": 393.335,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 236.49999998807903,
+          "marginRight": 398.456,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 253.19999998807907,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 269.7999999880791,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 286.499999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 303.09999998807905,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 319.7999999880791,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 336.499999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 353.09999998807905,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 369.7999999880791,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 386.499999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 403.09999998807916,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 419.799999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 436.499999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 453.09999998807916,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 469.799999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 486.499999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 503.09999998807916,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 519.799999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 536.499999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 553.0999999880792,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 569.799999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 586.499999988079,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 603.1999999880791,
+          "marginRight": 400,
+          "animations": []
+        }
+      ]
+    },
+    {
+      "preference": "reduce",
+      "matches": true,
+      "frames": [
+        {
+          "time": -7.0379999880790365,
+          "marginRight": 0,
+          "animations": []
+        },
+        {
+          "time": 9.600000011920883,
+          "marginRight": 0,
+          "animations": []
+        },
+        {
+          "time": 26.20000001192102,
+          "marginRight": 0,
+          "animations": []
+        },
+        {
+          "time": 42.90000001192084,
+          "marginRight": 0,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 59.500000011920974,
+          "marginRight": 6.84713,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 76.20000001192102,
+          "marginRight": 33.9591,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 92.90000001192084,
+          "marginRight": 94.6349,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 109.50000001192097,
+          "marginRight": 182.551,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 126.30000001192093,
+          "marginRight": 258.749,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 142.90000001192084,
+          "marginRight": 310.225,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 159.50000001192097,
+          "marginRight": 344.827,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 176.20000001192102,
+          "marginRight": 368.272,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 192.90000001192084,
+          "marginRight": 383.747,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 209.50000001192097,
+          "marginRight": 393.315,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 226.20000001192102,
+          "marginRight": 398.447,
+          "animations": [
+            {
+              "property": "margin-right",
+              "duration": 200
+            }
+          ]
+        },
+        {
+          "time": 242.90000001192084,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 259.6000000119209,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 276.200000011921,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 292.80000001192093,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 309.500000011921,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 326.200000011921,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 342.80000001192093,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 359.6000000119211,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 376.200000011921,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 392.90000001192084,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 409.6000000119211,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 426.200000011921,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 442.90000001192084,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 459.50000001192075,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 476.200000011921,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 492.90000001192084,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 509.50000001192075,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 526.1000000119211,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 542.9000000119208,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 559.5000000119207,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 576.200000011921,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 592.8000000119209,
+          "marginRight": 400,
+          "animations": []
+        },
+        {
+          "time": 609.6000000119211,
+          "marginRight": 400,
+          "animations": []
+        }
+      ]
+    }
+  ],
+  "inputContrast": {
+    "field": "email",
+    "borderColor": "rgba(34, 32, 27, 0.1)",
+    "backgroundColor": "rgb(255, 255, 255)",
+    "backgroundClip": "border-box",
+    "outsideColor": "rgb(247, 245, 240)",
+    "borderWidth": "1px",
+    "borderRgb": [
+      232,
+      232,
+      232
+    ],
+    "insideRgb": [
+      255,
+      255,
+      255
+    ],
+    "outsideRgb": [
+      247,
+      245,
+      240
+    ],
+    "borderVsOutside": 1.1245695680649823,
+    "borderVsInside": 1.2252724589999937,
+    "insideVsOutside": 1.089547942425908
+  },
+  "status": "COMPLETED"
+}

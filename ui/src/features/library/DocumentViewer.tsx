@@ -69,7 +69,7 @@ export function DocumentViewer({
         return;
       }
       if (e.key !== "Tab" || !panelRef.current) return;
-      // minimal focus trap (same idiom as SourceDrawer)
+      // Keep keyboard navigation inside the document reader.
       const focusables = panelRef.current.querySelectorAll<HTMLElement>(
         "button, a[href], iframe, [tabindex]:not([tabindex='-1'])",
       );
@@ -123,7 +123,7 @@ export function DocumentViewer({
               <a
                 href={objectUrl}
                 download={doc.filename}
-                className="rounded-[6px] border border-hairline px-2.5 py-0.5 text-sm text-ink-soft hover:border-stamp/40 hover:text-ink"
+                className="inline-flex min-h-11 items-center rounded-[6px] border border-hairline px-2.5 py-2 text-sm text-ink-soft hover:border-stamp/40 hover:text-ink active:bg-paper"
               >
                 Download
               </a>
@@ -133,9 +133,9 @@ export function DocumentViewer({
               type="button"
               onClick={onClose}
               aria-label="Close"
-              className="rounded-[6px] border border-hairline px-2 py-0.5 text-sm text-ink-soft hover:text-ink"
+              className="min-h-11 rounded-[6px] border border-hairline px-3 py-2 text-sm text-ink-soft hover:text-ink active:bg-paper"
             >
-              Esc
+              Close
             </button>
           </div>
         </div>

@@ -1,0 +1,12 @@
+{
+  "status": "REVIEWED",
+  "reviewer": "apple_fixes_review",
+  "blocking_issues": 0,
+  "clipboard_focus_issue_fixed": true,
+  "checks": [
+    "delayed success and rejection preserve focus at 390/1440 px",
+    "repeat Clipboard activation sends one write",
+    "native modal plus Tab wrapping; desktop background accessible",
+    "responsive table semantics and hidden Actions containment"
+  ]
+}
