@@ -32,6 +32,7 @@ async def fulltext_search(
     stmt = (
         select(
             Chunk.id,
+            Chunk.chunk_index,
             Chunk.content,
             Chunk.page_start,
             Chunk.page_end,

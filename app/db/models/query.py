@@ -1,8 +1,10 @@
 import uuid
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 
 from sqlalchemy import REAL, BigInteger, ForeignKey, Index, Numeric, text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.models.base import Base
@@ -51,3 +53,6 @@ class QueryCitation(Base):
     rank: Mapped[int] = mapped_column(primary_key=True)
     chunk_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("chunks.id", ondelete="CASCADE"))
     score: Mapped[float | None] = mapped_column(REAL)
+    # pinpoint spans [{"start", "end"}] into chunk.content for blocks the answer cited;
+    # NULL for context the model read but did not cite (app/generation/quotes.py)
+    quotes: Mapped[list[dict[str, Any]] | None] = mapped_column(JSONB)

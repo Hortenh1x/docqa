@@ -93,7 +93,17 @@ async def test_json_happy_path_with_citations_and_recording(client, tenant, read
     assert body["sources"], "sources must accompany a non-refused answer"
     assert body["sources"][0]["filename"] == "policy.md"
     assert body["sources"][0]["snippet"]
+    assert body["sources"][0]["chunk_id"] and body["sources"][0]["chunk_index"] == 0
     assert StubLLM.calls == 1
+
+    # the QUOTES section never reaches the answer; it becomes pinpoint spans
+    assert "QUOTES" not in body["answer"] and body["answer"].endswith("[1].")
+    [citation] = body["citations"]
+    assert citation["n"] == 1 and citation["chunk_id"] == body["sources"][0]["chunk_id"]
+    assert "27 vacation days" in citation["content"]
+    [quote] = citation["quotes"]
+    assert quote["text"] == "Employees receive 27 vacation days per year"
+    assert citation["content"][quote["start"] : quote["end"]] == quote["text"]
 
     queries, citations = await _query_rows()
     assert len(queries) == 1
@@ -106,6 +116,9 @@ async def test_json_happy_path_with_citations_and_recording(client, tenant, read
     assert row.latency_ms is not None
     assert len(citations) == len(body["sources"])
     assert {c.rank for c in citations} == {s["n"] for s in body["sources"]}
+    recorded = {c.rank: c.quotes for c in citations}
+    assert recorded[1] == [{"start": quote["start"], "end": quote["end"]}]
+    assert all(q is None for rank, q in recorded.items() if rank != 1)  # uncited context
 
 
 async def test_off_corpus_question_refused_without_llm_call(client, tenant, ready_collection):
@@ -159,6 +172,29 @@ async def test_sse_event_order_and_invalid_citation_cleanup(client, tenant, read
     assert "[9]" not in done["answer"]  # ...the final answer does not
     assert "[1]" in done["answer"]
     assert done["usage"]["prompt_tokens"] == 120
+    # no QUOTES section from the stub here: the cited block still gets a fallback span
+    # (the chunk sentence overlapping the claim) so the client has something to highlight
+    assert [c["n"] for c in done["citations"]] == [1]
+    assert done["citations"][0]["quotes"][0]["text"].startswith("Employees receive 27")
+
+
+async def test_sse_quotes_section_is_split_off_the_stream(client, tenant, ready_collection):
+    events = await read_sse(
+        client,
+        {
+            "collection_id": ready_collection,
+            "question": "How many vacation days do employees get?",
+            "stream": True,
+        },
+        tenant["headers"],
+    )
+    delta_text = "".join(data["text"] for name, data in events if name == "delta")
+    assert "QUO" not in delta_text and delta_text.endswith("[1].")
+    done = events[-1][1]
+    assert done["answer"] == delta_text
+    assert done["citations"][0]["quotes"][0]["text"] == (
+        "Employees receive 27 vacation days per year"
+    )
 
 
 async def test_sse_refusal_is_meta_then_done(client, tenant, ready_collection):

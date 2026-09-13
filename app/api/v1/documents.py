@@ -34,7 +34,7 @@ from app.core.errors import (
 )
 from app.core.idempotency import replay_headers, run_idempotent
 from app.core.rate_limit import rate_limit
-from app.db.models import Collection, Document, DocumentStatus
+from app.db.models import Chunk, Collection, Document, DocumentStatus
 from app.generation.tasks import suggest_questions
 from app.ingestion import service as ingestion_service
 from app.ingestion.mime import EXT_BY_MIME
@@ -89,6 +89,25 @@ class DocumentOut(BaseModel):
     processed_at: datetime | None
     # restricted content labels found in the document's sections (empty = all open)
     access_labels: list[str] = []
+
+
+class Passage(BaseModel):
+    """One chunk of a document, as retrieval and the answering model see it."""
+
+    chunk_id: int
+    chunk_index: int
+    section: str | None
+    pages: list[int] | None
+    access_label: str
+    content: str
+
+
+class PassagePage(BaseModel):
+    document_id: uuid.UUID
+    # chunks the role may read, in reading order; `total` counts the same set
+    total: int
+    offset: int
+    passages: list[Passage]
 
 
 @router.post(
@@ -286,6 +305,84 @@ async def get_document_file(
             "Cache-Control": "private, no-store",
             "X-Content-Type-Options": "nosniff",
         },
+    )
+
+
+@router.get(
+    "/documents/{document_id}/passages",
+    response_model=PassagePage,
+    dependencies=[Depends(rate_limit("default"))],
+    responses={
+        404: {"description": "Unknown document (or another tenant's)"},
+        409: {"description": "The document has not been processed yet"},
+    },
+    description=(
+        "The document's text in reading order, one passage per chunk — the surface the "
+        "reader highlights citations on. `role` applies the same access labels as "
+        "retrieval, in the WHERE clause: a passage the role cannot read is not in the page "
+        "and not in `total`. `offset`/`limit` page through long documents (`X-Total-Count` "
+        "mirrors `total`); `around` centres the page on a chunk index instead of `offset`."
+    ),
+)
+async def get_document_passages(
+    document_id: uuid.UUID,
+    tenant: CurrentTenant,
+    db: DbSession,
+    request: Request,
+    response: Response,
+    role: Annotated[str | None, Query(max_length=50)] = None,
+    limit: Annotated[int, Query(ge=1, le=200)] = 60,
+    offset: Annotated[int, Query(ge=0)] = 0,
+    around: Annotated[int | None, Query(ge=0)] = None,
+) -> PassagePage:
+    actor: Actor = request.state.actor
+    document = await _get_scoped_document(document_id, tenant.id, db, actor=actor)
+    collection = await fetch_collection(db, tenant.id, document.collection_id, actor)
+    principal = await collection_principal(db, collection, actor, role)
+    if principal.role != "owner" and document.status != DocumentStatus.READY:
+        raise DocumentNotReadyError(
+            "Passages are available after successful processing and access classification.",
+            document_status=document.status,
+        )
+    visible = [
+        Chunk.document_id == document.id,
+        Chunk.access_label.in_(list(principal.labels)),
+    ]
+    total = await db.scalar(select(func.count()).select_from(Chunk).where(*visible)) or 0
+    if around is not None:
+        # position of the target among the passages this role may read, then centre on it
+        before = (
+            await db.scalar(
+                select(func.count()).select_from(Chunk).where(*visible, Chunk.chunk_index < around)
+            )
+            or 0
+        )
+        offset = max(0, before - limit // 3)
+    rows = (
+        await db.execute(
+            select(Chunk).where(*visible).order_by(Chunk.chunk_index).offset(offset).limit(limit)
+        )
+    ).scalars()
+    response.headers["X-Total-Count"] = str(total)
+    return PassagePage(
+        document_id=document.id,
+        total=total,
+        offset=offset,
+        passages=[
+            Passage(
+                chunk_id=c.id,
+                chunk_index=c.chunk_index,
+                section=c.section_path,
+                pages=(
+                    [c.page_start, c.page_end if c.page_end is not None else c.page_start]
+                    if c.page_start is not None
+                    else None
+                ),
+                access_label=c.access_label,
+                content=c.content,
+            )
+            for c in rows
+        ],
     )
 
 

@@ -17,7 +17,7 @@ Design points, deliberate:
 import time
 import uuid
 from collections.abc import AsyncGenerator, Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Any
 
@@ -47,6 +47,7 @@ from app.generation.prompts import (
     build_context_blocks,
     build_user_prompt,
 )
+from app.generation.quotes import Quote, QuoteSplitter, resolve_quotes
 from app.generation.sentinel import SentinelBuffer
 from app.retrieval.base import HiddenStats
 from app.retrieval.service import retrieve
@@ -87,6 +88,9 @@ class DoneEvent:
     cost: Decimal | None
     latency_ms: int
     model: str | None
+    # cited blocks only: {n, chunk_id, content, quotes: [{start, end, text}]} — the
+    # pinpoint spans the client highlights (app/generation/quotes.py)
+    citations: list[dict[str, Any]] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -112,7 +116,28 @@ def _source_payload(block: ContextBlock) -> dict[str, Any]:
         "snippet": chunk.content[:300],
         "score": round(chunk.score, 4),
         "access_label": chunk.access_label,
+        "chunk_id": chunk.chunk_id,
+        "chunk_index": chunk.chunk_index,
     }
+
+
+def citations_payload(
+    blocks: list[ContextBlock], quotes: dict[int, list[Quote]]
+) -> list[dict[str, Any]]:
+    by_n = {b.n: b for b in blocks}
+    return [
+        {
+            "n": n,
+            "chunk_id": by_n[n].chunk.chunk_id,
+            "content": by_n[n].chunk.content,
+            "quotes": [
+                {"start": q.start, "end": q.end, "text": by_n[n].chunk.content[q.start : q.end]}
+                for q in spans
+            ],
+        }
+        for n, spans in quotes.items()
+        if n in by_n
+    ]
 
 
 def access_payload(principal: Principal, hidden: HiddenStats | None) -> dict[str, Any]:
@@ -145,6 +170,7 @@ async def _record_query(
     blocks: list[ContextBlock],
     role: str | None = None,
     data_version: int | None = None,
+    quotes: dict[int, list[Quote]] | None = None,
 ) -> None:
     """Best-effort, shielded from cancellation: stats must survive client disconnects."""
     try:
@@ -182,7 +208,15 @@ async def _record_query(
                 )
                 session.add_all(
                     QueryCitation(
-                        query_id=query_id, rank=b.n, chunk_id=b.chunk.chunk_id, score=b.chunk.score
+                        query_id=query_id,
+                        rank=b.n,
+                        chunk_id=b.chunk.chunk_id,
+                        score=b.chunk.score,
+                        quotes=(
+                            [{"start": q.start, "end": q.end} for q in quotes[b.n]]
+                            if quotes is not None and b.n in quotes
+                            else None
+                        ),
                     )
                     for b in blocks
                 )
@@ -222,12 +256,18 @@ async def run_query(
     confidence: float | None = None
     blocks: list[ContextBlock] = []
     sentinel = SentinelBuffer()
+    splitter = QuoteSplitter()
     parts: list[str] = []
     usage: StreamUsage | None = None
     recorded = False
 
     async def record_once(
-        *, answer: str | None, refused: bool, cost: Decimal | None, model: str | None
+        *,
+        answer: str | None,
+        refused: bool,
+        cost: Decimal | None,
+        model: str | None,
+        quotes: dict[int, list[Quote]] | None = None,
     ) -> None:
         nonlocal recorded
         if recorded:
@@ -249,6 +289,7 @@ async def run_query(
             model=model,
             blocks=blocks,
             role=principal.role,
+            quotes=quotes,
         )
 
     try:
@@ -312,13 +353,15 @@ async def run_query(
         try:
             async for event in llm.stream(SYSTEM_PROMPT, build_user_prompt(blocks, question)):
                 if isinstance(event, TextDelta):
-                    releasable = sentinel.feed(event.text)
-                    if releasable:
-                        parts.append(releasable)
-                        yield DeltaEvent(text=releasable)
+                    # head: NO_ANSWER interception; tail: the QUOTES section is kept
+                    # for the citations and never reaches the client as answer text
+                    visible = splitter.feed(sentinel.feed(event.text))
+                    if visible:
+                        parts.append(visible)
+                        yield DeltaEvent(text=visible)
                 elif isinstance(event, StreamUsage):
                     usage = event
-            tail = sentinel.flush()
+            tail = splitter.feed(sentinel.flush()) + splitter.flush()
             if tail:
                 parts.append(tail)
                 yield DeltaEvent(text=tail)
@@ -375,12 +418,14 @@ async def run_query(
             return
 
         answer, citations = finalize_answer(raw, blocks)
+        quotes = resolve_quotes(splitter.section, answer, blocks)
         log_ctx.info(
             "query_answered",
             citations=[c.n for c in citations],
+            quote_methods={n: [q.method for q in spans] for n, spans in quotes.items()},
             latency_ms=latency_ms(),
         )
-        await record_once(answer=answer, refused=False, cost=cost, model=model)
+        await record_once(answer=answer, refused=False, cost=cost, model=model, quotes=quotes)
         yield DoneEvent(
             answer=answer,
             refused=False,
@@ -391,15 +436,18 @@ async def run_query(
             cost=cost,
             latency_ms=latency_ms(),
             model=model,
+            citations=citations_payload(blocks, quotes),
         )
     except (BudgetExceededError, BudgetUnavailableError) as exc:
         log_ctx.warning("query_budget_blocked", code=exc.code)
         yield ErrorEvent(code=exc.code, message=exc.detail, headers=exc.headers, extra=exc.extra)
     finally:
         # client disconnected mid-stream (or an unexpected error): keep the stats anyway
+        partial = "".join(parts)
         await record_once(
-            answer="".join(parts) or None,
+            answer=partial or None,
             refused=False,
+            quotes=resolve_quotes(splitter.section, partial, blocks) if partial else None,
             cost=cost_usd(
                 llm.model_name if llm else None,
                 usage.prompt_tokens if usage else None,

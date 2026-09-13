@@ -2,7 +2,7 @@
 
 - "sabbatical" / "no_answer"  -> the NO_ANSWER sentinel (generation-gate test)
 - "badcite"                    -> an answer citing a non-existent block [9]
-- anything else                -> a grounded answer citing [1]
+- anything else                -> a grounded answer citing [1], followed by a QUOTES section
 
 Answers stream in several deltas on purpose. ``calls`` counts invocations so tests can
 assert the refusal gate spent zero LLM calls.
@@ -61,4 +61,8 @@ class StubLLM:
             return
         yield TextDelta("Employees receive 27 vacation days per year [1]")
         yield TextDelta(", and unused days expire on March 31 [1].")
+        # the pinpoint section (prompt rule 7), with the marker split across deltas —
+        # the pipeline must keep every character of it out of the streamed answer
+        yield TextDelta("\n\nQUO")
+        yield TextDelta('TES:\n[1] "Employees receive 27 vacation days per year"\n')
         yield StreamUsage(prompt_tokens=100, completion_tokens=18)

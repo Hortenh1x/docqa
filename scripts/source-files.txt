@@ -96,6 +96,7 @@ app/generation/sentinel.py
 app/generation/service.py
 app/generation/suggestions.py
 app/generation/tasks.py
+app/generation/quotes.py
 app/ingestion/__init__.py
 app/ingestion/access.py
 app/ingestion/chunking.py
@@ -289,6 +290,7 @@ ui/tsconfig.json
 uv.lock
 
 alembic/versions/0012_google_auth.py
+alembic/versions/0013_citation_quotes.py
 app/db/models/google.py
 docs/google-auth.md
 app/accounts/google_provider.py
@@ -297,9 +299,12 @@ app/accounts/google_accounts.py
 app/accounts/google_router.py
 tests/unit/test_google_config.py
 tests/unit/test_google_provider.py
+tests/unit/test_quotes.py
 tests/integration/test_google_auth.py
 tests/integration/test_google_runtime.py
 app/api/v1/storage.py
+app/api/v1/history.py
 app/storage/usage.py
 tests/integration/test_storage_quota.py
+tests/integration/test_history.py
 ui/public/branding/google-g.png

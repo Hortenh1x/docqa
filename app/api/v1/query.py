@@ -75,6 +75,7 @@ def _done_payload(event: DoneEvent) -> dict[str, Any]:
         },
         "latency_ms": event.latency_ms,
         "model": event.model,
+        "citations": event.citations,
     }
 
 

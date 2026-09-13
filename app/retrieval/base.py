@@ -17,6 +17,8 @@ class RetrievedChunk:
     score: float
     # content label the chunk was filtered on (app/access); "all" for open content
     access_label: str = "all"
+    # position in the document (reading order) — the reader opens at the cited passage
+    chunk_index: int | None = None
 
 
 @dataclass(frozen=True)

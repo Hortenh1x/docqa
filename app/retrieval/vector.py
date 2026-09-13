@@ -28,6 +28,7 @@ def _to_chunk(row: Row[Any]) -> RetrievedChunk:
         section_path=row.section_path,
         score=float(row.score),
         access_label=row.access_label,
+        chunk_index=row.chunk_index,
     )
 
 
@@ -57,6 +58,7 @@ async def vector_search(
     stmt = (
         select(
             Chunk.id,
+            Chunk.chunk_index,
             Chunk.content,
             Chunk.page_start,
             Chunk.page_end,

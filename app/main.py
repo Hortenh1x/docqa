@@ -10,7 +10,18 @@ from fastapi.openapi.utils import get_openapi
 
 from app.accounts import google_router
 from app.accounts import router as accounts
-from app.api.v1 import access, budget, collections, documents, health, query, site, storage, usage
+from app.api.v1 import (
+    access,
+    budget,
+    collections,
+    documents,
+    health,
+    history,
+    query,
+    site,
+    storage,
+    usage,
+)
 from app.billing.context import BillingContextMiddleware
 from app.config import get_settings
 from app.core.errors import install_error_handlers
@@ -108,6 +119,7 @@ def create_app() -> FastAPI:
     app.include_router(collections.router)
     app.include_router(documents.router)
     app.include_router(query.router)
+    app.include_router(history.router)
     app.include_router(usage.router)
     app.include_router(storage.router)
     app.include_router(budget.router)
