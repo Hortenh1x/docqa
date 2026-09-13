@@ -1,13 +1,24 @@
 # DocQA: эксплуатация после выпуска 2026-09-12
 
 Сайт https://docqa.net, API https://api.docqa.net. Рабочий выпуск —
-`/opt/docqa-releases/prod-20260912-apple-design-v2`, schema0012. Предыдущий код опубликован в
-[ветке codex/production-readiness-audit](https://github.com/Hortenh1x/docqa/tree/codex/production-readiness-audit),
-первый коммит реализации `463607a`. Исходники точно этой сборки доступны через
-About → Source; SHA-256 архива `1d284dac465cc8877aae85f957ba242b4f75c39bf0123244100e7fa693db9636`.
+`/opt/docqa-releases/prod-20260913-citations`, schema0013 (миграция `0013_citation_quotes`:
+колонка `query_citations.quotes`). Весь код опубликован в `main` на GitHub
+(коммиты `2968dff`, `32c1624`, `13d0044` — точечные цитаты, ридер с подсветкой, история
+вопросов); ветки `codex/production-readiness-audit` и `codex/apple-design-audit` слиты в
+`main` 13 сентября вместе с Dependabot-обновлениями (PR #1–#8 закрыты как merged).
+Исходники точно этой сборки доступны через About → Source; SHA-256 архива
+`41f5d186240ce6fed4d640b72c59572ddf6b63ced55d235555277039cb2ef686`.
 
-Исправления Apple-design опубликованы 12 сентября в14:28UTC, без нового коммита/push.
-Ветка локальных изменений `codex/apple-design-audit`; [проверки и состав выпуска](apple-design-fixes-2026-09-12.md).
+Выпуски 13 сентября: `prod-20260913-merged` (11:56UTC — слитый `main`, обновлённые
+зависимости, schema0012) и `prod-20260913-citations` (см. ниже). Скрипт выпуска теперь
+общий: `/home/ubuntu/.local/share/docqa-ops/release.py build NAME` и
+`release.py activate NAME --previous OLD` — те же проверки, что в прежних
+`build_*_release.py`/`activate_*_release.py`, без копии на каждый выпуск. Перед активацией
+нужен проверенный полный бэкап не старше 6 часов (`python3 nightly_backup.py` вручную).
+Предыдущие выпуски для отката: `prod-20260913-merged`, затем `prod-20260912-apple-design-v2`.
+
+Исправления Apple-design опубликованы 12 сентября в14:28UTC (`prod-20260912-apple-design-v2`);
+[проверки и состав выпуска](apple-design-fixes-2026-09-12.md).
 
 Последнее обновление V5: 50 MB оригиналов на личный аккаунт, без лимита количества
 файлов; удаление освобождает место, pending/failed тоже считаются. У всех 6 публичных
@@ -48,7 +59,7 @@ verify/reset/private-upload acceptance не выводится из этого �
 На основном VPS:
 
 - Указатель актуального release: `/home/ubuntu/.config/docqa/current-release`.
-- Сейчас: `/opt/docqa-releases/prod-20260912-apple-design-v2`.
+- Сейчас: `/opt/docqa-releases/prod-20260913-citations`.
 - Приватные значения: `/home/ubuntu/.config/docqa/runtime.env` (600). Не публиковать.
 - Project `docqa`; overlays **prod → shared-host → synchronous → source**, source последним.
 - Operational scripts/logs/status: `/home/ubuntu/.local/share/docqa-ops/`.
