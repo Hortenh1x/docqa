@@ -1,13 +1,13 @@
 # DocQA: эксплуатация после выпуска 2026-09-12
 
 Сайт https://docqa.net, API https://api.docqa.net. Рабочий выпуск —
-`/opt/docqa-releases/prod-20260913-citations`, schema0013 (миграция `0013_citation_quotes`:
+`/opt/docqa-releases/prod-20260913-citations-v2`, schema0013 (миграция `0013_citation_quotes`:
 колонка `query_citations.quotes`). Весь код опубликован в `main` на GitHub
 (коммиты `2968dff`, `32c1624`, `13d0044` — точечные цитаты, ридер с подсветкой, история
 вопросов); ветки `codex/production-readiness-audit` и `codex/apple-design-audit` слиты в
 `main` 13 сентября вместе с Dependabot-обновлениями (PR #1–#8 закрыты как merged).
 Исходники точно этой сборки доступны через About → Source; SHA-256 архива
-`41f5d186240ce6fed4d640b72c59572ddf6b63ced55d235555277039cb2ef686`.
+`9999607757a5bc20b18a2b189ed5c7518996cde5b3f4a842b0bb88479f3286ea`.
 
 Выпуски 13 сентября: `prod-20260913-merged` (11:56UTC — слитый `main`, обновлённые
 зависимости, schema0012) и `prod-20260913-citations` (см. ниже). Скрипт выпуска теперь
@@ -15,7 +15,7 @@
 `release.py activate NAME --previous OLD` — те же проверки, что в прежних
 `build_*_release.py`/`activate_*_release.py`, без копии на каждый выпуск. Перед активацией
 нужен проверенный полный бэкап не старше 6 часов (`python3 nightly_backup.py` вручную).
-Предыдущие выпуски для отката: `prod-20260913-merged`, затем `prod-20260912-apple-design-v2`.
+Предыдущие выпуски для отката: `prod-20260913-citations`, `prod-20260913-merged`, затем `prod-20260912-apple-design-v2`.
 
 Исправления Apple-design опубликованы 12 сентября в14:28UTC (`prod-20260912-apple-design-v2`);
 [проверки и состав выпуска](apple-design-fixes-2026-09-12.md).
@@ -59,7 +59,7 @@ verify/reset/private-upload acceptance не выводится из этого �
 На основном VPS:
 
 - Указатель актуального release: `/home/ubuntu/.config/docqa/current-release`.
-- Сейчас: `/opt/docqa-releases/prod-20260913-citations`.
+- Сейчас: `/opt/docqa-releases/prod-20260913-citations-v2`.
 - Приватные значения: `/home/ubuntu/.config/docqa/runtime.env` (600). Не публиковать.
 - Project `docqa`; overlays **prod → shared-host → synchronous → source**, source последним.
 - Operational scripts/logs/status: `/home/ubuntu/.local/share/docqa-ops/`.
