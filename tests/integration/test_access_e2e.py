@@ -114,6 +114,38 @@ async def test_hr_role_does_not_see_finance_content(client, tenant, fin_collecti
     assert all(s["access_label"] == "all" for s in body["sources"])
 
 
+async def test_planned_retrieval_keeps_original_principal_and_hides_restricted_source(
+    client, tenant, fin_collection, reveal_mode, monkeypatch
+):
+    from app.generation import service
+    from app.generation.llm import StreamUsage
+    from app.retrieval import service as retrieval_service
+
+    hidden_probe = retrieval_service.hidden_probe
+    hidden_probe_calls = 0
+
+    async def counted_hidden_probe(*args, **kwargs):
+        nonlocal hidden_probe_calls
+        hidden_probe_calls += 1
+        return await hidden_probe(*args, **kwargs)
+
+    async def restricted_plan(llm, question, aggregate_usage):
+        aggregate_usage.start_attempt()
+        aggregate_usage.observe(StreamUsage(0, 0))
+        return [RESTRICTED_CHUNK], StreamUsage(0, 0)
+
+    monkeypatch.setattr(service, "plan_queries", restricted_plan)
+    monkeypatch.setattr(retrieval_service, "hidden_probe", counted_hidden_probe)
+
+    body = (await _ask(client, tenant, fin_collection, OPEN_QUESTION)).json()
+
+    assert body["access"]["role"] == "employee"
+    assert body["access"]["hidden_passages"] == 0
+    assert hidden_probe_calls == 1  # original retrieval only; expansion explicitly skips it
+    assert all(source["access_label"] == "all" for source in body["sources"])
+    assert "1500" not in json.dumps(body)
+
+
 async def test_search_functions_filter_in_sql(fin_collection):
     """Both retrieval paths and the hidden probe apply the label predicate themselves."""
     from app.db.base import get_sessionmaker

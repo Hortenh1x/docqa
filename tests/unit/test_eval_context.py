@@ -8,6 +8,7 @@ from app.generation import service
 from app.generation.llm import TextDelta
 from app.generation.prompts import build_user_prompt
 from app.retrieval.base import RetrievedChunk
+from app.retrieval.planning import PLANNER_SYSTEM_PROMPT
 from app.retrieval.service import RetrievalResult
 from eval import run_eval
 
@@ -32,6 +33,9 @@ async def test_observer_captures_exact_trimmed_context_sent_to_model(monkeypatch
         model_name = "stub"
 
         async def stream(self, system, user):
+            if system == PLANNER_SYSTEM_PROMPT:
+                yield TextDelta('{"queries":[]}')
+                return
             prompts.append(user)
             yield TextDelta("The policy is visible [1].")
 

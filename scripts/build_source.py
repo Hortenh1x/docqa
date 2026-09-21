@@ -65,6 +65,7 @@ SOURCE_SUFFIXES = {
 SPECIAL_FILES = {
     "alembic/README",
     "deploy/Caddyfile",
+    "eval/indirect_comparison.yaml",
     "ui/Dockerfile",
     "ui/.dockerignore",
     "ui/.gitignore",

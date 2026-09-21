@@ -1,0 +1,65 @@
+version: 1
+fixture_name: amazon-2017-vs-2022-three-filing-vector
+question: "and what year was financially better for amazon? 2017 or 2022?"
+missing_evidence_control: "Compare Amazon's 2022 and 2025 net income in EUR. Which year was financially better?"
+
+# Fixed source artifacts from Patronus AI's public FinanceBench repository. The runner
+# refuses to parse a file whose SHA-256 or PDF page count differs.
+documents:
+  - filename: AMAZON_2017_10K.pdf
+    url: https://raw.githubusercontent.com/patronus-ai/financebench/main/pdfs/AMAZON_2017_10K.pdf
+    sha256: f8af08ff6c4147351ec3a6e5e2c74e104678ce68fb0d6d476b1e43f685c09a3f
+    pdf_pages: 85
+    role: evidence
+    expected_statement:
+      parser_chunk_index: 89
+      parser_page_start: 38
+      parser_page_end: 39
+      statement_document_page: 38
+      values_usd_millions:
+        net_sales: 177866
+        operating_income: 4106
+        net_income: 3033
+  - filename: AMAZON_2022_10K.pdf
+    url: https://raw.githubusercontent.com/patronus-ai/financebench/main/pdfs/AMAZON_2022_10K.pdf
+    sha256: 084ef3d6031c4b57169b32ae6a878a86ebbcbc7bb868030e3170d04392b4096e
+    pdf_pages: 81
+    role: evidence
+    expected_statement:
+      parser_chunk_index: 88
+      parser_page_start: 37
+      parser_page_end: 38
+      statement_document_page: 37
+      values_usd_millions:
+        net_sales: 513983
+        operating_income: 12248
+        net_income_loss: -2722
+  - filename: BESTBUY_2020_10K.pdf
+    url: https://raw.githubusercontent.com/patronus-ai/financebench/main/pdfs/BESTBUY_2020_10K.pdf
+    sha256: b699823b02e3545752f28cc579694dc9c81ef3b7a21b751c96f8b3a175804ec8
+    pdf_pages: 71
+    role: distractor
+
+# These are frozen evidence-search queries for a deterministic retrieval-layer sweep.
+# Live --with-answers runs exercise the current question-only planner instead.
+retrieval_queries:
+  original: "and what year was financially better for amazon? 2017 or 2022?"
+  amazon_2017: "Amazon 2017 annual financial results revenue net income operating income profit margin cash flow"
+  amazon_2022: "Amazon 2022 annual financial results revenue net income operating income profit margin cash flow"
+
+coverage_caps: [8, 12, 16, 20, 40]
+answer_cap: 16
+context_token_budget: 18000
+
+answer_expectations:
+  required_years: [2017, 2022]
+  required_citation_documents: [AMAZON_2017_10K.pdf, AMAZON_2022_10K.pdf]
+  acceptable_criteria: [profitability, net income, net loss, net sales, revenue, operating income, scale]
+  require_qualified_winner: true
+  # A calculation is not required to be refused when its operands are grounded.
+  require_refusal_for_computable_metrics: false
+
+limitations:
+  - Vector-only retrieval; no PostgreSQL FTS, RRF, reranker, or access-restricted chunks.
+  - Three filings, not the full 334-filing FinanceBench collection or screenshot collection.
+  - The standalone question is used exactly; conversation history is outside scope.

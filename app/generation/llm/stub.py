@@ -30,6 +30,11 @@ class StubLLM:
     async def stream(self, system: str, user: str) -> AsyncIterator[LLMEvent]:
         type(self).calls += 1
 
+        if "retrieval planner for a grounded document question-answering system" in system:
+            yield TextDelta('{"queries":[]}')
+            yield StreamUsage(prompt_tokens=0, completion_tokens=0)
+            return
+
         if "suggested questions" in system.lower():
             # candidates for app/generation/suggestions.py — valid JSON across deltas
             yield TextDelta('["What is the vacation policy?", ')

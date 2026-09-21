@@ -39,6 +39,8 @@ async def retrieve(
     question: str,
     settings: Settings,
     principal: Principal | None = None,
+    *,
+    reveal_hidden: bool = True,
 ) -> RetrievalResult:
     # no principal → the default (least-privilege) role; never "see everything"
     principal = principal or resolve_principal(settings, None)
@@ -58,7 +60,7 @@ async def retrieve(
         fulltext_hits = await fulltext_search(
             db, collection_id, question, settings.top_k_fts, principal.labels
         )
-        if settings.access_reveal_hidden:
+        if reveal_hidden and settings.access_reveal_hidden:
             # reveal mode: null means "not revealed"; a full-access role reports zero
             # without a probe
             if sees_everything(settings, principal):

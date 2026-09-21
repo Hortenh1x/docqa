@@ -94,7 +94,7 @@ async def test_json_happy_path_with_citations_and_recording(client, tenant, read
     assert body["sources"][0]["filename"] == "policy.md"
     assert body["sources"][0]["snippet"]
     assert body["sources"][0]["chunk_id"] and body["sources"][0]["chunk_index"] == 0
-    assert StubLLM.calls == 1
+    assert StubLLM.calls == 2  # default-on planner plus answer, using one provider type
 
     # the QUOTES section never reaches the answer; it becomes pinpoint spans
     assert "QUOTES" not in body["answer"] and body["answer"].endswith("[1].")
@@ -119,6 +119,48 @@ async def test_json_happy_path_with_citations_and_recording(client, tenant, read
     recorded = {c.rank: c.quotes for c in citations}
     assert recorded[1] == [{"start": quote["start"], "end": quote["end"]}]
     assert all(q is None for rank, q in recorded.items() if rank != 1)  # uncited context
+
+
+async def test_json_and_query_row_include_nonzero_planner_and_answer_usage(
+    client, tenant, ready_collection, monkeypatch
+):
+    from app.generation import service
+    from app.generation.llm import StreamUsage, TextDelta
+    from app.retrieval.planning import PLANNER_SYSTEM_PROMPT
+
+    class MeteredLLM:
+        model_name = "deepseek-flash"
+
+        async def stream(self, system, user):
+            if system == PLANNER_SYSTEM_PROMPT:
+                yield TextDelta('{"queries":[]}')
+                yield StreamUsage(30, 2)
+                return
+            yield TextDelta("Employees receive 27 vacation days [1].")
+            yield StreamUsage(100, 18)
+
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: MeteredLLM())
+    response = await client.post(
+        "/v1/query",
+        json={
+            "collection_id": ready_collection,
+            "question": "How many vacation days do employees get?",
+            "stream": False,
+        },
+        headers=tenant["headers"],
+    )
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["usage"] == {
+        "prompt_tokens": 130,
+        "completion_tokens": 20,
+        "cost_usd": 0.000063,
+    }
+    queries, _ = await _query_rows()
+    assert len(queries) == 1
+    assert (queries[0].prompt_tokens, queries[0].completion_tokens) == (130, 20)
+    assert float(queries[0].cost_usd) == 0.000063
 
 
 async def test_off_corpus_question_refused_without_llm_call(client, tenant, ready_collection):
@@ -163,6 +205,8 @@ async def test_sse_event_order_and_invalid_citation_cleanup(client, tenant, read
     assert names[0] == "meta" and events[0][1]["query_id"]
     assert names[1] == "sources" and events[1][1]["sources"]
     assert names[-1] == "done"
+    assert names.count("meta") == names.count("sources") == names.count("done") == 1
+    assert "planner" not in names
     delta_text = "".join(data["text"] for name, data in events if name == "delta")
     assert delta_text, "at least one delta expected"
     assert "[9]" in delta_text  # raw stream carries the model's mistake...

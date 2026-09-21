@@ -127,12 +127,13 @@ export function askReducer(state: AskState, action: AskAction): AskState {
 
 /** A recorded exchange from the history API, in the shape the screen renders. */
 export function fromHistory(item: HistoryQuery, collectionId: string): Exchange {
+  const incomplete = !item.refused && item.answer === null;
   return {
     id: item.id,
     collectionId,
     question: item.question,
     askedAs: item.role,
-    phase: item.refused ? "refused" : "done",
+    phase: item.refused ? "refused" : incomplete ? "error" : "done",
     queryId: item.id,
     // hidden-passage statistics are not recorded; the role is
     access: {
@@ -154,7 +155,13 @@ export function fromHistory(item: HistoryQuery, collectionId: string): Exchange 
       latency_ms: item.latency_ms ?? 0,
       model: item.model,
     },
-    error: null,
+    error: incomplete
+      ? {
+          message: "The answer was not completed. Please try again.",
+          code: "provider_unavailable",
+          retryAfterS: null,
+        }
+      : null,
     createdAt: item.created_at,
   };
 }

@@ -74,6 +74,7 @@ class Settings(BaseSettings):
     llm_temperature: float = Field(default=0.1, ge=0, le=2)
     llm_timeout_s: float = Field(default=180.0, gt=0)
     llm_max_tokens: int = Field(default=1024, gt=0)
+    query_planning_enabled: bool = True
     # must be large enough for rerank_top_n chunks, or the budget silently
     # re-imposes the old cut (20 chunks x ~450 tokens + headers)
     context_token_budget: int = Field(default=18000, gt=0)

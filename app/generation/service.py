@@ -50,6 +50,7 @@ from app.generation.prompts import (
 from app.generation.quotes import Quote, QuoteSplitter, resolve_quotes
 from app.generation.sentinel import SentinelBuffer
 from app.retrieval.base import HiddenStats
+from app.retrieval.planning import UsageAccumulator, plan_queries, round_robin_chunks
 from app.retrieval.service import retrieve
 from app.usage.costs import cost_usd
 
@@ -258,7 +259,7 @@ async def run_query(
     sentinel = SentinelBuffer()
     splitter = QuoteSplitter()
     parts: list[str] = []
-    usage: StreamUsage | None = None
+    usage = UsageAccumulator()
     recorded = False
 
     async def record_once(
@@ -273,6 +274,7 @@ async def run_query(
         if recorded:
             return
         recorded = True
+        total_usage = usage.total
         await _record_query(
             query_id=query_id,
             tenant_id=tenant_id,
@@ -283,8 +285,8 @@ async def run_query(
             refused=refused,
             confidence=confidence,
             latency_ms=latency_ms(),
-            prompt_tokens=usage.prompt_tokens if usage else None,
-            completion_tokens=usage.completion_tokens if usage else None,
+            prompt_tokens=total_usage.prompt_tokens if total_usage else None,
+            completion_tokens=total_usage.completion_tokens if total_usage else None,
             cost=cost,
             model=model,
             blocks=blocks,
@@ -341,82 +343,130 @@ async def run_query(
             )
             return
 
+        facet_groups = []
+        if settings.query_planning_enabled:
+            llm = get_llm_provider(settings)
+            try:
+                planned, _ = await plan_queries(llm, question, usage)
+            except GenerationError as exc:
+                log_ctx.warning("query_planning_failed", error_type=type(exc).__name__)
+                planned = None
+            if planned:
+                for index, facet in enumerate(planned):
+                    try:
+                        facet_result = await retrieve(
+                            collection_id,
+                            facet,
+                            settings,
+                            principal,
+                            reveal_hidden=False,
+                        )
+                    except EmbeddingError as exc:
+                        log_ctx.warning(
+                            "query_expansion_embedding_unavailable",
+                            facet_index=index,
+                            error_type=type(exc).__name__,
+                        )
+                        continue
+                    facet_groups.append(facet_result.chunks)
+
+        merged_chunks = round_robin_chunks([retrieval.chunks, *facet_groups], settings.rerank_top_n)
         blocks = build_context_blocks(
-            retrieval.chunks, settings.context_token_budget, settings.context_chunk_max_tokens
+            merged_chunks, settings.context_token_budget, settings.context_chunk_max_tokens
         )
         # In-process eval only. HTTP callers never receive full context through this hook.
         if context_observer is not None:
             context_observer(blocks)
         yield SourcesEvent(sources=[_source_payload(b) for b in blocks])
 
-        llm = get_llm_provider(settings)
-        try:
-            async for event in llm.stream(SYSTEM_PROMPT, build_user_prompt(blocks, question)):
-                if isinstance(event, TextDelta):
-                    # head: NO_ANSWER interception; tail: the QUOTES section is kept
-                    # for the citations and never reaches the client as answer text
-                    visible = splitter.feed(sentinel.feed(event.text))
-                    if visible:
-                        parts.append(visible)
-                        yield DeltaEvent(text=visible)
-                elif isinstance(event, StreamUsage):
-                    usage = event
-            tail = splitter.feed(sentinel.flush()) + splitter.flush()
-            if tail:
-                parts.append(tail)
-                yield DeltaEvent(text=tail)
-        except GenerationError as exc:
-            log_ctx.warning("query_generation_failed", error_type=type(exc).__name__)
-            yield ErrorEvent(code="provider_unavailable", message="LLM provider unavailable.")
+        if llm is None:
+            llm = get_llm_provider(settings)
+        answer_prompt = build_user_prompt(blocks, question)
+        for attempt in range(2):
+            sentinel = SentinelBuffer()
+            splitter = QuoteSplitter()
+            parts = []
+            usage.start_attempt()
+            answer_stream = llm.stream(SYSTEM_PROMPT, answer_prompt)
+            try:
+                try:
+                    async for event in answer_stream:
+                        if isinstance(event, TextDelta):
+                            # head: NO_ANSWER interception; tail: the QUOTES section is kept
+                            # for the citations and never reaches the client as answer text
+                            visible = splitter.feed(sentinel.feed(event.text))
+                            if visible:
+                                parts.append(visible)
+                                yield DeltaEvent(text=visible)
+                        elif isinstance(event, StreamUsage):
+                            usage.observe(event)
+                finally:
+                    close = getattr(answer_stream, "aclose", None)
+                    if close is not None:
+                        with anyio.CancelScope(shield=True):
+                            await close()
+                tail = splitter.feed(sentinel.flush()) + splitter.flush()
+                if tail:
+                    parts.append(tail)
+                    yield DeltaEvent(text=tail)
+            except GenerationError as exc:
+                log_ctx.warning("query_generation_failed", error_type=type(exc).__name__)
+                yield ErrorEvent(code="provider_unavailable", message="LLM provider unavailable.")
+                return
+
+            model = llm.model_name
+            total_usage = usage.total
+            cost = cost_usd(
+                model,
+                total_usage.prompt_tokens if total_usage else None,
+                total_usage.completion_tokens if total_usage else None,
+            )
+
+            if sentinel.refused:
+                # generation gate: the model saw the context and said NO_ANSWER
+                log_ctx.info("query_refused_by_model")
+                await record_once(answer=None, refused=True, cost=cost, model=model)
+                yield DoneEvent(
+                    answer=None,
+                    refused=True,
+                    reason=REFUSAL_REASON,
+                    confidence=retrieval.top_score,
+                    prompt_tokens=total_usage.prompt_tokens if total_usage else None,
+                    completion_tokens=total_usage.completion_tokens if total_usage else None,
+                    cost=cost,
+                    latency_ms=latency_ms(),
+                    model=model,
+                )
+                return
+
+            raw = "".join(parts)
+            if raw.strip():
+                break
+            if attempt == 0:
+                log_ctx.warning(
+                    "query_empty_completion_retrying",
+                    completion_tokens=(total_usage.completion_tokens if total_usage else None),
+                )
+                continue
+            log_ctx.warning(
+                "query_empty_completion_after_retry",
+                completion_tokens=total_usage.completion_tokens if total_usage else None,
+            )
+            yield ErrorEvent(
+                code="provider_unavailable",
+                message="The LLM did not complete an answer. Please try again.",
+            )
             return
 
         model = llm.model_name
+        total_usage = usage.total
         cost = cost_usd(
             model,
-            usage.prompt_tokens if usage else None,
-            usage.completion_tokens if usage else None,
+            total_usage.prompt_tokens if total_usage else None,
+            total_usage.completion_tokens if total_usage else None,
         )
 
-        if sentinel.refused:
-            # generation gate: the model saw the context and said NO_ANSWER
-            log_ctx.info("query_refused_by_model")
-            await record_once(answer=None, refused=True, cost=cost, model=model)
-            yield DoneEvent(
-                answer=None,
-                refused=True,
-                reason=REFUSAL_REASON,
-                confidence=retrieval.top_score,
-                prompt_tokens=usage.prompt_tokens if usage else None,
-                completion_tokens=usage.completion_tokens if usage else None,
-                cost=cost,
-                latency_ms=latency_ms(),
-                model=model,
-            )
-            return
-
         raw = "".join(parts)
-        if not raw.strip():
-            # empty completion: the provider spent the whole budget on hidden reasoning
-            # or returned a zero-token stream — a blank non-refusal would reach the
-            # client as an empty answer, so convert it to an honest refusal
-            log_ctx.warning(
-                "query_empty_completion",
-                completion_tokens=usage.completion_tokens if usage else None,
-            )
-            await record_once(answer=None, refused=True, cost=cost, model=model)
-            yield DoneEvent(
-                answer=None,
-                refused=True,
-                reason=EMPTY_COMPLETION_REASON,
-                confidence=retrieval.top_score,
-                prompt_tokens=usage.prompt_tokens if usage else None,
-                completion_tokens=usage.completion_tokens if usage else None,
-                cost=cost,
-                latency_ms=latency_ms(),
-                model=model,
-            )
-            return
-
         answer, citations = finalize_answer(raw, blocks)
         quotes = resolve_quotes(splitter.section, answer, blocks)
         log_ctx.info(
@@ -431,8 +481,8 @@ async def run_query(
             refused=False,
             reason=None,
             confidence=retrieval.top_score,
-            prompt_tokens=usage.prompt_tokens if usage else None,
-            completion_tokens=usage.completion_tokens if usage else None,
+            prompt_tokens=total_usage.prompt_tokens if total_usage else None,
+            completion_tokens=total_usage.completion_tokens if total_usage else None,
             cost=cost,
             latency_ms=latency_ms(),
             model=model,
@@ -444,14 +494,19 @@ async def run_query(
     finally:
         # client disconnected mid-stream (or an unexpected error): keep the stats anyway
         partial = "".join(parts)
+        substantive_partial = partial if partial.strip() else None
         await record_once(
-            answer=partial or None,
+            answer=substantive_partial,
             refused=False,
-            quotes=resolve_quotes(splitter.section, partial, blocks) if partial else None,
+            quotes=(
+                resolve_quotes(splitter.section, substantive_partial, blocks)
+                if substantive_partial
+                else None
+            ),
             cost=cost_usd(
                 llm.model_name if llm else None,
-                usage.prompt_tokens if usage else None,
-                usage.completion_tokens if usage else None,
+                usage.total.prompt_tokens if usage.total else None,
+                usage.total.completion_tokens if usage.total else None,
             ),
             model=llm.model_name if llm else None,
         )

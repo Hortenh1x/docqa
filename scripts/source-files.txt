@@ -113,6 +113,7 @@ app/retrieval/__init__.py
 app/retrieval/base.py
 app/retrieval/fulltext.py
 app/retrieval/fusion.py
+app/retrieval/planning.py
 app/retrieval/rerank/__init__.py
 app/retrieval/rerank/base.py
 app/retrieval/rerank/cohere.py
@@ -159,7 +160,9 @@ docs/billing.md
 docs/demo.gif
 docs/source-releases.md
 eval/__init__.py
+eval/indirect_comparison.yaml
 eval/run_eval.py
+eval/run_indirect_comparison.py
 pyproject.toml
 scripts/__init__.py
 scripts/build_corpus.py
@@ -214,9 +217,11 @@ tests/unit/test_eval_context.py
 tests/unit/test_fusion.py
 tests/unit/test_generation.py
 tests/unit/test_golden_visibility.py
+tests/unit/test_indirect_comparison_eval.py
 tests/unit/test_llm_openai_compat.py
 tests/unit/test_parsers.py
 tests/unit/test_private_error_logging.py
+tests/unit/test_query_planning.py
 tests/unit/test_rerank.py
 tests/unit/test_security.py
 tests/unit/test_settings.py

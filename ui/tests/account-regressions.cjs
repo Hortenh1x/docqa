@@ -355,6 +355,16 @@ test('a signed-in thread is read from the account history and pages backwards', 
     await f.page.getByRole('dialog', { name: 'Source 1: Private salary.md' }).waitFor();
   } finally { await f.close(); }
 });
+test('an incomplete recorded answer renders as a retryable error', async browser => {
+  const f = await fixture(browser); try {
+    f.state.history = [{ id: 'q-incomplete', collection_id: own, question: 'Interrupted answer', answer: null, refused: false, reason: null, role: null, confidence: 0.9, usage: { prompt_tokens: 10, completion_tokens: null, cost_usd: null }, latency_ms: 1, model: 'stub', created_at: '2026-09-12T10:00:00Z', sources: [] }];
+    await login(f.page); await f.page.getByRole('link', { name: 'Ask', exact: true }).click();
+    await f.page.getByLabel('Collection', { exact: true }).selectOption(own);
+    const exchange = f.page.getByRole('article', { name: 'Interrupted answer', exact: true });
+    await exchange.getByText('The answer was not completed. Please try again.', { exact: true }).waitFor();
+    await exchange.getByRole('button', { name: 'Retry', exact: true }).waitFor();
+  } finally { await f.close(); }
+});
 test('mutation preflight detects another account and never sends the old upload', async browser => {
   const f = await fixture(browser); try {
     await login(f.page); await f.page.getByRole('link', { name: 'Library', exact: true }).click();

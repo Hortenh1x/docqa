@@ -325,6 +325,212 @@ async def test_llm_denied_before_transport_and_real_usage_releases_reserve(budge
         current_billing_actor.reset(token)
 
 
+async def test_query_planner_and_answer_use_two_provider_reservations(budget_config, monkeypatch):
+    import json
+    import uuid
+
+    import httpx
+    from sqlalchemy import select
+
+    from app.billing.context import current_billing_actor
+    from app.db.base import get_sessionmaker
+    from app.db.models import SpendReservation
+    from app.generation import service
+    from app.generation.llm.openai_compat import OpenAICompatLLM
+    from app.retrieval.base import RetrievedChunk
+    from app.retrieval.planning import PLANNER_SYSTEM_PROMPT
+    from app.retrieval.service import RetrievalResult
+
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        payload = json.loads(request.content)
+        system = payload["messages"][0]["content"]
+        if system == PLANNER_SYSTEM_PROMPT:
+            content = '{"queries":[]}'
+            usage = {"prompt_tokens": 10, "completion_tokens": 2}
+        else:
+            content = "Supported [1]."
+            usage = {"prompt_tokens": 20, "completion_tokens": 4}
+        delta = json.dumps({"choices": [{"delta": {"content": content}}]})
+        usage_event = json.dumps({"usage": usage})
+        return httpx.Response(
+            200,
+            text=f"data: {delta}\n\ndata: {usage_event}\n\ndata: [DONE]\n\n",
+        )
+
+    llm = OpenAICompatLLM(
+        "https://api.deepseek.com",
+        "fixture",
+        "deepseek-flash",
+        0,
+        100,
+        transport=httpx.MockTransport(handler),
+    )
+    chunk = RetrievedChunk(
+        chunk_id=1,
+        document_id=uuid.uuid4(),
+        filename="fixture.md",
+        content="Supported evidence.",
+        page_start=None,
+        page_end=None,
+        section_path=None,
+        score=0.9,
+    )
+
+    async def fake_retrieve(*args, **kwargs):
+        return RetrievalResult(chunks=[chunk], top_score=0.9)
+
+    async def fake_record(**kwargs):
+        return None
+
+    monkeypatch.setattr(service, "retrieve", fake_retrieve)
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: llm)
+    monkeypatch.setattr(service, "_record_query", fake_record)
+    actor = BillingActor("planner-answer-ip")
+    token = current_billing_actor.set(actor)
+    try:
+        events = [
+            event
+            async for event in service.run_query(
+                uuid.uuid4(),
+                uuid.uuid4(),
+                "Compare the evidence",
+                service.Settings(database_url="postgresql+asyncpg://x/x", redis_url="redis://x"),
+                data_version=0,
+            )
+        ]
+    finally:
+        current_billing_actor.reset(token)
+
+    assert len(requests) == 2
+    done = events[-1]
+    assert isinstance(done, service.DoneEvent)
+    assert (done.prompt_tokens, done.completion_tokens) == (30, 6)
+    assert done.cost == Decimal("0.000016")
+    async with get_sessionmaker()() as db:
+        rows = list(
+            (
+                await db.execute(
+                    select(SpendReservation).where(
+                        SpendReservation.ip_digest == "planner-answer-ip"
+                    )
+                )
+            )
+            .scalars()
+            .all()
+        )
+    assert len(rows) == 2
+    assert all(row.operation == "generation" and row.settled_at is not None for row in rows)
+    assert sum((row.actual_usd or Decimal(0) for row in rows), Decimal(0)) == Decimal("0.00001620")
+
+
+async def test_empty_answer_retry_uses_a_third_provider_reservation(budget_config, monkeypatch):
+    import json
+    import uuid
+
+    import httpx
+    from sqlalchemy import select
+
+    from app.billing.context import current_billing_actor
+    from app.db.base import get_sessionmaker
+    from app.db.models import SpendReservation
+    from app.generation import service
+    from app.generation.llm.openai_compat import OpenAICompatLLM
+    from app.retrieval.base import RetrievedChunk
+    from app.retrieval.planning import PLANNER_SYSTEM_PROMPT
+    from app.retrieval.service import RetrievalResult
+
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        payload = json.loads(request.content)
+        system = payload["messages"][0]["content"]
+        if system == PLANNER_SYSTEM_PROMPT:
+            content = '{"queries":[]}'
+            usage = {"prompt_tokens": 10, "completion_tokens": 2}
+        elif len(requests) == 2:
+            content = ""
+            usage = {"prompt_tokens": 20, "completion_tokens": 4}
+        else:
+            content = "Supported after retry [1]."
+            usage = {"prompt_tokens": 20, "completion_tokens": 4}
+        events = []
+        if content:
+            events.append("data: " + json.dumps({"choices": [{"delta": {"content": content}}]}))
+        events.append("data: " + json.dumps({"usage": usage}))
+        events.append("data: [DONE]")
+        return httpx.Response(200, text="\n\n".join(events) + "\n\n")
+
+    llm = OpenAICompatLLM(
+        "https://api.deepseek.com",
+        "fixture",
+        "deepseek-flash",
+        0,
+        100,
+        transport=httpx.MockTransport(handler),
+    )
+    chunk = RetrievedChunk(
+        chunk_id=1,
+        document_id=uuid.uuid4(),
+        filename="fixture.md",
+        content="Supported evidence.",
+        page_start=None,
+        page_end=None,
+        section_path=None,
+        score=0.9,
+    )
+
+    async def fake_retrieve(*args, **kwargs):
+        return RetrievalResult(chunks=[chunk], top_score=0.9)
+
+    async def fake_record(**kwargs):
+        return None
+
+    monkeypatch.setattr(service, "retrieve", fake_retrieve)
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: llm)
+    monkeypatch.setattr(service, "_record_query", fake_record)
+    actor = BillingActor("planner-answer-retry-ip")
+    token = current_billing_actor.set(actor)
+    try:
+        events = [
+            event
+            async for event in service.run_query(
+                uuid.uuid4(),
+                uuid.uuid4(),
+                "Compare the evidence",
+                service.Settings(database_url="postgresql+asyncpg://x/x", redis_url="redis://x"),
+                data_version=0,
+            )
+        ]
+    finally:
+        current_billing_actor.reset(token)
+
+    assert len(requests) == 3
+    done = events[-1]
+    assert isinstance(done, service.DoneEvent)
+    assert done.answer == "Supported after retry [1]."
+    assert (done.prompt_tokens, done.completion_tokens) == (50, 10)
+    assert done.cost == Decimal("0.000027")
+    async with get_sessionmaker()() as db:
+        rows = list(
+            (
+                await db.execute(
+                    select(SpendReservation).where(
+                        SpendReservation.ip_digest == "planner-answer-retry-ip"
+                    )
+                )
+            )
+            .scalars()
+            .all()
+        )
+    assert len(rows) == 3
+    assert all(row.operation == "generation" and row.settled_at is not None for row in rows)
+    assert sum((row.actual_usd or Decimal(0) for row in rows), Decimal(0)) == Decimal("0.00002700")
+
+
 async def test_provider_unknown_usage_and_client_close_keep_reservation(budget_config):
     import httpx
 
