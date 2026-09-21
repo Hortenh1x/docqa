@@ -1,6 +1,7 @@
 """Google account/session boundaries against real PostgreSQL, with signed local OIDC."""
 
 import asyncio
+import uuid
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from types import SimpleNamespace
@@ -170,6 +171,41 @@ async def email_login(browser, email="alice@example.com"):
     assert login.status_code == 200, login.text
 
 
+async def guest_conversation(browser) -> uuid.UUID:
+    from app.accounts.sessions import token_hash
+    from app.config import get_settings
+    from app.db.base import get_sessionmaker
+    from app.db.models import AccountSession, Collection, Conversation, Tenant
+
+    raw = browser.client.cookies.get(COOKIE)
+    async with get_sessionmaker()() as db:
+        session_id = await db.scalar(
+            select(AccountSession.id).where(AccountSession.token_hash == token_hash(raw))
+        )
+        tenant = Tenant(name="Public service", kind="service")
+        db.add(tenant)
+        await db.flush()
+        collection = Collection(
+            tenant_id=tenant.id,
+            name="Public",
+            slug=f"public-{uuid.uuid4().hex[:6]}",
+            embedding_model=get_settings().embedding_model_id,
+            read_only=True,
+            is_public=True,
+        )
+        db.add(collection)
+        await db.flush()
+        conversation = Conversation(
+            tenant_id=tenant.id,
+            collection_id=collection.id,
+            title="Guest Google history",
+            owner_guest_session_id=session_id,
+        )
+        db.add(conversation)
+        await db.commit()
+        return conversation.id
+
+
 async def test_new_google_user_has_verified_private_tenant_and_rotated_cookie(google_browser):
     from app.db.base import get_sessionmaker
     from app.db.models import Collection, GoogleIdentity, Tenant, User
@@ -189,6 +225,48 @@ async def test_new_google_user_has_verified_private_tenant_and_rotated_cookie(go
         assert (await db.get(Tenant, user.tenant_id)).kind == "personal"
         assert (await db.scalar(select(Collection))).name == "My documents"
         assert (await db.scalar(select(GoogleIdentity))).user_id == user.id
+
+
+async def test_google_login_claims_guest_conversations_before_session_rotation(google_browser):
+    from app.db.base import get_sessionmaker
+    from app.db.models import Conversation, User
+
+    params = await start(google_browser)
+    conversation_id = await guest_conversation(google_browser)
+    await configure_provider(google_browser, params)
+    response = await finish(google_browser, params)
+    assert response.headers["location"] == "https://ui.test/"
+    async with get_sessionmaker()() as db:
+        conversation = await db.get(Conversation, conversation_id)
+        user = await db.scalar(select(User))
+        assert conversation.owner_user_id == user.id
+        assert conversation.owner_guest_session_id is None
+
+
+async def test_google_rotation_failure_rolls_back_guest_conversation_claim(
+    google_browser, monkeypatch
+):
+    from app.accounts import google_accounts
+    from app.accounts.google_state import GoogleAuthError
+    from app.db.base import get_sessionmaker
+    from app.db.models import Conversation
+
+    params = await start(google_browser)
+    conversation_id = await guest_conversation(google_browser)
+    old_cookie = google_browser.client.cookies.get(COOKIE)
+    await configure_provider(google_browser, params)
+
+    async def fail_rotation(*args, **kwargs):
+        raise GoogleAuthError()
+
+    monkeypatch.setattr(google_accounts, "create_authenticated_session", fail_rotation)
+    response = await finish(google_browser, params)
+    assert response.headers["location"] == "https://ui.test/account?google_error=failed"
+    assert google_browser.client.cookies.get(COOKIE) == old_cookie
+    async with get_sessionmaker()() as db:
+        conversation = await db.get(Conversation, conversation_id)
+        assert conversation.owner_user_id is None
+        assert conversation.owner_guest_session_id is not None
 
 
 async def test_existing_email_never_automatically_merges(google_browser):

@@ -130,9 +130,27 @@ def _store_chunks(
     token: uuid.UUID,
 ) -> bool:
     with sync_session() as session:
-        document = session.get(Document, document_id, with_for_update=True)
+        # All chunk-changing paths lock Collection before Document. Reading the immutable
+        # collection id without a lock first avoids the inverse Document->Collection order
+        # that can deadlock against delete, retry, reprocess or wipe.
+        collection_id = session.scalar(
+            select(Document.collection_id).where(Document.id == document_id)
+        )
+        if collection_id is None:
+            log.warning("document_vanished_or_reclaimed", document_id=str(document_id))
+            return False
+        collection = session.get(Collection, collection_id, with_for_update=True)
+        document = session.get(
+            Document,
+            document_id,
+            with_for_update=True,
+            populate_existing=True,
+        )
         if document is None or document.processing_token != token:
             log.warning("document_vanished_or_reclaimed", document_id=str(document_id))
+            return False
+        if collection is None or document.collection_id != collection.id:
+            log.warning("document_collection_vanished", document_id=str(document_id))
             return False
         # reprocessing must not duplicate chunks
         session.execute(delete(Chunk).where(Chunk.document_id == document_id))
@@ -158,6 +176,7 @@ def _store_chunks(
             (page.number for page in parsed.pages if page.number is not None), default=None
         )
         document.processed_at = datetime.now(UTC)
+        collection.source_generation += 1
 
     return True
 

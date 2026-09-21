@@ -5,6 +5,7 @@ from app.db.models.api_key import ApiKey
 from app.db.models.base import Base
 from app.db.models.chunk import Chunk
 from app.db.models.collection import Collection
+from app.db.models.conversation import Conversation
 from app.db.models.document import Document, DocumentStatus
 from app.db.models.google import GoogleAuthState, GoogleIdentity
 from app.db.models.query import Query, QueryCitation
@@ -24,6 +25,7 @@ __all__ = [
     "Base",
     "Chunk",
     "Collection",
+    "Conversation",
     "Document",
     "DocumentStatus",
     "Query",

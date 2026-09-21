@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any
 
-from sqlalchemy import REAL, BigInteger, ForeignKey, Index, Numeric, text
+from sqlalchemy import REAL, BigInteger, CheckConstraint, ForeignKey, Index, Numeric, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -16,6 +16,12 @@ class Query(Base):
         Index("ix_queries_tenant_id_created_at", "tenant_id", "created_at"),
         Index("ix_queries_user_created", "user_id", "created_at"),
         Index("ix_queries_ip_created", "ip_digest", "created_at"),
+        Index("ix_queries_conversation_created", "conversation_id", "created_at", "id"),
+        CheckConstraint(
+            "outcome IS NULL OR outcome IN "
+            "('answered', 'refused', 'clarification', 'failed', 'cancelled')",
+            name="outcome",
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -24,6 +30,12 @@ class Query(Base):
     tenant_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("tenants.id", ondelete="CASCADE"))
     collection_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey("collections.id", ondelete="CASCADE")
+    )
+    conversation_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("conversations.id", ondelete="CASCADE")
+    )
+    parent_query_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("queries.id", ondelete="SET NULL")
     )
     question: Mapped[str]
     answer: Mapped[str | None]
@@ -37,6 +49,11 @@ class Query(Base):
     cost_usd: Mapped[Decimal | None] = mapped_column(Numeric(10, 6))
     model: Mapped[str | None]
     role: Mapped[str | None]  # the caller's asserted role (access levels); null = legacy rows
+    outcome: Mapped[str | None]
+    outcome_reason: Mapped[str | None]
+    source_generation: Mapped[int | None]
+    access_fingerprint: Mapped[str | None]
+    context_reset: Mapped[bool] = mapped_column(server_default=text("false"))
     user_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"))
     ip_digest: Mapped[str | None]
     created_at: Mapped[datetime] = mapped_column(server_default=text("now()"))

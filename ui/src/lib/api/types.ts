@@ -142,15 +142,35 @@ export interface DonePayload {
   latency_ms: number;
   model: string | null;
   citations?: Citation[];
+  outcome: QueryOutcome;
+  context: QueryContext;
+}
+
+export type QueryOutcome =
+  | "answered"
+  | "refused"
+  | "clarification"
+  | "failed"
+  | "cancelled"
+  | "legacy_unknown";
+
+export interface QueryContext {
+  reset: boolean;
+  /** Live streams only. History intentionally persists only context_reset. */
+  turns_used: number;
 }
 
 /** One recorded exchange from GET /v1/collections/{id}/queries (accounts only). */
 export interface HistoryQuery {
   id: string;
+  conversation_id: string | null;
+  parent_query_id: string | null;
   question: string;
   answer: string | null;
   refused: boolean;
   reason: string | null;
+  outcome: QueryOutcome;
+  context_reset: boolean;
   role: string | null;
   confidence: number | null;
   usage: Usage;
@@ -163,6 +183,34 @@ export interface HistoryQuery {
 export interface HistoryPage {
   queries: HistoryQuery[];
   has_more: boolean;
+}
+
+export interface ConversationPreview {
+  query_id: string;
+  question: string;
+  outcome: QueryOutcome;
+  created_at: string;
+}
+
+export interface Conversation {
+  id: string;
+  collection_id: string;
+  title: string;
+  archived: boolean;
+  legacy: boolean;
+  created_at: string;
+  updated_at: string;
+  preview: ConversationPreview | null;
+}
+
+export interface ConversationPage {
+  conversations: Conversation[];
+  has_more: boolean;
+  next_cursor: string | null;
+}
+
+export interface ConversationHistoryPage extends HistoryPage {
+  next_cursor: string | null;
 }
 
 export interface UsageDay {

@@ -104,6 +104,18 @@ class ProviderUnavailableError(DomainError):
     title = "Upstream provider unavailable"
 
 
+class QueryPersistenceError(DomainError):
+    status = 503
+    code = "query_persistence_failed"
+    title = "Query persistence failed"
+
+
+class QuerySourceChangedError(DomainError):
+    status = 409
+    code = "query_source_changed"
+    title = "Collection sources changed"
+
+
 class RateLimitedError(DomainError):
     status = 429
     code = "rate_limited"
@@ -158,6 +170,42 @@ class IdempotencyKeyReusedError(DomainError):
     status = 422
     code = "idempotency_key_reused"
     title = "Idempotency-Key reused with a different request"
+
+
+class GuestSessionRequiredError(DomainError):
+    status = 401
+    code = "guest_session_required"
+    title = "Guest session required"
+
+
+class ConversationArchivedError(DomainError):
+    status = 409
+    code = "conversation_archived"
+    title = "Conversation is archived"
+
+
+class ConversationReadOnlyError(DomainError):
+    status = 409
+    code = "conversation_read_only"
+    title = "Conversation is read-only"
+
+
+class InvalidConversationParentError(DomainError):
+    status = 422
+    code = "invalid_conversation_parent"
+    title = "Invalid conversation parent"
+
+
+class InvalidCursorError(DomainError):
+    status = 400
+    code = "invalid_cursor"
+    title = "Invalid pagination cursor"
+
+
+class LegacyGuestClaimDisabledError(DomainError):
+    status = 410
+    code = "legacy_guest_claim_disabled"
+    title = "Legacy guest claim is no longer available"
 
 
 def problem_response(

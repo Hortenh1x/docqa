@@ -84,5 +84,13 @@ def render_context(blocks: list[ContextBlock]) -> str:
     return "\n\n".join(f"{block_header(b)}\n{b.text}" for b in blocks)
 
 
-def build_user_prompt(blocks: list[ContextBlock], question: str) -> str:
-    return f"Context blocks:\n\n{render_context(blocks)}\n\nQuestion: {question}"
+def build_user_prompt(
+    blocks: list[ContextBlock], question: str, effective_question: str | None = None
+) -> str:
+    context = f"Context blocks:\n\n{render_context(blocks)}"
+    if effective_question is None:
+        return f"{context}\n\nQuestion: {question}"
+    return (
+        f"{context}\n\nOriginal user wording: {question}\n"
+        f"Standalone retrieval interpretation: {effective_question}"
+    )

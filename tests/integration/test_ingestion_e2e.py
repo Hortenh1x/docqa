@@ -50,7 +50,18 @@ async def _chunk_rows(document_id: str):
         return list(result.scalars().all())
 
 
+async def _collection_versions(collection_id: str) -> tuple[int, int]:
+    from app.db.base import get_sessionmaker
+    from app.db.models import Collection
+
+    async with get_sessionmaker()() as session:
+        collection = await session.get(Collection, collection_id)
+        assert collection is not None
+        return collection.data_version, collection.source_generation
+
+
 async def test_markdown_upload_reaches_ready_with_chunks(client, tenant, collection_id):
+    assert await _collection_versions(collection_id) == (0, 0)
     upload = await client.post(
         f"/v1/collections/{collection_id}/documents",
         files={"file": ("policy.md", POLICY_MD, "text/markdown")},
@@ -79,6 +90,9 @@ async def test_markdown_upload_reaches_ready_with_chunks(client, tenant, collect
     assert carryover
     assert carryover[0].section_path is not None
     assert carryover[0].section_path.startswith("Vacation Policy")
+    # Becoming retrieval-visible advances the context source fence, while the older
+    # data_version cleanup fence retains its existing upload semantics.
+    assert await _collection_versions(collection_id) == (0, 1)
 
 
 async def test_pdf_upload_maps_pages(client, tenant, collection_id):
@@ -141,6 +155,10 @@ async def test_broken_pdf_ends_as_failed(client, tenant, collection_id):
     assert body["status"] == "failed"
     assert "parse error" in body["error"]
     assert await _chunk_rows(document_id) == []
+    assert await _collection_versions(collection_id) == (0, 0)
+    deleted = await client.delete(f"/v1/documents/{document_id}", headers=tenant["headers"])
+    assert deleted.status_code == 204
+    assert await _collection_versions(collection_id) == (1, 0)
 
 
 async def test_delete_cascades_chunks(client, tenant, collection_id):
@@ -161,6 +179,7 @@ async def test_delete_cascades_chunks(client, tenant, collection_id):
     async with get_sessionmaker()() as session:
         remaining = await session.scalar(select(func.count()).select_from(Chunk))
     assert remaining == 0
+    assert await _collection_versions(collection_id) == (1, 2)
 
 
 async def test_document_file_served_inline(client, tenant, make_tenant, collection_id):

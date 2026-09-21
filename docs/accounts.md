@@ -84,6 +84,14 @@ are scoped in SQL; a foreign owner gets 404. Account queries against public
 collections retrieve from the collection tenant while retaining the account actor
 for billing. Personal tenants never authenticate with API keys. The configured
 public tenant's legacy API key resolves as a guest when accounts are enabled.
+
+Named guest conversations use the same opaque `__Host-docqa_session` cookie with a
+bounded sliding lifetime (`AUTH_GUEST_SESSION_TTL_S`, 30 days by default). Password and
+Google sign-in claim conversations owned by that exact server-side session in the same
+transaction that revokes it. UUIDs, IP addresses and the shared public demo key are not
+conversation ownership credentials. Private service-tenant API keys retain tenant-wide
+conversation access. When accounts are disabled, legacy API-key query calls continue to
+work, but browser guest conversations require an account-mode session.
 Other service keys preserve operator integration access; browser mutations using
 service keys require account sign-in.
 

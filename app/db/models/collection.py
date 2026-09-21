@@ -34,6 +34,9 @@ class Collection(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=text("now()"))
     # Incremented by wipe; fences results from queries/suggestions already in flight.
     data_version: Mapped[int] = mapped_column(server_default=text("0"))
+    # Changes only when retrieval-visible chunks change. Conversation context snapshots
+    # use this independently from data_version's cleanup/in-flight fencing semantics.
+    source_generation: Mapped[int] = mapped_column(server_default=text("0"))
     suggestion_billing_user_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("users.id", ondelete="RESTRICT")
     )

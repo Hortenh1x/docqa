@@ -409,7 +409,14 @@ async def delete_document(
         raise DemoReadOnlyError("This collection is read-only.")
     sha256, mime_type = document.sha256, document.mime_type
     collection_id = document.collection_id
+    had_chunks = bool(
+        await db.scalar(
+            select(func.count()).select_from(Chunk).where(Chunk.document_id == document.id)
+        )
+    )
     collection.data_version += 1
+    if had_chunks:
+        collection.source_generation += 1
     collection.suggested_questions = None
     payer = current_billing_actor.get()
     collection.suggestion_billing_user_id = payer.user_id if payer else None

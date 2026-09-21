@@ -20,7 +20,14 @@ from sqlalchemy import select
 from app.api.deps import CurrentTenant, DbSession, collection_principal, fetch_collection
 from app.billing.errors import BudgetExceededError, BudgetUnavailableError
 from app.config import get_settings
-from app.core.errors import EmbeddingModelMismatchError, ProviderUnavailableError
+from app.conversations.context import ConversationContext, load_conversation_context
+from app.core.errors import (
+    EmbeddingModelMismatchError,
+    InvalidConversationParentError,
+    ProviderUnavailableError,
+    QueryPersistenceError,
+    QuerySourceChangedError,
+)
 from app.core.idempotency import replay_headers, run_idempotent
 from app.core.logging import get_request_id
 from app.core.rate_limit import rate_limit
@@ -47,6 +54,8 @@ _SSE_HEADERS = {
 
 class QueryRequest(BaseModel):
     collection_id: uuid.UUID
+    conversation_id: uuid.UUID | None = None
+    parent_query_id: uuid.UUID | None = None
     question: str = Field(min_length=1, max_length=4000)
     stream: bool = True
     # access levels: the trusted API client's claim about its end user. Chunks whose
@@ -76,6 +85,8 @@ def _done_payload(event: DoneEvent) -> dict[str, Any]:
         "latency_ms": event.latency_ms,
         "model": event.model,
         "citations": event.citations,
+        "outcome": event.outcome,
+        "context": event.context,
     }
 
 
@@ -83,11 +94,23 @@ def _sse_frame(name: str, payload: dict[str, Any]) -> str:
     return f"event: {name}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
+def _fingerprint(parts: list[Any], *, legacy_spacing: bool) -> str:
+    serialized = json.dumps(parts) if legacy_spacing else json.dumps(parts, separators=(",", ":"))
+    return hashlib.sha256(serialized.encode()).hexdigest()
+
+
 async def _sse_stream(events: AsyncGenerator[QueryEvent, None]) -> AsyncIterator[str]:
     async with aclosing(events):
         async for event in events:
             if isinstance(event, MetaEvent):
-                yield _sse_frame("meta", {"query_id": str(event.query_id), "access": event.access})
+                yield _sse_frame(
+                    "meta",
+                    {
+                        "query_id": str(event.query_id),
+                        "access": event.access,
+                        **({"context": event.context} if event.context is not None else {}),
+                    },
+                )
             elif isinstance(event, SourcesEvent):
                 yield _sse_frame("sources", {"sources": event.sources})
             elif isinstance(event, DeltaEvent):
@@ -131,6 +154,10 @@ async def _collect_json(events: AsyncGenerator[QueryEvent, None]) -> dict[str, A
                     raise BudgetUnavailableError(
                         event.message, headers=event.headers, **(event.extra or {})
                     )
+                if event.code == "query_persistence_failed":
+                    raise QueryPersistenceError(event.message)
+                if event.code == "query_source_changed":
+                    raise QuerySourceChangedError(event.message)
                 raise ProviderUnavailableError(event.message)
             elif isinstance(event, DoneEvent):
                 return {
@@ -170,6 +197,8 @@ async def query(
     request: Request,
     idempotency_key: Annotated[str | None, Header()] = None,
 ) -> StreamingResponse | JSONResponse:
+    if payload.parent_query_id is not None and payload.conversation_id is None:
+        raise InvalidConversationParentError("parent_query_id requires conversation_id.")
     collection = await fetch_collection(db, tenant.id, payload.collection_id, request.state.actor)
     settings = get_settings()
     if collection.embedding_model != settings.embedding_model_id:
@@ -180,6 +209,18 @@ async def query(
         )
 
     principal = await collection_principal(db, collection, request.state.actor, payload.role)
+    conversation_context: ConversationContext | None = None
+    if payload.conversation_id is not None:
+        conversation_context = await load_conversation_context(
+            db,
+            request,
+            request.state.actor,
+            collection.id,
+            payload.conversation_id,
+            payload.parent_query_id,
+            principal,
+            settings,
+        )
 
     # responses constructed below replace the injected Response — carry over the
     # rate-limit/quota headers the dependency wrote into it
@@ -187,70 +228,102 @@ async def query(
     tenant_id, collection_id = collection.tenant_id, collection.id
     data_version = collection.data_version
     await db.commit()  # release request dependency connection before generation
-    if payload.stream:
-        events = run_query(
-            tenant_id, collection_id, payload.question, settings, principal, data_version
+
+    def query_events() -> AsyncGenerator[QueryEvent, None]:
+        args = (
+            tenant_id,
+            collection_id,
+            payload.question,
+            settings,
+            principal,
+            data_version,
         )
+        if conversation_context is None:
+            return run_query(*args)
+        return run_query(*args, conversation_context=conversation_context)
+
+    if payload.stream:
         return StreamingResponse(
-            _sse_stream(events),
+            _sse_stream(query_events()),
             media_type="text/event-stream",
             headers={**_SSE_HEADERS, **limit_headers},
         )
 
     if idempotency_key is None:
         return JSONResponse(
-            await _collect_json(
-                run_query(
-                    tenant_id, collection_id, payload.question, settings, principal, data_version
-                )
-            ),
+            await _collect_json(query_events()),
             headers=limit_headers,
         )
 
     async def _handler() -> tuple[int, dict[str, Any]]:
-        body = await _collect_json(
-            run_query(tenant_id, collection_id, payload.question, settings, principal, data_version)
-        )
+        body = await _collect_json(query_events())
         return 200, body
 
-    # the key is bound to (collection, role, question): a replay under another role
-    # must not receive an answer produced with different access
-    fingerprint = hashlib.sha256(
-        json.dumps(
-            [
-                "query",
-                str(collection_id),
-                data_version,
-                principal.role,
-                sorted(principal.labels),
-                settings.access_reveal_hidden,
-                payload.question,
-            ]
-        ).encode()
-    ).hexdigest()
+    # Standalone calls retain the historic fingerprint. Contextual calls additionally bind
+    # replay to the exact accepted head and source/access snapshot.
+    fingerprint_parts: list[Any]
+    if conversation_context is None:
+        fingerprint_parts = [
+            "query",
+            str(collection_id),
+            data_version,
+            principal.role,
+            sorted(principal.labels),
+            settings.access_reveal_hidden,
+            payload.question,
+        ]
+    else:
+        fingerprint_parts = [
+            "query",
+            str(collection_id),
+            data_version,
+            conversation_context.source_generation,
+            principal.role,
+            sorted(principal.labels),
+            settings.access_reveal_hidden,
+            str(conversation_context.conversation_id),
+            (
+                str(conversation_context.parent_query_id)
+                if conversation_context.parent_query_id is not None
+                else None
+            ),
+            payload.question,
+        ]
+    fingerprint = _fingerprint(
+        fingerprint_parts,
+        legacy_spacing=conversation_context is None,
+    )
 
     async def cache_valid() -> bool:
         async with get_sessionmaker()() as session:
-            return (
-                await session.scalar(
-                    select(Collection.data_version).where(
+            versions = (
+                await session.execute(
+                    select(Collection.data_version, Collection.source_generation).where(
                         Collection.id == collection_id, Collection.tenant_id == tenant_id
                     )
                 )
-                == data_version
+            ).one_or_none()
+            if versions is None or versions.data_version != data_version:
+                return False
+            return (
+                conversation_context is None
+                or versions.source_generation == conversation_context.source_generation
             )
 
     visitor_scope = None
     if request.state.actor.kind == "guest":
-        from app.accounts.limits import client_address
-        from app.billing.context import current_billing_actor
+        if conversation_context is not None:
+            visitor_scope = str(request.state.account_session.id)
+        else:
+            from app.accounts.limits import client_address
+            from app.billing.context import current_billing_actor
 
-        payer = current_billing_actor.get()
-        visitor_scope = (
-            payer.ip_digest
-            if payer
-            else hashlib.sha256(client_address(request).encode()).hexdigest()
-        )
+            payer = current_billing_actor.get()
+            visitor_scope = (
+                payer.ip_digest
+                if payer
+                else hashlib.sha256(client_address(request).encode()).hexdigest()
+            )
     result = await run_idempotent(
         tenant.id,
         idempotency_key,

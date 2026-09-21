@@ -75,7 +75,7 @@ async def create_session(
     db: AsyncSession, response: Response, user: User | None = None
 ) -> AccountSession:
     raw = secrets.token_urlsafe(32)
-    ttl = get_settings().auth_session_ttl_s if user else 3600
+    ttl = get_settings().auth_session_ttl_s if user else get_settings().auth_guest_session_ttl_s
     session = AccountSession(
         token_hash=token_hash(raw),
         user_id=user.id if user else None,
@@ -86,6 +86,21 @@ async def create_session(
     await db.flush()
     set_cookie(response, raw, ttl)
     return session
+
+
+def renew_guest_session(request: Request, response: Response, session: AccountSession) -> None:
+    """Sliding renewal for active anonymous ownership, bounded by the configured TTL."""
+    if session.user_id is not None:
+        return
+    ttl = get_settings().auth_guest_session_ttl_s
+    now = datetime.now(UTC)
+    if session.expires_at - now >= timedelta(seconds=ttl / 2):
+        return
+    raw = request.cookies.get(COOKIE_NAME)
+    if raw is None or not 32 <= len(raw) <= 128:
+        raise InvalidSessionError()
+    session.expires_at = now + timedelta(seconds=ttl)
+    set_cookie(response, raw, ttl)
 
 
 async def create_authenticated_session(

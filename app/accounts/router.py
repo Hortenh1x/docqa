@@ -18,9 +18,11 @@ from app.accounts.sessions import (
     create_authenticated_session,
     create_session,
     load_session,
+    renew_guest_session,
 )
 from app.api.deps import DbSession
 from app.config import get_settings
+from app.conversations.service import claim_guest_conversations
 from app.db.models import AccountSession
 
 router = APIRouter(prefix="/v1/auth", tags=["accounts"])
@@ -117,6 +119,7 @@ async def login(
         from app.billing.service import summary
 
         await summary(BillingActor(client_digest(request), user.id))
+    await claim_guest_conversations(db, session.id, user.id)
     current = await create_authenticated_session(db, request, response, user, session)
     return SessionOut(
         user=UserOut.model_validate(user),
@@ -183,6 +186,7 @@ async def session_status(request: Request, response: Response, db: DbSession) ->
         session, user = await create_session(db, response), None
     else:
         session, user = loaded
+        renew_guest_session(request, response, session)
     return SessionOut(
         user=UserOut.model_validate(user) if user else None,
         csrf_token=session.csrf_token,

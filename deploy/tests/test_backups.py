@@ -39,6 +39,14 @@ def test_backup_verification_rejects_incomplete_and_modified_bundles(tmp_path):
         module.verify_bundle(tmp_path)
 
 
+def test_backup_counts_include_conversations_and_accept_older_manifest_subset():
+    module = backup_module()
+    assert "conversations" in module.TABLES
+    sql = module.counts_sql(tuple(name for name in module.TABLES if name != "conversations"))
+    assert "conversations" not in sql
+    assert "queries" in sql
+
+
 def test_project_lock_rejects_overlapping_backups(tmp_path, monkeypatch):
     module = backup_module()
     monkeypatch.setattr(module.tempfile, "gettempdir", lambda: str(tmp_path))

@@ -30,6 +30,7 @@ TABLES = (
     "collections",
     "documents",
     "chunks",
+    "conversations",
     "queries",
     "query_citations",
     "users",

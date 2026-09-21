@@ -531,6 +531,120 @@ async def test_empty_answer_retry_uses_a_third_provider_reservation(budget_confi
     assert sum((row.actual_usd or Decimal(0) for row in rows), Decimal(0)) == Decimal("0.00002700")
 
 
+async def test_contextual_normalizer_planner_and_retry_each_bill_once(budget_config, monkeypatch):
+    import json
+    import uuid
+
+    import httpx
+    from sqlalchemy import select
+
+    from app.billing.context import current_billing_actor
+    from app.conversations.context import ConversationContext, SafeTurn
+    from app.conversations.normalizer import NORMALIZER_SYSTEM_PROMPT
+    from app.db.base import get_sessionmaker
+    from app.db.models import SpendReservation
+    from app.generation import service
+    from app.generation.llm.openai_compat import OpenAICompatLLM
+    from app.retrieval.base import RetrievedChunk
+    from app.retrieval.planning import PLANNER_SYSTEM_PROMPT
+    from app.retrieval.service import RetrievalResult
+
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        system = json.loads(request.content)["messages"][0]["content"]
+        if system == NORMALIZER_SYSTEM_PROMPT:
+            content = '{"action":"search","effective_question":"Standalone evidence question"}'
+            usage = {"prompt_tokens": 5, "completion_tokens": 1}
+        elif system == PLANNER_SYSTEM_PROMPT:
+            content = '{"queries":[]}'
+            usage = {"prompt_tokens": 10, "completion_tokens": 2}
+        elif len(requests) == 3:
+            content = ""
+            usage = {"prompt_tokens": 20, "completion_tokens": 4}
+        else:
+            content = "Supported after retry [1]."
+            usage = {"prompt_tokens": 20, "completion_tokens": 4}
+        stream_events = []
+        if content:
+            stream_events.append(
+                "data: " + json.dumps({"choices": [{"delta": {"content": content}}]})
+            )
+        stream_events.append("data: " + json.dumps({"usage": usage}))
+        stream_events.append("data: [DONE]")
+        return httpx.Response(200, text="\n\n".join(stream_events) + "\n\n")
+
+    llm = OpenAICompatLLM(
+        "https://api.deepseek.com",
+        "fixture",
+        "deepseek-flash",
+        0,
+        100,
+        transport=httpx.MockTransport(handler),
+    )
+    chunk = RetrievedChunk(
+        chunk_id=1,
+        document_id=uuid.uuid4(),
+        filename="fixture.md",
+        content="Supported evidence.",
+        page_start=None,
+        page_end=None,
+        section_path=None,
+        score=0.9,
+    )
+
+    async def fake_retrieve(*args, **kwargs):
+        return RetrievalResult(chunks=[chunk], top_score=0.9)
+
+    async def fake_record(**kwargs):
+        return "recorded"
+
+    context = ConversationContext(
+        conversation_id=uuid.uuid4(),
+        parent_query_id=uuid.uuid4(),
+        source_generation=1,
+        access_fingerprint="fingerprint",
+        reset=False,
+        turns=(SafeTurn(uuid.uuid4(), "Previous evidence question"),),
+        references=(),
+    )
+    monkeypatch.setattr(service, "retrieve", fake_retrieve)
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: llm)
+    monkeypatch.setattr(service, "_record_query", fake_record)
+    actor = BillingActor("contextual-retry-ip")
+    token = current_billing_actor.set(actor)
+    try:
+        events = [
+            event
+            async for event in service.run_query(
+                uuid.uuid4(),
+                uuid.uuid4(),
+                "And this one?",
+                service.Settings(database_url="postgresql+asyncpg://x/x", redis_url="redis://x"),
+                data_version=0,
+                conversation_context=context,
+            )
+        ]
+    finally:
+        current_billing_actor.reset(token)
+
+    assert len(requests) == 4
+    done = events[-1]
+    assert isinstance(done, service.DoneEvent)
+    assert (done.prompt_tokens, done.completion_tokens) == (55, 11)
+    assert done.cost == Decimal("0.000030")
+    async with get_sessionmaker()() as db:
+        rows = list(
+            await db.scalars(
+                select(SpendReservation).where(SpendReservation.ip_digest == "contextual-retry-ip")
+            )
+        )
+    assert len(rows) == 4
+    assert all(row.settled_at is not None for row in rows)
+    assert sum((row.actual_usd or Decimal(0) for row in rows), Decimal(0)) == Decimal("0.00002970")
+
+
 async def test_provider_unknown_usage_and_client_close_keep_reservation(budget_config):
     import httpx
 

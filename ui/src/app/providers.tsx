@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useRef } from "react";
 import { AskProvider } from "@/features/ask/AskProvider";
-import { ACCOUNTS_ENABLED, abortRequests, acceptSession, api, ApiError, fetchSession, onSessionChange, listCollections, listRoles, setApiKey } from "@/lib/api/client";
+import { ACCOUNTS_ENABLED, abortRequests, acceptSession, api, ApiError, fetchSession, onSessionChange, listCollections, listRoles, sameIdentity, setApiKey } from "@/lib/api/client";
 import { AccountContext, type ProofAction } from "@/features/account/context";
 import type { AccountSession, Collection, Role } from "@/lib/api/types";
 
@@ -121,9 +121,10 @@ function LegacyProviders({ children }: { children: React.ReactNode }) {
       void session.client.cancelQueries();
       session.client.clear();
       try {
-        for (const storageKey of ["docqa.ask", "docqa.collection", "docqa.role"]) {
-          sessionStorage.removeItem(storageKey);
-        }
+      for (const storageKey of ["docqa.ask", "docqa.collection", "docqa.role"]) {
+        sessionStorage.removeItem(storageKey);
+      }
+      localStorage.removeItem("docqa.ask.v2.demo");
       } catch {
         /* blocked storage must not prevent changing credentials */
       }
@@ -213,17 +214,15 @@ function AccountProviders({ children }: { children: React.ReactNode }) {
         next = await fetchSession();
       }
       if (revision !== refreshId.current) return;
-      const sameIdentity = previous?.user?.id === next.user?.id &&
-        previous?.user?.tenant_id === next.user?.tenant_id &&
-        previous?.user?.email_verified === next.user?.email_verified;
-      if (preserve && sameIdentity) {
+      const unchanged = sameIdentity(previous, next);
+      if (preserve && unchanged) {
         acceptSession(next, { notify: false });
         setState(value => ({ ...value, session: next }));
         setRevalidating(false);
         requestAnimationFrame(() => {
           if (revision === refreshId.current && focused?.isConnected) focused.focus();
         });
-      } else if (silent && sameIdentity) {
+      } else if (silent && unchanged) {
         acceptSession(next, { notify: false, abort: false });
         setState(value => ({ ...value, session: next }));
       } else {
@@ -281,6 +280,7 @@ function AccountProviders({ children }: { children: React.ReactNode }) {
   const signOut = useCallback(async () => {
     ++refreshId.current;
     beginProof();
+    try { localStorage.removeItem("docqa.ask.v2.guest"); } catch { /* optional legacy storage */ }
     clear();
     channel.current?.postMessage("changing");
     try {
