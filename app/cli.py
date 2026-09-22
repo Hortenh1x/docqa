@@ -16,11 +16,11 @@ import sys
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 
 from app.core.security import display_key, generate_api_key
 from app.db.base import dispose_engine, get_sessionmaker
-from app.db.models import ApiKey, Collection, Document, DocumentStatus, Query, Tenant
+from app.db.models import ApiKey, Chunk, Collection, Document, DocumentStatus, Query, Tenant
 from app.ingestion.service import delete_document_file_if_unreferenced
 from app.storage.lifecycle import lock_tenant_files
 
@@ -134,9 +134,19 @@ async def wipe_collection(collection_id: uuid.UUID) -> None:
             .scalars()
             .all()
         )
+        had_chunks = bool(
+            await session.scalar(
+                select(func.count())
+                .select_from(Chunk)
+                .join(Document, Chunk.document_id == Document.id)
+                .where(Document.collection_id == collection_id)
+            )
+        )
         await session.execute(delete(Document).where(Document.collection_id == collection_id))
         await session.execute(delete(Query).where(Query.collection_id == collection_id))
         collection.data_version += 1
+        if had_chunks:
+            collection.source_generation += 1
         collection.suggested_questions = None  # stale once the documents are gone
         await session.commit()
         for document in documents:

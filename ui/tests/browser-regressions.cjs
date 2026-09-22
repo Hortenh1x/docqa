@@ -178,6 +178,7 @@ if (!demo) {
       // the key lives in memory only, so nothing tied to it may be persisted
       const storage = await f.page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }));
       assert(!storage.includes('Tenant A private answer') && !storage.includes('docqa.ask'), 'Keyless threads stay in memory');
+      assert.equal(f.state.requests.some(request => request.path.includes('/conversations')), false);
       await f.page.reload();
       await f.page.getByRole('heading', { name: 'Ask the documents.' }).waitFor({ timeout: 4000 });
       assert.equal(await f.page.getByText('Tenant A private answer', { exact: false }).count(), 0);
@@ -267,6 +268,7 @@ if (!demo) {
       assert.equal(await f.page.getByRole('button', { name: /^(set API key|change key)$/ }).count(), 0);
       assert(f.state.requests.filter(r => r.path === '/v1/collections').every(r => r.authorization && r.authorization !== 'Bearer'));
       await ask(f.page);
+      assert.equal(f.state.requests.some(request => request.path.includes('/conversations')), false);
       await f.page.reload();
       await f.page.getByRole('button', { name: 'Source 1: tenant-A.md, pages 1–1', exact: true }).waitFor();
     } finally { await f.close(); }
@@ -288,6 +290,33 @@ if (!demo) {
       await f.page.evaluate(() => localStorage.setItem('docqa.ask.v2.demo', '{not json'));
       await f.page.reload();
       await f.page.getByRole('heading', { name: 'Ask the documents.' }).waitFor({ timeout: 4000 });
+    } finally { await f.close(); }
+  });
+
+  test('demo storage is capped per collection and globally, strips probes, and clears one collection', async (browser) => {
+    const f = await fixture(browser);
+    try {
+      const collectionIds = [cid, secondCid, '55555555-5555-4555-8555-555555555555', '66666666-6666-4666-8666-666666666666'];
+      const rows = collectionIds.flatMap((collectionId, group) => Array.from({ length: 35 }, (_, index) => ({
+        id: `stored-${group}-${index}`, collectionId, conversationId: null, parentQueryId: null,
+        question: `Stored ${group}-${index}`, askedAs: 'employee', phase: 'done', queryId: `query-${group}-${index}`,
+        access: { role: 'employee', hidden_passages: 9, hidden_labels: ['secret'], hidden_documents: 3, hidden_outranking: true, hidden_truncated: true },
+        sources: [{ ...source, quotes: [{ start: 0, end: 24, text: 'Tenant A private passage' }] }, context],
+        answer: 'Stored answer [1]', done: { ...done, outcome: 'answered', context: { reset: false, turns_used: 0 } }, error: null,
+        createdAt: new Date(Date.UTC(2026, 8, group + 1, 0, index)).toISOString(), outcome: 'answered', contextReset: false,
+      })));
+      await f.page.evaluate((stored) => localStorage.setItem('docqa.ask.v2.demo', JSON.stringify(stored)), rows);
+      await f.page.reload();
+      await f.page.waitForFunction(() => JSON.parse(localStorage.getItem('docqa.ask.v2.demo') || '[]').length === 100);
+      const stored = await f.page.evaluate(() => JSON.parse(localStorage.getItem('docqa.ask.v2.demo')));
+      assert.equal(stored.length, 100);
+      for (const collectionId of collectionIds) assert(stored.filter(row => row.collectionId === collectionId).length <= 30);
+      assert(stored.every(row => Object.values(row.access || {}).slice(1).every(value => value === null)));
+      assert(stored.every(row => row.sources.every(item => item.quotes != null)), 'Only cited sources persist');
+      await f.page.getByLabel('Collection', { exact: true }).selectOption(cid);
+      await f.page.getByRole('button', { name: 'Clear history', exact: true }).click();
+      await f.page.waitForFunction((collectionId) => !JSON.parse(localStorage.getItem('docqa.ask.v2.demo') || '[]').some(row => row.collectionId === collectionId), cid);
+      assert((await f.page.evaluate(() => JSON.parse(localStorage.getItem('docqa.ask.v2.demo') || '[]').length)) > 0, 'Other collections remain stored');
     } finally { await f.close(); }
   });
 }
@@ -497,7 +526,8 @@ test(`upload hint matches ${demo ? '5' : '25'} MB limit and server size error is
   } finally { await f.close(); }
 });
 
-(async () => {
+module.exports = { fixture, ask, useKey };
+if (require.main === module) (async () => {
   const browser = await chromium.launch({ headless: true,
     executablePath: process.env.DOCQA_CHROMIUM || process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH });
   const results = [];

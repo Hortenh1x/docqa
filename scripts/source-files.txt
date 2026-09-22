@@ -267,7 +267,10 @@ ui/src/features/ask/AccessLine.tsx
 ui/src/features/ask/AnswerView.tsx
 ui/src/features/ask/AskProvider.tsx
 ui/src/features/ask/AskScreen.tsx
+ui/src/features/ask/ClarificationPanel.tsx
 ui/src/features/ask/Composer.tsx
+ui/src/features/ask/ConversationList.tsx
+ui/src/features/ask/ConversationTranscript.tsx
 ui/src/features/ask/ErrorPanel.tsx
 ui/src/features/ask/MetaLine.tsx
 ui/src/features/ask/QuestionChips.tsx
@@ -314,4 +317,16 @@ app/api/v1/history.py
 app/storage/usage.py
 tests/integration/test_storage_quota.py
 tests/integration/test_history.py
+alembic/versions/0014_conversations.py
+app/db/models/conversation.py
+app/conversations/__init__.py
+app/conversations/context.py
+app/conversations/normalizer.py
+app/conversations/scope.py
+app/conversations/service.py
+app/api/v1/conversations.py
+tests/integration/test_conversation_context.py
+tests/integration/test_conversations.py
+tests/integration/test_conversation_query.py
+tests/unit/test_conversation_context.py
 ui/public/branding/google-g.png

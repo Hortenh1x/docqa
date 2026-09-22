@@ -35,6 +35,11 @@ def settings(**kwargs):
         {"llm_max_tokens": -1},
         {"chunk_overlap_tokens": 500},
         {"chunk_target_tokens": 900},
+        {"conversation_context_max_turns": 9},
+        {"conversation_context_token_budget": 127},
+        {"conversation_context_max_references": 0},
+        {"conversation_normalizer_max_output_chars": 20000},
+        {"conversation_normalizer_max_question_chars": 4001},
     ],
 )
 def test_invalid_configuration_fails_before_serving(values):

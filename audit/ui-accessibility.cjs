@@ -91,7 +91,8 @@ async function tabInventory(page, name, required) {
   // Starting at document body permits a deterministic full keyboard traversal.
   await page.evaluate(() => { document.body.tabIndex = -1; document.body.focus(); });
   const seen = [];
-  for (let i = 0; i < 36; i++) {
+  const maxTabs = await page.locator('button,a,input,textarea,select,summary,[tabindex]:not([tabindex="-1"])').count() + 1;
+  for (let i = 0; i < maxTabs; i++) {
     await page.keyboard.press('Tab');
     const active = await page.evaluate(() => {
       const el = document.activeElement;
@@ -177,7 +178,16 @@ async function keyboardState(page) {
       const live = await page.locator('[aria-live="polite"]').first().textContent();
       report.checks.push({ name: 'settled answer polite live message', pass: live.startsWith('Answer ready:'), text: live });
       await contrast(page, 'grounded status on paper', page.getByText('● grounded', { exact: true }));
-      await contrast(page, 'answer metadata on paper', page.locator('p').filter({ hasText: 'confidence 0.90' }));
+      const answerDetails = page.locator('details').filter({ hasText: 'Answer details' });
+      const answerSummary = answerDetails.locator('summary');
+      assert.equal(await answerDetails.getAttribute('open'), null);
+      await contrast(page, 'answer details summary on paper', answerSummary);
+      await answerSummary.focus();
+      await page.keyboard.press('Enter');
+      const answerMetadata = answerDetails.locator('p').filter({ hasText: 'confidence 0.90' });
+      await answerMetadata.waitFor({ state: 'visible' });
+      report.checks.push({ name: 'answer details expand by keyboard', pass: await answerSummary.evaluate(el => el === document.activeElement) });
+      await contrast(page, 'expanded answer metadata on paper', answerMetadata);
       await contrast(page, 'citation link', page.getByRole('button', { name: 'Source 1: tenant-A.md, pages 1–1', exact: true }));
       fs.writeFileSync(path.join(out, 'ui-accessibility-ask-aria.txt'), await page.locator('body').ariaSnapshot());
     } finally { await keyboardFixture.close(); }

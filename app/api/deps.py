@@ -108,6 +108,7 @@ async def get_current_tenant(request: Request, db: DbSession) -> Tenant:
                 else "api_key",
                 None,
                 tenant.id,
+                api_key.id,
             )
             return tenant
     raise InvalidApiKeyError()

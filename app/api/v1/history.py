@@ -1,10 +1,8 @@
-"""Conversation history — an account's past exchanges, rebuilt from the query log.
+"""Legacy collection history plus shared transcript serialization.
 
-Every query is recorded with its context blocks (`queries` + `query_citations`), so the
-Ask screen's thread for a signed-in user is a read of that log: question, answer,
-refusal, usage, and the sources with their pinpoint quotes. Guests keep their thread in
-the browser instead (an IP digest is shared behind NAT) and, on sign-in, claim the rows
-they asked as a guest by id — ids are unguessable and only the asking browser saw them.
+The collection endpoint remains compatible for existing clients. Named conversations
+reuse the source/quote serializer below and use opaque server-side guest-session ownership.
+The old UUID-only guest claim endpoint is retained solely as a 410 tombstone.
 """
 
 import uuid
@@ -14,13 +12,14 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, Request
 from fastapi import Query as QueryParam
 from pydantic import BaseModel, Field
-from sqlalchemy import select, tuple_, update
+from sqlalchemy import select, tuple_
 
 from app.accounts.actor import Actor
-from app.accounts.errors import AuthenticationError
-from app.api.deps import CurrentCollection, CurrentTenant, DbSession
+from app.accounts.router import MutationSession
+from app.api.deps import CurrentCollection, DbSession
+from app.core.errors import LegacyGuestClaimDisabledError
 from app.core.rate_limit import rate_limit
-from app.db.models import Chunk, Collection, Document, Query, QueryCitation
+from app.db.models import Chunk, Document, Query, QueryCitation
 from app.generation.prompts import ContextBlock
 from app.generation.quotes import resolve_quotes
 from app.generation.service import EMPTY_COMPLETION_REASON, REFUSAL_REASON
@@ -59,10 +58,14 @@ class HistoryUsage(BaseModel):
 
 class HistoryQuery(BaseModel):
     id: uuid.UUID
+    conversation_id: uuid.UUID | None
+    parent_query_id: uuid.UUID | None
     question: str
     answer: str | None
     refused: bool
     reason: str | None
+    outcome: str
+    context_reset: bool
     role: str | None
     confidence: float | None
     usage: HistoryUsage
@@ -178,6 +181,10 @@ async def list_queries(
     )
     has_more = len(rows) > limit
     rows = rows[:limit]
+    return await build_history_page(db, rows, has_more)
+
+
+async def build_history_page(db: DbSession, rows: list[Query], has_more: bool) -> HistoryPage:
     sources: dict[uuid.UUID, list[dict[str, Any]]] = {q.id: [] for q in rows}
     if rows:
         cited = (
@@ -198,16 +205,21 @@ async def list_queries(
         queries=[
             HistoryQuery(
                 id=q.id,
+                conversation_id=q.conversation_id,
+                parent_query_id=q.parent_query_id,
                 question=q.question,
                 answer=q.answer,
                 refused=q.refused,
-                reason=(
+                reason=q.outcome_reason
+                or (
                     None
                     if not q.refused
                     else EMPTY_COMPLETION_REASON
                     if q.model is not None and q.completion_tokens
                     else REFUSAL_REASON
                 ),
+                outcome=q.outcome or "legacy_unknown",
+                context_reset=q.context_reset,
                 role=q.role,
                 confidence=q.confidence,
                 usage=HistoryUsage(
@@ -229,36 +241,13 @@ async def list_queries(
 @router.post(
     "/queries/claim",
     response_model=ClaimResult,
-    dependencies=[Depends(rate_limit("default"))],
     description=(
-        "Attach queries asked as a guest to the signed-in account, so the thread survives "
-        "sign-in. Only rows without an owner move, and only in public collections; ids are "
-        "the unguessable `query_id`s the asking browser received."
+        "Retired UUID-only guest claim endpoint. Guest conversation ownership now transfers "
+        "from the authenticated browser session during sign-in."
     ),
 )
-async def claim_queries(
-    payload: ClaimRequest, tenant: CurrentTenant, db: DbSession, request: Request
-) -> ClaimResult:
-    actor: Actor = request.state.actor
-    if actor.kind != "account" or actor.user_id is None:
-        raise AuthenticationError("Sign in to keep your questions.")
-    if not payload.query_ids:
-        return ClaimResult(claimed=0)
-    claimed = list(
-        (
-            await db.execute(
-                update(Query)
-                .where(
-                    Query.id.in_(payload.query_ids),
-                    Query.user_id.is_(None),
-                    Query.collection_id.in_(
-                        select(Collection.id).where(Collection.is_public.is_(True))
-                    ),
-                )
-                .values(user_id=actor.user_id)
-                .returning(Query.id)
-            )
-        ).scalars()
+async def claim_queries(payload: ClaimRequest, session: MutationSession) -> ClaimResult:
+    del payload, session
+    raise LegacyGuestClaimDisabledError(
+        "Guest history now transfers from the signed browser session during sign-in."
     )
-    await db.commit()
-    return ClaimResult(claimed=len(claimed))

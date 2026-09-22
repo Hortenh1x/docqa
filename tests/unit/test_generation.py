@@ -239,6 +239,8 @@ async def test_two_empty_answers_emit_provider_error_and_record_all_usage(monkey
     assert "try again" in events[-1].message.lower()
     assert recorded["answer"] is None and recorded["refused"] is False
     assert (recorded["prompt_tokens"], recorded["completion_tokens"]) == (50, 12)
+    assert recorded["outcome"] == "failed"
+    assert recorded["outcome_reason"] == "empty_completion"
 
 
 async def test_no_answer_sentinel_does_not_retry(monkeypatch):
@@ -375,6 +377,8 @@ async def test_retry_budget_denial_is_not_retried_and_records_unknown_attempt(mo
     assert recorded["prompt_tokens"] is None
     assert recorded["completion_tokens"] is None
     assert recorded["cost"] is None
+    assert recorded["outcome"] == "failed"
+    assert recorded["outcome_reason"] == "quota_exceeded"
 
 
 async def test_query_planning_expands_context_with_original_scope_and_question(monkeypatch):
@@ -455,6 +459,390 @@ async def test_query_planning_expands_context_with_original_scope_and_question(m
     done = events[-1]
     assert done.confidence == 0.91
     assert (done.prompt_tokens, done.completion_tokens) == (110, 20)
+
+
+async def test_followup_normalizes_before_retrieval_and_shares_usage(monkeypatch):
+    from app.access import Principal
+    from app.conversations.context import ConversationContext, SafeTurn
+    from app.conversations.normalizer import NORMALIZER_SYSTEM_PROMPT
+    from app.generation import service
+    from app.generation.llm import StreamUsage, TextDelta
+    from app.retrieval.service import RetrievalResult
+
+    original_question = "And in 2022?"
+    effective_question = "What was Amazon revenue in 2022?"
+    collection_id = uuid.uuid4()
+    context = ConversationContext(
+        conversation_id=uuid.uuid4(),
+        parent_query_id=uuid.uuid4(),
+        source_generation=7,
+        access_fingerprint="access-fingerprint",
+        reset=False,
+        turns=(SafeTurn(uuid.uuid4(), "What was Amazon revenue in 2017?"),),
+        references=(),
+    )
+    calls = []
+
+    async def fake_retrieve(
+        actual_collection_id, question, settings, principal=None, *, reveal_hidden=True
+    ):
+        calls.append(("retrieve", actual_collection_id, question, reveal_hidden))
+        return RetrievalResult(chunks=[make_chunk(1, "Current 2022 evidence")], top_score=0.91)
+
+    class ContextualLLM:
+        model_name = "gpt-4o-mini"
+
+        async def stream(self, system, user):
+            if system == NORMALIZER_SYSTEM_PROMPT:
+                calls.append(("normalizer", user))
+                yield TextDelta(
+                    '{"action":"search","effective_question":"What was Amazon revenue in 2022?"}'
+                )
+                yield StreamUsage(7, 2)
+                return
+            if system == PLANNER_SYSTEM_PROMPT:
+                calls.append(("planner", user))
+                yield TextDelta('{"queries":[]}')
+                yield StreamUsage(11, 3)
+                return
+            calls.append(("answer", user))
+            yield TextDelta("The current documents answer it [1].")
+            yield StreamUsage(101, 19)
+
+    recorded = {}
+
+    async def fake_record(**kwargs):
+        recorded.update(kwargs)
+        return "recorded"
+
+    monkeypatch.setattr(service, "retrieve", fake_retrieve)
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: ContextualLLM())
+    monkeypatch.setattr(service, "_record_query", fake_record)
+
+    events = [
+        event
+        async for event in service.run_query(
+            uuid.uuid4(),
+            collection_id,
+            original_question,
+            _settings(),
+            Principal("finance", ("all", "finance")),
+            data_version=3,
+            conversation_context=context,
+        )
+    ]
+
+    assert [call[0] for call in calls] == ["normalizer", "retrieve", "planner", "answer"]
+    assert calls[1][2] == effective_question
+    assert calls[2][1] == effective_question
+    answer_prompt = calls[3][1]
+    assert f"Original user wording: {original_question}" in answer_prompt
+    assert f"Standalone retrieval interpretation: {effective_question}" in answer_prompt
+    done = events[-1]
+    assert isinstance(done, service.DoneEvent)
+    assert done.outcome == "answered"
+    assert done.context == {"reset": False, "turns_used": 1}
+    assert (done.prompt_tokens, done.completion_tokens) == (119, 24)
+    assert recorded["question"] == original_question
+    assert recorded["conversation_context"] == context
+    assert recorded["outcome"] == "answered"
+
+
+async def test_conversation_root_skips_normalizer(monkeypatch):
+    from app.conversations.context import ConversationContext
+    from app.conversations.normalizer import NORMALIZER_SYSTEM_PROMPT
+    from app.generation import service
+    from app.generation.llm import StreamUsage, TextDelta
+    from app.retrieval.service import RetrievalResult
+
+    context = ConversationContext(
+        conversation_id=uuid.uuid4(),
+        parent_query_id=None,
+        source_generation=2,
+        access_fingerprint="fingerprint",
+        reset=False,
+        turns=(),
+        references=(),
+    )
+    systems = []
+
+    async def fake_retrieve(*args, **kwargs):
+        return RetrievalResult(chunks=[make_chunk(1, "Fresh evidence")], top_score=0.9)
+
+    class RootLLM:
+        model_name = "gpt-4o-mini"
+
+        async def stream(self, system, user):
+            systems.append(system)
+            if system == PLANNER_SYSTEM_PROMPT:
+                yield TextDelta('{"queries":[]}')
+                yield StreamUsage(1, 1)
+                return
+            yield TextDelta("Supported [1].")
+            yield StreamUsage(2, 2)
+
+    async def fake_record(**kwargs):
+        return "recorded"
+
+    monkeypatch.setattr(service, "retrieve", fake_retrieve)
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: RootLLM())
+    monkeypatch.setattr(service, "_record_query", fake_record)
+
+    events = [
+        event
+        async for event in service.run_query(
+            uuid.uuid4(),
+            uuid.uuid4(),
+            "A standalone first question",
+            _settings(),
+            data_version=0,
+            conversation_context=context,
+        )
+    ]
+
+    assert NORMALIZER_SYSTEM_PROMPT not in systems
+    assert events[-1].context == {"reset": False, "turns_used": 0}
+
+
+@pytest.mark.parametrize(
+    ("normalizer_text", "expected_answer"),
+    [
+        (
+            '{"action":"clarify","question":"Which company do you mean?"}',
+            "Which company do you mean?",
+        ),
+        (
+            "not-json",
+            "Could you restate the question with the subject, period, or document you mean?",
+        ),
+    ],
+)
+async def test_followup_clarification_skips_retrieval_and_uses_done_shape(
+    monkeypatch, normalizer_text, expected_answer
+):
+    from app.conversations.context import ConversationContext, SafeTurn
+    from app.generation import service
+    from app.generation.llm import StreamUsage, TextDelta
+
+    context = ConversationContext(
+        conversation_id=uuid.uuid4(),
+        parent_query_id=uuid.uuid4(),
+        source_generation=4,
+        access_fingerprint="fingerprint",
+        reset=True,
+        turns=(SafeTurn(uuid.uuid4(), "Old question"),),
+        references=(),
+    )
+    recorded = {}
+
+    async def forbidden_retrieve(*args, **kwargs):
+        pytest.fail("clarification must end before retrieval")
+
+    class ClarifyingLLM:
+        model_name = "gpt-4o-mini"
+
+        async def stream(self, system, user):
+            yield TextDelta(normalizer_text)
+            yield StreamUsage(13, 5)
+
+    async def fake_record(**kwargs):
+        recorded.update(kwargs)
+        return "recorded"
+
+    monkeypatch.setattr(service, "retrieve", forbidden_retrieve)
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: ClarifyingLLM())
+    monkeypatch.setattr(service, "_record_query", fake_record)
+
+    events = [
+        event
+        async for event in service.run_query(
+            uuid.uuid4(),
+            uuid.uuid4(),
+            "What about it?",
+            _settings(),
+            data_version=0,
+            conversation_context=context,
+        )
+    ]
+
+    assert [type(event) for event in events] == [
+        service.MetaEvent,
+        service.SourcesEvent,
+        service.DoneEvent,
+    ]
+    done = events[-1]
+    assert done.answer == expected_answer
+    assert done.refused is False
+    assert done.reason == "context_clarification"
+    assert done.outcome == "clarification"
+    assert done.citations == []
+    assert done.context == {"reset": True, "turns_used": 1}
+    assert (done.prompt_tokens, done.completion_tokens) == (13, 5)
+    assert recorded["outcome"] == "clarification"
+    assert recorded["outcome_reason"] == "context_clarification"
+
+
+async def test_normalized_gate_refusal_records_normalizer_usage(monkeypatch):
+    from app.conversations.context import ConversationContext, SafeTurn
+    from app.generation import service
+    from app.generation.llm import StreamUsage, TextDelta
+    from app.retrieval.service import RetrievalResult
+
+    context = ConversationContext(
+        conversation_id=uuid.uuid4(),
+        parent_query_id=uuid.uuid4(),
+        source_generation=6,
+        access_fingerprint="fingerprint",
+        reset=False,
+        turns=(SafeTurn(uuid.uuid4(), "Original topic"),),
+        references=(),
+    )
+    retrieval_questions = []
+    recorded = {}
+
+    async def fake_retrieve(collection_id, question, settings, principal=None, **kwargs):
+        retrieval_questions.append(question)
+        return RetrievalResult(chunks=[], top_score=0.1)
+
+    class NormalizerOnlyLLM:
+        model_name = "gpt-4o-mini"
+
+        async def stream(self, system, user):
+            yield TextDelta('{"action":"search","effective_question":"Standalone topic"}')
+            yield StreamUsage(5, 2)
+
+    async def fake_record(**kwargs):
+        recorded.update(kwargs)
+        return "recorded"
+
+    monkeypatch.setattr(service, "retrieve", fake_retrieve)
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: NormalizerOnlyLLM())
+    monkeypatch.setattr(service, "_record_query", fake_record)
+
+    events = [
+        event
+        async for event in service.run_query(
+            uuid.uuid4(),
+            uuid.uuid4(),
+            "And that topic?",
+            _settings(),
+            data_version=0,
+            conversation_context=context,
+        )
+    ]
+
+    assert retrieval_questions == ["Standalone topic"]
+    done = events[-1]
+    assert isinstance(done, service.DoneEvent)
+    assert done.outcome == "refused"
+    assert (done.prompt_tokens, done.completion_tokens) == (5, 2)
+    assert done.cost == Decimal("0.000002")
+    assert recorded["outcome"] == "refused"
+    assert (recorded["prompt_tokens"], recorded["completion_tokens"]) == (5, 2)
+
+
+@pytest.mark.parametrize(
+    ("record_result", "error_code"),
+    [
+        ("failed", "query_persistence_failed"),
+        ("source_changed", "query_source_changed"),
+    ],
+)
+async def test_contextual_success_requires_durable_record_before_done(
+    monkeypatch, record_result, error_code
+):
+    from app.conversations.context import ConversationContext
+    from app.generation import service
+    from app.generation.llm import StreamUsage, TextDelta
+    from app.retrieval.service import RetrievalResult
+
+    context = ConversationContext(
+        conversation_id=uuid.uuid4(),
+        parent_query_id=None,
+        source_generation=1,
+        access_fingerprint="fingerprint",
+        reset=False,
+        turns=(),
+        references=(),
+    )
+    record_calls = 0
+
+    async def fake_retrieve(*args, **kwargs):
+        return RetrievalResult(chunks=[make_chunk(1, "Fresh evidence")], top_score=0.9)
+
+    class AnswerLLM:
+        model_name = "gpt-4o-mini"
+
+        async def stream(self, system, user):
+            if system == PLANNER_SYSTEM_PROMPT:
+                yield TextDelta('{"queries":[]}')
+                yield StreamUsage(1, 1)
+                return
+            yield TextDelta("Supported [1].")
+            yield StreamUsage(2, 2)
+
+    async def fake_record(**kwargs):
+        nonlocal record_calls
+        record_calls += 1
+        return record_result
+
+    monkeypatch.setattr(service, "retrieve", fake_retrieve)
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: AnswerLLM())
+    monkeypatch.setattr(service, "_record_query", fake_record)
+
+    events = [
+        event
+        async for event in service.run_query(
+            uuid.uuid4(),
+            uuid.uuid4(),
+            "Question",
+            _settings(),
+            data_version=0,
+            conversation_context=context,
+        )
+    ]
+
+    assert record_calls == 1
+    assert not any(isinstance(event, service.DoneEvent) for event in events)
+    assert isinstance(events[-1], service.ErrorEvent)
+    assert events[-1].code == error_code
+
+
+async def test_standalone_recording_failure_keeps_legacy_done_compatibility(monkeypatch):
+    from app.generation import service
+    from app.generation.llm import StreamUsage, TextDelta
+    from app.retrieval.service import RetrievalResult
+
+    async def fake_retrieve(*args, **kwargs):
+        return RetrievalResult(chunks=[make_chunk(1, "Fresh evidence")], top_score=0.9)
+
+    class AnswerLLM:
+        model_name = "gpt-4o-mini"
+
+        async def stream(self, system, user):
+            if system == PLANNER_SYSTEM_PROMPT:
+                yield TextDelta('{"queries":[]}')
+                yield StreamUsage(1, 1)
+                return
+            yield TextDelta("Supported [1].")
+            yield StreamUsage(2, 2)
+
+    monkeypatch.setattr(service, "retrieve", fake_retrieve)
+    monkeypatch.setattr(service, "get_llm_provider", lambda settings: AnswerLLM())
+    monkeypatch.setattr(service, "_record_query", lambda **kwargs: _async_value("failed"))
+
+    events = [
+        event
+        async for event in service.run_query(
+            uuid.uuid4(), uuid.uuid4(), "Question", _settings(), data_version=0
+        )
+    ]
+
+    assert isinstance(events[-1], service.DoneEvent)
+
+
+async def _async_value(value):
+    return value
 
 
 async def test_planner_generation_error_falls_back_and_keeps_observed_usage(monkeypatch):
@@ -588,6 +976,8 @@ async def test_planner_cancellation_propagates_and_records_known_usage(monkeypat
 
     assert llm.closed
     assert (recorded["prompt_tokens"], recorded["completion_tokens"]) == (9, 1)
+    assert recorded["outcome"] == "cancelled"
+    assert recorded["outcome_reason"] == "client_cancelled"
 
 
 @pytest.mark.parametrize(
@@ -729,6 +1119,8 @@ async def test_answer_cancellation_closes_stream_and_records_partial_usage(monke
     assert llm.answer_closed
     assert recorded["answer"].startswith("A substantive partial")
     assert (recorded["prompt_tokens"], recorded["completion_tokens"]) == (30, 6)
+    assert recorded["outcome"] == "cancelled"
+    assert recorded["outcome_reason"] == "client_cancelled"
 
 
 def test_query_planning_defaults_on_and_can_be_disabled():
@@ -871,6 +1263,8 @@ async def test_answer_budget_error_is_not_planner_fallback_and_records_unknown_a
     assert recorded["prompt_tokens"] is None
     assert recorded["completion_tokens"] is None
     assert recorded["cost"] is None
+    assert recorded["outcome"] == "failed"
+    assert recorded["outcome_reason"] == "budget_unavailable"
 
 
 # --- llm provider factory ---

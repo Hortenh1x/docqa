@@ -13,6 +13,7 @@ from app.accounts.google_state import AuthorizationState, GoogleAuthError
 from app.accounts.passwords import hash_password
 from app.accounts.sessions import COOKIE_NAME, create_authenticated_session, token_hash
 from app.config import get_settings
+from app.conversations.service import claim_guest_conversations
 from app.db.models import AccountSession, Collection, GoogleIdentity, Tenant, User
 
 
@@ -149,5 +150,6 @@ async def complete(
     else:
         # Linking has no provider calls or independent billing transaction remaining.
         previous, _ = await _lock_session_and_users(db, request, state, user.id)
+    await claim_guest_conversations(db, previous.id, user.id)
     await create_authenticated_session(db, request, response, user, previous)
     await db.commit()  # Never expose a new cookie before its durable transaction succeeds.

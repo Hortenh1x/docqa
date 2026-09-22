@@ -16,6 +16,9 @@ class Actor:
     kind: Literal["account", "guest", "api_key"]
     user_id: uuid.UUID | None
     tenant_id: uuid.UUID
+    # Server-resolved audit identity. A public service key is still a guest actor,
+    # but retaining this id lets conversation routes reject shared-key ownership.
+    api_key_id: uuid.UUID | None = None
 
 
 def collection_scope(actor: Actor) -> ColumnElement[bool]:

@@ -10,6 +10,9 @@ import type {
   AccountSession,
   Budget,
   SiteInfo,
+  Conversation,
+  ConversationHistoryPage,
+  ConversationPage,
 } from "./types";
 
 export const API_BASE =
@@ -39,8 +42,17 @@ export function acceptSession(
   browserSession = session;
   if (notify) sessionHandler?.(session);
 }
-const identity = (session: AccountSession | null) =>
-  `${session?.user?.id ?? "guest"}:${session?.user?.email_verified ?? false}`;
+/** The guest CSRF value is an in-memory identity discriminator only. It must never enter
+ * query keys, storage, telemetry, or the DOM. TTL renewal retains it; a new guest cookie does not. */
+export const sameIdentity = (left: AccountSession | null, right: AccountSession | null) => {
+  if (!left || !right) return left === right;
+  if (left.user || right.user) {
+    return left.user?.id === right.user?.id &&
+      left.user?.tenant_id === right.user?.tenant_id &&
+      left.user?.email_verified === right.user?.email_verified;
+  }
+  return left.csrf_token !== null && left.csrf_token === right.csrf_token;
+};
 
 export async function fetchSession(): Promise<AccountSession> {
   const signal = requests.signal;
@@ -60,7 +72,7 @@ async function mutationSession(): Promise<string> {
     if (error instanceof ApiError && error.code === "invalid_session") acceptSession(null);
     throw error;
   });
-  if (identity(current) !== identity(browserSession)) {
+  if (!sameIdentity(current, browserSession)) {
     acceptSession(current);
     throw new DOMException("Account changed. Please repeat the action.", "AbortError");
   }
@@ -199,12 +211,42 @@ export function listQueries(
   return api<HistoryPage>(`/v1/collections/${collectionId}/queries?${params}`);
 }
 
-/** Attach the queries this browser asked as a guest to the account that just signed in. */
-export const claimQueries = (queryIds: string[]) =>
-  api<{ claimed: number }>("/v1/queries/claim", {
+/** Named conversation endpoints are used only by the accounts-enabled browser. Guest
+ * ownership transfers atomically on the server when the account session is created. */
+export const createConversation = (collectionId: string, title = "New chat") =>
+  api<Conversation>(`/v1/collections/${collectionId}/conversations`, {
     method: "POST",
-    body: JSON.stringify({ query_ids: queryIds }),
+    body: JSON.stringify({ title }),
   });
+
+export function listConversations(
+  collectionId: string,
+  options: { archived?: "false" | "true" | "all"; limit?: number; before?: string } = {},
+): Promise<ConversationPage> {
+  const params = new URLSearchParams({
+    archived: options.archived ?? "false",
+    limit: String(options.limit ?? 20),
+  });
+  if (options.before) params.set("before", options.before);
+  return api<ConversationPage>(`/v1/collections/${collectionId}/conversations?${params}`);
+}
+
+export const patchConversation = (
+  conversationId: string,
+  patch: { title?: string; archived?: boolean },
+) => api<Conversation>(`/v1/conversations/${conversationId}`, {
+  method: "PATCH",
+  body: JSON.stringify(patch),
+});
+
+export function listConversationQueries(
+  conversationId: string,
+  options: { limit?: number; before?: string } = {},
+): Promise<ConversationHistoryPage> {
+  const params = new URLSearchParams({ limit: String(options.limit ?? 30) });
+  if (options.before) params.set("before", options.before);
+  return api<ConversationHistoryPage>(`/v1/conversations/${conversationId}/queries?${params}`);
+}
 
 export const getUsage = (days = 30) => api<UsageSummary>(`/v1/usage?days=${days}`);
 

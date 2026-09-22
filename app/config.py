@@ -79,6 +79,11 @@ class Settings(BaseSettings):
     # re-imposes the old cut (20 chunks x ~450 tokens + headers)
     context_token_budget: int = Field(default=18000, gt=0)
     context_chunk_max_tokens: int = Field(default=700, gt=0)
+    conversation_context_max_turns: int = Field(default=4, ge=1, le=8)
+    conversation_context_token_budget: int = Field(default=2000, ge=128, le=8000)
+    conversation_context_max_references: int = Field(default=6, ge=1, le=20)
+    conversation_normalizer_max_output_chars: int = Field(default=8192, ge=256, le=16384)
+    conversation_normalizer_max_question_chars: int = Field(default=4000, ge=1, le=4000)
     # suggested questions: the worker refreshes them when a collection's ingestion
     # settles — count kept, count+2 drafted, ranked by retrieval score
     suggested_questions_enabled: bool = True
@@ -138,6 +143,7 @@ class Settings(BaseSettings):
     auth_allowed_origins: str = "http://localhost:3000,http://localhost:3002"
     auth_public_url: str = "http://localhost:3002"
     auth_session_ttl_s: int = Field(default=604800, ge=300, le=2592000)
+    auth_guest_session_ttl_s: int = Field(default=2592000, ge=3600, le=31536000)
     auth_verify_ttl_s: int = Field(default=86400, ge=300, le=172800)
     auth_reset_ttl_s: int = Field(default=1800, ge=300, le=3600)
     auth_attempt_window_s: int = Field(default=900, ge=60)

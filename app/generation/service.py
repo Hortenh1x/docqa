@@ -18,8 +18,9 @@ import time
 import uuid
 from collections.abc import AsyncGenerator, Callable
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, Literal
 
 import anyio
 import structlog
@@ -29,9 +30,11 @@ from app.access import Principal, resolve_principal
 from app.billing.context import current_account_id, current_billing_actor
 from app.billing.errors import BudgetExceededError, BudgetUnavailableError
 from app.config import Settings
+from app.conversations.context import ConversationContext
+from app.conversations.normalizer import normalize_followup
 from app.core.errors import NotFoundError
 from app.db.base import get_sessionmaker
-from app.db.models import Collection, Query, QueryCitation
+from app.db.models import Collection, Conversation, Query, QueryCitation
 from app.embeddings.base import EmbeddingError
 from app.generation.citations import finalize_answer
 from app.generation.llm import (
@@ -66,6 +69,7 @@ class MetaEvent:
     # {"role", "hidden_passages", "hidden_labels", "hidden_documents", "hidden_outranking",
     # "hidden_truncated"} — hidden_* are null unless reveal mode
     access: dict[str, Any]
+    context: dict[str, bool | int] | None = None
 
 
 @dataclass(frozen=True)
@@ -92,6 +96,10 @@ class DoneEvent:
     # cited blocks only: {n, chunk_id, content, quotes: [{start, end, text}]} — the
     # pinpoint spans the client highlights (app/generation/quotes.py)
     citations: list[dict[str, Any]] = field(default_factory=list)
+    outcome: str = "answered"
+    context: dict[str, bool | int] = field(
+        default_factory=lambda: {"reset": False, "turns_used": 0}
+    )
 
 
 @dataclass(frozen=True)
@@ -172,8 +180,12 @@ async def _record_query(
     role: str | None = None,
     data_version: int | None = None,
     quotes: dict[int, list[Quote]] | None = None,
-) -> None:
-    """Best-effort, shielded from cancellation: stats must survive client disconnects."""
+    conversation_context: ConversationContext | None = None,
+    outcome: str | None = None,
+    outcome_reason: str | None = None,
+    accepted_at: datetime | None = None,
+) -> Literal["recorded", "source_changed", "failed"]:
+    """Persist one terminal state in a short, cancellation-shielded transaction."""
     try:
         with anyio.CancelScope(shield=True):
             async with get_sessionmaker()() as session:
@@ -185,28 +197,60 @@ async def _record_query(
                     )
                     if current != data_version:
                         log.info("query_discarded_after_cleanup", query_id=str(query_id))
-                        return
-                session.add(
-                    Query(
-                        id=query_id,
-                        tenant_id=tenant_id,
-                        collection_id=collection_id,
-                        question=question,
-                        answer=answer,
-                        refused=refused,
-                        confidence=confidence,
-                        latency_ms=latency_ms,
-                        prompt_tokens=prompt_tokens,
-                        completion_tokens=completion_tokens,
-                        cost_usd=cost,
-                        model=model,
-                        role=role,
-                        user_id=current_account_id.get(),
-                        ip_digest=(
-                            payer.ip_digest if (payer := current_billing_actor.get()) else None
-                        ),
+                        return "source_changed"
+                owner_user_id = current_account_id.get()
+                conversation: Conversation | None = None
+                if conversation_context is not None:
+                    conversation = await session.scalar(
+                        select(Conversation)
+                        .where(
+                            Conversation.id == conversation_context.conversation_id,
+                            Conversation.tenant_id == tenant_id,
+                            Conversation.collection_id == collection_id,
+                        )
+                        .with_for_update()
                     )
-                )
+                    if conversation is None:
+                        log.error("query_conversation_missing", query_id=str(query_id))
+                        return "failed"
+                    owner_user_id = conversation.owner_user_id
+                query_values: dict[str, Any] = {
+                    "id": query_id,
+                    "tenant_id": tenant_id,
+                    "collection_id": collection_id,
+                    "question": question,
+                    "answer": answer,
+                    "refused": refused,
+                    "confidence": confidence,
+                    "latency_ms": latency_ms,
+                    "prompt_tokens": prompt_tokens,
+                    "completion_tokens": completion_tokens,
+                    "cost_usd": cost,
+                    "model": model,
+                    "role": role,
+                    "conversation_id": (
+                        conversation_context.conversation_id if conversation_context else None
+                    ),
+                    "parent_query_id": (
+                        conversation_context.parent_query_id if conversation_context else None
+                    ),
+                    "outcome": outcome,
+                    "outcome_reason": outcome_reason,
+                    "source_generation": (
+                        conversation_context.source_generation if conversation_context else None
+                    ),
+                    "access_fingerprint": (
+                        conversation_context.access_fingerprint if conversation_context else None
+                    ),
+                    "context_reset": conversation_context.reset if conversation_context else False,
+                    "user_id": owner_user_id,
+                    "ip_digest": (
+                        payer.ip_digest if (payer := current_billing_actor.get()) else None
+                    ),
+                }
+                if conversation_context is not None and accepted_at is not None:
+                    query_values["created_at"] = accepted_at
+                session.add(Query(**query_values))
                 session.add_all(
                     QueryCitation(
                         query_id=query_id,
@@ -221,9 +265,14 @@ async def _record_query(
                     )
                     for b in blocks
                 )
+                if conversation is not None:
+                    conversation.updated_at = datetime.now(UTC)
                 await session.commit()
-    except Exception:
-        log.error("query_record_failed", query_id=str(query_id))
+                return "recorded"
+    except Exception as exc:
+        log.error("query_record_failed", query_id=str(query_id), error_type=type(exc).__name__)
+        return "failed"
+    return "failed"
 
 
 async def run_query(
@@ -235,6 +284,7 @@ async def run_query(
     data_version: int | None = None,
     *,
     context_observer: Callable[[list[ContextBlock]], None] | None = None,
+    conversation_context: ConversationContext | None = None,
 ) -> AsyncGenerator[QueryEvent, None]:
     if data_version is None:
         async with get_sessionmaker()() as session:
@@ -246,6 +296,7 @@ async def run_query(
         if data_version is None:
             raise NotFoundError("Collection not found.")
     query_id = uuid.uuid4()
+    accepted_at = datetime.now(UTC)
     started = time.perf_counter()
     principal = principal or resolve_principal(settings, None)
     log_ctx = log.bind(query_id=str(query_id), role=principal.role)
@@ -260,7 +311,14 @@ async def run_query(
     splitter = QuoteSplitter()
     parts: list[str] = []
     usage = UsageAccumulator()
+    record_attempted = False
     recorded = False
+    effective_question = question
+    context_payload: dict[str, bool | int] = {
+        "reset": conversation_context.reset if conversation_context else False,
+        "turns_used": conversation_context.turns_used if conversation_context else 0,
+    }
+    meta_emitted = False
 
     async def record_once(
         *,
@@ -269,13 +327,15 @@ async def run_query(
         cost: Decimal | None,
         model: str | None,
         quotes: dict[int, list[Quote]] | None = None,
-    ) -> None:
-        nonlocal recorded
-        if recorded:
-            return
-        recorded = True
+        outcome: str = "answered",
+        reason: str | None = None,
+    ) -> str | None:
+        nonlocal record_attempted, recorded
+        if record_attempted:
+            return "recorded" if recorded else None
+        record_attempted = True
         total_usage = usage.total
-        await _record_query(
+        result = await _record_query(
             query_id=query_id,
             tenant_id=tenant_id,
             collection_id=collection_id,
@@ -292,54 +352,160 @@ async def run_query(
             blocks=blocks,
             role=principal.role,
             quotes=quotes,
+            conversation_context=conversation_context,
+            outcome=outcome,
+            outcome_reason=reason,
+            accepted_at=accepted_at,
+        )
+        recorded = result == "recorded"
+        return result
+
+    def persistence_error(result: str | None) -> ErrorEvent | None:
+        if conversation_context is None or result == "recorded":
+            return None
+        if result == "source_changed":
+            return ErrorEvent(
+                code="query_source_changed",
+                message="Collection sources changed before the query could be saved. Please retry.",
+            )
+        return ErrorEvent(
+            code="query_persistence_failed",
+            message="The query could not be saved. Please retry.",
+        )
+
+    async def record_incomplete(outcome: str, reason: str) -> None:
+        partial = "".join(parts)
+        substantive_partial = partial if partial.strip() else None
+        total_usage = usage.total
+        model = llm.model_name if llm else None
+        await record_once(
+            answer=substantive_partial,
+            refused=False,
+            quotes=(
+                resolve_quotes(splitter.section, substantive_partial, blocks)
+                if substantive_partial
+                else None
+            ),
+            cost=cost_usd(
+                model,
+                total_usage.prompt_tokens if total_usage else None,
+                total_usage.completion_tokens if total_usage else None,
+            ),
+            model=model,
+            outcome=outcome,
+            reason=reason,
         )
 
     try:
+        if conversation_context is not None and conversation_context.parent_query_id is not None:
+            llm = get_llm_provider(settings)
+            decision = await normalize_followup(
+                llm,
+                question,
+                conversation_context,
+                aggregate_usage=usage,
+                max_output_chars=settings.conversation_normalizer_max_output_chars,
+                max_question_chars=settings.conversation_normalizer_max_question_chars,
+            )
+            effective_question = decision.question
+            if decision.action == "clarify":
+                total_usage = usage.total
+                model = llm.model_name
+                cost = cost_usd(
+                    model,
+                    total_usage.prompt_tokens if total_usage else None,
+                    total_usage.completion_tokens if total_usage else None,
+                )
+                yield MetaEvent(
+                    query_id=query_id,
+                    access=access_payload(principal, None),
+                    context=context_payload,
+                )
+                meta_emitted = True
+                yield SourcesEvent(sources=[])
+                result = await record_once(
+                    answer=decision.question,
+                    refused=False,
+                    cost=cost,
+                    model=model,
+                    outcome="clarification",
+                    reason="context_clarification",
+                )
+                if error := persistence_error(result):
+                    yield error
+                    return
+                yield DoneEvent(
+                    answer=decision.question,
+                    refused=False,
+                    reason="context_clarification",
+                    confidence=None,
+                    prompt_tokens=total_usage.prompt_tokens if total_usage else None,
+                    completion_tokens=total_usage.completion_tokens if total_usage else None,
+                    cost=cost,
+                    latency_ms=latency_ms(),
+                    model=model,
+                    outcome="clarification",
+                    context=context_payload,
+                )
+                return
         try:
-            retrieval = await retrieve(collection_id, question, settings, principal)
+            retrieval = await retrieve(collection_id, effective_question, settings, principal)
         except EmbeddingError as exc:
             log_ctx.warning("query_embedding_unavailable", error_type=type(exc).__name__)
+            await record_incomplete("failed", "provider_unavailable")
+            if conversation_context is not None and not meta_emitted:
+                yield MetaEvent(
+                    query_id=query_id,
+                    access=access_payload(principal, None),
+                    context=context_payload,
+                )
+                meta_emitted = True
             yield ErrorEvent(code="provider_unavailable", message="Embedding provider unavailable.")
             return
 
         confidence = retrieval.top_score
-        yield MetaEvent(query_id=query_id, access=access_payload(principal, retrieval.hidden))
+        yield MetaEvent(
+            query_id=query_id,
+            access=access_payload(principal, retrieval.hidden),
+            context=context_payload,
+        )
+        meta_emitted = True
 
         # retrieval gate: an off-corpus question is refused before the LLM — it costs nothing
         if not retrieval.chunks or (
             retrieval.top_score is not None and retrieval.top_score < settings.refusal_threshold
         ):
             log_ctx.info("query_refused_at_gate", top_score=retrieval.top_score)
-            # record BEFORE the final yield: a JSON-mode collector stops consuming at `done`,
-            # so code after this yield would never run
-            recorded = True
-            await _record_query(
-                query_id=query_id,
-                tenant_id=tenant_id,
-                collection_id=collection_id,
-                data_version=data_version,
-                question=question,
+            total_usage = usage.total
+            gate_model: str | None = llm.model_name if llm is not None else None
+            cost = cost_usd(
+                gate_model,
+                total_usage.prompt_tokens if total_usage else None,
+                total_usage.completion_tokens if total_usage else None,
+            )
+            result = await record_once(
                 answer=None,
                 refused=True,
-                confidence=retrieval.top_score,
-                latency_ms=latency_ms(),
-                prompt_tokens=None,
-                completion_tokens=None,
-                cost=None,
-                model=None,
-                blocks=[],
-                role=principal.role,
+                cost=cost,
+                model=gate_model,
+                outcome="refused",
+                reason=REFUSAL_REASON,
             )
+            if error := persistence_error(result):
+                yield error
+                return
             yield DoneEvent(
                 answer=None,
                 refused=True,
                 reason=REFUSAL_REASON,
                 confidence=retrieval.top_score,
-                prompt_tokens=None,
-                completion_tokens=None,
-                cost=None,
+                prompt_tokens=total_usage.prompt_tokens if total_usage else None,
+                completion_tokens=total_usage.completion_tokens if total_usage else None,
+                cost=cost,
                 latency_ms=latency_ms(),
-                model=None,
+                model=gate_model,
+                outcome="refused",
+                context=context_payload,
             )
             return
 
@@ -347,7 +513,7 @@ async def run_query(
         if settings.query_planning_enabled:
             llm = get_llm_provider(settings)
             try:
-                planned, _ = await plan_queries(llm, question, usage)
+                planned, _ = await plan_queries(llm, effective_question, usage)
             except GenerationError as exc:
                 log_ctx.warning("query_planning_failed", error_type=type(exc).__name__)
                 planned = None
@@ -381,7 +547,11 @@ async def run_query(
 
         if llm is None:
             llm = get_llm_provider(settings)
-        answer_prompt = build_user_prompt(blocks, question)
+        answer_prompt = build_user_prompt(
+            blocks,
+            question,
+            effective_question if conversation_context is not None else None,
+        )
         for attempt in range(2):
             sentinel = SentinelBuffer()
             splitter = QuoteSplitter()
@@ -411,6 +581,7 @@ async def run_query(
                     yield DeltaEvent(text=tail)
             except GenerationError as exc:
                 log_ctx.warning("query_generation_failed", error_type=type(exc).__name__)
+                await record_incomplete("failed", "provider_unavailable")
                 yield ErrorEvent(code="provider_unavailable", message="LLM provider unavailable.")
                 return
 
@@ -425,7 +596,17 @@ async def run_query(
             if sentinel.refused:
                 # generation gate: the model saw the context and said NO_ANSWER
                 log_ctx.info("query_refused_by_model")
-                await record_once(answer=None, refused=True, cost=cost, model=model)
+                result = await record_once(
+                    answer=None,
+                    refused=True,
+                    cost=cost,
+                    model=model,
+                    outcome="refused",
+                    reason=REFUSAL_REASON,
+                )
+                if error := persistence_error(result):
+                    yield error
+                    return
                 yield DoneEvent(
                     answer=None,
                     refused=True,
@@ -436,6 +617,8 @@ async def run_query(
                     cost=cost,
                     latency_ms=latency_ms(),
                     model=model,
+                    outcome="refused",
+                    context=context_payload,
                 )
                 return
 
@@ -452,6 +635,7 @@ async def run_query(
                 "query_empty_completion_after_retry",
                 completion_tokens=total_usage.completion_tokens if total_usage else None,
             )
+            await record_incomplete("failed", EMPTY_COMPLETION_REASON)
             yield ErrorEvent(
                 code="provider_unavailable",
                 message="The LLM did not complete an answer. Please try again.",
@@ -475,7 +659,17 @@ async def run_query(
             quote_methods={n: [q.method for q in spans] for n, spans in quotes.items()},
             latency_ms=latency_ms(),
         )
-        await record_once(answer=answer, refused=False, cost=cost, model=model, quotes=quotes)
+        result = await record_once(
+            answer=answer,
+            refused=False,
+            cost=cost,
+            model=model,
+            quotes=quotes,
+            outcome="answered",
+        )
+        if error := persistence_error(result):
+            yield error
+            return
         yield DoneEvent(
             answer=answer,
             refused=False,
@@ -487,26 +681,38 @@ async def run_query(
             latency_ms=latency_ms(),
             model=model,
             citations=citations_payload(blocks, quotes),
+            outcome="answered",
+            context=context_payload,
         )
+    except GenerationError as exc:
+        log_ctx.warning("query_normalization_failed", error_type=type(exc).__name__)
+        await record_incomplete("failed", "provider_unavailable")
+        if conversation_context is not None and not meta_emitted:
+            yield MetaEvent(
+                query_id=query_id,
+                access=access_payload(principal, None),
+                context=context_payload,
+            )
+            meta_emitted = True
+        yield ErrorEvent(code="provider_unavailable", message="LLM provider unavailable.")
     except (BudgetExceededError, BudgetUnavailableError) as exc:
         log_ctx.warning("query_budget_blocked", code=exc.code)
+        await record_incomplete("failed", exc.code)
+        if conversation_context is not None and not meta_emitted:
+            yield MetaEvent(
+                query_id=query_id,
+                access=access_payload(principal, None),
+                context=context_payload,
+            )
+            meta_emitted = True
         yield ErrorEvent(code=exc.code, message=exc.detail, headers=exc.headers, extra=exc.extra)
-    finally:
-        # client disconnected mid-stream (or an unexpected error): keep the stats anyway
-        partial = "".join(parts)
-        substantive_partial = partial if partial.strip() else None
-        await record_once(
-            answer=substantive_partial,
-            refused=False,
-            quotes=(
-                resolve_quotes(splitter.section, substantive_partial, blocks)
-                if substantive_partial
-                else None
-            ),
-            cost=cost_usd(
-                llm.model_name if llm else None,
-                usage.total.prompt_tokens if usage.total else None,
-                usage.total.completion_tokens if usage.total else None,
-            ),
-            model=llm.model_name if llm else None,
+    except BaseException as exc:
+        cancelled = isinstance(exc, (GeneratorExit, anyio.get_cancelled_exc_class()))
+        await record_incomplete(
+            "cancelled" if cancelled else "failed",
+            "client_cancelled" if cancelled else "internal_error",
         )
+        raise
+    finally:
+        if not record_attempted:
+            await record_incomplete("cancelled", "client_cancelled")

@@ -346,20 +346,31 @@ async def test_reprocess_rechunks_without_reupload(client, tenant, fin_collectio
 
     from app.cli import reprocess_documents
     from app.db.base import get_sessionmaker
-    from app.db.models import Chunk, Document
+    from app.db.models import Chunk, Collection, Document
 
     async with get_sessionmaker()() as session:
         before = (await session.execute(select(Chunk.id).order_by(Chunk.id))).scalars().all()
+        generation_before = await session.scalar(
+            select(Collection.source_generation).where(Collection.id == _uuid.UUID(fin_collection))
+        )
     await reprocess_documents(_uuid.UUID(fin_collection), ".md")  # celery is eager: runs inline
     async with get_sessionmaker()() as session:
         after = (await session.execute(select(Chunk.id).order_by(Chunk.id))).scalars().all()
         statuses = (await session.execute(select(Document.status))).scalars().all()
         labels = (await session.execute(select(Chunk.access_label))).scalars().all()
+        generation_after = await session.scalar(
+            select(Collection.source_generation).where(Collection.id == _uuid.UUID(fin_collection))
+        )
     assert len(after) == len(before) and set(after).isdisjoint(before)  # replaced, not duplicated
     assert statuses == ["ready"]
     assert sorted(labels) == ["all", "finance"]
+    assert generation_after == generation_before + 1
     # documents with another suffix are left alone
     await reprocess_documents(_uuid.UUID(fin_collection), ".pdf")
     async with get_sessionmaker()() as session:
         untouched = (await session.execute(select(Chunk.id).order_by(Chunk.id))).scalars().all()
+        generation_untouched = await session.scalar(
+            select(Collection.source_generation).where(Collection.id == _uuid.UUID(fin_collection))
+        )
     assert untouched == after
+    assert generation_untouched == generation_after

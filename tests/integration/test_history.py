@@ -182,7 +182,7 @@ async def test_rows_recorded_before_pinpoint_quotes_get_a_fallback_span(client, 
     assert cited["quotes"] and "27 vacation days" in cited["quotes"][0]["text"]
 
 
-async def test_accounts_see_only_their_own_history_and_guests_none(
+async def test_accounts_see_only_their_history_and_legacy_guest_rows_are_unclaimable(
     account_client, capture_mail, make_tenant, monkeypatch
 ):
     from app.config import get_settings
@@ -233,26 +233,24 @@ async def test_accounts_see_only_their_own_history_and_guests_none(
     denied = await client.post(
         "/v1/queries/claim", headers=guest_headers, json={"query_ids": [guest_answer["query_id"]]}
     )
-    assert denied.status_code == 401
+    assert denied.status_code == 410
 
-    # Alice signs in and claims the guest exchange: it appears in her thread
+    # Sign-in cannot prove ownership of an old UUID-only guest row. The disabled
+    # endpoint remains gone for accounts too; only session-owned conversations move.
     alice, alice_headers = await register_login(client, capture_mail)
     claimed = await client.post(
         "/v1/queries/claim",
         headers=alice_headers,
         json={"query_ids": [guest_answer["query_id"], public_id]},
     )
-    assert claimed.status_code == 200, claimed.text
-    assert claimed.json() == {"claimed": 1}
+    assert claimed.status_code == 410, claimed.text
     own = await ask(client, alice_headers, public_id, "What about remote work?")
     alice_page = (await client.get(f"/v1/collections/{public_id}/queries")).json()
-    assert [q["id"] for q in alice_page["queries"]] == [own["query_id"], guest_answer["query_id"]]
-    assert alice_page["queries"][1]["question"] == "How many vacation days?"
-    # a second claim of the same rows moves nothing
+    assert [q["id"] for q in alice_page["queries"]] == [own["query_id"]]
     again = await client.post(
         "/v1/queries/claim", headers=alice_headers, json={"query_ids": [guest_answer["query_id"]]}
     )
-    assert again.json() == {"claimed": 0}
+    assert again.status_code == 410
 
     # Bob sees none of it, and cannot take Alice's rows either
     async with AsyncClient(
@@ -266,13 +264,13 @@ async def test_accounts_see_only_their_own_history_and_guests_none(
             headers=bob_headers,
             json={"query_ids": [guest_answer["query_id"], own["query_id"]]},
         )
-        assert stolen.json() == {"claimed": 0}
+        assert stolen.status_code == 410
 
     from app.db.models import Query
 
     async with get_sessionmaker()() as db:
         owners = dict((await db.execute(select(Query.id, Query.user_id))).all())
     assert {str(k): str(v) for k, v in owners.items()} == {
-        guest_answer["query_id"]: alice["user"]["id"],
+        guest_answer["query_id"]: "None",
         own["query_id"]: alice["user"]["id"],
     }

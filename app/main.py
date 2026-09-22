@@ -14,6 +14,7 @@ from app.api.v1 import (
     access,
     budget,
     collections,
+    conversations,
     documents,
     health,
     history,
@@ -33,6 +34,7 @@ from app.db.base import dispose_engine
 _TAGS = [
     {"name": "health", "description": "Liveness and readiness probes (no auth)."},
     {"name": "collections", "description": "Document groups; each pins an embedding model."},
+    {"name": "conversations", "description": "Named, owner-scoped collection conversations."},
     {"name": "documents", "description": "Upload, status tracking and deletion."},
     {
         "name": "query",
@@ -117,6 +119,7 @@ def create_app() -> FastAPI:
     app.include_router(accounts.router)
     app.include_router(google_router.router)
     app.include_router(collections.router)
+    app.include_router(conversations.router)
     app.include_router(documents.router)
     app.include_router(query.router)
     app.include_router(history.router)
