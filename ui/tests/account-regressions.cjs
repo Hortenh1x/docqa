@@ -916,9 +916,9 @@ test('a late older sibling never replaces the newer completed and echoed head', 
     f.state.held.splice(0).forEach(resolve => resolve());
     await f.page.getByRole('article', { name: 'Slow older sibling', exact: true }).getByText('Public answer', { exact: false }).waitFor();
     f.state.queryPlans['After sibling race'] = { queryId: 'q-after-siblings' };
+    const nextRequest = f.page.waitForRequest(request => new URL(request.url()).pathname === '/v1/query' && request.method() === 'POST' && request.postDataJSON().question === 'After sibling race');
     await f.page.getByLabel('Your question').fill('After sibling race'); await f.page.getByRole('button', { name: 'Ask', exact: true }).click();
-    await f.page.waitForFunction(() => window.transport.filter(item => item.path.endsWith('/v1/query')).length >= 3);
-    const body = JSON.parse(f.state.requests.filter(item => item.path === '/v1/query').at(-1).body);
+    const body = (await nextRequest).postDataJSON();
     assert.equal(body.parent_query_id, 'q-fast');
   } finally { await f.close(); }
 });
@@ -940,9 +940,9 @@ test('a newer sibling remains the head when the older sibling completes first', 
     await f.page.getByRole('article', { name: 'Newer finishes second', exact: true }).getByText('Public answer', { exact: false }).waitFor();
     await waitForHeld(f.state, 1);
     f.state.queryPlans['After forward siblings'] = { queryId: 'q-after-forward' };
+    const nextRequest = f.page.waitForRequest(request => new URL(request.url()).pathname === '/v1/query' && request.method() === 'POST' && request.postDataJSON().question === 'After forward siblings');
     await f.page.getByLabel('Your question').fill('After forward siblings'); await f.page.getByRole('button', { name: 'Ask', exact: true }).click();
-    await f.page.waitForFunction(() => window.transport.filter(item => item.path.endsWith('/v1/query')).length >= 3);
-    const body = JSON.parse(f.state.requests.filter(item => item.path === '/v1/query').at(-1).body);
+    const body = (await nextRequest).postDataJSON();
     assert.equal(body.parent_query_id, 'q-newer-second');
   } finally { await f.close(); }
 });
@@ -983,8 +983,9 @@ test('failed rows do not advance the head and retry preserves the captured scope
     await f.page.getByLabel('Your question').fill('Endpoint failure'); await f.page.getByRole('button', { name: 'Ask', exact: true }).click();
     const endpointFailure = f.page.getByRole('article', { name: 'Endpoint failure', exact: true });
     await endpointFailure.getByText(/Something went wrong|Incomplete/).waitFor();
+    const afterFailure = f.page.waitForRequest(request => new URL(request.url()).pathname === '/v1/query' && request.method() === 'POST' && request.postDataJSON().question === 'After endpoint failure');
     await f.page.getByLabel('Your question').fill('After endpoint failure'); await f.page.getByRole('button', { name: 'Ask', exact: true }).click();
-    body = JSON.parse(f.state.requests.filter(item => item.path === '/v1/query').at(-1).body);
+    body = (await afterFailure).postDataJSON();
     assert.notEqual(body.parent_query_id, 'q-error');
   } finally { await f.close(); }
 });
@@ -997,9 +998,11 @@ test('View as reruns the clicked refusal with its captured collection conversati
     f.state.hold = (_req, url) => url.pathname === '/v1/conversations/chat-view/queries';
     await f.page.getByLabel('Your question').fill('Restricted question'); await f.page.getByRole('button', { name: 'Ask', exact: true }).click();
     const refused = f.page.getByRole('article', { name: 'Restricted question', exact: true });
-    await refused.getByRole('button', { name: 'View as Finance', exact: true }).click();
-    await f.page.waitForFunction(() => window.transport.filter(item => item.path.endsWith('/v1/query')).length >= 2);
-    const body = JSON.parse(f.state.requests.filter(item => item.path === '/v1/query').at(-1).body);
+    const viewAs = refused.getByRole('button', { name: 'View as Finance', exact: true });
+    await viewAs.waitFor({ state: 'visible' });
+    const rerun = f.page.waitForRequest(request => new URL(request.url()).pathname === '/v1/query' && request.method() === 'POST');
+    await viewAs.click();
+    const body = (await rerun).postDataJSON();
     assert.deepEqual({ collection: body.collection_id, conversation: body.conversation_id, parent: body.parent_query_id, role: body.role }, { collection: pub, conversation: 'chat-view', parent: 'q-parent', role: 'finance' });
   } finally { await f.close(); }
 });
@@ -1117,12 +1120,15 @@ test('large variable transcript keeps prepend anchor, bounded DOM, focus and sou
     await f.page.waitForFunction(label => { const viewport = document.querySelector('[aria-label="Conversation transcript"]'); const article = [...document.querySelectorAll('article')].find(row => row.getAttribute('aria-label') === label); return !!viewport && !!article && article.getBoundingClientRect().top >= viewport.getBoundingClientRect().top; }, anchor.label);
     const after = await visibleAnchor();
     assert.equal(after.label, anchor.label); assert(Math.abs(after.top - anchor.top) < 12, `Anchor shifted ${after.top - anchor.top}px`);
-    const detailsPair = await transcript.evaluate((node, label) => {
-      const anchorRow = [...node.querySelectorAll('article')].find(row => row.getAttribute('aria-label') === label)?.closest('[data-row-key]');
+    const detailsPairHandle = await f.page.waitForFunction(label => {
+      const node = document.querySelector('[aria-label="Conversation transcript"]');
+      const anchorRow = [...(node?.querySelectorAll('article') ?? [])].find(row => row.getAttribute('aria-label') === label)?.closest('[data-row-key]');
       const expandingRow = anchorRow?.nextElementSibling ? anchorRow : anchorRow?.previousElementSibling;
       const followingRow = expandingRow?.nextElementSibling;
-      return expandingRow && followingRow ? { expandedKey: expandingRow.dataset.rowKey, nextKey: followingRow.dataset.rowKey } : null;
+      return expandingRow?.dataset.rowKey && followingRow?.dataset.rowKey ? { expandedKey: expandingRow.dataset.rowKey, nextKey: followingRow.dataset.rowKey } : null;
     }, anchor.label);
+    const detailsPair = await detailsPairHandle.jsonValue();
+    await detailsPairHandle.dispose();
     assert(detailsPair?.expandedKey && detailsPair.nextKey, 'Need neighboring virtual rows to check expanded answer details');
     const pinnedRowKey = detailsPair.expandedKey;
     const pinnedDetails = transcript.locator(`[data-row-key="${pinnedRowKey}"] details`).filter({ hasText: 'Answer details' });
