@@ -39,6 +39,9 @@ export function DailyBudget() {
         Settled spend includes completed AI usage. Pending reservations are held for
         in-flight or unconfirmed usage and already reduce the remaining allowance.
       </p>
+      <p className="mt-1 text-xs leading-5 text-ink-soft">
+        Guest use carries over after sign-in. People on the same network share the IP allowance.
+      </p>
       <p className="mt-1 text-xs text-ink-soft">
         Resets <time dateTime={data.reset_at}>{new Date(data.reset_at).toLocaleString("en-GB", { timeZone: "UTC" })} UTC</time>.
       </p>

@@ -17,15 +17,6 @@ const LABEL_NAMES: Record<string, string> = {
   leadership: "Leadership",
 };
 
-/** Demo personas from the corpus fact sheet (corpus/FACTS.md) — shown in the switcher. */
-export const PERSONAS: Record<string, string> = {
-  employee: "Anna, backend engineer",
-  manager: "Ines, engineering manager",
-  hr: "Lea, people operations",
-  finance: "Tomasz, CFO",
-  leadership: "Marta, CEO",
-};
-
 export const roleName = (role: string) => ROLE_NAMES[role] ?? role;
 export const labelName = (label: string) => LABEL_NAMES[label] ?? label;
 

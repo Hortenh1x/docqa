@@ -58,7 +58,7 @@ export function SourceDrawer({
       // Native inertness blocks the page; wrap Tab as well so it stays in the sheet.
       if (e.key === "Tab" && panel.matches(":modal")) {
         const focusables = panel.querySelectorAll<HTMLElement>(
-          "button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex='-1'])",
+          "button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), summary:not([tabindex='-1']), [tabindex]:not([tabindex='-1'])",
         );
         const first = focusables[0];
         const last = focusables[focusables.length - 1];
@@ -152,8 +152,6 @@ export function SourceDrawer({
               <dd>{source.section}</dd>
             </>
           )}
-          <dt className="text-ink-soft">Relevance</dt>
-          <dd>{source.score !== null ? source.score.toFixed(3) : "—"}</dd>
           <dt className="text-ink-soft">Access</dt>
           <dd>
             {selected?.owned ? "Private · only your account" : source.access_label === "all"
@@ -210,6 +208,16 @@ export function SourceDrawer({
             </blockquote>
           </figure>
         )}
+
+        <details className="font-data text-xs text-ink-soft">
+          <summary className="min-h-11 cursor-pointer rounded-[6px] py-3 hover:text-ink">
+            Source details
+          </summary>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-4 pb-2">
+            <dt>Relevance</dt>
+            <dd className="text-ink">{source.score !== null ? source.score.toFixed(3) : "—"}</dd>
+          </dl>
+        </details>
 
         <div className="flex flex-wrap gap-2">
           <button

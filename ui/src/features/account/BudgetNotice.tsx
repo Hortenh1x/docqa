@@ -19,11 +19,18 @@ export function BudgetNotice() {
   if (!budget.data?.enabled) return null;
   const data = budget.data;
   return (
-    <div className="border-t border-hairline px-4 py-2 text-xs text-ink-soft">
-      <div className="mx-auto flex max-w-[1128px] flex-wrap items-baseline gap-x-3 gap-y-1">
+    <div className="border-t border-hairline px-4 py-1 text-xs text-ink-soft">
+      <div className="mx-auto flex max-w-[1128px] flex-wrap items-center gap-x-3 gap-y-1">
         <span role="status" className="font-data text-ink">${Number(data.remaining_usd).toFixed(2)} remaining / ${Number(data.limit_usd).toFixed(2)} per day</span>
         <span>Resets at 00:00 UTC.</span>
-        <span>Guest use carries over after sign-in. Shared networks share the IP allowance.</span>
+        <details className="max-w-full open:basis-full">
+          <summary className="min-h-11 w-fit cursor-pointer rounded-[6px] py-3 leading-5 hover:text-ink">
+            Budget details
+          </summary>
+          <p className="max-w-[68ch] pb-2 leading-5">
+            Guest use carries over after sign-in. People on the same network share the IP allowance.
+          </p>
+        </details>
       </div>
     </div>
   );

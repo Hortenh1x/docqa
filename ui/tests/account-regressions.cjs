@@ -381,10 +381,14 @@ test('mobile private source keeps keyboard focus and fits the viewport', async b
   const f = await fixture(browser, { width: 360 }); try {
     await login(f.page); await f.page.getByRole('link', { name: 'Ask', exact: true }).click();
     await f.page.getByLabel('Collection', { exact: true }).selectOption(own); await ask(f.page);
-    await f.page.getByText('Private source', { exact: true }).waitFor();
     const source = f.page.getByRole('button', { name: 'Source 1: Private salary.md, pages 1–1', exact: true });
     await source.click(); await f.page.getByRole('dialog').waitFor();
     await f.page.getByText('Private · only your account', { exact: true }).waitFor();
+    const details = f.page.getByRole('dialog').locator('details').filter({ hasText: 'Source details' });
+    assert.equal(await details.getAttribute('open'), null);
+    await details.locator('summary').focus();
+    await f.page.keyboard.press('Enter');
+    await details.getByText('0.900', { exact: true }).waitFor();
     await f.page.keyboard.press('Escape');
     assert.equal(await source.evaluate(el => el === document.activeElement), true);
     assert.equal(await f.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
@@ -632,17 +636,19 @@ test('storage read failure offers retry without claiming zero usage', async brow
     await storage.getByText('100 B of 50.0 MB used', { exact: false }).waitFor();
   } finally { await f.close(); }
 });
-test('every public set shows an accurate access explanation and three starter questions', async browser => {
+test('public starters remain available and access guidance appears only where relevant', async browser => {
   const second = '44444444-4444-4444-8444-444444444444';
   const questions = [{ question: 'Question one?', min_role: 'employee' }, { question: 'Question two?', min_role: 'employee' }, { question: 'Question three?', min_role: 'finance' }];
   const f = await fixture(browser, { publicCollections: [{ ...collection(pub), suggested_questions: questions }, { ...collection(second), name: 'Open handbook', slug: 'handbook', access_labels: [], suggested_questions: questions }] }); try {
     for (const id of [pub, second]) {
       await f.page.getByLabel('Collection', { exact: true }).selectOption(id);
-      await f.page.getByRole('note', { name: 'Document access' }).waitFor();
       for (const q of questions) await f.page.getByRole('button', { name: q.question, exact: false }).waitFor();
-      const note = await f.page.getByRole('note', { name: 'Document access' }).textContent();
-      assert.match(note, /Viewing as Employee/);
-      assert.match(note, id === pub ? /restricted to Finance/ : /no restricted sections/);
+      const note = f.page.getByRole('note', { name: 'Document access' });
+      if (id === pub) {
+        await note.getByText('Switch demo roles to explore restricted sections.', { exact: true }).waitFor();
+      } else {
+        assert.equal(await note.count(), 0);
+      }
     }
     await login(f.page); await f.page.getByRole('link', { name: 'Ask', exact: true }).click();
     await f.page.getByLabel('Collection', { exact: true }).selectOption(own);

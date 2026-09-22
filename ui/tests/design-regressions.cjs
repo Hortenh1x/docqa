@@ -13,7 +13,7 @@ test('desktop source allows keyboard access to the background and restores focus
     const dialog = f.page.getByRole('dialog');
     assert.notEqual(await dialog.getAttribute('aria-modal'), 'true');
     let reachedBackground = false;
-    const maxTabs = await f.page.locator('button,a,input,textarea,select').count() + 1;
+    const maxTabs = await f.page.locator('button,a,input,textarea,select,summary').count() + 1;
     for (let i = 0; i < maxTabs; i++) {
       await f.page.keyboard.press('Tab');
       if (await f.page.evaluate(() => document.activeElement === document.querySelector('textarea[aria-label="Your question"]'))) reachedBackground = true;

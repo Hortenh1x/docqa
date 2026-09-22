@@ -178,18 +178,29 @@ export function LibraryScreen() {
             <p>{site.data?.document_privacy ?? "Your documents belong to your private account."} Personal and confidential documents are allowed.</p>
             {site.data ? <><p>Before you upload, these providers process your content:</p><ul className="mt-1 list-disc pl-5">{site.data.providers.map(provider => <li key={provider.name}><span className="text-ink">{provider.name}</span>: {provider.receives}</li>)}</ul></> : <p role="status">{site.isError ? "Provider information is unavailable. Retry after the connection is restored." : "Loading provider information…"}</p>}
             <p className="mt-2">Your originals stay in your account until you delete them, including when processing fails.</p>
+            <p>Only upload documents you are allowed to share with this service.</p>
           </div>
           {site.data && <Dropzone busy={upload.isPending} disabled={storage.data?.remaining_bytes === 0} progress={progress} maxUploadMb={site.data.upload_max_mb} onFile={file => upload.mutate(file)} />}
-        </> : <div className="rounded-[10px] border border-hairline bg-sheet px-5 py-4 text-sm leading-6 text-ink-soft">
-          {selected.owned ? <><p>Verify your email before uploading to your private library.</p>{session?.registration_available ? <Link href="/account/resend" className="text-stamp underline">Resend verification email</Link> : <p>Verification email delivery is currently unavailable.</p>}</> : <><p>Public demo collection. Anyone can explore these documents; uploads and changes are disabled here.</p>{session?.user ? <p>Choose My documents in the collection menu to use your private library.</p> : <Link href="/account" className="text-stamp underline">Sign in to upload private documents</Link>}</>}
-        </div>
+        </> : selected.owned ? (
+          <div className="rounded-[10px] border border-hairline bg-sheet px-5 py-4 text-sm leading-6 text-ink-soft">
+            <p>Verify your email before uploading to your private library.</p>
+            {session?.registration_available ? <Link href="/account/resend" className="text-stamp underline">Resend verification email</Link> : <p>Verification email delivery is currently unavailable.</p>}
+          </div>
+        ) : (
+          <p className="text-sm leading-6 text-ink-soft">
+            {session?.user ? "Choose My documents in the collection menu to use your private library." : <Link href="/account" className="text-stamp underline">Sign in to upload private documents</Link>}
+          </p>
+        )
       ) : selected.read_only ? (
         <div className="rounded-[10px] border border-hairline bg-sheet px-5 py-4 text-sm text-ink-soft">
           Read-only demo collection — uploads are disabled here. Switch to the sandbox
           collection to try your own files.
         </div>
       ) : (
-        <Dropzone busy={upload.isPending} progress={progress} onFile={(file) => upload.mutate(file)} />
+        <div className="flex flex-col gap-3">
+          <p className="text-sm leading-6 text-ink-soft">Only upload documents you are allowed to share with this service.</p>
+          <Dropzone busy={upload.isPending} progress={progress} onFile={(file) => upload.mutate(file)} />
+        </div>
       )}
 
       {ingest.data && <IngestProgress status={ingest.data} owner={!!selected.owned} />}
@@ -203,7 +214,6 @@ export function LibraryScreen() {
       {documents.data && total === 0 && writable ? (
         <div className="py-14 text-center">
           <p className="font-display text-2xl text-ink-soft">No documents yet.</p>
-          <p className="mt-1 text-sm text-ink-soft">Drop a PDF, DOCX or MD above ↑</p>
         </div>
       ) : (
         <>
@@ -268,43 +278,38 @@ export function LibraryScreen() {
   );
 }
 
-/** One quiet line under the dropzone: ETA + running tokens/cost while ingesting,
- *  "generating questions" while the LLM drafts them, a cost summary when idle. */
+/** Keep active processing visible; reveal diagnostics on demand. */
 function IngestProgress({ status, owner }: { status: IngestStatus; owner: boolean }) {
   const inFlight = status.pending + status.processing;
-  if (inFlight > 0) {
-    return (
-      <p role="status" className="font-data text-xs text-ink-soft">
-        Processing {inFlight} {inFlight === 1 ? "document" : "documents"}…
-        {status.eta_seconds !== null && ` ~${status.eta_seconds}s left`}
-        {" · "}
-        {formatTokens(status.embedded_tokens)} tokens embedded
-        {status.embedding_cost_usd !== null && ` · ${formatCost(status.embedding_cost_usd)}`}
-      </p>
-    );
-  }
-  if (status.ready > 0 && !status.suggested_questions) {
-    return (
-      <p role="status" className="font-data text-xs text-ink-soft">
-        Generating suggested questions…
-      </p>
-    );
-  }
-  if (status.ready > 0) {
-    const restricted = Object.entries(status.access.chunks_by_label).filter(
-      ([label]) => label !== "all",
-    );
-    return (
-      <p className="font-data text-xs text-ink-soft">
-        {formatTokens(status.embedded_tokens)} tokens embedded
-        {status.embedding_cost_usd !== null &&
-          ` · ${formatCost(status.embedding_cost_usd)} embedding cost`}
-        {!owner && status.access.restricted_chunks > 0 &&
-          ` · ${status.access.restricted_chunks} restricted ${
-            status.access.restricted_chunks === 1 ? "passage" : "passages"
-          } (${restricted.map(([label, n]) => `${labelName(label)} ${n}`).join(" · ")})`}
-      </p>
-    );
-  }
-  return null;
+  if (inFlight === 0 && status.ready === 0) return null;
+
+  const restricted = Object.entries(status.access.chunks_by_label).filter(
+    ([label]) => label !== "all",
+  );
+  return (
+    <div className="text-xs text-ink-soft">
+      {inFlight > 0 ? (
+        <p role="status" className="font-data">
+          Processing {inFlight} {inFlight === 1 ? "document" : "documents"}…
+          {status.eta_seconds !== null && ` ~${status.eta_seconds}s left`}
+        </p>
+      ) : !status.suggested_questions && (
+        <p role="status" className="font-data">Generating suggested questions…</p>
+      )}
+      <details>
+        <summary className="min-h-11 cursor-pointer rounded-[6px] py-3 hover:text-ink">
+          Processing details
+        </summary>
+        <p className="font-data">
+          {formatTokens(status.embedded_tokens)} tokens embedded
+          {status.embedding_cost_usd !== null &&
+            ` · ${formatCost(status.embedding_cost_usd)} embedding cost`}
+          {!owner && status.access.restricted_chunks > 0 &&
+            ` · ${status.access.restricted_chunks} restricted ${
+              status.access.restricted_chunks === 1 ? "passage" : "passages"
+            } (${restricted.map(([label, n]) => `${labelName(label)} ${n}`).join(" · ")})`}
+        </p>
+      </details>
+    </div>
+  );
 }

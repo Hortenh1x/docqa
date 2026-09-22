@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useCollections, useRole } from "@/app/providers";
 import { ACCOUNTS_ENABLED } from "@/lib/api/client";
-import { joinNames, labelName, roleName } from "@/lib/access";
+import { roleName } from "@/lib/access";
 import type { QuoteSpan, Source } from "@/lib/api/types";
 import { AccessLine } from "./AccessLine";
 import { useAsk } from "./AskProvider";
@@ -121,13 +121,11 @@ export function AskScreen() {
             Ask the documents.
           </h1>
           <QuestionChips questions={selected?.suggested_questions} onPick={ask} />
-          {selected && (
+          {selected && (owned || restricted.length > 0) && (
             <p role="note" aria-label="Document access" className="max-w-md text-xs leading-5 text-ink-soft">
-              {owned ? "Only your account can access these documents. You can search all sections in your private library." : <>
-                Viewing as <span className="text-ink">{roleName(role)}</span>. {restricted.length > 0
-                  ? <>Some sections here are restricted to {joinNames(restricted.map(labelName))} — switch the role in the top bar to see how the answers change.</>
-                  : "This collection has no restricted sections. All roles can access the same documents; use the role menu to explore access levels in other collections."}
-              </>}
+              {owned
+                ? "Only your account can access these documents."
+                : "Switch demo roles to explore restricted sections."}
             </p>
           )}
           {historyError && (

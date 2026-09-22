@@ -8,7 +8,7 @@ import { useChangeApiKey, useCollections, useRole } from "@/app/providers";
 import { Select } from "@/components/Select";
 import { useAccount } from "@/features/account/context";
 import { BudgetNotice } from "@/features/account/BudgetNotice";
-import { PERSONAS, roleName } from "@/lib/access";
+import { roleName } from "@/lib/access";
 
 function NavLink({ href, label }: { href: string; label: string }) {
   const pathname = usePathname();
@@ -88,12 +88,11 @@ function RoleSwitch() {
         value={role}
         onChange={(e) => setRole(e.target.value)}
         aria-label="Access role"
-        className="min-w-0 flex-1 sm:w-60 sm:flex-none"
+        className="min-w-0 flex-1 sm:w-40 sm:flex-none"
       >
         {roles.map((r) => (
           <option key={r.role} value={r.role}>
             {roleName(r.role)}
-            {PERSONAS[r.role] ? ` · ${PERSONAS[r.role]}` : ""}
           </option>
         ))}
       </Select>

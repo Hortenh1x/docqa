@@ -31,6 +31,14 @@ export default function AboutPage() {
         It is a project for exploring document Q&amp;A.
       </p>
 
+      <section className="mt-10" aria-labelledby="acceptable-use-heading">
+        <h2 id="acceptable-use-heading" className="font-display text-xl">Acceptable use</h2>
+        <p className="mt-4 text-sm leading-6">
+          Only upload documents you are allowed to share with this service.
+          Do not use it for abusive, unlawful or exploitative purposes.
+        </p>
+      </section>
+
       <section className="mt-10" aria-labelledby="operator-heading">
         <h2 id="operator-heading" className="font-display text-xl">Operator &amp; contact</h2>
         <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">

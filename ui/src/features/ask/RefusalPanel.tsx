@@ -38,7 +38,6 @@ export function RefusalPanel({
           </p>
           <p className="mt-1 text-sm text-ink-soft">
             {describeHidden(access)} restricted to {joinNames(hiddenLabels.map(labelName))}.
-            Nothing was invented to fill the gap.
           </p>
           {unlockers.length > 0 && onViewAs && (
             <div className="mt-3 flex flex-wrap gap-2">
@@ -56,13 +55,7 @@ export function RefusalPanel({
           )}
         </>
       ) : (
-        <>
-          <p className="font-medium text-ink">Not found in the documents.</p>
-          <p className="mt-1 text-sm text-ink-soft">
-            The collection doesn&rsquo;t contain information about this — so no answer was
-            invented.
-          </p>
-        </>
+        <p className="font-medium text-ink">Not found in the documents.</p>
       )}
       <div className="mt-3">
         <QuestionChips questions={questions} onPick={onPick} exclude={question} compact />

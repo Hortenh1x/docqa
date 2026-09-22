@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Providers } from "@/app/providers";
-import { SiteNotice } from "@/features/account/SiteNotice";
 import { TopBar } from "@/components/TopBar";
 
 const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
@@ -33,7 +32,6 @@ export function AppFrame({ children }: { children: React.ReactNode }) {
           )}
           <TopBar />
           {content}
-          <SiteNotice />
         </Providers>
       )}
       <footer className="mx-auto w-full max-w-[760px] border-t border-hairline px-4 py-3 text-xs text-ink-soft">
