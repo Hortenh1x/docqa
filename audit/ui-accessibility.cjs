@@ -263,7 +263,7 @@ async function keyboardState(page) {
         await badge.waitFor();
         await contrast(page, `${status} document status on white`, badge);
       }
-      await contrast(page, 'upload hint on white', page.getByText('Drop PDF, DOCX, MD or TXT · up to 25 MB', { exact: true }));
+      await contrast(page, 'upload hint on white', page.getByText('Drop PDF, DOCX, MD, TXT or a scan/photo (PNG, JPEG, TIFF, HEIC) · up to 25 MB', { exact: true }));
       await contrast(page, 'document table heading on white', page.getByRole('columnheader', { name: 'Document', exact: true }));
       page.once('dialog', dialog => dialog.accept());
       await page.getByRole('button', { name: 'Delete ready.md', exact: true }).click();

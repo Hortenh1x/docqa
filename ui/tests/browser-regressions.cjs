@@ -517,7 +517,7 @@ test(`upload hint matches ${demo ? '5' : '25'} MB limit and server size error is
   const f = await fixture(browser, { path: '/library' });
   try {
     const { page } = f;
-    await page.getByText(`Drop PDF, DOCX, MD or TXT · up to ${demo ? '5' : '25'} MB`, { exact: true }).waitFor({ timeout: 4000 });
+    await page.getByText(`Drop PDF, DOCX, MD, TXT or a scan/photo (PNG, JPEG, TIFF, HEIC) · up to ${demo ? '5' : '25'} MB`, { exact: true }).waitFor({ timeout: 4000 });
     await page.locator('input[type=file]').setInputFiles({ name: 'oversized.md', mimeType: 'text/markdown', buffer: Buffer.from('synthetic rejection') });
     const alert = page.getByRole('main').getByRole('alert');
     await alert.waitFor();
