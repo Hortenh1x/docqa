@@ -8,7 +8,7 @@ import { canRead, joinNames, labelName } from "@/lib/access";
 import { ACCOUNTS_ENABLED, ApiError, deleteDocument, reprocessDocument, errorMessage } from "@/lib/api/client";
 import type { DocumentOut } from "@/lib/api/types";
 import { formatBytes, formatDate } from "@/lib/format";
-import { DocumentViewer } from "./DocumentViewer";
+import { DocumentViewer, type ReaderMode } from "./DocumentViewer";
 import { StatusBadge } from "./StatusBadge";
 
 function MobileLabel({ children }: { children: React.ReactNode }) {
@@ -28,7 +28,7 @@ export function DocumentTable({
 }) {
   const queryClient = useQueryClient();
   const { roles, role } = useRole();
-  const [reading, setReading] = useState<DocumentOut | null>(null);
+  const [reading, setReading] = useState<{ doc: DocumentOut; mode: ReaderMode } | null>(null);
   const closeReader = useCallback(() => setReading(null), []);
   const remove = useMutation({
     mutationFn: deleteDocument,
@@ -92,7 +92,7 @@ export function DocumentTable({
                 {owner || canRead(roles, role, doc.access_labels) ? (
                   <button
                     type="button"
-                    onClick={() => setReading(doc)}
+                    onClick={() => setReading({ doc, mode: "original" })}
                     title={`Read ${doc.filename}`}
                     className="font-data block min-h-11 max-w-full text-left text-xs underline-offset-2 hover:text-stamp hover:underline max-sm:break-words sm:truncate"
                   >
@@ -112,6 +112,14 @@ export function DocumentTable({
               <td role="cell" className="font-data min-w-0 px-3 py-2.5 text-xs text-ink-soft">
                 <MobileLabel>Pages</MobileLabel>
                 {doc.page_count ?? "—"}
+                {doc.ocr_pages ? (
+                  <span
+                    className="ml-1.5 rounded border border-hairline px-1 text-[10px] leading-4"
+                    title={`${doc.ocr_pages} ${doc.ocr_pages === 1 ? "page" : "pages"} recognised by OCR${doc.ocr_confidence !== null && doc.ocr_confidence !== undefined ? ` · ${Math.round(doc.ocr_confidence)}% confidence` : ""}`}
+                  >
+                    scan{doc.ocr_confidence !== null && doc.ocr_confidence !== undefined && doc.ocr_confidence < 60 ? " · low quality" : ""}
+                  </span>
+                ) : null}
               </td>
               <td role="cell" className="font-data min-w-0 px-3 py-2.5 text-xs text-ink-soft">
                 <MobileLabel>Size</MobileLabel>
@@ -146,6 +154,11 @@ export function DocumentTable({
               {!readOnly && (
                 <td role="cell" className="col-span-2 px-3 py-2.5 text-right">
                   <div className="flex flex-wrap items-center justify-end gap-2">
+                  {doc.status === "ready" && (owner || canRead(roles, role, doc.access_labels)) && <button
+                    type="button" onClick={() => setReading({ doc, mode: "fields" })}
+                    aria-label={`Extract fields from ${doc.filename}`}
+                    className="min-h-11 rounded-[6px] px-3 py-2 text-xs text-ink-soft hover:bg-stamp/10 hover:text-stamp"
+                  >Fields</button>}
                   {ACCOUNTS_ENABLED && owner && doc.status === "failed" && <button
                     type="button" onClick={() => retry.mutate(doc.id)} disabled={retry.isPending}
                     aria-label={`Retry processing ${doc.filename}`}
@@ -171,7 +184,7 @@ export function DocumentTable({
           ))}
         </tbody>
       </table>
-      {reading && <DocumentViewer doc={reading} onClose={closeReader} owner={owner} />}
+      {reading && <DocumentViewer doc={reading.doc} onClose={closeReader} owner={owner} initialMode={reading.mode} canExtract={!readOnly} />}
     </div>
   );
 }

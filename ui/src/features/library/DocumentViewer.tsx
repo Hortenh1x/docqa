@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRole } from "@/app/providers";
 import { LockIcon } from "@/components/LockIcon";
 import { HighlightedPassage } from "@/features/ask/HighlightedPassage";
+import { FieldsPanel } from "@/features/extraction/FieldsPanel";
 import { labelName } from "@/lib/access";
 import { ApiError, fetchDocumentFile, fetchPassages } from "@/lib/api/client";
 import type { DocumentOut, Passage, QuoteSpan } from "@/lib/api/types";
@@ -13,7 +14,7 @@ import { formatBytes, formatPages } from "@/lib/format";
 const TEXT_MIMES = new Set(["text/markdown", "text/plain"]);
 const WINDOW = 60;
 
-export type ReaderMode = "passages" | "original";
+export type ReaderMode = "passages" | "original" | "fields";
 
 /** The passage a citation points at: the reader opens on it and marks the quoted words. */
 export interface ReaderHighlight {
@@ -30,23 +31,35 @@ export function DocumentViewer({
   doc,
   onClose,
   owner = false,
-  highlight = null,
+  highlight: highlightProp = null,
   initialMode = "original",
+  canExtract = false,
 }: {
   doc: DocumentOut;
   onClose: () => void;
   owner?: boolean;
   highlight?: ReaderHighlight | null;
   initialMode?: ReaderMode;
+  /** show the Fields view (extraction) — the caller decides who may run it */
+  canExtract?: boolean;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const [mode, setMode] = useState<ReaderMode>(initialMode);
+  // a field's evidence opens the passages view on its passage, like a citation does
+  const [evidence, setEvidence] = useState<ReaderHighlight | null>(null);
+  const highlight = evidence ?? highlightProp;
+  const showEvidence = useCallback((target: ReaderHighlight) => {
+    setEvidence(target);
+    setMode("passages");
+  }, []);
+  // scans and photos: the searchable copy is a PDF the browser can render and search
+  const wantsSearchable = doc.searchable_pdf === true && doc.mime_type !== "application/pdf";
 
   const { role } = useRole();
   const file = useQuery({
-    queryKey: ["document-file", doc.id, role],
-    queryFn: () => fetchDocumentFile(doc.id, owner ? undefined : role),
+    queryKey: ["document-file", doc.id, role, wantsSearchable],
+    queryFn: () => fetchDocumentFile(doc.id, owner ? undefined : role, wantsSearchable ? "searchable" : "original"),
     staleTime: Infinity,
     retry: false,
     enabled: mode === "original",
@@ -113,7 +126,7 @@ export function DocumentViewer({
     };
   }, [onClose]);
 
-  const isPdf = doc.mime_type === "application/pdf";
+  const isPdf = doc.mime_type === "application/pdf" || (wantsSearchable && file.data?.type === "application/pdf");
   // a citation opens the original PDF on its page
   const pdfFragment = `#toolbar=0&navpanes=0${highlight?.pages ? `&page=${highlight.pages[0]}` : ""}`;
 
@@ -144,7 +157,7 @@ export function DocumentViewer({
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <div role="group" aria-label="View" className="flex rounded-[6px] border border-hairline">
-              {(["passages", "original"] as const).map((option) => (
+              {(canExtract ? (["passages", "original", "fields"] as const) : (["passages", "original"] as const)).map((option) => (
                 <button
                   key={option}
                   type="button"
@@ -154,7 +167,7 @@ export function DocumentViewer({
                     mode === option ? "bg-paper text-ink" : "text-ink-soft hover:text-ink"
                   }`}
                 >
-                  {option === "passages" ? "Passages" : "Original"}
+                  {option === "passages" ? "Passages" : option === "original" ? "Original" : "Fields"}
                 </button>
               ))}
             </div>
@@ -181,6 +194,9 @@ export function DocumentViewer({
 
         {mode === "passages" && (
           <PassagesView doc={doc} owner={owner} highlight={highlight} />
+        )}
+        {mode === "fields" && (
+          <FieldsPanel doc={doc} writable={canExtract} onShowEvidence={showEvidence} />
         )}
 
         {mode === "original" && file.isPending && (
@@ -222,7 +238,7 @@ export function DocumentViewer({
         {mode === "original" && !isPdf && !isText && objectUrl && (
           <p className="p-5 text-sm text-ink-soft">
             This format doesn&apos;t render in the browser — use Download above to read it
-            locally, or switch to Passages for its text.
+            locally, or switch to Passages for its recognised text.
           </p>
         )}
       </aside>

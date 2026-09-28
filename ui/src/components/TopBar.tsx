@@ -116,6 +116,7 @@ export function TopBar() {
         <nav className="order-2 ml-auto flex items-center gap-1 sm:order-3 sm:ml-0" aria-label="Screens">
           <NavLink href="/" label="Ask" />
           <NavLink href="/library" label="Library" />
+          <NavLink href="/schemas" label="Schemas" />
           <NavLink href="/usage" label="Usage" />
         </nav>
 

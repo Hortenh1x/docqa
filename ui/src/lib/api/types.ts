@@ -73,6 +73,95 @@ export interface DocumentOut {
   processed_at: string | null;
   /** restricted content labels found in the document's sections (empty = all open) */
   access_labels: string[];
+  /** set when a source (Notion) created the document */
+  source_id?: string | null;
+  external_url?: string | null;
+  /** OCR: pages recognised from a scan/photo, mean confidence 0–100, searchable copy */
+  ocr_pages?: number | null;
+  ocr_confidence?: number | null;
+  searchable_pdf?: boolean;
+}
+
+export type FieldType = "string" | "number" | "integer" | "date" | "boolean" | "enum" | "array";
+
+/** One field of an extraction schema, as the user defines it. */
+export interface FieldSpec {
+  name: string;
+  type: FieldType;
+  description: string;
+  required: boolean;
+  enum_values: string[] | null;
+  pattern: string | null;
+  examples: string[];
+}
+
+export interface ExtractionSchema {
+  id: string;
+  name: string;
+  description: string | null;
+  fields: FieldSpec[];
+  rules: string[];
+  index_facts: boolean;
+  extraction_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SchemaTemplate {
+  key: string;
+  name: string;
+  description: string;
+  fields: FieldSpec[];
+  rules: string[];
+}
+
+export interface SchemaInput {
+  name: string;
+  description?: string | null;
+  fields: FieldSpec[];
+  rules: string[];
+  index_facts: boolean;
+}
+
+/** Where an extracted value comes from: a span in a passage and, on scans, a box. */
+export interface FieldEvidence {
+  chunk_id: number;
+  chunk_index: number;
+  page: number | null;
+  start: number;
+  end: number;
+  quote: string;
+  bbox: [number, number, number, number] | null;
+  page_size: [number, number] | null;
+}
+
+export interface ExtractedField {
+  value: unknown;
+  confidence: number | null;
+  evidence: FieldEvidence | null;
+  edited: boolean;
+}
+
+export interface ExtractionIssue {
+  field: string | null;
+  code: string;
+  message: string;
+}
+
+export interface Extraction {
+  id: string;
+  document_id: string;
+  schema_id: string;
+  status: "pending" | "processing" | "ready" | "failed";
+  model: string | null;
+  fields: Record<string, ExtractedField>;
+  issues: ExtractionIssue[];
+  prompt_tokens: number | null;
+  completion_tokens: number | null;
+  cost_usd: number | string | null;
+  error: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 /** A pinpoint span inside a passage: character offsets into `content` plus the text. */

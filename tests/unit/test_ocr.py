@@ -62,6 +62,20 @@ def test_prepare_upscales_small_images_and_flattens_lighting():
     assert prepared.transform.deskew_deg == 0.0
 
 
+def test_noisy_scans_are_median_filtered_clean_ones_are_not():
+    import numpy as np
+
+    clean = _lined_page()
+    assert prepare(clean, deskew=False).transform.denoised is False
+    arr = np.asarray(clean, dtype=np.float32)
+    noise = np.random.default_rng(1).normal(0, 14, arr.shape)
+    noisy = Image.fromarray(np.clip(arr + noise, 0, 255).astype(np.uint8), "L")
+    prepared = prepare(noisy, deskew=False)
+    assert prepared.transform.denoised is True
+    # the filtered paper is flat again
+    assert np.asarray(prepared.image)[:60, :].std() < 8
+
+
 def test_prepare_applies_exif_orientation():
     image = Image.new("RGB", (400, 200), "white")
     exif = image.getexif()

@@ -60,7 +60,7 @@ export function Dropzone({
         </div>
       ) : (
         <>
-          <p className="text-sm text-ink-soft">Drop PDF, DOCX, MD or TXT · up to {maxUploadMb} MB</p>
+          <p className="text-sm text-ink-soft">Drop PDF, DOCX, MD, TXT or a scan/photo (PNG, JPEG, TIFF, HEIC) · up to {maxUploadMb} MB</p>
           <button
             type="button"
             disabled={busy || disabled}
@@ -75,7 +75,7 @@ export function Dropzone({
         ref={inputRef}
         type="file"
         disabled={busy || disabled}
-        accept=".pdf,.docx,.md,.txt"
+        accept=".pdf,.docx,.md,.txt,.png,.jpg,.jpeg,.tiff,.tif,.bmp,.webp,.gif,.heic,.heif,image/*"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];

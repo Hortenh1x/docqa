@@ -14,6 +14,7 @@ import numpy as np
 from PIL import Image, ImageFilter, ImageOps
 
 MIN_SIDE = 1500
+NOISE_GRAIN = 1.0
 MAX_SIDE = 4500
 _SEARCH_DEG = 15.0
 _COARSE_STEP = 1.0
@@ -28,6 +29,7 @@ class Transform:
     exif_rotated: bool
     deskew_deg: float
     scale: float
+    denoised: bool = False
 
 
 @dataclass(frozen=True)
@@ -43,6 +45,20 @@ def _flatten_lighting(gray: Image.Image) -> Image.Image:
     bg = np.asarray(background, dtype=np.float32)
     flattened = np.clip(fg / np.maximum(bg, 1.0) * 255.0, 0, 255).astype(np.uint8)
     return Image.fromarray(flattened, mode="L")
+
+
+def background_noise(gray: Image.Image) -> float:
+    """Grain estimate: mean absolute difference between the page and its 3×3 median on
+    paper pixels (the brighter 70%). Smooth lighting gradients score ~0, scanner or
+    sensor noise scores high; text edges are too few pixels to matter."""
+    arr = np.asarray(gray, dtype=np.float32)
+    if arr.size == 0:
+        return 0.0
+    median = np.asarray(gray.filter(ImageFilter.MedianFilter(3)), dtype=np.float32)
+    paper = arr >= np.percentile(arr, 30)
+    if not paper.any():
+        return 0.0
+    return float(np.abs(arr - median)[paper].mean())
 
 
 def _projection_score(binary: np.ndarray) -> float:
@@ -100,6 +116,12 @@ def prepare(image: Image.Image, *, deskew: bool = True) -> Prepared:
         exif_rotated = True
     image = transposed or image
     gray = image.convert("L")
+    denoised = False
+    if background_noise(gray) > NOISE_GRAIN:
+        # measured on the raw scan, before flattening hides it: a 3×3 median removes
+        # grain without eating 10 pt strokes at 200 dpi
+        gray = gray.filter(ImageFilter.MedianFilter(3))
+        denoised = True
     gray = _flatten_lighting(gray)
     gray = ImageOps.autocontrast(gray, cutoff=1)
 
@@ -121,4 +143,4 @@ def prepare(image: Image.Image, *, deskew: bool = True) -> Prepared:
         else:
             scale = 1.0
     gray.info = dict(image.info)  # metadata survives (the stub provider reads it)
-    return Prepared(image=gray, transform=Transform(exif_rotated, angle, scale))
+    return Prepared(image=gray, transform=Transform(exif_rotated, angle, scale, denoised))

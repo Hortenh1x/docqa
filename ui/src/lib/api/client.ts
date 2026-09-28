@@ -1,6 +1,10 @@
 import type {
   Collection,
   DocumentOut,
+  Extraction,
+  ExtractionSchema,
+  SchemaInput,
+  SchemaTemplate,
   HistoryPage,
   IngestStatus,
   PassagePage,
@@ -177,10 +181,58 @@ export const getIngestStatus = (collectionId: string) =>
 export const deleteDocument = (documentId: string) =>
   api<void>(`/v1/documents/${documentId}`, { method: "DELETE" });
 
-/** The original uploaded file as a blob — the reader shows PDFs natively, text inline. */
-export async function fetchDocumentFile(documentId: string, role?: string): Promise<Blob> {
-  const query = role ? `?role=${encodeURIComponent(role)}` : "";
+/** The original uploaded file as a blob — the reader shows PDFs natively, text inline.
+ *  `variant: "searchable"` asks for the OCR copy with an invisible text layer (scans and
+ *  photos); the API falls back to the original when there is none. */
+export async function fetchDocumentFile(
+  documentId: string,
+  role?: string,
+  variant: "original" | "searchable" = "original",
+): Promise<Blob> {
+  const params = new URLSearchParams();
+  if (role) params.set("role", role);
+  if (variant !== "original") params.set("variant", variant);
+  const query = params.size ? `?${params}` : "";
   const res = await apiFetch(`/v1/documents/${documentId}/file${query}`);
+  if (!res.ok) throw await toApiError(res);
+  return res.blob();
+}
+
+// --- field extraction -------------------------------------------------------------------
+
+export const listSchemas = () => api<ExtractionSchema[]>("/v1/schemas");
+export const listSchemaTemplates = () => api<SchemaTemplate[]>("/v1/schemas/templates");
+export const createSchema = (input: SchemaInput) =>
+  api<ExtractionSchema>("/v1/schemas", { method: "POST", body: JSON.stringify(input) });
+export const updateSchema = (schemaId: string, input: Partial<SchemaInput>) =>
+  api<ExtractionSchema>(`/v1/schemas/${schemaId}`, { method: "PATCH", body: JSON.stringify(input) });
+export const deleteSchema = (schemaId: string) =>
+  api<void>(`/v1/schemas/${schemaId}`, { method: "DELETE" });
+
+export const requestExtraction = (documentId: string, schemaId: string, force = false) =>
+  api<Extraction>(`/v1/documents/${documentId}/extractions`, {
+    method: "POST",
+    body: JSON.stringify({ schema_id: schemaId, force }),
+  });
+export const listDocumentExtractions = (documentId: string) =>
+  api<Extraction[]>(`/v1/documents/${documentId}/extractions`);
+export const getExtraction = (extractionId: string) =>
+  api<Extraction>(`/v1/extractions/${extractionId}`);
+export const patchExtraction = (
+  extractionId: string,
+  patch: { values?: Record<string, unknown>; clear?: string[] },
+) => api<Extraction>(`/v1/extractions/${extractionId}`, {
+  method: "PATCH",
+  body: JSON.stringify(patch),
+});
+export const deleteExtraction = (extractionId: string) =>
+  api<void>(`/v1/extractions/${extractionId}`, { method: "DELETE" });
+
+/** CSV of one schema's values across a collection, as a blob for a download link. */
+export async function fetchExtractionsCsv(collectionId: string, schemaId: string): Promise<Blob> {
+  const res = await apiFetch(
+    `/v1/collections/${collectionId}/extractions?schema_id=${encodeURIComponent(schemaId)}&format=csv`,
+  );
   if (!res.ok) throw await toApiError(res);
   return res.blob();
 }
