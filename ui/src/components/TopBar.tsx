@@ -113,7 +113,7 @@ export function TopBar() {
           DocQA
         </Link>
 
-        <nav className="order-2 ml-auto flex items-center gap-1 sm:order-3 sm:ml-0" aria-label="Screens">
+        <nav className="order-2 ml-auto flex min-w-0 flex-wrap items-center justify-end gap-1 sm:order-3 sm:ml-0 sm:justify-start" aria-label="Screens">
           <NavLink href="/" label="Ask" />
           <NavLink href="/library" label="Library" />
           <NavLink href="/schemas" label="Schemas" />
