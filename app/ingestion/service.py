@@ -26,7 +26,14 @@ from app.core.errors import (
     UnsupportedFileTypeError,
 )
 from app.db.models import Collection, Document, DocumentStatus, Tenant
-from app.ingestion.mime import EXT_BY_MIME, TEXT_EXT_MIME
+from app.ingestion.mime import (
+    EXT_BY_MIME,
+    IMAGE_MIMES,
+    SEARCHABLE_PDF_EXT,
+    TEXT_EXT_MIME,
+    UPLOAD_TYPES_HUMAN,
+)
+from app.ingestion.parsers.image import frame_count
 from app.ingestion.tasks import ingest_document
 from app.storage import get_storage
 from app.storage.errors import StorageUnavailableError
@@ -103,15 +110,19 @@ async def save_upload(db: AsyncSession, collection: Collection, upload: UploadFi
 
         mime = _detect_mime(head, upload.filename)
         if mime is None:
-            raise UnsupportedFileTypeError(
-                "Unsupported file type. Allowed: PDF, DOCX, Markdown, plain text."
-            )
+            raise UnsupportedFileTypeError(f"Unsupported file type. Allowed: {UPLOAD_TYPES_HUMAN}.")
 
         if mime == "application/pdf":
             pages = await anyio.to_thread.run_sync(_pdf_page_count, tmp_path)
             if pages is not None and pages > settings.max_pages:
                 raise TooManyPagesError(
                     f"PDF has {pages} pages; the limit is {settings.max_pages}."
+                )
+        elif mime in IMAGE_MIMES:
+            frames = await anyio.to_thread.run_sync(frame_count, tmp_path)
+            if frames is not None and frames > settings.ocr_max_pages:
+                raise TooManyPagesError(
+                    f"Image has {frames} frames; the OCR limit is {settings.ocr_max_pages}."
                 )
     except BaseException:
         tmp_path.unlink(missing_ok=True)
@@ -213,10 +224,31 @@ async def save_upload(db: AsyncSession, collection: Collection, upload: UploadFi
 
 
 async def delete_document_file_if_unreferenced(
-    db: AsyncSession, tenant_id: uuid.UUID, sha256: str, mime_type: str
+    db: AsyncSession,
+    tenant_id: uuid.UUID,
+    sha256: str,
+    mime_type: str,
+    *,
+    searchable_sha256: str | None = None,
 ) -> None:
     """Remove the stored file unless another document of this tenant still points at it."""
     await lock_tenant_files(db, tenant_id)
+    if searchable_sha256:
+        derived_referenced = (
+            await db.execute(
+                select(Document.id)
+                .join(Collection, Document.collection_id == Collection.id)
+                .where(
+                    Collection.tenant_id == tenant_id,
+                    Document.searchable_sha256 == searchable_sha256,
+                )
+                .limit(1)
+            )
+        ).first()
+        if derived_referenced is None:
+            await anyio.to_thread.run_sync(
+                get_storage().delete, str(tenant_id), searchable_sha256, SEARCHABLE_PDF_EXT
+            )
     still_referenced = (
         await db.execute(
             select(Document.id)

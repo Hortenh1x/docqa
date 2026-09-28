@@ -9,6 +9,7 @@ import uuid
 from pathlib import Path
 
 from app.config import get_settings
+from app.ingestion.mime import STORAGE_EXTENSIONS
 from app.storage.base import StorageProtocol
 from app.storage.errors import StorageUnavailableError
 
@@ -17,7 +18,7 @@ def object_key(tenant_id: str, sha256: str, ext: str) -> str:
     """Only server-generated content addresses can become paths or remote keys."""
     if str(uuid.UUID(tenant_id)) != tenant_id or not re.fullmatch(r"[0-9a-f]{64}", sha256):
         raise StorageUnavailableError("Invalid document storage address.")
-    if ext not in (".pdf", ".docx", ".md", ".txt"):
+    if ext not in STORAGE_EXTENSIONS:
         raise StorageUnavailableError("Invalid document storage format.")
     return f"{tenant_id}/{sha256}{ext}"
 

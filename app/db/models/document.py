@@ -1,8 +1,10 @@
 import enum
 import uuid
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import BigInteger, CheckConstraint, ForeignKey, Index, UniqueConstraint, text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.models.base import Base
@@ -66,3 +68,11 @@ class Document(Base):
     external_url: Mapped[str | None]
     # provider version marker (Notion last_edited_time); unchanged → the sync skips it
     external_version: Mapped[str | None]
+    # OCR: how many pages were recognised rather than extracted, mean confidence (0–100),
+    # and the content address of the searchable copy (invisible text layer) in storage
+    ocr_pages: Mapped[int | None]
+    ocr_confidence: Mapped[float | None]
+    searchable_sha256: Mapped[str | None]
+    # [{page, size: [w, h], blocks: [{bbox: [x0, y0, x1, y1], text}]}] for OCR'd pages —
+    # lets field-extraction evidence be drawn on the scan
+    ocr_layout: Mapped[list[dict[str, Any]] | None] = mapped_column(JSONB)

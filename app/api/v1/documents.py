@@ -4,13 +4,13 @@ import hashlib
 import re
 import uuid
 from datetime import datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 from urllib.parse import quote
 
 import anyio
 from fastapi import APIRouter, Depends, Header, Query, Request, Response, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 from sqlalchemy import func, select
 
 from app.access.labels import restricted_labels_by_document
@@ -37,7 +37,7 @@ from app.core.rate_limit import rate_limit
 from app.db.models import Chunk, Collection, Document, DocumentStatus
 from app.generation.tasks import suggest_questions
 from app.ingestion import service as ingestion_service
-from app.ingestion.mime import EXT_BY_MIME
+from app.ingestion.mime import EXT_BY_MIME, SEARCHABLE_PDF_EXT
 from app.storage import get_storage
 from app.storage.lifecycle import lock_tenant_files
 
@@ -92,6 +92,15 @@ class DocumentOut(BaseModel):
     # set when a source (Notion, ...) created the document; the UI links to external_url
     source_id: uuid.UUID | None = None
     external_url: str | None = None
+    # OCR: pages recognised from a scan/photo, mean confidence 0–100, searchable copy
+    ocr_pages: int | None = None
+    ocr_confidence: float | None = None
+    searchable_sha256: str | None = Field(default=None, exclude=True)
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def searchable_pdf(self) -> bool:
+        return self.searchable_sha256 is not None
 
 
 class Passage(BaseModel):
@@ -264,6 +273,7 @@ async def get_document_file(
     db: DbSession,
     request: Request,
     role: Annotated[str | None, Query(max_length=50)] = None,
+    variant: Annotated[Literal["original", "searchable"], Query()] = "original",
 ) -> FileResponse:
     # Keep status and classification stable against deletion/reprocessing until
     # access has been decided (missing chunks must never mean public access).
@@ -284,26 +294,32 @@ async def get_document_file(
             labels=blocked,
             role=principal.role,
         )
-    path = await anyio.to_thread.run_sync(
-        get_storage().path_for,
-        str(collection.tenant_id),
+    # searchable = the OCR'd copy with an invisible text layer (scans, photos); falls
+    # back to the original when there is none, so the viewer can always ask for it
+    sha256, ext, media_type, filename = (
         document.sha256,
         EXT_BY_MIME.get(document.mime_type, ""),
+        document.mime_type,
+        document.filename,
+    )
+    if variant == "searchable" and document.searchable_sha256:
+        sha256, ext, media_type = document.searchable_sha256, SEARCHABLE_PDF_EXT, "application/pdf"
+        filename = f"{document.filename}.pdf"
+    path = await anyio.to_thread.run_sync(
+        get_storage().path_for, str(collection.tenant_id), sha256, ext
     )
     if not path.is_file():
         raise NotFoundError("Document not found.")
     # ASCII fallback + RFC 5987 filename* so non-ASCII names survive the header
     ascii_name = (
-        re.sub(r'[\x00-\x1f\x7f"\\]', "_", document.filename.encode("ascii", "ignore").decode())
-        or "file"
+        re.sub(r'[\x00-\x1f\x7f"\\]', "_", filename.encode("ascii", "ignore").decode()) or "file"
     )
     return FileResponse(
         path,
-        media_type=document.mime_type,
+        media_type=media_type,
         headers={
             "Content-Disposition": (
-                f'inline; filename="{ascii_name}"; '
-                f"filename*=UTF-8''{quote(document.filename, safe='')}"
+                f"inline; filename=\"{ascii_name}\"; filename*=UTF-8''{quote(filename, safe='')}"
             ),
             "Cache-Control": "private, no-store",
             "X-Content-Type-Options": "nosniff",
@@ -411,6 +427,7 @@ async def delete_document(
     if collection.read_only:
         raise DemoReadOnlyError("This collection is read-only.")
     sha256, mime_type = document.sha256, document.mime_type
+    searchable_sha256 = document.searchable_sha256
     collection_id = document.collection_id
     had_chunks = bool(
         await db.scalar(
@@ -431,7 +448,9 @@ async def delete_document(
     await db.commit()
 
     # the stored file is content-addressed per tenant; keep it while other documents reference it
-    await ingestion_service.delete_document_file_if_unreferenced(db, tenant.id, sha256, mime_type)
+    await ingestion_service.delete_document_file_if_unreferenced(
+        db, tenant.id, sha256, mime_type, searchable_sha256=searchable_sha256
+    )
     await db.commit()
 
     # the corpus shrank — refresh the collection's suggested questions (worker-side)

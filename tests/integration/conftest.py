@@ -40,6 +40,7 @@ def app_env(_containers, tmp_path_factory):
     os.environ["REDIS_URL"] = redis_url
     os.environ["EMBEDDING_PROVIDER"] = "stub"
     os.environ["LLM_PROVIDER"] = "stub"
+    os.environ["OCR_PROVIDER"] = "stub"
     # word-overlap stub: gives the refusal gate real discrimination in tests;
     # the threshold is scale-dependent per provider — 0.35 matches the stub's scale
     # (the 0.50 default is tuned for the rerank=none cosine gate)

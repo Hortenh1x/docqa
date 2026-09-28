@@ -9,12 +9,13 @@ cost, never to a failure.
 import asyncio
 import json
 from collections.abc import AsyncIterator
+from typing import Any
 
 import httpx
 
 from app.billing.providers import after_call, before_call
 from app.config import is_local_llm_url
-from app.generation.llm.base import GenerationError, LLMEvent, StreamUsage, TextDelta
+from app.generation.llm.base import GenerationError, JsonResult, LLMEvent, StreamUsage, TextDelta
 
 _TIMEOUT = httpx.Timeout(180.0, connect=10.0)
 
@@ -101,3 +102,113 @@ class OpenAICompatLLM:
             raise GenerationError(f"LLM request failed: {exc}") from exc
         except (json.JSONDecodeError, KeyError) as exc:
             raise GenerationError(f"LLM stream malformed: {exc}") from exc
+
+    async def complete_json(
+        self, system: str, user: str, schema: dict[str, Any], *, max_tokens: int
+    ) -> JsonResult:
+        """Structured output: ``json_schema`` response format first; providers that reject
+        it (400) get ``json_object`` with the schema spelled out in the prompt. A reply
+        that is not valid JSON is sent back once for repair."""
+        ticket = None
+        if not is_local_llm_url(self.base_url):
+            ticket = await before_call(self.model, [system, user], max_tokens)
+        headers = {"Content-Type": "application/json"}
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        messages: list[dict[str, Any]] = [
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ]
+        formats: list[dict[str, Any]] = [
+            {
+                "type": "json_schema",
+                "json_schema": {"name": "extraction", "schema": schema, "strict": False},
+            },
+            {"type": "json_object"},
+        ]
+        prompt_total = 0
+        completion_total = 0
+        usage_seen = False
+        try:
+            async with (
+                asyncio.timeout(self.total_timeout_s),
+                httpx.AsyncClient(timeout=_TIMEOUT, transport=self._transport) as client,
+            ):
+                response_format = formats[0]
+                attempts = 0
+                while True:
+                    attempts += 1
+                    payload = {
+                        "model": self.model,
+                        "messages": messages,
+                        "temperature": 0,
+                        "max_tokens": max_tokens,
+                        "response_format": response_format,
+                    }
+                    response = await client.post(
+                        f"{self.base_url}/chat/completions", json=payload, headers=headers
+                    )
+                    if response.status_code == 400 and response_format is formats[0]:
+                        response_format = formats[1]
+                        messages[0] = {
+                            "role": "system",
+                            "content": system
+                            + "\n\nAnswer with one JSON object matching this JSON Schema:\n"
+                            + json.dumps(schema),
+                        }
+                        continue
+                    if response.status_code != 200:
+                        raise GenerationError(
+                            f"LLM returned {response.status_code}: {response.text[:500]}"
+                        )
+                    body = response.json()
+                    usage = body.get("usage") or {}
+                    if usage:
+                        usage_seen = True
+                        prompt_total += int(usage.get("prompt_tokens") or 0)
+                        completion_total += int(usage.get("completion_tokens") or 0)
+                    content = (body["choices"][0]["message"] or {}).get("content") or ""
+                    parsed = _parse_json_object(content)
+                    if parsed is not None:
+                        break
+                    if attempts >= 2:
+                        raise GenerationError("LLM did not return a JSON object.")
+                    messages = messages + [
+                        {"role": "assistant", "content": content[:4000]},
+                        {
+                            "role": "user",
+                            "content": "That was not valid JSON. Return only the JSON object.",
+                        },
+                    ]
+        except TimeoutError as exc:
+            raise GenerationError("LLM total deadline exceeded.") from exc
+        except httpx.HTTPError as exc:
+            raise GenerationError(f"LLM request failed: {exc}") from exc
+        except (json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
+            raise GenerationError(f"LLM response malformed: {exc}") from exc
+        finally:
+            if usage_seen:
+                await after_call(ticket, self.model, prompt_total, completion_total)
+            elif ticket is not None:
+                await after_call(ticket, self.model, None, None)
+        return JsonResult(
+            content=parsed,
+            prompt_tokens=prompt_total if usage_seen else None,
+            completion_tokens=completion_total if usage_seen else None,
+        )
+
+
+def _parse_json_object(content: str) -> dict[str, Any] | None:
+    text = content.strip()
+    if text.startswith("```"):
+        text = text.strip("`")
+        if text.startswith("json"):
+            text = text[4:]
+    start, end = text.find("{"), text.rfind("}")
+    if start == -1 or end <= start:
+        return None
+    try:
+        parsed = json.loads(text[start : end + 1])
+    except json.JSONDecodeError:
+        return None
+    return parsed if isinstance(parsed, dict) else None

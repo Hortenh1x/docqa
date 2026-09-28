@@ -2,7 +2,7 @@
 
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, Protocol
 
 from app.config import Settings, is_local_llm_url
 
@@ -25,8 +25,23 @@ class StreamUsage:
 LLMEvent = TextDelta | StreamUsage
 
 
+@dataclass(frozen=True)
+class JsonResult:
+    """A structured (JSON) completion with its usage."""
+
+    content: dict[str, Any]
+    prompt_tokens: int | None
+    completion_tokens: int | None
+
+
 class LLMProvider(Protocol):
     def stream(self, system: str, user: str) -> AsyncIterator[LLMEvent]: ...
+
+    async def complete_json(
+        self, system: str, user: str, schema: dict[str, Any], *, max_tokens: int
+    ) -> JsonResult:
+        """One non-streaming call whose answer must be a JSON object matching ``schema``."""
+        ...
 
     @property
     def model_name(self) -> str: ...

@@ -10,6 +10,10 @@ COPY alembic ./alembic
 COPY alembic.ini ./
 
 FROM python:3.12-slim
+# OCR engine for scanned pages and photos (OCR_PROVIDER=tesseract, English data)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng \
+    && rm -rf /var/lib/apt/lists/*
 RUN useradd -m appuser
 WORKDIR /app
 COPY --from=builder /app /app

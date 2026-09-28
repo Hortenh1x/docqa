@@ -11,9 +11,9 @@ assert the refusal gate spent zero LLM calls.
 import json
 import re
 from collections.abc import AsyncIterator
-from typing import ClassVar
+from typing import Any, ClassVar
 
-from app.generation.llm.base import LLMEvent, StreamUsage, TextDelta
+from app.generation.llm.base import JsonResult, LLMEvent, StreamUsage, TextDelta
 
 _RESTRICTED_EXCERPT_RE = re.compile(
     r"^### .+ \(Access: \w+\)\n(.+?)(?=\n\n### |\n\nWrite )", re.M | re.S
@@ -26,6 +26,34 @@ class StubLLM:
     @property
     def model_name(self) -> str:
         return "stub"
+
+    async def complete_json(
+        self, system: str, user: str, schema: dict[str, Any], *, max_tokens: int
+    ) -> JsonResult:
+        """Field extraction stand-in: for every field of the response schema, find a
+        ``<label>: value`` line in the document text (label = field name with spaces, or
+        its description) and return the value with that line as the quote."""
+        type(self).calls += 1
+        fields = (schema.get("properties") or {}).get("fields", {}).get("properties") or {}
+        document = user.split("DOCUMENT:", 1)[-1]
+        out: dict[str, Any] = {}
+        for name, spec in fields.items():
+            labels = [name.replace("_", " ")]
+            description = str(spec.get("description") or "")
+            if description:
+                labels.append(description.split(".")[0])
+            value: Any = None
+            quote: str | None = None
+            for label in labels:
+                pattern = re.compile(
+                    rf"^[^\n]*\b{re.escape(label)}\b\s*[:\-–]\s*(.+?)\s*$", re.I | re.M
+                )
+                match = pattern.search(document)
+                if match:
+                    value, quote = match.group(1).strip(), match.group(0).strip()
+                    break
+            out[name] = {"value": value, "quote": quote}
+        return JsonResult(content={"fields": out}, prompt_tokens=200, completion_tokens=60)
 
     async def stream(self, system: str, user: str) -> AsyncIterator[LLMEvent]:
         type(self).calls += 1

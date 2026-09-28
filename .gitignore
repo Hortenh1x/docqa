@@ -41,3 +41,4 @@ corpus/large/rejected/
 
 # eval run logs (structlog JSON, large)
 eval/*.log
+eval/ocr/tmp/

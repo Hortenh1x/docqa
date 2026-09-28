@@ -146,6 +146,30 @@ class DemoQuotaExceededError(DomainError):
     title = "Demo quota exceeded"
 
 
+class InvalidSchemaError(DomainError):
+    status = 422
+    code = "invalid_schema"
+    title = "The extraction schema is invalid"
+
+
+class DuplicateSchemaError(DomainError):
+    status = 409
+    code = "duplicate_schema"
+    title = "A schema with this name already exists"
+
+
+class ExtractionInProgressError(DomainError):
+    status = 409
+    code = "extraction_in_progress"
+    title = "This extraction is still running"
+
+
+class ExtractionQuotaExceededError(DomainError):
+    status = 429
+    code = "extraction_quota_exceeded"
+    title = "Daily extraction quota exhausted"
+
+
 class SourcesDisabledError(DomainError):
     status = 503
     code = "sources_disabled"

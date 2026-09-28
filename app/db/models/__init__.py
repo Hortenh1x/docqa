@@ -7,6 +7,7 @@ from app.db.models.chunk import Chunk
 from app.db.models.collection import Collection
 from app.db.models.conversation import Conversation
 from app.db.models.document import Document, DocumentStatus
+from app.db.models.extraction import Extraction, ExtractionSchema, ExtractionStatus
 from app.db.models.google import GoogleAuthState, GoogleIdentity
 from app.db.models.query import Query, QueryCitation
 from app.db.models.source import Source, SourceKind, SyncStatus
@@ -29,6 +30,9 @@ __all__ = [
     "Conversation",
     "Document",
     "DocumentStatus",
+    "Extraction",
+    "ExtractionSchema",
+    "ExtractionStatus",
     "Query",
     "QueryCitation",
     "Source",

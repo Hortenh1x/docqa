@@ -14,9 +14,11 @@ Status machine: pending → processing → ready | failed.
 
 import asyncio
 import concurrent.futures
+import hashlib
 import uuid
 from collections.abc import Coroutine
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from typing import Any
 
 import structlog
@@ -32,9 +34,12 @@ from app.embeddings import get_embedding_provider
 from app.embeddings.base import EmbeddingError
 from app.generation.tasks import suggest_questions
 from app.ingestion.chunking import ChunkDraft, chunk_document
-from app.ingestion.mime import EXT_BY_MIME
+from app.ingestion.mime import EXT_BY_MIME, PDF_MIME, SEARCHABLE_PDF_EXT
+from app.ingestion.ocr.layout import ocr_layout
+from app.ingestion.ocr.searchable import build_searchable_pdf
 from app.ingestion.parsers import ParsedDocument, ParserError, get_parser
 from app.storage import get_storage
+from app.storage.local import durable_directory
 from app.workers.celery_app import celery_app
 
 log = structlog.get_logger("docqa.ingestion")
@@ -128,6 +133,8 @@ def _store_chunks(
     drafts: list[ChunkDraft],
     embeddings: list[list[float]],
     token: uuid.UUID,
+    *,
+    searchable_sha256: str | None = None,
 ) -> bool:
     with sync_session() as session:
         # All chunk-changing paths lock Collection before Document. Reading the immutable
@@ -176,9 +183,41 @@ def _store_chunks(
             (page.number for page in parsed.pages if page.number is not None), default=None
         )
         document.processed_at = datetime.now(UTC)
+        ocr_pages = [page for page in parsed.pages if page.ocr]
+        document.ocr_pages = len(ocr_pages) if ocr_pages else None
+        scored = [page.confidence for page in ocr_pages if page.confidence is not None]
+        document.ocr_confidence = round(sum(scored) / len(scored), 1) if scored else None
+        document.searchable_sha256 = searchable_sha256
+        document.ocr_layout = ocr_layout(parsed) if ocr_pages else None
         collection.source_generation += 1
 
     return True
+
+
+def _write_searchable_pdf(
+    tenant_id: uuid.UUID, document: Document, path: Path, parsed: ParsedDocument
+) -> str | None:
+    """Content address of the derived copy. Best effort: a failure here costs the viewer's
+    text layer, never the ingestion."""
+    if not get_settings().ocr_searchable_pdf or not any(p.ocr for p in parsed.pages):
+        return None
+    try:
+        payload = build_searchable_pdf(path, document.mime_type == PDF_MIME, parsed)
+        if payload is None:
+            return None
+        sha256 = hashlib.sha256(payload).hexdigest()
+        tmp_dir = get_settings().storage_dir / "tmp"
+        durable_directory(tmp_dir)
+        tmp_path = tmp_dir / uuid.uuid4().hex
+        try:
+            tmp_path.write_bytes(payload)
+            get_storage().store(str(tenant_id), sha256, SEARCHABLE_PDF_EXT, tmp_path)
+        finally:
+            tmp_path.unlink(missing_ok=True)
+        return sha256
+    except Exception:
+        log.warning("searchable_pdf_failed", document_id=str(document.id), exc_info=True)
+        return None
 
 
 @celery_app.task(name="ingestion.ingest_document", bind=True, max_retries=3)  # type: ignore[untyped-decorator]
@@ -246,7 +285,10 @@ def ingest_document(self: Task, document_id: str) -> None:
         embeddings = _run_async(
             attributed(provider.embed([draft.content for draft in drafts]), payer, operator)
         )
-        if not _store_chunks(doc_id, parsed, drafts, embeddings, token):
+        searchable = _write_searchable_pdf(tenant_id, document, path, parsed)
+        if not _store_chunks(
+            doc_id, parsed, drafts, embeddings, token, searchable_sha256=searchable
+        ):
             return
     except (BudgetExceededError, BudgetUnavailableError) as exc:
         log_ctx.warning("ingest_budget_blocked", code=exc.code)

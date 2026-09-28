@@ -175,6 +175,30 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     service_operator_contact: str | None = Field(default=None, max_length=300)
 
+    # OCR for scanned PDF pages and images. tesseract: offline, free, needs the binary
+    # (+ eng traineddata); vision: multimodal LLM transcription (paid, image leaves the
+    # server); stub: tests. A PDF page with fewer than OCR_MIN_CHARS_PER_PAGE extracted
+    # characters is rasterised at OCR_DPI and recognised.
+    ocr_provider: Literal["tesseract", "vision", "stub"] = "tesseract"
+    ocr_languages: str = "eng"
+    ocr_min_chars_per_page: int = Field(default=20, ge=0)
+    ocr_dpi: int = Field(default=200, ge=72, le=600)
+    ocr_max_pages: int = Field(default=100, gt=0)  # images/frames per upload (CPU-bound)
+    ocr_deskew: bool = True
+    ocr_searchable_pdf: bool = True  # write an invisible text layer copy for the viewer
+    ocr_vision_model: str = "gpt-4o-mini"
+    ocr_vision_base_url: str | None = None  # defaults to LLM_BASE_URL
+    ocr_vision_api_key: str | None = Field(default=None, repr=False)  # defaults to LLM_API_KEY
+    demo_max_ocr_pages: int = Field(default=20, gt=0)  # per document in demo mode
+
+    # schema-driven field extraction (one structured LLM call per document)
+    extraction_enabled: bool = True
+    extraction_max_fields: int = Field(default=30, gt=0, le=100)
+    extraction_full_text_tokens: int = Field(default=12000, gt=0)  # below: whole document
+    extraction_context_tokens: int = Field(default=8000, gt=0)  # above: selected chunks
+    extraction_max_tokens: int = Field(default=2048, gt=0)  # completion budget
+    demo_max_extractions_per_day: int = Field(default=10, gt=0)
+
     # external sources (Notion, ...). Sources are disabled until a Fernet key is set:
     # provider tokens are stored encrypted with it (generate: python -m app.sources.crypto).
     source_credentials_key: str | None = Field(default=None, repr=False)

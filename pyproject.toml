@@ -14,11 +14,15 @@ dependencies = [
     "fastapi>=0.139.0",
     "filetype>=1.2.0",
     "httpx>=0.28.1",
+    "numpy>=2.5.3",
     "pgvector>=0.5.0",
+    "pillow>=12.3.0",
+    "pillow-heif>=1.8.0",
     "psycopg[binary]>=3.3.4",
     "pydantic-settings>=2.14.2",
     "pyjwt[crypto]>=2.10,<3",
     "pymupdf>=1.28.0",
+    "pytesseract>=0.3.13",
     "python-docx>=1.2.0",
     "python-multipart>=0.0.32",
     "redis>=8.0.1",
@@ -66,6 +70,8 @@ module = [
     "sentence_transformers.*",
     "boto3.*",
     "botocore.*",
+    "pytesseract.*",
+    "pillow_heif.*",
 ]
 ignore_missing_imports = true
 

@@ -16,6 +16,7 @@ from app.api.v1 import (
     collections,
     conversations,
     documents,
+    extraction,
     health,
     history,
     query,
@@ -134,6 +135,7 @@ def create_app() -> FastAPI:
     app.include_router(site.router)
     app.include_router(access.router)
     app.include_router(sources.router)
+    app.include_router(extraction.router)
     _install_openapi(app)
     return app
 
