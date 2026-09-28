@@ -9,6 +9,7 @@ from app.db.models.conversation import Conversation
 from app.db.models.document import Document, DocumentStatus
 from app.db.models.google import GoogleAuthState, GoogleIdentity
 from app.db.models.query import Query, QueryCitation
+from app.db.models.source import Source, SourceKind, SyncStatus
 from app.db.models.spend import SpendAllocation, SpendReservation
 from app.db.models.tenant import Tenant
 
@@ -30,5 +31,8 @@ __all__ = [
     "DocumentStatus",
     "Query",
     "QueryCitation",
+    "Source",
+    "SourceKind",
+    "SyncStatus",
     "Tenant",
 ]

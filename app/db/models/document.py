@@ -23,6 +23,14 @@ class Document(Base):
         CheckConstraint("status IN ('pending', 'processing', 'ready', 'failed')", name="status"),
         Index("ix_documents_collection_id_status", "collection_id", "status"),
         Index("ix_documents_recovery", "status", "next_attempt_at", "lease_expires_at"),
+        # one document per external item and source; uploads (source_id null) are exempt
+        Index(
+            "uq_documents_source_external",
+            "source_id",
+            "external_id",
+            unique=True,
+            postgresql_where=text("source_id IS NOT NULL"),
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(
@@ -49,3 +57,12 @@ class Document(Base):
         ForeignKey("users.id", ondelete="RESTRICT")
     )
     billing_ip_digest: Mapped[str | None]
+    # set when a source (Notion, ...) created the document; deleting the source keeps
+    # the document and nulls the link
+    source_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("sources.id", ondelete="SET NULL")
+    )
+    external_id: Mapped[str | None]
+    external_url: Mapped[str | None]
+    # provider version marker (Notion last_edited_time); unchanged → the sync skips it
+    external_version: Mapped[str | None]

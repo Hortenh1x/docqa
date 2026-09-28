@@ -89,6 +89,9 @@ class DocumentOut(BaseModel):
     processed_at: datetime | None
     # restricted content labels found in the document's sections (empty = all open)
     access_labels: list[str] = []
+    # set when a source (Notion, ...) created the document; the UI links to external_url
+    source_id: uuid.UUID | None = None
+    external_url: str | None = None
 
 
 class Passage(BaseModel):

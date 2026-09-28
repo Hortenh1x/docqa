@@ -20,6 +20,7 @@ from app.api.v1 import (
     history,
     query,
     site,
+    sources,
     storage,
     usage,
 )
@@ -42,6 +43,10 @@ _TAGS = [
     },
     {"name": "usage", "description": "Tenant usage aggregates (tokens, cost, refusal rate)."},
     {"name": "access", "description": "Access roles: who may read which labelled passages."},
+    {
+        "name": "sources",
+        "description": "External content sources (Notion) synced into a collection.",
+    },
 ]
 
 
@@ -128,6 +133,7 @@ def create_app() -> FastAPI:
     app.include_router(budget.router)
     app.include_router(site.router)
     app.include_router(access.router)
+    app.include_router(sources.router)
     _install_openapi(app)
     return app
 

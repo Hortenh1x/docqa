@@ -51,6 +51,8 @@ def app_env(_containers, tmp_path_factory):
     # the access tests switch it on per test
     os.environ["ACCESS_REVEAL_HIDDEN"] = "false"
     os.environ["STORAGE_DIR"] = str(tmp_path_factory.mktemp("storage"))
+    # sources (Notion) need a Fernet key; the stub connector never touches the network
+    os.environ["SOURCE_CREDENTIALS_KEY"] = "vGqYvvC8bQfN1gE0m8x7T4m3cP2Zr9dK5jH6sL0wA1E="
 
     import app.core.redis as core_redis
     import app.db.base as db_base

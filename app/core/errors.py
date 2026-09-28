@@ -146,6 +146,36 @@ class DemoQuotaExceededError(DomainError):
     title = "Demo quota exceeded"
 
 
+class SourcesDisabledError(DomainError):
+    status = 503
+    code = "sources_disabled"
+    title = "External sources are not enabled"
+
+
+class InvalidSourceCredentialsError(DomainError):
+    status = 422
+    code = "invalid_source_credentials"
+    title = "The source rejected the credentials"
+
+
+class SourceUnavailableError(DomainError):
+    status = 503
+    code = "source_unavailable"
+    title = "The source could not be reached"
+
+
+class SourceSyncInProgressError(DomainError):
+    status = 409
+    code = "source_sync_in_progress"
+    title = "A sync of this source is already running"
+
+
+class SourceLimitExceededError(DomainError):
+    status = 422
+    code = "source_limit_exceeded"
+    title = "Too many sources for this collection"
+
+
 class InvalidRoleError(DomainError):
     status = 422
     code = "invalid_role"

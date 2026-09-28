@@ -25,6 +25,7 @@ The [README](README.md) covers the quick start; this file holds everything else:
 - **Background ingestion** — Celery worker: parse → section-aware chunking (~450 tokens, 60 overlap, tables kept atomic) → embeddings → bulk insert; status `pending → processing → ready | failed`
 - **Parsers** — PDF (PyMuPDF, font-size heading heuristics → section breadcrumbs), DOCX (headings + tables → Markdown), MD (a YAML front matter becomes one metadata line plus an `Access:` marker, never raw YAML in a chunk), TXT. `python -m app.cli reprocess --collection-id … [--suffix .md]` re-chunks stored files in place after a parser change — no re-upload, so neither the demo cap nor the rate limiter is involved
 - **Embedding providers** — OpenAI (`text-embedding-3-small@1024`), Ollama (`bge-m3`), and a deterministic stub: tests and offline mode need zero API keys
+- **Notion as a source** — `POST /v1/collections/{id}/sources` with an internal-integration token (stored Fernet-encrypted, never returned) and optional root pages/databases (ids or URLs; none = everything shared with the integration). The worker lists the workspace through the search endpoint, renders each page to Markdown (headings shifted under the page title, lists, tables, callouts, database-row properties as `key: value` lines, `Access: … only` markers preserved) and stores it like an upload, so parsing, chunking, retrieval and citations are unchanged. A re-sync (`POST /v1/sources/{id}/sync`, or `auto_sync_interval_s`) re-renders only pages whose `last_edited_time` moved, updates documents in place, removes pages that vanished, and reports `{listed, added, updated, unchanged, removed, duplicates, …}`. Deleting a source keeps its documents. See "External sources" below
 - **Suggested questions:** the model drafts from public excerpts only; candidates are ranked against public retrieval. A locked starter may refer to an already-visible filename whose restricted labels are covered by an available role, never paraphrase private text. If no suitable role/file is available, no locked hint is manufactured. Suggestions refresh after ingestion/deletion and are cleared on wipe; stale tasks cannot restore pre-cleanup suggestions.
 - **Ingestion progress & cost** — `GET /v1/collections/{id}/ingest-status`: document counts by status, tokens embedded so far priced at the collection's embedding model (e.g. the whole 21-doc demo corpus ≈ $0.0004 on `text-embedding-3-small`), and an ETA for in-flight documents derived from recently measured throughput
 
@@ -172,6 +173,10 @@ Copy `.env.example` and adjust. Highlights:
 | `RATE_LIMIT_QUERY_PER_DAY` | `0` (off) | daily query quota per key+address; not a global monetary cap, and Redis failure currently fails open |
 | `MAX_UPLOAD_MB` | `25` | upload size cap → 413 |
 | `MAX_PAGES` | `300` | PDF page cap → 422 |
+| `SOURCE_CREDENTIALS_KEY` | — (sources off) | Fernet key encrypting source tokens at rest (`python -m app.sources.crypto` prints one) |
+| `SOURCE_MAX_DOCUMENTS` / `SOURCE_MAX_PER_COLLECTION` | `500` / `5` | pages per source and sync; sources per collection |
+| `SOURCE_SYNC_SCHEDULE_S` | `300` | beat cadence that enqueues due auto-sync sources |
+| `NOTION_BASE_URL` / `NOTION_API_VERSION` | `https://api.notion.com` / `2022-06-28` | Notion API endpoint and version header |
 
 ## Design decisions
 
@@ -188,6 +193,24 @@ Copy `.env.example` and adjust. Highlights:
 - **`rerank=none` for the demo is a decision, not a gap** — recall@8 is 0.99 on the 447-question set and the cosine gate separates off-corpus questions, so a cross-encoder would add latency and an API key for little measurable gain at this scale. The pluggable path stays ready (Cohere `rerank-v3.5` or local `bge-reranker-v2-m3`); switching providers means retuning `REFUSAL_THRESHOLD` with `eval/run_eval.py` — rerank score scales differ.
 - **Query stats survive disconnects** — recording runs in a cancellation-shielded `finally`; a closed laptop lid doesn't lose usage data.
 - **Access control is a retrieval filter, not an answer filter** — see the next section.
+
+## External sources (Notion)
+
+A **source** belongs to one collection and turns an external workspace into ordinary documents (`documents.source_id`, `external_id`, `external_url`, `external_version`). Everything after rendering is the upload path: the Markdown is content-addressed in storage, `ingest_document` parses and chunks it, retrieval and citations do not know where a document came from.
+
+Set `SOURCE_CREDENTIALS_KEY` (a Fernet key: `uv run python -m app.sources.crypto`) — without it the endpoints answer `503 sources_disabled`. Create a Notion internal integration, share the pages or databases with it, then:
+
+```bash
+curl -X POST $API/v1/collections/$COLLECTION/sources -H "Authorization: Bearer $KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"kind": "notion", "name": "Company wiki", "token": "ntn_…",
+       "root_ids": ["https://www.notion.so/acme/Handbook-1a2b3c…"], "auto_sync_interval_s": 3600}'
+```
+
+- **Listing** uses `POST /v1/search` (every page and database the integration can see, with `last_edited_time` and parent), filtered to the pages whose ancestor chain reaches a root; database rows are pages and become one document each; archived pages count as removed. Only pages changed since the last sync are rendered (`GET /v1/blocks/{id}/children`, recursively), at Notion's 3 requests/second with `Retry-After` honoured.
+- **Rendering** — page title `#`, `heading_n` → `#` × (n+1) so breadcrumbs read *Page > Section*; lists nest by indentation; tables become Markdown tables (kept atomic by the chunker); callouts are plain paragraphs so an `Access: leadership only` callout labels its section exactly like in a PDF; child pages are not inlined (they are documents of their own, a `Sub-page: …` line keeps the relation readable).
+- **Sync semantics** — one transaction per document; a soft time limit marks the source `partial` and re-enqueues it; two pages that render to identical text collide on `(collection_id, sha256)` and the second is counted under `duplicates`; a page above `MAX_UPLOAD_MB` or beyond the account storage limit is skipped and counted; a source in `queued`/`syncing` with a live lease answers `409 source_sync_in_progress`. `sources.schedule` (beat, every `SOURCE_SYNC_SCHEDULE_S`) enqueues due auto-sync sources and re-publishes queued rows whose lease expired.
+- **Limits** — `SOURCE_MAX_DOCUMENTS` pages per source and sync (500), `SOURCE_MAX_PER_COLLECTION` (5). Guests and read-only/public collections cannot create sources; sources are owner-only (a foreign source is a 404).
 
 ## Access-aware retrieval
 

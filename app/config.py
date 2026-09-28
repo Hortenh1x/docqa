@@ -175,6 +175,16 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     service_operator_contact: str | None = Field(default=None, max_length=300)
 
+    # external sources (Notion, ...). Sources are disabled until a Fernet key is set:
+    # provider tokens are stored encrypted with it (generate: python -m app.sources.crypto).
+    source_credentials_key: str | None = Field(default=None, repr=False)
+    source_max_documents: int = Field(default=500, gt=0)  # per source, per sync
+    source_max_per_collection: int = Field(default=5, gt=0)
+    source_sync_schedule_s: int = Field(default=300, ge=60)  # beat cadence for auto-sync
+    notion_base_url: str = "https://api.notion.com"
+    notion_api_version: str = "2022-06-28"
+    notion_timeout_s: float = Field(default=30.0, gt=0)
+
     @model_validator(mode="after")
     def _validate_providers_and_limits(self) -> "Settings":
         if self.storage_provider == "s3":
@@ -198,6 +208,21 @@ class Settings(BaseSettings):
                 raise ValueError("LLM_API_KEY is required for a hosted LLM endpoint")
         if not self.chunk_overlap_tokens < self.chunk_target_tokens <= self.chunk_max_tokens:
             raise ValueError("Chunk limits must satisfy overlap < target <= max")
+        return self
+
+    @model_validator(mode="after")
+    def _validate_sources(self) -> "Settings":
+        self.source_credentials_key = (self.source_credentials_key or "").strip() or None
+        if self.source_credentials_key is not None:
+            from app.sources.crypto import validate_key
+
+            if not validate_key(self.source_credentials_key):
+                raise ValueError(
+                    "SOURCE_CREDENTIALS_KEY must be a Fernet key (32 url-safe base64 bytes)"
+                )
+        endpoint = urlparse(self.notion_base_url)
+        if endpoint.scheme not in ("http", "https") or not endpoint.hostname:
+            raise ValueError("NOTION_BASE_URL must be an HTTP(S) endpoint")
         return self
 
     @model_validator(mode="after")
