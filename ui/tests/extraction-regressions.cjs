@@ -153,7 +153,15 @@ for (const [filename, mime, searchable, expected] of [
     await f.page.getByLabel('Collection', { exact: true }).selectOption(own);
     await f.page.getByRole('button', { name: filename, exact: true }).click();
     const link = f.page.getByRole('dialog').getByRole('link', { name: 'Download', exact: true });
-    const [download] = await Promise.all([f.page.waitForEvent('download'), link.click()]);
+    await link.waitFor();
+    const declaredFilename = await link.getAttribute('download');
+    assert.equal(declaredFilename, expected);
+    // Headless shell downloads the PDF iframe as UUID.pdf before this click.
+    // Correlate the event with this link, not that unrelated automatic download.
+    const [download] = await Promise.all([
+      f.page.waitForEvent('download', { predicate: item => item.suggestedFilename() === declaredFilename }),
+      link.click(),
+    ]);
     assert.equal(download.suggestedFilename(), expected);
     assert.deepEqual(fileRequests, [mime === 'application/pdf' ? null : 'searchable']);
   } finally { await f.close(); }
