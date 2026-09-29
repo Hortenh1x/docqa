@@ -8,7 +8,8 @@ from datetime import UTC, datetime
 from typing import Any
 
 import structlog
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, or_, select
+from sqlalchemy.orm import Session
 
 from app.billing.context import BillingActor
 from app.billing.errors import BudgetExceededError, BudgetUnavailableError
@@ -119,6 +120,7 @@ def run_extraction(extraction_id: uuid.UUID) -> None:
                 select(Chunk.id, Chunk.embedding).where(Chunk.document_id == document.id)
             ).all()
             embeddings = {int(cid): list(vec) for cid, vec in rows}
+        collection_id = document.collection_id
         layout = document.ocr_layout
         previous = dict(extraction.fields or {})
         payer, operator = _billing(session, extraction)
@@ -180,7 +182,28 @@ def run_extraction(extraction_id: uuid.UUID) -> None:
             "edited": False,
         }
 
+    text = facts_text(schema_name, definition, fields) if index_facts else ""
+    embedding = None
+    if text:
+        try:
+            [embedding] = _run_async(
+                attributed(get_embedding_provider(settings).embed([text]), payer, operator)
+            )
+        except (BudgetExceededError, BudgetUnavailableError, EmbeddingError) as exc:
+            log_ctx.warning("extraction_facts_not_indexed", error_type=type(exc).__name__)
+            issues.append(
+                {
+                    "field": None,
+                    "code": "facts_not_indexed",
+                    "message": "Facts could not be indexed. Re-run to retry.",
+                }
+            )
+
     with sync_session() as session:
+        # Document deletion locks Collection before its Extraction FK cascades.
+        # Follow that order so finalization cannot deadlock with deletion.
+        if session.get(Collection, collection_id, with_for_update=True) is None:
+            return
         extraction = session.get(Extraction, extraction_id, with_for_update=True)
         if extraction is None or extraction.processing_token != token:
             return
@@ -196,25 +219,15 @@ def run_extraction(extraction_id: uuid.UUID) -> None:
         extraction.error = None
         extraction.processing_token = None
         extraction.updated_at = datetime.now(UTC)
-        document_id, tenant_id = extraction.document_id, extraction.tenant_id
-        old_facts = extraction.facts_chunk_id
-        extraction.facts_chunk_id = None
+        tenant_id = extraction.tenant_id
+        extraction.facts_chunk_id = _replace_facts(
+            session,
+            extraction.document_id,
+            extraction.facts_chunk_id,
+            text if embedding is not None else "",
+            embedding,
+        )
 
-    if index_facts:
-        try:
-            chunk_id = _index_facts(
-                document_id, old_facts, facts_text(schema_name, definition, fields), payer, operator
-            )
-        except (BudgetExceededError, BudgetUnavailableError, EmbeddingError) as exc:
-            log_ctx.warning("extraction_facts_not_indexed", error_type=type(exc).__name__)
-            chunk_id = None
-        if chunk_id is not None:
-            with sync_session() as session:
-                extraction = session.get(Extraction, extraction_id, with_for_update=True)
-                if extraction is not None:
-                    extraction.facts_chunk_id = chunk_id
-    elif old_facts is not None:
-        remove_facts_chunk(document_id, old_facts)
     log_ctx.info(
         "extraction_done",
         fields=sum(1 for f in fields.values() if f.get("value") is not None),
@@ -234,58 +247,60 @@ def _fail(extraction_id: uuid.UUID, token: uuid.UUID, error: str) -> None:
         extraction.updated_at = datetime.now(UTC)
 
 
-def _index_facts(
+def _replace_facts(
+    session: Session,
     document_id: uuid.UUID,
     old_chunk_id: int | None,
     text: str,
-    payer: BillingActor | None,
-    operator: bool,
+    embedding: list[float] | None,
 ) -> int | None:
-    if not text:
-        remove_facts_chunk(document_id, old_chunk_id)
+    """Replace the retrieval passage atomically with the extraction's final result."""
+    collection_id = session.scalar(select(Document.collection_id).where(Document.id == document_id))
+    if collection_id is None:
         return None
-    settings = get_settings()
-    [embedding] = _run_async(
-        attributed(get_embedding_provider(settings).embed([text]), payer, operator)
-    )
-    tokens = TokenCounter().count(text)
-    with sync_session() as session:
-        collection_id = session.scalar(
-            select(Document.collection_id).where(Document.id == document_id)
-        )
-        if collection_id is None:
-            return None
-        collection = session.get(Collection, collection_id, with_for_update=True)
-        if collection is None:
-            return None
-        labels = set(
-            session.scalars(
-                select(Chunk.access_label).where(Chunk.document_id == document_id).distinct()
+    collection = session.get(Collection, collection_id, with_for_update=True)
+    if collection is None:
+        return None
+    labels = set(
+        session.scalars(
+            select(Chunk.access_label)
+            .where(
+                Chunk.document_id == document_id,
+                or_(Chunk.section_path.is_(None), Chunk.section_path != FACTS_SECTION),
             )
+            .distinct()
         )
-        if old_chunk_id is not None:
-            session.execute(delete(Chunk).where(Chunk.id == old_chunk_id))
-        next_index = (
+    )
+    if old_chunk_id is not None:
+        session.execute(
+            delete(Chunk).where(Chunk.id == old_chunk_id, Chunk.document_id == document_id)
+        )
+        collection.source_generation += 1
+    if not text or embedding is None:
+        return None
+    next_index = (
+        int(
             session.scalar(
                 select(func.coalesce(func.max(Chunk.chunk_index), -1)).where(
                     Chunk.document_id == document_id
                 )
             )
-            or 0
-        ) + 1
-        chunk = Chunk(
-            document_id=document_id,
-            chunk_index=next_index,
-            content=text,
-            token_count=tokens,
-            section_path=FACTS_SECTION,
-            access_label=_facts_label(labels),
-            embedding=embedding,
         )
-        session.add(chunk)
-        session.flush()
-        collection.source_generation += 1
-        return int(chunk.id)
+        + 1
+    )
+    chunk = Chunk(
+        document_id=document_id,
+        chunk_index=next_index,
+        content=text,
+        token_count=TokenCounter().count(text),
+        section_path=FACTS_SECTION,
+        access_label=_facts_label(labels),
+        embedding=embedding,
+    )
+    session.add(chunk)
+    session.flush()
+    collection.source_generation += 1
+    return int(chunk.id)
 
 
 def remove_facts_chunk(document_id: uuid.UUID, chunk_id: int | None) -> None:

@@ -134,3 +134,51 @@ async def test_unsupported_type_message_lists_images(client, tenant, collection_
     )
     assert response.status_code == 415
     assert "HEIC" in response.json()["detail"]
+
+
+@pytest.mark.parametrize("as_pdf", [False, True])
+async def test_real_tesseract_upload_produces_searchable_document(
+    client, tenant, collection_id, monkeypatch, as_pdf
+):
+    from app.config import get_settings
+    from app.ingestion.ocr.tesseract import TesseractOcr
+
+    if not TesseractOcr.available():
+        pytest.skip("tesseract binary not installed")
+    monkeypatch.setenv("OCR_PROVIDER", "tesseract")
+    get_settings.cache_clear()
+    with fitz.open() as original:
+        page = original.new_page(width=400, height=500)
+        page.insert_text((35, 65), "Invoice 4711", fontsize=28)
+        page.insert_text((35, 120), "Total due: 1250.00 EUR", fontsize=20)
+        payload = page.get_pixmap(dpi=200).tobytes("png")
+    mime, name = "image/png", "invoice.png"
+    if as_pdf:
+        with fitz.open() as scan:
+            page = scan.new_page(width=400, height=500)
+            page.insert_image(page.rect, stream=payload)
+            payload = scan.tobytes()
+        mime, name = "application/pdf", "invoice.pdf"
+    try:
+        upload = await client.post(
+            f"/v1/collections/{collection_id}/documents",
+            files={"file": (name, payload, mime)},
+            headers=tenant["headers"],
+        )
+        assert upload.status_code == 202, upload.text
+        document_id = upload.json()["id"]
+        info = (await client.get(f"/v1/documents/{document_id}", headers=tenant["headers"])).json()
+        assert info["status"] == "ready", info
+        assert info["ocr_pages"] == 1 and info["searchable_pdf"]
+        assert "1250.00" in " ".join(await _chunks(document_id))
+        response = await client.get(
+            f"/v1/documents/{document_id}/file",
+            params={"variant": "searchable"},
+            headers=tenant["headers"],
+        )
+        assert response.status_code == 200, response.text
+        with fitz.open(stream=response.content, filetype="pdf") as result:
+            assert "4711" in result[0].get_text()
+            assert "1250.00" in result[0].get_text()
+    finally:
+        get_settings.cache_clear()

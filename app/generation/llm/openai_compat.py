@@ -109,9 +109,6 @@ class OpenAICompatLLM:
         """Structured output: ``json_schema`` response format first; providers that reject
         it (400) get ``json_object`` with the schema spelled out in the prompt. A reply
         that is not valid JSON is sent back once for repair."""
-        ticket = None
-        if not is_local_llm_url(self.base_url):
-            ticket = await before_call(self.model, [system, user], max_tokens)
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
@@ -135,9 +132,8 @@ class OpenAICompatLLM:
                 httpx.AsyncClient(timeout=_TIMEOUT, transport=self._transport) as client,
             ):
                 response_format = formats[0]
-                attempts = 0
+                repairs = 0
                 while True:
-                    attempts += 1
                     payload = {
                         "model": self.model,
                         "messages": messages,
@@ -145,9 +141,29 @@ class OpenAICompatLLM:
                         "max_tokens": max_tokens,
                         "response_format": response_format,
                     }
-                    response = await client.post(
-                        f"{self.base_url}/chat/completions", json=payload, headers=headers
-                    )
+                    ticket = None
+                    if not is_local_llm_url(self.base_url):
+                        # Both the schema and any repair messages count toward input usage.
+                        texts = [message["content"] for message in messages]
+                        texts.append(json.dumps(response_format))
+                        ticket = await before_call(self.model, texts, max_tokens)
+                    usage: dict[str, Any] = {}
+                    try:
+                        response = await client.post(
+                            f"{self.base_url}/chat/completions", json=payload, headers=headers
+                        )
+                        if response.status_code == 200:
+                            body = response.json()
+                            usage = body.get("usage") or {}
+                    finally:
+                        # Settle this HTTP attempt before admitting another one. Unknown
+                        # usage keeps its reservation instead of borrowing a later reply's.
+                        await after_call(
+                            ticket,
+                            self.model,
+                            usage.get("prompt_tokens"),
+                            usage.get("completion_tokens"),
+                        )
                     if response.status_code == 400 and response_format is formats[0]:
                         response_format = formats[1]
                         messages[0] = {
@@ -161,8 +177,6 @@ class OpenAICompatLLM:
                         raise GenerationError(
                             f"LLM returned {response.status_code}: {response.text[:500]}"
                         )
-                    body = response.json()
-                    usage = body.get("usage") or {}
                     if usage:
                         usage_seen = True
                         prompt_total += int(usage.get("prompt_tokens") or 0)
@@ -171,8 +185,9 @@ class OpenAICompatLLM:
                     parsed = _parse_json_object(content)
                     if parsed is not None:
                         break
-                    if attempts >= 2:
+                    if repairs >= 1:
                         raise GenerationError("LLM did not return a JSON object.")
+                    repairs += 1
                     messages = messages + [
                         {"role": "assistant", "content": content[:4000]},
                         {
@@ -186,11 +201,6 @@ class OpenAICompatLLM:
             raise GenerationError(f"LLM request failed: {exc}") from exc
         except (json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
             raise GenerationError(f"LLM response malformed: {exc}") from exc
-        finally:
-            if usage_seen:
-                await after_call(ticket, self.model, prompt_total, completion_total)
-            elif ticket is not None:
-                await after_call(ticket, self.model, None, None)
         return JsonResult(
             content=parsed,
             prompt_tokens=prompt_total if usage_seen else None,

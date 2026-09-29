@@ -16,6 +16,7 @@ from PIL import Image
 from app.config import get_settings
 from app.ingestion.ocr.base import OcrError, OcrPage
 from app.ingestion.ocr.layout import heading_levels, page_from_ocr
+from app.ingestion.ocr.preprocess import MAX_SIDE
 from app.ingestion.parsers.base import ParsedDocument, ParsedPage, ParserError
 
 _BOLD_FLAG = 1 << 4  # PyMuPDF span flag
@@ -142,7 +143,8 @@ def _needs_ocr(page: fitz.Page, page_lines: list[_Line], min_chars: int) -> bool
 
 
 def _rasterize(page: fitz.Page, dpi: int) -> Image.Image:
-    pixmap = page.get_pixmap(dpi=dpi, colorspace=fitz.csGRAY, alpha=False)
+    scale = min(dpi / 72, MAX_SIDE / max(page.rect.width, page.rect.height))
+    pixmap = page.get_pixmap(matrix=fitz.Matrix(scale, scale), colorspace=fitz.csGRAY, alpha=False)
     return Image.frombytes("L", (pixmap.width, pixmap.height), pixmap.samples)
 
 

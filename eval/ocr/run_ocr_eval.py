@@ -25,13 +25,24 @@ from pathlib import Path
 
 import fitz
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageFilter
 from PIL.PngImagePlugin import PngInfo
 
 from app.ingestion.parsers.image import ImageParser
 
 CORPUS = Path("corpus")
-DOCS = ["HR-001", "HR-002", "HR-003", "FIN-001", "OPS-001", "POL-001-v2", "SEC-001", "POL-006", "HR-004", "EXEC-001"]
+DOCS = [
+    "HR-001",
+    "HR-002",
+    "HR-003",
+    "FIN-001",
+    "OPS-001",
+    "POL-001-v2",
+    "SEC-001",
+    "POL-006",
+    "HR-004",
+    "EXEC-001",
+]
 OUT = Path("eval/results_ocr.md")
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
@@ -145,7 +156,9 @@ def degrade(image: Image.Image, variant: str, rng: random.Random) -> Image.Image
         [(0, 0), (sw, 0), (sw, sh), (0, sh)],
         [(tilt, 0), (sw - tilt // 2, tilt // 2), (sw, sh), (0, sh - tilt)],
     )
-    warped = small.transform((sw, sh), Image.Transform.PERSPECTIVE, coeffs, Image.Resampling.BICUBIC, fillcolor=235)
+    warped = small.transform(
+        (sw, sh), Image.Transform.PERSPECTIVE, coeffs, Image.Resampling.BICUBIC, fillcolor=235
+    )
     arr = np.asarray(warped, dtype=np.float32)
     gradient = np.linspace(0.65, 1.0, sw, dtype=np.float32)[None, :]
     arr = arr * gradient
@@ -189,7 +202,11 @@ def _norm(word: str) -> str:
 def main() -> None:
     rng = random.Random(7)
     parser = ImageParser()
-    rows: dict[str, list[tuple[float, float, float | None, float]]] = {"scan": [], "skewed": [], "photo": []}
+    rows: dict[str, list[tuple[float, float, float | None, float]]] = {
+        "scan": [],
+        "skewed": [],
+        "photo": [],
+    }
     tmp = Path("eval/ocr/tmp")
     tmp.mkdir(parents=True, exist_ok=True)
     for name in DOCS:
@@ -219,7 +236,10 @@ def main() -> None:
                     else 1.0
                 )
                 rows[variant].append((wer, recall, page.confidence, elapsed))
-                print(f"{name} p{index + 1} {variant:6s} WER={wer:.3f} headings={recall:.2f} conf={page.confidence} {elapsed:.1f}s")
+                print(
+                    f"{name} p{index + 1} {variant:6s} WER={wer:.3f} headings={recall:.2f} "
+                    f"conf={page.confidence} {elapsed:.1f}s"
+                )
 
     lines = [
         "# OCR evaluation (Tesseract, English, synthetic scans of the demo corpus)",
@@ -227,7 +247,8 @@ def main() -> None:
         f"{sum(len(v) for v in rows.values()) // 3} typeset pages × 3 degradations; "
         "see `eval/ocr/run_ocr_eval.py` for how they are made.",
         "",
-        "| Variant | Pages | Word error rate (mean / median) | Heading recall | Mean confidence | s / page |",
+        "| Variant | Pages | Word error rate (mean / median) | Heading recall "
+        "| Mean confidence | s / page |",
         "|---|---|---|---|---|---|",
     ]
     for variant, values in rows.items():
@@ -238,8 +259,10 @@ def main() -> None:
         confs = [v[2] for v in values if v[2] is not None]
         secs = [v[3] for v in values]
         lines.append(
-            f"| {variant} | {len(values)} | {statistics.mean(wers):.3f} / {statistics.median(wers):.3f} "
-            f"| {statistics.mean(recalls):.2f} | {statistics.mean(confs):.1f} | {statistics.mean(secs):.1f} |"
+            f"| {variant} | {len(values)} | {statistics.mean(wers):.3f} / "
+            f"{statistics.median(wers):.3f} "
+            f"| {statistics.mean(recalls):.2f} | {statistics.mean(confs):.1f} | "
+            f"{statistics.mean(secs):.1f} |"
         )
     lines += [
         "",

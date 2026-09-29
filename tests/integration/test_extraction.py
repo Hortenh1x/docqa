@@ -319,3 +319,194 @@ async def test_extraction_scope_and_readiness(client, tenant, make_tenant, colle
             method, path, headers=other["headers"], json={} if method == "PATCH" else None
         )
         assert response.status_code == 404, (method, path)
+
+
+async def test_guest_cannot_read_owner_extraction_data(client, tenant, collection_id, monkeypatch):
+    from app.config import get_settings
+
+    document_id = await _upload(client, tenant, collection_id)
+    schema = await _schema(client, tenant)
+    extraction = await _extract(client, tenant, document_id, schema["id"])
+    settings = get_settings()
+    monkeypatch.setattr(settings, "accounts_enabled", True)
+    monkeypatch.setattr(settings, "public_tenant_id", tenant["id"])
+    for path in (
+        "/v1/schemas",
+        f"/v1/schemas/{schema['id']}",
+        f"/v1/extractions/{extraction['id']}",
+        f"/v1/documents/{document_id}/extractions",
+    ):
+        response = await client.get(path)
+        assert response.status_code == 404, (path, response.text)
+
+
+async def test_edit_invalidates_indexed_facts(client, tenant, collection_id):
+    from app.db.base import get_sessionmaker
+    from app.db.models import Chunk
+
+    document_id = await _upload(client, tenant, collection_id)
+    schema = await _schema(client, tenant, index_facts=True)
+    extraction = await _extract(client, tenant, document_id, schema["id"])
+    response = await client.patch(
+        f"/v1/extractions/{extraction['id']}",
+        json={"values": {"total": 99}},
+        headers=tenant["headers"],
+    )
+    assert response.status_code == 200
+    async with get_sessionmaker()() as session:
+        facts = await session.scalar(
+            select(Chunk).where(
+                Chunk.document_id == document_id, Chunk.section_path == "Extracted fields"
+            )
+        )
+    assert facts is None  # outdated values must not remain answerable
+    rerun = await _extract(client, tenant, document_id, schema["id"])
+    assert rerun["fields"]["total"]["value"] == 99
+    async with get_sessionmaker()() as session:
+        facts = await session.scalar(
+            select(Chunk).where(
+                Chunk.document_id == document_id, Chunk.section_path == "Extracted fields"
+            )
+        )
+        assert "total: 99" in facts.content
+
+
+async def test_failed_reindex_does_not_orphan_old_facts(client, tenant, collection_id, monkeypatch):
+    from app.db.base import get_sessionmaker
+    from app.db.models import Chunk
+    from app.embeddings.base import EmbeddingError
+    from app.extraction import service
+
+    document_id = await _upload(client, tenant, collection_id)
+    schema = await _schema(client, tenant, index_facts=True)
+    extraction = await _extract(client, tenant, document_id, schema["id"])
+
+    class Unavailable:
+        async def embed(self, texts):
+            raise EmbeddingError("offline")
+
+    monkeypatch.setattr(service, "get_embedding_provider", lambda settings: Unavailable())
+    await _extract(client, tenant, document_id, schema["id"])
+    response = await client.delete(f"/v1/extractions/{extraction['id']}", headers=tenant["headers"])
+    assert response.status_code == 204
+    async with get_sessionmaker()() as session:
+        facts = await session.scalar(
+            select(Chunk).where(
+                Chunk.document_id == document_id, Chunk.section_path == "Extracted fields"
+            )
+        )
+    assert facts is None
+
+
+async def test_recovery_republishes_pending_and_expires_worker_claims(
+    client, tenant, collection_id, monkeypatch
+):
+    import uuid
+    from datetime import UTC, datetime, timedelta
+
+    from app.db.base import get_sessionmaker
+    from app.db.models import Extraction
+    from app.extraction import tasks
+
+    document_id = await _upload(client, tenant, collection_id)
+    schema = await _schema(client, tenant)
+    extraction = await _extract(client, tenant, document_id, schema["id"])
+    extraction_id = uuid.UUID(extraction["id"])
+    async with get_sessionmaker()() as session:
+        row = await session.get(Extraction, extraction_id)
+        row.status = "processing"
+        row.processing_token = uuid.uuid4()
+        row.updated_at = datetime.now(UTC) - timedelta(hours=1)
+        await session.commit()
+    recovery = getattr(tasks, "recover_extractions", None)
+    assert recovery is not None, "extractions need durable recovery"
+    recovery()
+    response = await client.get(f"/v1/extractions/{extraction_id}", headers=tenant["headers"])
+    assert response.json()["status"] == "failed"
+    async with get_sessionmaker()() as session:
+        row = await session.get(Extraction, extraction_id)
+        row.status = "pending"
+        row.updated_at = datetime.now(UTC) - timedelta(minutes=2)
+        await session.commit()
+    recovery()
+    response = await client.get(f"/v1/extractions/{extraction_id}", headers=tenant["headers"])
+    assert response.json()["status"] == "ready"
+
+
+@pytest.mark.parametrize("access_label", ["all", "finance"])
+async def test_heading_free_text_is_extracted_and_keeps_access_label(
+    client, tenant, collection_id, access_label
+):
+    from sqlalchemy import update
+
+    from app.db.base import get_sessionmaker
+    from app.db.models import Chunk
+
+    document_id = await _upload(
+        client,
+        tenant,
+        collection_id,
+        "plain.txt",
+        b"Invoice number: PLAIN-42\nTotal: 42.00 EUR\n",
+        "text/plain",
+    )
+    async with get_sessionmaker()() as session:
+        chunks = list(
+            (await session.scalars(select(Chunk).where(Chunk.document_id == document_id))).all()
+        )
+        assert chunks and all(chunk.section_path is None for chunk in chunks)
+        # Exercise labels independently of parser heading/access-marker heuristics.
+        await session.execute(
+            update(Chunk).where(Chunk.document_id == document_id).values(access_label=access_label)
+        )
+        await session.commit()
+    schema = await _schema(client, tenant, index_facts=True)
+    extraction = await _extract(client, tenant, document_id, schema["id"])
+    assert extraction["fields"]["invoice_number"]["value"] == "PLAIN-42"
+    assert extraction["fields"]["total"]["value"] == 42
+    async with get_sessionmaker()() as session:
+        facts = await session.scalar(
+            select(Chunk).where(
+                Chunk.document_id == document_id, Chunk.section_path == "Extracted fields"
+            )
+        )
+        assert facts is not None and facts.access_label == access_label
+
+
+async def test_facts_finalization_already_holds_collection_lock(
+    client, tenant, collection_id, monkeypatch
+):
+    import uuid
+
+    from sqlalchemy.exc import OperationalError
+
+    from app.db.models import Collection
+    from app.db.sync import sync_session
+    from app.extraction import service
+
+    document_id = await _upload(client, tenant, collection_id)
+    schema = await _schema(client, tenant, index_facts=True)
+    original = service._replace_facts
+    collection_was_locked = []
+
+    def probe(*args, **kwargs):
+        # A competing document deletion acquires this lock first. Finalization
+        # must already hold it before reaching the facts write transaction.
+        try:
+            with sync_session() as competing:
+                competing.scalar(
+                    select(Collection)
+                    .where(Collection.id == uuid.UUID(collection_id))
+                    .with_for_update(nowait=True)
+                )
+        except OperationalError as exc:
+            assert exc.orig.sqlstate == "55P03"  # lock_not_available
+            collection_was_locked.append(True)
+        else:
+            collection_was_locked.append(False)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(service, "_replace_facts", probe)
+    result = await _extract(client, tenant, document_id, schema["id"])
+    assert result["status"] == "ready"
+    assert collection_was_locked == [True]

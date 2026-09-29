@@ -314,3 +314,117 @@ def test_backup_retry_resyncs_existing_ancestor_after_failed_creation(tmp_path, 
     module.backup(SuccessfulCompose(module), destination)
     assert tmp_path in synced
     assert module.verify_bundle(destination)["document_references"] == 0
+
+
+def test_backup_counts_include_source_and_extraction_records():
+    module = backup_module()
+    assert {"sources", "extraction_schemas", "extractions"} <= set(module.TABLES)
+    assert module.counts_sql(("documents", "chunks"))
+
+
+@pytest.mark.parametrize(
+    "mime,ext",
+    [
+        ("image/png", ".png"),
+        ("image/jpeg", ".jpg"),
+        ("image/tiff", ".tiff"),
+        ("image/bmp", ".bmp"),
+        ("image/webp", ".webp"),
+        ("image/gif", ".gif"),
+        ("image/heic", ".heic"),
+        ("image/heif", ".heif"),
+    ],
+)
+def test_image_originals_are_verified(mime, ext):
+    module = backup_module()
+    data = b"synthetic image bytes"
+    digest = hashlib.sha256(data).hexdigest()
+    archive = io.BytesIO()
+    with tarfile.open(fileobj=archive, mode="w:gz") as files:
+        entry = tarfile.TarInfo(f"files/tenant/{digest}{ext}")
+        entry.size = len(data)
+        files.addfile(entry, io.BytesIO(data))
+    archive.seek(0)
+    module.verify_originals(archive, [("tenant", digest, mime)])
+
+
+@pytest.mark.parametrize("content", [None, b"corrupt", b"searchable pdf"])
+def test_searchable_pdf_references_require_matching_archived_bytes(content):
+    module = backup_module()
+    digest = hashlib.sha256(b"searchable pdf").hexdigest()
+    archive = io.BytesIO()
+    with tarfile.open(fileobj=archive, mode="w:gz") as files:
+        if content is not None:
+            entry = tarfile.TarInfo(f"files/tenant/{digest}.ocr.pdf")
+            entry.size = len(content)
+            files.addfile(entry, io.BytesIO(content))
+    archive.seek(0)
+    if content == b"searchable pdf":
+        module.verify_originals(archive, [], [("tenant", digest)])
+    else:
+        with pytest.raises(ValueError, match="Missing original|hash mismatch"):
+            module.verify_originals(archive, [], [("tenant", digest)])
+
+
+@pytest.mark.parametrize("searchable", [False, True])
+@pytest.mark.parametrize("restored_content", [b"searchable pdf", b"corrupt", None])
+def test_restore_check_preserves_legacy_schema_and_verifies_searchable_files(
+    tmp_path, monkeypatch, capsys, searchable, restored_content
+):
+    module = backup_module()
+    digest = hashlib.sha256(b"searchable pdf").hexdigest()
+    (tmp_path / "database.dump").write_bytes(b"dump")
+    with tarfile.open(tmp_path / "files.tar.gz", "w:gz") as files:
+        if searchable:
+            entry = tarfile.TarInfo(f"files/tenant/{digest}.ocr.pdf")
+            entry.size = len(b"searchable pdf")
+            files.addfile(entry, io.BytesIO(b"searchable pdf"))
+    manifest = {
+        "format": 1,
+        "migration": "0015" if searchable else "0014",
+        "document_references": 0,
+        "table_counts": {"documents": 0},
+        "files": {name: module.checksum(tmp_path / name) for name in module.ARTIFACTS},
+    }
+    if searchable:
+        manifest["searchable_references"] = 1
+    (tmp_path / "manifest.json").write_text(json.dumps(manifest))
+    derivative_queries = []
+
+    def run(command, **kwargs):
+        output = b""
+        if "-c" in command:
+            sql = command[-1]
+            if "searchable_sha256" in sql:
+                assert searchable, "Old restored schemas do not have OCR columns"
+                derivative_queries.append(sql)
+                output = f"tenant,{digest}\n".encode()
+            elif "version_num" in sql:
+                output = manifest["migration"].encode()
+            elif "json_build_object" in sql:
+                output = json.dumps(manifest["table_counts"]).encode()
+        elif "-czf" in command:
+            with tarfile.open(fileobj=kwargs["stdout"], mode="w:gz") as files:
+                if searchable and restored_content is not None:
+                    entry = tarfile.TarInfo(f"files/tenant/{digest}.ocr.pdf")
+                    entry.size = len(restored_content)
+                    files.addfile(entry, io.BytesIO(restored_content))
+        return SimpleNamespace(stdout=output, stderr=b"", returncode=0)
+
+    monkeypatch.setattr(module, "run", run)
+    if searchable and restored_content != b"searchable pdf":
+        with pytest.raises(ValueError, match="Missing original|hash mismatch"):
+            module.restore_check(tmp_path, "synthetic")
+        assert not capsys.readouterr().out
+    else:
+        module.restore_check(tmp_path, "synthetic")
+        assert json.loads(capsys.readouterr().out)["status"] == "ok"
+    assert bool(derivative_queries) == searchable
+
+
+def test_backup_records_searchable_reference_count(tmp_path, monkeypatch):
+    module = backup_module()
+    compose = SuccessfulCompose(module)
+    monkeypatch.setattr(module.tempfile, "gettempdir", lambda: str(tmp_path))
+    module.backup(compose, tmp_path / "bundle")
+    assert module.verify_bundle(tmp_path / "bundle")["searchable_references"] == 0

@@ -11,7 +11,7 @@ from typing import Annotated, Any, Literal
 from fastapi import APIRouter, Depends, Query, Request, Response
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError
 
 from app.accounts.actor import Actor
@@ -28,6 +28,7 @@ from app.core.errors import (
 )
 from app.core.rate_limit import consume_daily, rate_limit
 from app.db.models import (
+    Chunk,
     Collection,
     Document,
     DocumentStatus,
@@ -40,7 +41,18 @@ from app.extraction.service import remove_facts_chunk
 from app.extraction.tasks import enqueue_extraction
 from app.extraction.templates import TEMPLATES
 
-router = APIRouter(prefix="/v1", tags=["extraction"], dependencies=[Depends(rate_limit("default"))])
+
+async def _require_owner(tenant: CurrentTenant, request: Request) -> None:
+    # Public/demo credentials identify a tenant, but never establish ownership.
+    if request.state.actor.kind == "guest":
+        raise NotFoundError("Extraction resources not found.")
+
+
+router = APIRouter(
+    prefix="/v1",
+    tags=["extraction"],
+    dependencies=[Depends(rate_limit("default")), Depends(_require_owner)],
+)
 
 
 # --- schemas -----------------------------------------------------------------------------
@@ -389,6 +401,22 @@ async def patch_extraction(
 ) -> ExtractionOut:
     require_write_access(request)
     extraction = await _fetch_extraction(db, tenant.id, extraction_id)
+    document = await _owned_document(db, tenant.id, extraction.document_id)
+    collection = await db.get(Collection, document.collection_id, with_for_update=True)
+    require_write_access(request, collection)
+    # Lock in the same order as document deletion and worker finalization, and
+    # re-read after waiting so concurrent reruns cannot lose their state.
+    locked = await db.scalar(
+        select(Extraction)
+        .where(Extraction.id == extraction_id, Extraction.tenant_id == tenant.id)
+        .with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    if locked is None:
+        raise NotFoundError("Extraction not found.")
+    extraction = locked
+    if extraction.status in (ExtractionStatus.PENDING, ExtractionStatus.PROCESSING):
+        raise ExtractionInProgressError("This extraction is still running.")
     schema = await _fetch_schema(db, tenant.id, extraction.schema_id)
     known = {f["name"] for f in schema.fields}
     unknown = [name for name in [*payload.values, *payload.clear] if name not in known]
@@ -402,6 +430,20 @@ async def patch_extraction(
         fields[name] = entry
     for name in payload.clear:
         fields[name] = {"value": None, "confidence": None, "evidence": None, "edited": True}
+    # Invalidate stale retrieval evidence in the same transaction as the correction.
+    # An explicit re-run rebuilds facts from the preserved human edits.
+    if extraction.facts_chunk_id is not None:
+        await db.execute(
+            delete(Chunk).where(
+                Chunk.id == extraction.facts_chunk_id, Chunk.document_id == extraction.document_id
+            )
+        )
+        extraction.facts_chunk_id = None
+        await db.execute(
+            update(Collection)
+            .where(Collection.id == document.collection_id)
+            .values(source_generation=Collection.source_generation + 1)
+        )
     extraction.fields = fields
     extraction.issues = [
         i

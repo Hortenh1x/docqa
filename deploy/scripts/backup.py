@@ -41,6 +41,9 @@ TABLES = (
     "google_auth_states",
     "spend_reservations",
     "spend_allocations",
+    "sources",
+    "extraction_schemas",
+    "extractions",
 )
 
 
@@ -60,6 +63,14 @@ EXTENSIONS = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
     "text/markdown": ".md",
     "text/plain": ".txt",
+    "image/png": ".png",
+    "image/jpeg": ".jpg",
+    "image/tiff": ".tiff",
+    "image/bmp": ".bmp",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+    "image/heic": ".heic",
+    "image/heif": ".heif",
 }
 
 
@@ -148,12 +159,18 @@ class Compose:
         )
 
 
-def verify_originals(archive, references):
-    """Validate paths and committed originals in one forward pass over gzip data."""
+def verify_originals(archive, references, searchable_references=()):
+    """Validate originals and referenced OCR copies in one forward pass over gzip data."""
     expected = {
         f"files/{tenant_id}/{digest}{EXTENSIONS[mime_type]}": digest
         for tenant_id, digest, mime_type in references
     }
+    expected.update(
+        {
+            f"files/{tenant_id}/{digest}.ocr.pdf": digest
+            for tenant_id, digest in searchable_references
+        }
+    )
     source = {"fileobj": archive} if hasattr(archive, "read") else {"name": archive}
     verified = set()
     seen = set()
@@ -179,6 +196,11 @@ def verify_originals(archive, references):
 REFERENCE_SQL = (
     "COPY (SELECT c.tenant_id, d.sha256, d.mime_type FROM documents d "
     "JOIN collections c ON c.id=d.collection_id) TO STDOUT WITH CSV"
+)
+SEARCHABLE_REFERENCE_SQL = (
+    "COPY (SELECT c.tenant_id, d.searchable_sha256 FROM documents d "
+    "JOIN collections c ON c.id=d.collection_id WHERE d.searchable_sha256 IS NOT NULL) "
+    "TO STDOUT WITH CSV"
 )
 
 
@@ -251,8 +273,9 @@ def _backup(compose, destination, config):
         manifest["migration"] = compose.sql("SELECT version_num FROM alembic_version")
         manifest["table_counts"] = json.loads(compose.sql(COUNTS_SQL))
         references = list(csv.reader(io.StringIO(compose.sql(REFERENCE_SQL))))
+        searchable_references = list(csv.reader(io.StringIO(compose.sql(SEARCHABLE_REFERENCE_SQL))))
         # S3 mode may have an empty cache after host replacement. Fetch every
-        # committed original before tarring; fail rather than produce a partial bundle.
+        # committed original and OCR copy before tarring; fail on an incomplete bundle.
         compose.call(
             "run", "--rm", "--no-deps", "-T", "api", "python", "-m", "app.storage.snapshot"
         )
@@ -291,8 +314,9 @@ def _backup(compose, destination, config):
             )
             output.flush()
             os.fsync(output.fileno())
-        verify_originals(staging / "files.tar.gz", references)
+        verify_originals(staging / "files.tar.gz", references, searchable_references)
         manifest["document_references"] = len(references)
+        manifest["searchable_references"] = len(searchable_references)
         manifest["files"] = {name: checksum(staging / name) for name in ARTIFACTS}
         manifest["completed_at"] = datetime.now(UTC).isoformat()
         with (staging / "manifest.json").open("w") as output:
@@ -438,6 +462,31 @@ def restore_check(directory, postgres_image):
             ]
         ).stdout.decode()
         references = list(csv.reader(io.StringIO(rows)))
+        # Pre-OCR bundles restore schemas without searchable_sha256. Their original
+        # reference/count contract remains valid and must not query the newer column.
+        searchable_references = []
+        if "searchable_references" in manifest:
+            rows = run(
+                [
+                    "docker",
+                    "exec",
+                    prefix,
+                    "psql",
+                    "-X",
+                    "-v",
+                    "ON_ERROR_STOP=1",
+                    "-U",
+                    "docqa",
+                    "-d",
+                    "docqa",
+                    "-At",
+                    "-c",
+                    SEARCHABLE_REFERENCE_SQL,
+                ]
+            ).stdout.decode()
+            searchable_references = list(csv.reader(io.StringIO(rows)))
+            if len(searchable_references) != manifest["searchable_references"]:
+                raise ValueError("Restored searchable references do not match backup manifest")
         # Check bytes read BACK from the restored volume, not just the source archive.
         with tempfile.TemporaryFile() as restored:
             run(
@@ -461,7 +510,7 @@ def restore_check(directory, postgres_image):
                 stdout=restored,
             )
             restored.seek(0)
-            verify_originals(restored, references)
+            verify_originals(restored, references, searchable_references)
         migration = (
             run(
                 [

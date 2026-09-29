@@ -26,7 +26,7 @@ def frame_count(path: Path) -> int | None:
     try:
         with Image.open(path) as image:
             return int(getattr(image, "n_frames", 1))
-    except (UnidentifiedImageError, OSError, ValueError):
+    except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError):
         return None
 
 
@@ -55,7 +55,7 @@ class ImageParser:
                     raise ParserError(f"Image has {frames} frames; the OCR limit is {limit}")
                 for frame in ImageSequence.Iterator(image):
                     ocr_pages.append(recognize_image(frame.copy()))
-        except (UnidentifiedImageError, OSError, ValueError) as exc:
+        except (UnidentifiedImageError, OSError, ValueError, Image.DecompressionBombError) as exc:
             raise ParserError(f"cannot decode image: {exc}") from exc
         except OcrError as exc:
             raise ParserError(f"OCR failed: {exc}") from exc

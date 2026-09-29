@@ -292,3 +292,87 @@ def test_searchable_pdf_carries_an_invisible_text_layer(tmp_path):
 
     plain = ParsedDocument(pages=[parsed.pages[0].__class__(number=1, text="x")])
     assert build_searchable_pdf(path, False, plain) is None
+
+
+def test_searchable_pdf_preserves_unicode_and_long_lines(tmp_path):
+    from app.ingestion.parsers.base import ParsedPage
+
+    path = tmp_path / "scan.png"
+    Image.new("RGB", (800, 600), "white").save(path)
+    text = "Rechnung € — Привет " + "invoice amount " * 16
+    parsed = ParsedDocument(
+        pages=[
+            ParsedPage(
+                number=1,
+                text=text,
+                ocr=True,
+                size=(800, 600),
+                ocr_blocks=[OcrBlock(text, (20, 20, 780, 50), 95, lines=[text])],
+            )
+        ]
+    )
+    payload = build_searchable_pdf(path, False, parsed)
+    with fitz.open(stream=payload, filetype="pdf") as pdf:
+        assert " ".join(pdf[0].get_text().split()) == text.strip()
+
+
+def test_searchable_pdf_includes_vision_text_without_boxes(tmp_path):
+    from app.ingestion.parsers.base import ParsedPage
+
+    path = tmp_path / "scan.png"
+    Image.new("RGB", (800, 600), "white").save(path)
+    text = "Invoice 123 Total EUR 450"
+    parsed = ParsedDocument(
+        pages=[
+            ParsedPage(
+                number=1,
+                text=text,
+                ocr=True,
+                size=(800, 600),
+                ocr_blocks=[OcrBlock(text, None, None)],
+            )
+        ]
+    )
+    payload = build_searchable_pdf(path, False, parsed)
+    with fitz.open(stream=payload, filetype="pdf") as pdf:
+        assert text in pdf[0].get_text()
+
+
+def test_searchable_photo_preserves_exif_orientation(tmp_path):
+    path = tmp_path / "phone.jpg"
+    image = Image.new("RGB", (800, 400), "white")
+    exif = image.getexif()
+    exif[0x0112] = 6
+    image.save(path, exif=exif)
+    parsed = ImageParser().parse(path)
+    # The stub has no text in a JPEG; supply one OCR block to exercise the copy.
+    parsed.pages[0].ocr_blocks = [_block("Invoice", 24)]
+    payload = build_searchable_pdf(path, False, parsed)
+    with fitz.open(stream=payload, filetype="pdf") as pdf:
+        assert pdf[0].rect.width < pdf[0].rect.height
+
+
+def test_prepare_bounds_large_image_before_processing():
+    from app.ingestion.ocr.preprocess import MAX_SIDE
+
+    image = Image.new("L", (MAX_SIDE + 100, 100), 255)
+    assert max(prepare(image, deskew=False).image.size) <= MAX_SIDE
+
+
+def test_oversized_image_is_a_parser_error(tmp_path, monkeypatch):
+    path = tmp_path / "large.png"
+    Image.new("L", (100, 100), 255).save(path)
+    monkeypatch.setattr(Image, "MAX_IMAGE_PIXELS", 100)
+    assert frame_count(path) is None
+    with pytest.raises(ParserError):
+        ImageParser().parse(path)
+
+
+def test_pdf_rasterization_bounds_dimensions_before_allocation():
+    from app.ingestion.ocr.preprocess import MAX_SIDE
+    from app.ingestion.parsers.pdf import _rasterize
+
+    with fitz.open() as document:
+        page = document.new_page(width=3000, height=100)
+        raster = _rasterize(page, 200)
+        assert max(raster.size) <= MAX_SIDE

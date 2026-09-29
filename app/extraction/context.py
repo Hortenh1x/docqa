@@ -10,7 +10,7 @@ context budget is spent. The first chunk is always kept: headers carry the ident
 from dataclasses import dataclass
 
 import numpy as np
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.config import Settings
@@ -41,7 +41,10 @@ def load_chunks(session: Session, document_id: object) -> list[ChunkText]:
             Chunk.token_count,
             Chunk.access_label,
         )
-        .where(Chunk.document_id == document_id, Chunk.section_path != FACTS_SECTION)
+        .where(
+            Chunk.document_id == document_id,
+            or_(Chunk.section_path.is_(None), Chunk.section_path != FACTS_SECTION),
+        )
         .order_by(Chunk.chunk_index)
     ).all()
     return [ChunkText(*row) for row in rows]

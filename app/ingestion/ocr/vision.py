@@ -5,6 +5,7 @@ through the budget ledger. Off in the demo by default — the image leaves the s
 import asyncio
 import base64
 import concurrent.futures
+import contextvars
 import io
 import re
 from collections.abc import Coroutine
@@ -13,8 +14,10 @@ from typing import Any
 import httpx
 from PIL import Image
 
+from app.billing.context import operator_billing
+from app.billing.errors import BudgetUnavailableError
 from app.billing.providers import after_call, before_call
-from app.config import is_local_llm_url
+from app.config import get_settings, is_local_llm_url
 from app.ingestion.ocr.base import OcrBlock, OcrError, OcrPage, OcrUnavailableError
 
 _SYSTEM = (
@@ -34,7 +37,7 @@ def _run_async[T](coro: Coroutine[Any, Any, T]) -> T:
     except RuntimeError:
         return asyncio.run(coro)
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
-        return pool.submit(asyncio.run, coro).result()
+        return pool.submit(contextvars.copy_context().run, asyncio.run, coro).result()
 
 
 class VisionOcr:
@@ -77,7 +80,12 @@ class VisionOcr:
     async def _transcribe(self, encoded_jpeg: str) -> str:
         ticket = None
         if not is_local_llm_url(self.base_url):
-            # image tokens are provider-specific; reserve on the text budget only
+            # Text-only reservations cannot bound provider-specific image charges.
+            if get_settings().budget_enabled and not operator_billing.get():
+                raise BudgetUnavailableError(
+                    "Hosted vision OCR has no configured image-token spending bound. "
+                    "Use Tesseract for budget-controlled uploads."
+                )
             ticket = await before_call(self.model, [_SYSTEM], _MAX_TOKENS)
         headers = {"Content-Type": "application/json"}
         if self.api_key:

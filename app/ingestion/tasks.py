@@ -25,6 +25,7 @@ import structlog
 from celery import Task
 from sqlalchemy import and_, delete, func, or_, select
 
+from app.billing.context import current_billing_actor, operator_billing
 from app.billing.errors import BudgetExceededError, BudgetUnavailableError
 from app.billing.jobs import attributed, collection_billing
 from app.config import get_settings
@@ -278,10 +279,18 @@ def ingest_document(self: Task, document_id: str) -> None:
         path = get_storage().path_for(
             str(tenant_id), document.sha256, EXT_BY_MIME[document.mime_type]
         )
-        parsed = get_parser(document.mime_type).parse(path)
+        # Parsing may invoke paid vision OCR. Resolve the saved upload identity
+        # before any provider work, overriding ambient eager-task request context.
+        payer, operator = collection_billing(document.collection_id, doc_id)
+        actor_token = current_billing_actor.set(payer)
+        operator_token = operator_billing.set(operator)
+        try:
+            parsed = get_parser(document.mime_type).parse(path)
+        finally:
+            current_billing_actor.reset(actor_token)
+            operator_billing.reset(operator_token)
         drafts = chunk_document(parsed)
         provider = get_embedding_provider(get_settings())
-        payer, operator = collection_billing(document.collection_id, doc_id)
         embeddings = _run_async(
             attributed(provider.embed([draft.content for draft in drafts]), payer, operator)
         )

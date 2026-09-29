@@ -157,10 +157,10 @@ async def test_upload_and_removal_never_destroy_a_surviving_file(
             entered.set()
             await resume.wait()
 
-    async def delayed_cleanup(*args):
+    async def delayed_cleanup(*args, **kwargs):
         entered.set()  # DB removal has committed, but file cleanup has not locked yet.
         await resume.wait()
-        await original_cleanup(*args)
+        await original_cleanup(*args, **kwargs)
 
     async def remove():
         if wipe:

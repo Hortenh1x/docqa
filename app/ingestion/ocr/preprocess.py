@@ -115,7 +115,14 @@ def prepare(image: Image.Image, *, deskew: bool = True) -> Prepared:
     if transposed is not None and transposed.size != image.size:
         exif_rotated = True
     image = transposed or image
+    # Bound arrays and filter work before allocating float32 copies of large scans.
+    initial_scale = min(1.0, MAX_SIDE / max(image.size))
     gray = image.convert("L")
+    if initial_scale < 1.0:
+        gray = gray.resize(
+            (max(1, int(gray.width * initial_scale)), max(1, int(gray.height * initial_scale))),
+            resample=Image.Resampling.LANCZOS,
+        )
     denoised = False
     if background_noise(gray) > NOISE_GRAIN:
         # measured on the raw scan, before flattening hides it: a 3×3 median removes
@@ -143,4 +150,6 @@ def prepare(image: Image.Image, *, deskew: bool = True) -> Prepared:
         else:
             scale = 1.0
     gray.info = dict(image.info)  # metadata survives (the stub provider reads it)
-    return Prepared(image=gray, transform=Transform(exif_rotated, angle, scale, denoised))
+    return Prepared(
+        image=gray, transform=Transform(exif_rotated, angle, initial_scale * scale, denoised)
+    )

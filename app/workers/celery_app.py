@@ -28,6 +28,7 @@ celery_app.conf.update(
     ),
     beat_schedule={
         "recover-ingestion": {"task": "ingestion.recover", "schedule": 60.0},
+        "recover-extractions": {"task": "extraction.recover", "schedule": 60.0},
         "schedule-source-syncs": {
             "task": "sources.schedule",
             "schedule": float(get_settings().source_sync_schedule_s),
