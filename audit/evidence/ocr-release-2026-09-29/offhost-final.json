@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-09-29T13:23:01.985149+00:00",
+  "status": "ok",
+  "bundle": "20260929T130408Z",
+  "documents": 9778,
+  "migration": "0017",
+  "manifest_sha256": "310f8f076dea18fa066bfc9cf3f2aafce076f954922f614091b6e805d38f373b",
+  "source_manifest_sha256": "5a6fe1627c517a52928b7e97f2242006582eefdebc4a00a2df35129d0127a6a9",
+  "source_release": "b48591bf13d57f613419e2facaac0aae7a00b4de9f1c152e725ef43a327f7575",
+  "captured_inputs": "/home/ubuntu/.config/docqa-backup/inputs/1cd00f50c513b7b0ca79bd54d658104dae452ff5cc15d5782809206efdab9fe7",
+  "action": "snapshot_created",
+  "snapshot_id": "1acb31304018475ad6f7ce213a86c5994e0615a3b83e414ec875b26560c774ba",
+  "total_bytes_processed": 2147178471,
+  "data_added": 945168,
+  "data_added_packed": null,
+  "completed_at": "2026-09-29T13:23:23.554346+00:00"
+}

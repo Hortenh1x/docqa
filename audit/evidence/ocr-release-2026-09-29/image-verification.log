@@ -1,0 +1,2 @@
+warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+{"status": "PASS", "image_source_files_verified": 182, "tesseract_languages": ["eng", "osd"], "real_ocr_and_searchable_pdf": true}

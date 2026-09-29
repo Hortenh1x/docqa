@@ -1,0 +1,2 @@
+{"started_at": "20260929T125241Z", "status": "ok", "release": "/opt/docqa-releases/prod-20260922-merged-ui", "bundle": "/home/ubuntu/backups/docqa-complete/20260929T125241Z", "completed_at": "2026-09-29T12:57:37.892766+00:00", "documents": 9778, "migration": "0014"}
+Primary monitoring configuration restored

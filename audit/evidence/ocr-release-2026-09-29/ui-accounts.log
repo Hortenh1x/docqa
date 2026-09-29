@@ -1,0 +1,55 @@
+npm notice run docqa-ui@0.1.0 test:accounts
+npm notice run node tests/account-regressions.cjs
+PASS guest has public Ask, no upload, and 0.20 spend leaves 0.30 after login
+PASS verification and reset consume fragment, choose final password and require explicit login
+PASS owner can download failed historical-label original, retry, upload and delete with credentials
+PASS logout clears private answers and readers across tabs, then account B starts fresh
+PASS expired session discards private state and explicitly obtains guest session
+PASS missing mail is honest, existing login works and narrow keyboard forms fit
+PASS registration, resend and recovery use neutral responses and keep passwords out of storage
+PASS unverified accounts cannot upload or delete and can request verification
+PASS HTTP and SSE budget exhaustion show the UTC reset and preserve guest spending at login
+PASS cross-tab logout aborts pending original fetch, upload XHR and query SSE requests
+PASS session refresh on tab return keeps the thread for the same identity and clears it for another
+PASS guest conversations transfer at sign-in without a UUID claim request
+PASS a signed-in thread is read from the account history and pages backwards
+PASS an incomplete recorded answer is readable and retryable
+PASS mutation preflight detects another account and never sends the old upload
+PASS mobile private source keeps keyboard focus and fits the viewport
+PASS verification and reset keep their in-memory proof and password after same-session tab return
+PASS proof forms are discarded when tab return finds an expired or different session
+PASS Usage distinguishes settled daily spend and pending reservations from remaining allowance
+PASS signed-in password reset preserves confirmed success through revoked-cookie recovery
+PASS confirmed password reset survives a failed guest-session bootstrap and retry
+PASS a fresh proof fragment starts a new form after an earlier proof completed
+PASS password confirmation blocks mismatches and accepts exactly eight characters
+PASS Google is hidden without credentials and enabled independently of SMTP
+PASS signed-in accounts explicitly connect Google and start failures remain actionable
+PASS Google callback errors explain email collision without merging accounts
+PASS a newer proof remains usable when an earlier proof request finishes
+PASS storage allowance spans the private library and refreshes after upload and deletion
+PASS full storage prevents upload but keeps deletion available
+PASS storage read failure offers retry without claiming zero usage
+PASS public starters remain available and access guidance appears only where relevant
+PASS Google button follows Sign in and displays the multicolor mark on mobile
+PASS a committed delete with an error response still refreshes the full storage allowance
+PASS named chat can be renamed, archived, and continued with a clean root
+PASS changing chat while renaming cannot submit the draft to the newly selected chat
+PASS archived chat keeps incomplete and refused history read-only
+PASS initial transcript blocks send until its durable parent is loaded
+PASS local completion survives an older transcript snapshot and a refreshed external head wins
+PASS failed lazy create stays with its collection and Retry creates the captured root
+PASS late lazy creation never steals a newer selected conversation
+PASS a late older sibling never replaces the newer completed and echoed head
+PASS a newer sibling remains the head when the older sibling completes first
+PASS partial SSE failure stays readable and reconciles to durable incomplete history
+PASS failed rows do not advance the head and retry preserves the captured scope
+PASS View as reruns the clicked refusal with its captured collection conversation and parent
+PASS clarification is neutral and remains an eligible parent while reset copy stays generic
+PASS same guest refresh preserves a running stream while guest rotation clears and aborts it
+PASS legacy anonymous local history is read-only, hidden after login, and removed only on explicit logout
+PASS conversation lists page beyond twenty and default titles show their last-question preview
+PASS legacy server conversation is readable and exposes no write or reply actions
+PASS large variable transcript keeps prepend anchor, bounded DOM, focus and source state
+PASS switching conversations resets a scrolled transcript to the latest row
+{"suite":"accounts","failed":0,"total":52}

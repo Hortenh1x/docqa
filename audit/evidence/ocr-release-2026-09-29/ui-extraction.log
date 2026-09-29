@@ -1,0 +1,5 @@
+PASS schemas and Fields create, edit, evidence and clear at 320px
+PASS schemas and Fields create, edit, evidence and clear at 390px
+PASS schemas and Fields create, edit, evidence and clear at 1440px
+PASS extraction and correction errors remain visible and permit retry
+{"suite":"extraction","failed":0,"total":4}

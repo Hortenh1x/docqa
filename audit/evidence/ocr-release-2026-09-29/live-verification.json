@@ -1,0 +1,105 @@
+{
+  "at": "2026-09-29T13:22:59.451Z",
+  "pages": [
+    {
+      "path": "/",
+      "width": 1440,
+      "status": 200,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/library",
+      "width": 1440,
+      "status": 200,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/schemas",
+      "width": 1440,
+      "status": 200,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/account",
+      "width": 1440,
+      "status": 200,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/about",
+      "width": 1440,
+      "status": 200,
+      "documentWidth": 1440
+    },
+    {
+      "path": "/",
+      "width": 390,
+      "status": 200,
+      "documentWidth": 390
+    },
+    {
+      "path": "/library",
+      "width": 390,
+      "status": 200,
+      "documentWidth": 390
+    },
+    {
+      "path": "/schemas",
+      "width": 390,
+      "status": 200,
+      "documentWidth": 390
+    },
+    {
+      "path": "/account",
+      "width": 390,
+      "status": 200,
+      "documentWidth": 390
+    },
+    {
+      "path": "/about",
+      "width": 390,
+      "status": 200,
+      "documentWidth": 390
+    },
+    {
+      "path": "/",
+      "width": 320,
+      "status": 200,
+      "documentWidth": 320
+    },
+    {
+      "path": "/library",
+      "width": 320,
+      "status": 200,
+      "documentWidth": 320
+    },
+    {
+      "path": "/schemas",
+      "width": 320,
+      "status": 200,
+      "documentWidth": 320
+    },
+    {
+      "path": "/account",
+      "width": 320,
+      "status": 200,
+      "documentWidth": 320
+    },
+    {
+      "path": "/about",
+      "width": 320,
+      "status": 200,
+      "documentWidth": 320
+    }
+  ],
+  "errors": [],
+  "mutations": [],
+  "external": [],
+  "source": {
+    "release": "b48591bf13d57f613419e2facaac0aae7a00b4de9f1c152e725ef43a327f7575",
+    "sha256": "0335c4aceacd98263873fb83132040672501b25dd1e5c88473832471a9fde89f"
+  },
+  "readiness": 200,
+  "guestSchemas": 404,
+  "status": "PASS"
+}

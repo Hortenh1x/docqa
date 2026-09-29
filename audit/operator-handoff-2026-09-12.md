@@ -1,29 +1,38 @@
-# DocQA: эксплуатация, обновлено 2026-09-22
+# DocQA: эксплуатация, обновлено 2026-09-29
 
 Сайт https://docqa.net, API https://api.docqa.net. Фактический активный выпуск всегда
 определяет `/home/ubuntu/.config/docqa/current-release` на основном VPS. Его исходники
 доступны через About → Source; публичный `/source/manifest.json` содержит имя архива
 и SHA-256. Проверяйте их для активного выпуска, а не используйте старую дату этого файла.
 
-Перед интеграцией 22 сентября проверены выпуск
-`/opt/docqa-releases/prod-20260921-conversation-context` и схема `0014`. В интеграцию
-входят grounded comparisons, чаты с контекстом, сокращение повторяющихся UI-текстов
-и семь обновлений Dependabot (PR #9–#15). Схема остаётся `0014`.
+Активирован выпуск `/opt/docqa-releases/prod-20260929-digitization-v4`, схема `0017`.
+Код `61c84c8dc8321f1b2e380191b862585ed2b58592`: OCR сканов/фото, PDF с текстовым
+слоем, извлечение полей и схемы, исправления проверки доступа, очереди, учёта стоимости
+и резервного копирования. [Ревью и проверки](ocr-review-2026-09-29.md).
+
+Прод использует `OCR_PROVIDER=tesseract`, `OCR_LANGUAGES=eng`. Извлечение полей
+доступно владельцу документов. Hosted Vision для пользовательских операций с лимитом
+расходов блокируется до внедрения точного резервирования стоимости изображений.
+Notion connector присутствует в коде, но требует отдельного SOURCE_CREDENTIALS_KEY.
 
 Скрипт выпуска: `/home/ubuntu/.local/share/docqa-ops/release.py build NAME` и
-`release.py activate NAME --previous OLD`. Перед активацией нужен проверенный полный
-бэкап не старше 6 часов (`python3 nightly_backup.py` вручную). `activate` временно
-приостанавливает мониторинг и восстанавливает конфигурацию в `finally`, пересоздаёт
-постоянный `migrate`, проверяет готовность и синхронную репликацию и только затем
-атомарно меняет указатель. Результат записывается в `NAME-release-status.json` рядом
-со скриптом. Исходники для обеих сборок готовятся одним `scripts/build_source.py`.
+`release.py activate NAME --previous OLD`. Изменение схемы требует
+`--additive-schema --expected-schema-before REV --expected-schema-after REV`.
+Перед активацией нужен проверенный полный backup не старше 6 часов
+(`python3 nightly_backup.py`). Скрипт сохраняет мониторинг, пересоздаёт постоянный
+`migrate`, проверяет готовность/синхронную реплику и меняет указатель только после успеха.
 
-Совместимый выпуск для отката интеграции: `prod-20260921-conversation-context`.
-Выпуски до `0014` (включая `prod-20260913-citations-v2` и grounded-comparisons без
-conversation-context) не являются безопасным откатом на текущей схеме. Не возвращайте
-старые writers после изменения схемы; при наличии
-`additive-schema-recovery-required.json` используйте зафиксированную процедуру восстановления.
-Предыдущие образы, исходники и приватная конфигурация сохраняются вместе.
+Предыдущий выпуск `prod-20260929-digitization-v2` использует ту же схему `0017`;
+его образы сохранены. Более старый `prod-20260922-merged-ui` и его backup тоже сохранены.
+Он использует схему `0014`: после миграций до `0017` не запускайте старые writers
+автоматически. При ошибке после изменения схемы применяйте процедуру восстановления
+с исправленным кандидатом; учитывайте `additive-schema-recovery-required.json`.
+
+Финальный CI: https://github.com/Hortenh1x/docqa/actions/runs/36573965315 — PASS.
+Проверки продакшена, исходников и внешнего восстановления сохранены в
+`evidence/ocr-release-2026-09-29/`. Backup схемы `0017`: `20260929T130408Z`;
+последний проверенный snapshot: `1acb31304018475ad6f7ce213a86c5994e0615a3b83e414ec875b26560c774ba`.
+Проверены восстановленные файлы/дамп и конфигурация; повторный SQL import не выполнялся.
 
 ## Исторические проверки 12–13 сентября
 
@@ -69,7 +78,7 @@ verify/reset/private-upload acceptance не выводится из этого �
 На основном VPS:
 
 - Указатель актуального release: `/home/ubuntu/.config/docqa/current-release`.
-- Перед любым действием прочитайте указатель; текущая схема — `0014`.
+- Перед любым действием прочитайте указатель; проверенная схема — `0017`.
 - Приватные значения: `/home/ubuntu/.config/docqa/runtime.env` (600). Не публиковать.
 - Project `docqa`; overlays **prod → shared-host → synchronous → source**, source последним.
 - Operational scripts/logs/status: `/home/ubuntu/.local/share/docqa-ops/`.
@@ -103,7 +112,8 @@ docker compose --env-file /home/ubuntu/.config/docqa/runtime.env -p docqa \
 Существующие pre-release образы, configuration backups и original bundles сохранены.
 Свежесть текущей полной копии проверяйте в `nightly-backup-status.json`, зашифрованной
 внешней копии — в `offhost-backup-status.json` в каталоге operational scripts.
-Для восстановления схемы `0014` используйте backup.py выпуска с поддержкой conversations.
+Для восстановления схемы `0017` используйте backup.py текущего выпуска: он учитывает
+новые таблицы, изображения и производные PDF. Старые manifests также поддерживаются.
 Зашифрованные копии расположены в bucket `docqa-backups`, prefix `restic`. Пароль
 шифрования и отдельные credentials также сохранены на рабочем компьютере владельца:
 

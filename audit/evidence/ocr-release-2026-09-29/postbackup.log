@@ -1,0 +1,2 @@
+{"started_at": "20260929T130408Z", "status": "ok", "release": "/opt/docqa-releases/prod-20260929-digitization-v2", "bundle": "/home/ubuntu/backups/docqa-complete/20260929T130408Z", "completed_at": "2026-09-29T13:08:56.856221+00:00", "documents": 9778, "migration": "0017"}
+Primary monitoring configuration restored

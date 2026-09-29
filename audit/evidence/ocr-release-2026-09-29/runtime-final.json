@@ -1,0 +1,17 @@
+{
+  "release": "/opt/docqa-releases/prod-20260929-digitization-v4",
+  "schema": "0017",
+  "replication": "docqa_standby|streaming|sync",
+  "synchronous_commit": "on",
+  "primary_monitor_enabled": true,
+  "documents": 9778,
+  "containers": [
+    "docqa-worker-1 Up 45 seconds (healthy)",
+    "docqa-api-1 Up 45 seconds (healthy)",
+    "docqa-beat-1 Up 45 seconds (healthy)",
+    "docqa-ui-1 Up 45 seconds (healthy)",
+    "docqa-db-1 Up 2 weeks (healthy)",
+    "docqa-redis-1 Up 2 weeks (healthy)"
+  ],
+  "status": "PASS"
+}
