@@ -174,7 +174,7 @@ export function DocumentViewer({
             {mode === "original" && objectUrl && (
               <a
                 href={objectUrl}
-                download={doc.filename}
+                download={wantsSearchable ? `${doc.filename.replace(/\.[^.]+$/, "")}.pdf` : doc.filename}
                 className="inline-flex min-h-11 items-center rounded-[6px] border border-hairline px-2.5 py-2 text-sm text-ink-soft hover:border-stamp/40 hover:text-ink active:bg-paper"
               >
                 Download

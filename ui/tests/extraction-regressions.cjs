@@ -129,6 +129,36 @@ test('extraction and correction errors remain visible and permit retry', async b
   } finally { await f.close(); }
 });
 
+
+for (const [filename, mime, searchable, expected] of [
+  ['scan.png', 'image/png', true, 'scan.pdf'],
+  ['scan.jpeg', 'image/jpeg', true, 'scan.pdf'],
+  ['scan.pdf', 'application/pdf', true, 'scan.pdf'],
+]) test(`download filename matches PDF bytes for ${filename}`, async browser => {
+  const f = await setup(browser, 390);
+  try {
+    const fileRequests = [];
+    await f.context.route('**/v1/**', async route => {
+      const req = route.request(), url = new URL(req.url());
+      const headers = { 'access-control-allow-origin': new URL(base).origin, 'access-control-allow-credentials': 'true', 'access-control-allow-headers': 'Content-Type, X-CSRF-Token', 'access-control-allow-methods': 'GET,OPTIONS', 'access-control-expose-headers': 'X-Total-Count', 'X-Total-Count': '1' };
+      if (req.method() === 'OPTIONS') return route.fallback();
+      if (url.pathname === `/v1/collections/${own}/documents`) return route.fulfill({ status: 200, headers, contentType: 'application/json', body: JSON.stringify([{ id: did, collection_id: own, filename, mime_type: mime, searchable_pdf: searchable, size_bytes: 100, sha256: '0'.repeat(64), status: 'ready', error: null, page_count: 1, access_labels: [], created_at: stamp, processed_at: stamp }]) });
+      if (url.pathname === `/v1/documents/${did}/file`) {
+        fileRequests.push(url.searchParams.get('variant'));
+        return route.fulfill({ status: 200, headers, contentType: 'application/pdf', body: '%PDF-1.4\n% synthetic download fixture\n%%EOF' });
+      }
+      return route.fallback();
+    });
+    await f.page.goto(base + '/library');
+    await f.page.getByLabel('Collection', { exact: true }).selectOption(own);
+    await f.page.getByRole('button', { name: filename, exact: true }).click();
+    const link = f.page.getByRole('dialog').getByRole('link', { name: 'Download', exact: true });
+    const [download] = await Promise.all([f.page.waitForEvent('download'), link.click()]);
+    assert.equal(download.suggestedFilename(), expected);
+    assert.deepEqual(fileRequests, [mime === 'application/pdf' ? null : 'searchable']);
+  } finally { await f.close(); }
+});
+
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.DOCQA_CHROMIUM || process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH, headless: true });
   let failed = 0;
